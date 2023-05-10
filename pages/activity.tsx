@@ -2,7 +2,7 @@ import Page from '@/components/page'
 import Section from '@/components/section'
 
 const Recipes = () => (
-	<Page>
+	<Page title="Activity">
 		<Section>
 			<h2 className='text-xl font-semibold'>Ingredients</h2>
 

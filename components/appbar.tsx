@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 const links = [
-	{ label: 'Booking', href: '/' },
+	{ label: 'Booking', href: '/booking' },
 	{ label: 'Activity', href: '/activity' },
 	{ label: 'Notifications', href: '/notifications' },
 	{ label: 'Settings', href: '/settings' },
