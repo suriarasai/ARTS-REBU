@@ -1,7 +1,7 @@
 {
-	"name": "Rice Bowl",
-	"short_name": "Rice Bowl",
-	"description": "Fluffless jasmine rice for those cold winter nights",
+	"name": "Rebu",
+	"short_name": "Rebu",
+	"description": "Demonstrating real time streaming via a PWA ride hailing application",
 	"icons": [
 		{
 			"src": "/images/icon-192.png",
