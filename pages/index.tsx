@@ -1,3 +1,5 @@
+// First page, for signing in
+
 import Link from 'next/link'
 
 const SignIn = () => (
@@ -11,6 +13,7 @@ const SignIn = () => (
 				</p>
 			</div>
 
+			{/* User form */}
 			<form className='mt-6 w-full max-w-lg flex flex-col'>
 				<div className='-mx-3 mb-4 flex flex-wrap'>
 					<div className='mb-6 w-full px-3 md:mb-0 md:w-1/4'>
@@ -40,6 +43,7 @@ const SignIn = () => (
 					</div>
 				</div>
 
+				{/* Submit button */}
 				<Link key={'Continue'} href={'/booking'}>
 					<button
 						type='submit'

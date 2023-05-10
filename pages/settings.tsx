@@ -1,3 +1,5 @@
+// Main hub for options and account configuration
+
 import Page from '@/components/page'
 import Section from '@/components/section'
 import Link from 'next/link'

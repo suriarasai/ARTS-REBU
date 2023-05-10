@@ -1,6 +1,9 @@
+// Navigation Bar: For routing
+
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
+// Links to be rendered
 const links = [
 	{ label: 'Booking', href: '/booking' },
 	{ label: 'Activity', href: '/activity' },
@@ -19,12 +22,18 @@ const Appbar = ({ sectionTitle }: appBarProps) => {
 		<div className='fixed top-0 left-0 z-20 w-full bg-zinc-900 pt-safe'>
 			<header className='border-b bg-zinc-100 px-safe dark:border-zinc-800 dark:bg-zinc-900'>
 				<div className='mx-auto flex h-14 max-w-screen-md items-center justify-between px-6'>
+
+					{/* Conditional Rendering: Show site title for web, and section title for mobile */}
 					<a>
-						<h1 className='font-medium'>
+						<h1 className='font-medium visible sm:hidden'>
 							{sectionTitle ? sectionTitle : 'Rebu'}
+						</h1>
+						<h1 className='font-medium hidden sm:block'>
+							Rebu
 						</h1>
 					</a>
 
+					{/* Conditional Rendering: Show navbar links for web */}
 					<nav className='flex items-center space-x-6'>
 						<div className='hidden sm:block'>
 							<div className='flex items-center space-x-6'>

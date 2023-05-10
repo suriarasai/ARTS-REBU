@@ -1,3 +1,5 @@
+// Bottom Navigation bar: For mobile navigation
+
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -8,6 +10,8 @@ const BottomNav = () => {
 		<div className='sm:hidden'>
 			<nav className='fixed bottom-0 w-full border-t bg-zinc-100 pb-safe dark:border-zinc-800 dark:bg-zinc-900'>
 				<div className='mx-auto flex h-16 max-w-md items-center justify-around px-6'>
+
+					{/* Iterating through the list of NavBar links to render them */}
 					{links.map(({ href, label, icon }) => (
 						<Link key={label} href={href}>
 							<a
@@ -40,6 +44,7 @@ interface navIconProps {
 	stroke?: string
 }
 
+// Reusable function for creating NavBar buttons
 const navIcon = ({ label, href, image, fill, stroke }: navIconProps) => {
 	return {
 		label: label,
@@ -58,6 +63,7 @@ const navIcon = ({ label, href, image, fill, stroke }: navIconProps) => {
 	}
 }
 
+// Populating the BottomNavBar with data
 const links = [
 	navIcon({
 		label: 'Booking',

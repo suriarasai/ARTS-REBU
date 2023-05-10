@@ -1,3 +1,7 @@
+// Registration for new users
+// Only accessible if the phone number from the sign-in
+// screen does not exist in the database
+
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'

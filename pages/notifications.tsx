@@ -1,3 +1,5 @@
+// Notifications page for informing the user
+
 import Page from '@/components/page'
 import Section from '@/components/section'
 
