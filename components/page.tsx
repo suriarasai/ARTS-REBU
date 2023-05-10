@@ -5,9 +5,10 @@ import BottomNav from '@/components/bottom-nav'
 interface Props {
 	title?: string
 	children: React.ReactNode
+	showHeader?: boolean
 }
 
-const Page = ({ title, children }: Props) => (
+const Page = ({ title, children, showHeader = true }: Props) => (
 	<>
 		{title ? (
 			<Head>
@@ -15,15 +16,9 @@ const Page = ({ title, children }: Props) => (
 			</Head>
 		) : null}
 
-		<Appbar sectionTitle={title} />
+		{showHeader ? <Appbar sectionTitle={title} /> : null}
 
-		<main
-			/**
-			 * Padding top = `appbar` height
-			 * Padding bottom = `bottom-nav` height
-			 */
-			className='mx-auto max-w-screen-md pt-12 pb-16 px-safe sm:pb-0'
-		>
+		<main className={`mx-auto max-w-screen-md pb-16 px-safe sm:pb-0 ${showHeader ? 'pt-12' : null}`}>
 			<div className='p-6'>{children}</div>
 		</main>
 

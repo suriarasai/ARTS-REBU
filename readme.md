@@ -1,1 +1,1 @@
-<!-- Template: https://github.com/ivandotv/nextjs-material-pwa/tree/master/src/pages -->
+<!-- Template: https://github.com/mvllow/next-pwa-template -->

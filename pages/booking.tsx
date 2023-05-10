@@ -1,36 +1,54 @@
 import Page from '@/components/page'
 import Section from '@/components/section'
 
-const Index = () => (
-	<Page title="Booking">
+const Booking = () => (
+	<Page title='Booking' showHeader={false}>
 		<Section>
-			<h2 className='text-xl font-semibold text-zinc-800 dark:text-zinc-200'>
-				We grow a lot of rice.
-			</h2>
+			<div className='mb-3 w-full'>
+				<input
+					className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none'
+					type='text'
+					placeholder='Your location'
+				/>
+			</div>
 
-			<div className='mt-2'>
-				<p className='text-zinc-600 dark:text-zinc-400'>
-					You love rice, and so does the rest of the world. In the crop year
-					2008/2009, the milled rice production volume amounted to over{' '}
-					<span className='font-medium text-zinc-900 dark:text-zinc-50'>
-						448 million tons
-					</span>{' '}
-					worldwide.
-				</p>
+			<div className='mb-3 w-full'>
+				<input
+					className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none'
+					type='text'
+					placeholder='Choose a destination...'
+				/>
+			</div>
 
-				<br />
+			<span className='inline-grid w-full grid-cols-2'>
+				<div className='ml-3'>
+					<label className='mb-6 w-full'>Home</label>
+					<p className='text-xs text-gray-400'>Set Location</p>
+				</div>
+				<div className='ml-3'>
+					<label>Work</label>
+					<p className='text-xs text-gray-400'>Set Location</p>
+				</div>
+			</span>
 
-				<p className='text-sm text-zinc-600 dark:text-zinc-400'>
-					<a
-						href='https://github.com/mvllow/next-pwa-template'
-						className='underline'
-					>
-						Source
-					</a>
-				</p>
+			<label className='mt-6 mb-4 block text-xs font-bold uppercase tracking-wide text-gray-700'>
+				Recents
+			</label>
+
+			<div className='ml-3 mb-3'>
+				<p>Location</p>
+				<p className="text-xs text-gray-400">Address</p>
+			</div>
+			<div className='ml-3 mb-3'>
+				<p>Location</p>
+				<p className="text-xs text-gray-400">Address</p>
+			</div>
+			<div className='ml-3 mb-3'>
+				<p>Location</p>
+				<p className="text-xs text-gray-400">Address</p>
 			</div>
 		</Section>
 	</Page>
 )
 
-export default Index
+export default Booking

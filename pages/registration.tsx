@@ -2,9 +2,9 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 
-export default Home
+export default Registration
 
-function Home() {
+function Registration() {
 	// form validation rules
 	const validationSchema = Yup.object().shape({
 		title: Yup.string().required('Title is required'),
