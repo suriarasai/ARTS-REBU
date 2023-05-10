@@ -15,7 +15,7 @@ const Page = ({ title, children }: Props) => (
 			</Head>
 		) : null}
 
-		<Appbar />
+		<Appbar sectionTitle={title} />
 
 		<main
 			/**

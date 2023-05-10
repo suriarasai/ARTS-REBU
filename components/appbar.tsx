@@ -5,20 +5,25 @@ const links = [
 	{ label: 'Booking', href: '/' },
 	{ label: 'Activity', href: '/activity' },
 	{ label: 'Notifications', href: '/notifications' },
-	{ label: 'Account', href: '/account' },
+	{ label: 'Settings', href: '/settings' },
 ]
 
-const Appbar = () => {
+interface appBarProps {
+	sectionTitle?: string
+}
+
+const Appbar = ({ sectionTitle }: appBarProps) => {
 	const router = useRouter()
 
 	return (
 		<div className='fixed top-0 left-0 z-20 w-full bg-zinc-900 pt-safe'>
 			<header className='border-b bg-zinc-100 px-safe dark:border-zinc-800 dark:bg-zinc-900'>
-				<div className='mx-auto flex h-20 max-w-screen-md items-center justify-between px-6'>
-
+				<div className='mx-auto flex h-14 max-w-screen-md items-center justify-between px-6'>
 					<Link href='/'>
 						<a>
-							<h1 className='font-medium'>Rebu</h1>
+							<h1 className='font-medium'>
+								{sectionTitle ? sectionTitle : 'Rebu'}
+							</h1>
 						</a>
 					</Link>
 
