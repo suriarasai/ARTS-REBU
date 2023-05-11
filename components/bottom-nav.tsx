@@ -1,6 +1,5 @@
 // Bottom Navigation bar: For mobile navigation
 
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 const BottomNav = () => {
@@ -13,20 +12,20 @@ const BottomNav = () => {
 
 					{/* Iterating through the list of NavBar links to render them */}
 					{links.map(({ href, label, icon }) => (
-						<Link key={label} href={href}>
 							<a
 								className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
 									router.pathname === href
 										? 'text-indigo-500 dark:text-indigo-400'
 										: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
 								}`}
+								key={label}
+								onClick={() => router.push(href)}
 							>
 								{icon}
 								<span className='text-xs text-zinc-600 dark:text-zinc-400'>
 									{label}
 								</span>
 							</a>
-						</Link>
 					))}
 				</div>
 			</nav>

@@ -1,6 +1,5 @@
 // Navigation Bar: For routing
 
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 // Links to be rendered
@@ -38,17 +37,17 @@ const Appbar = ({ sectionTitle }: appBarProps) => {
 						<div className='hidden sm:block'>
 							<div className='flex items-center space-x-6'>
 								{links.map(({ label, href }) => (
-									<Link key={label} href={href}>
 										<a
 											className={`text-sm ${
 												router.pathname === href
 													? 'text-indigo-500 dark:text-indigo-400'
 													: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
 											}`}
+											onClick={() => router.push(href)}
+											key={label}
 										>
 											{label}
 										</a>
-									</Link>
 								))}
 							</div>
 						</div>

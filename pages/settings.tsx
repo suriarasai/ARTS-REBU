@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Page from '@/components/page'
 import Section from '@/components/section'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const Settings = () => (
 	<Page title='Settings'>
@@ -25,15 +25,16 @@ interface navButtonProps {
 }
 
 const NavButton = ({ label, href, className }: navButtonProps) => {
+	const router = useRouter()
 	return (
-		<div>
-			<Link key={label} href={href}>
-				<div className='mt-2'>
-					<p className={`mt-5 text-zinc-600 dark:text-zinc-400 ${className}`}>
-						{label}
-					</p>
-				</div>
-			</Link>
+		<div className='mt-2'>
+			<p
+				className={`mt-5 text-zinc-600 dark:text-zinc-400 ${className}`}
+				key={label}
+				onClick={() => router.push(href)}
+			>
+				{label}
+			</p>
 		</div>
 	)
 }
@@ -41,6 +42,7 @@ const NavButton = ({ label, href, className }: navButtonProps) => {
 export default Settings
 
 const SignOutModal = () => {
+	const router = useRouter()
 	const [showModal, setShowModal] = useState(false)
 
 	return (
@@ -57,15 +59,15 @@ const SignOutModal = () => {
 						</h2>
 						<div className='flex gap-5'>
 							<button
-								className='rounded border boder-blue-700 py-2 px-3 text-xs text-blue-700 hover:bg-blue-700 hover:text-white'
+								className='boder-blue-700 rounded border py-2 px-3 text-xs text-blue-700 hover:bg-blue-700 hover:text-white'
 								onClick={() => setShowModal(false)}
 							>
 								Cancel
 							</button>
 							<button className='rounded border border-red-100 py-2 px-3 text-xs text-red-600 hover:bg-red-700 hover:text-white'>
-								<Link className='text-red-500' key='logout' href='/'>
+								<div className='text-red-500' key='logout' onClick={() => router.push('/')}>
 									Logout
-								</Link>
+								</div>
 							</button>
 						</div>
 					</div>
