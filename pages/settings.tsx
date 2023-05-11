@@ -51,7 +51,7 @@ const SignOutModal = () => {
 
 			{showModal ? (
 				<div className='absolute left-0 top-0 flex h-full w-full items-center justify-center backdrop-brightness-50'>
-					<div className='absolute left-0 right-0 top-1/3 ml-auto mr-auto flex h-auto w-1/3 flex-col items-center justify-center rounded-lg bg-zinc-50 p-7 shadow-xl'>
+					<div className='absolute left-0 right-0 top-1/3 ml-auto mr-auto flex h-auto w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-50 p-7 shadow-xl'>
 						<h2 className='mx-4 mt-3 mb-5 text-center text-base text-gray-400'>
 							Are you sure you want to log out?
 						</h2>
