@@ -9,69 +9,66 @@ type FormValues = {
 	countryCode: string
 }
 
+// Schema for error handling
 const resolver: Resolver<FormValues> = async (values) => {
 	return {
-	  values: values.mobileNumber ? values : {},
-	  errors: !values.mobileNumber
-		? {
-			mobileNumber: {
-			  type: 'required',
-			  message: 'This is required.',
-			},
-		  }
-		: {},
-	};
-  };
+		values: values.mobileNumber ? values : {},
+		errors: !values.mobileNumber
+			? {
+					mobileNumber: {
+						type: 'required',
+						message: 'Please enter your mobile number',
+					},
+			  }
+			: {},
+	}
+}
 
+// Main component
 const SignIn = () => {
-	// const [showSignIn, changeShowSignIn] = useState<boolean>(true)
-	// const [mobileNumber, setMobileNumber] = useState<string>()
+	const [number, setNumber] = React.useState<string>()
+	const [signInForm, changeSignInForm] = React.useState<boolean>(true)
 
 	return (
 		<main className='mx-auto max-w-screen-md pt-20 pb-16 px-safe sm:pb-0'>
 			<div className='p-6'>
 				<h2 className='text-xl font-semibold'>Welcome to Rebu</h2>
-				{/* {mobileNumber} */}
-				<SignInForm
-					// mobileNumber={mobileNumber}
-					// setMobileNumber={setMobileNumber}
-				/>
+				{signInForm ? (
+					<SignInForm
+						setNumber={setNumber}
+						changeSignInForm={changeSignInForm}
+					/>
+				) : (
+					<OTPForm mobileNumber={number} changeSignInForm={changeSignInForm} />
+				)}
 			</div>
 		</main>
 	)
 }
 
+// Text component
 const TermsOfService = () => (
 	<div className='mb-8 bg-neutral-100 text-neutral-600 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
 		By continuing, you are agreeing to the <u>terms and conditions</u>
 	</div>
 )
 
-// interface SignInFormProps {
-// 	mobileNumber?: string
-// 	setMobileNumber: Function
-// }
-
 // The default component that renders the mobile number input box
-// const SignInForm = ({ mobileNumber, setMobileNumber }: SignInFormProps) => {
-	const SignInForm = () => {
-	// const [countryCode, changeCountryCode] = useState<string>()
-
-	const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>): void => {
-		event.preventDefault()
-		// setMobileNumber(countryCode, ' ', mobileNumber)
-	}
-
-	const handleCountryCode = (
-		event: React.ChangeEvent<HTMLSelectElement>
-	): void => {
-		// changeCountryCode(event.target.value)
-	}
+const SignInForm = ({ setNumber, changeSignInForm }: any) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<FormValues>({ resolver })
+	const onSubmit = handleSubmit((data) => {
+		setNumber(data.countryCode + ' ' + data.mobileNumber)
+		changeSignInForm(false)
+	})
 
 	return (
 		<>
 			{/* User form */}
-			<form className='flex w-full max-w-lg flex-col'>
+			<form className='flex w-full max-w-lg flex-col' onSubmit={onSubmit}>
 				<div className='mt-5'>
 					<p className='mb-4 pb-6 text-zinc-600 dark:text-zinc-400'>
 						Enter your mobile number
@@ -86,7 +83,8 @@ const TermsOfService = () => (
 						<div className='relative'>
 							<select
 								className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 pr-8 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
-								onChange={handleCountryCode}
+								{...register('countryCode')}
+								defaultValue='+60'
 							>
 								<option>+60</option>
 								<option>+61</option>
@@ -105,9 +103,11 @@ const TermsOfService = () => (
 							className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
 							type='text'
 							placeholder='12345678'
-							// value={mobileNumber}
-							// onChange={setMobileNumber}
+							{...register('mobileNumber')}
 						/>
+						<div className='text-xs text-red-500'>
+							{errors?.mobileNumber && <p>{errors.mobileNumber.message}</p>}
+						</div>
 					</div>
 				</div>
 
@@ -117,10 +117,81 @@ const TermsOfService = () => (
 				<button
 					type='submit'
 					className='self-end rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'
-					onClick={handleSubmit}
 				>
 					{'Continue ᐳ'}
 				</button>
+			</form>
+		</>
+	)
+}
+
+const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
+	const handleSubmit = (data: any) => {
+		changeSignInForm(false)
+	}
+
+	// Navigates back to sign in screen
+	const goBack = (event: any) => {
+		event.preventDefault()
+		changeSignInForm(true)
+	}
+
+	const getOTP = (event: any) => {
+		event.preventDefault()
+	}
+
+	const continueButton = () => {
+		history.push('/booking')
+	}
+
+	return (
+		<>
+			{/* User form */}
+			<form className='flex w-full max-w-lg flex-col' onSubmit={handleSubmit}>
+				<div className='mt-5'>
+					<p className='mb-4 pb-6 text-zinc-600 dark:text-zinc-400'>
+						Enter the OTP we sent to <b>{mobileNumber}</b>
+					</p>
+				</div>
+
+				<div className='-mx-3 mb-2 flex flex-wrap items-center'>
+					<div className='w-full px-3 pb-6 md:mb-0 md:w-4/5'>
+						<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
+							Enter OTP
+						</label>
+						<input
+							className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
+							type='text'
+							placeholder='1234'
+						/>
+					</div>
+
+					<div className='mb-6 w-full px-3 md:mb-0 md:w-1/5'>
+						<button
+							className='rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'
+							onClick={getOTP}
+						>
+							Get OTP
+						</button>
+					</div>
+				</div>
+
+				<TermsOfService />
+
+				<div className='-mx-3 mb-2 flex self-end'>
+					<button
+						className='mr-3 rounded border border-zinc-500 py-3 px-4 text-xs font-bold text-zinc-500 hover:bg-zinc-700 hover:text-white'
+						onClick={goBack}
+					>
+						{'Go Back'}
+					</button>
+					<button
+						className='mr-4 self-end rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'
+						onClick={continueButton}
+					>
+						{'Continue ᐳ'}
+					</button>
+				</div>
 			</form>
 		</>
 	)
