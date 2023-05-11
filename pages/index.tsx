@@ -3,6 +3,7 @@
 import React from 'react'
 import history from '@/components/history'
 import { useForm } from 'react-hook-form'
+import { MobileNumber } from '@/components/MobileNumber'
 
 // Main component
 const SignIn = () => {
@@ -28,7 +29,7 @@ const SignIn = () => {
 
 // Text component
 const TermsOfService = () => (
-	<div className='mb-8 bg-neutral-100 text-neutral-600 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
+	<div className='mb-8 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
 		By continuing, you are agreeing to the <u>terms and conditions</u>
 	</div>
 )
@@ -55,43 +56,7 @@ const SignInForm = ({ setNumber, changeSignInForm }: any) => {
 					</p>
 				</div>
 
-				<div className='-mx-3 mb-2 flex flex-wrap'>
-					<div className='mb-6 w-full px-3 md:mb-0 md:w-1/4'>
-						<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
-							Country Code
-						</label>
-						<div className='relative'>
-							<select
-								className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 pr-8 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
-								{...register('countryCode')}
-								defaultValue='+60'
-							>
-								<option>+60</option>
-								<option>+61</option>
-								<option>+62</option>
-								<option>+65</option>
-								<option>+852</option>
-							</select>
-						</div>
-					</div>
-
-					<div className='w-full px-3 pb-6 md:mb-0 md:w-3/4'>
-						<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
-							Mobile Number
-						</label>
-						<input
-							className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
-							type='text'
-							placeholder='12345678'
-							{...register('mobileNumber', { required: true, minLength: 8, maxLength: 8, pattern: /^-?[0-9]\d*\.?\d*$/i })}
-						/>
-						{errors.mobileNumber && (
-							<p className='text-xs text-red-500'>
-								Please enter a 8-digit mobile number
-							</p>
-						)}
-					</div>
-				</div>
+				{MobileNumber(register, errors)}
 
 				<TermsOfService />
 
@@ -138,7 +103,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 				</div>
 
 				<div className='-mx-3 mb-2 flex flex-wrap items-center'>
-					<div className='w-full px-3 pb-6 md:mb-0 md:w-4/5'>
+					<div className='w-full px-3 pb-6 md:mb-0 w-3/4'>
 						<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
 							Enter OTP
 						</label>
@@ -149,7 +114,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 						/>
 					</div>
 
-					<div className='mb-6 w-full px-3 md:mb-0 md:w-1/5'>
+					<div className='w-full px-3 md:mb-0 w-1/4'>
 						<button
 							className='rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'
 							onClick={getOTP}
@@ -181,3 +146,5 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 }
 
 export default SignIn
+
+

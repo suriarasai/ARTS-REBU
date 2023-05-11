@@ -5,11 +5,11 @@ import Appbar from '@/components/appbar'
 import BottomNav from '@/components/bottom-nav'
 
 interface Props {
-	title?: string
 	children: React.ReactNode
+	title?: string
 }
 
-const Page = ({ title, children }: Props) => (
+const Page: React.FC<Props> = ({ children, title }) => (
 	<>
 		{/* For web: Changes the name in the browser tab */}
 		{title ? (
