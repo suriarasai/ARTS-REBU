@@ -1,28 +1,8 @@
 // First page, for signing in
 
-import React, { useState } from 'react'
+import React from 'react'
 import history from '@/components/history'
-import { useForm, Resolver } from 'react-hook-form'
-
-type FormValues = {
-	mobileNumber: string
-	countryCode: string
-}
-
-// Schema for error handling
-const resolver: Resolver<FormValues> = async (values) => {
-	return {
-		values: values.mobileNumber ? values : {},
-		errors: !values.mobileNumber
-			? {
-					mobileNumber: {
-						type: 'required',
-						message: 'Please enter your mobile number',
-					},
-			  }
-			: {},
-	}
-}
+import { useForm } from 'react-hook-form'
 
 // Main component
 const SignIn = () => {
@@ -59,7 +39,7 @@ const SignInForm = ({ setNumber, changeSignInForm }: any) => {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<FormValues>({ resolver })
+	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		setNumber(data.countryCode + ' ' + data.mobileNumber)
 		changeSignInForm(false)
@@ -103,11 +83,13 @@ const SignInForm = ({ setNumber, changeSignInForm }: any) => {
 							className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
 							type='text'
 							placeholder='12345678'
-							{...register('mobileNumber')}
+							{...register('mobileNumber', { required: true, minLength: 8, maxLength: 8, pattern: /^-?[0-9]\d*\.?\d*$/i })}
 						/>
-						<div className='text-xs text-red-500'>
-							{errors?.mobileNumber && <p>{errors.mobileNumber.message}</p>}
-						</div>
+						{errors.mobileNumber && (
+							<p className='text-xs text-red-500'>
+								Please enter a 8-digit mobile number
+							</p>
+						)}
 					</div>
 				</div>
 
@@ -125,6 +107,7 @@ const SignInForm = ({ setNumber, changeSignInForm }: any) => {
 	)
 }
 
+// 2nd screen to validate the user's mobile number via OTP (one-time password)
 const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 	const handleSubmit = (data: any) => {
 		changeSignInForm(false)
