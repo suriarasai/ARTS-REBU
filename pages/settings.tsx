@@ -59,12 +59,12 @@ const SignOutModal = () => {
 						</h2>
 						<div className='flex gap-5'>
 							<button
-								className='boder-blue-700 rounded border py-2 px-3 text-xs text-blue-700 hover:bg-blue-700 hover:text-white'
+								className='blue-button-hollow'
 								onClick={() => setShowModal(false)}
 							>
 								Cancel
 							</button>
-							<button className='rounded border border-red-100 py-2 px-3 text-xs text-red-600 hover:bg-red-700 hover:text-white'>
+							<button className='red-button'>
 								<div className='text-red-500' key='logout' onClick={() => router.push('/')}>
 									Logout
 								</div>

@@ -1,9 +1,9 @@
 .map-container {
 	height: 100vh !important;
-    width: 100vw !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    overflow: hidden !important;
-    z-index: 0 !important;
+	width: 100vw !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: hidden !important;
+	z-index: 0 !important;
 }

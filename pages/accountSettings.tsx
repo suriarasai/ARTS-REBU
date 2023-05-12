@@ -69,14 +69,12 @@ const AccountSettings = () => {
 
 					<div className='-mx-3 mb-6 mt-8 flex justify-center md:self-end'>
 						<button
-							className='mr-3 rounded border border-zinc-500 py-3 px-4 text-xs font-bold text-zinc-500 hover:bg-zinc-700 hover:text-white'
+							className='grey-button mr-3'
 							onClick={() => router.push('/settings')}
 						>
 							{'Discard Changes'}
 						</button>
-						<button className='mr-4 rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'>
-							{'Save Changes'}
-						</button>
+						<button className='blue-button mr-4'>{'Save Changes'}</button>
 					</div>
 				</form>
 			</Section>
@@ -86,23 +84,16 @@ const AccountSettings = () => {
 
 const TextField = ({ label, placeholder }: any) => (
 	<div className='w-full px-3'>
-		<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
-			{label}
-		</label>
-		<input
-			className='mb-3 block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
-			placeholder={placeholder}
-		/>
+		<label>{label}</label>
+		<input placeholder={placeholder} />
 	</div>
 )
 
 const DropDown = ({ label, array }: any) => (
 	<div className={`w-full px-3 ${label === 'Prefix' ? '' : 'w-1/3'}`}>
-		<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
-			{label}
-		</label>
+		<label>{label}</label>
 		<div className='relative'>
-			<select className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 pr-8 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'>
+			<select>
 				<option value='0'>{label}</option>
 				{array.map((option: any) => (
 					<option key={option}>{option}</option>

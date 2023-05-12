@@ -3,12 +3,11 @@ import React from 'react';
 export function MobileNumber(register: any, errors: any) {
 	return <div className='-mx-3 mb-2 flex flex-wrap'>
 		<div className='mb-6 w-full px-3 md:mb-0 w-1/4'>
-			<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
+			<label>
 				Area
 			</label>
 			<div className='relative'>
 				<select
-					className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 pr-8 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
 					{...register('countryCode')}
 					defaultValue='+60'
 				>
@@ -22,11 +21,10 @@ export function MobileNumber(register: any, errors: any) {
 		</div>
 
 		<div className='w-full px-3 pb-6 md:mb-0 w-3/4'>
-			<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
+			<label>
 				Mobile Number
 			</label>
 			<input
-				className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
 				type='text'
 				placeholder='12345678'
 				{...register('mobileNumber', { required: true, minLength: 8, maxLength: 8, pattern: /^-?[0-9]\d*\.?\d*$/i })} />

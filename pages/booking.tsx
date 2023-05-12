@@ -1,59 +1,100 @@
 // Main hub for booking rides
 
+// Displays user activity (ex. booked rides, reviews)
+
+import React, { useRef, useEffect, useState } from 'react'
 import Page from '@/components/page'
 import Section from '@/components/section'
+import mapboxgl from 'mapbox-gl'
+import { AddressAutofill, SearchBox } from '@mapbox/search-js-react'
+import SearchLocations from './searchLocations'
 
-const Booking = () => (
-	<Page title='Booking'>
-		<Section>
+mapboxgl.accessToken =
+	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
 
-			{/* Search Bar input fields */}
-			<div className='mb-3 w-full'>
-				<input
-					className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none'
-					type='text'
-					placeholder='Your location'
+const Booking = () => {
+	const mapContainer = useRef(null)
+	const map = useRef(null)
+	const [lng, setLng] = useState(103.776958)
+	const [lat, setLat] = useState(1.29368)
+	const [zoom, setZoom] = useState(11)
+
+	const [toLocation, setToLocation] = useState(false)
+	const [fromLocation, setFromLocation] = useState(false)
+	const [searchQueryVisible, setSearchQueryVisible] = useState(false)
+
+	useEffect(() => {
+		if (map.current) return // initialize map only once
+		map.current = new mapboxgl.Map({
+			container: mapContainer.current,
+			style: 'mapbox://styles/mapbox/light-v11',
+			center: [lng, lat],
+			zoom: zoom,
+		})
+	})
+
+	return (
+		<Page title='Booking'>
+			<Section>
+				{/* Show map API by default but hide it if the search buttons are clicked */}
+				<div
+					ref={mapContainer}
+					className={`map-container ${searchQueryVisible ? 'hidden' : null}`}
 				/>
-			</div>
-			<div className='mb-3 w-full'>
-				<input
-					className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none'
-					type='text'
-					placeholder='Choose a destination...'
-				/>
-			</div>
+			</Section>
 
-			{/* Saved locations: Home and Work */}
-			<span className='inline-grid w-full grid-cols-2'>
-				<div className='ml-3'>
-					<label className='mb-6 w-full'>Home</label>
-					<p className='text-xs text-gray-400'>Set Location</p>
+			<Section>
+				<div className='absolute w-11/12 lg:w-6/12'>
+					{/* Search Bar input fields */}
+					<div className={`${toLocation ? 'hidden' : null}`}>
+						<SearchBox
+							accessToken={mapboxgl.accessToken}
+							options={{ language: 'en', country: 'SG' }}
+							// map={mapContainer}
+							// theme={{
+							// 	variables: {
+							// 		padding: '0.75rem 0.75rem 1rem 1rem',
+							// 		spacing: '0.75rem',
+							// 		colorBackground: '#E5E7EB',
+							// 		colorText: '#374151',
+							// 		lineHeight: '1.25',
+							// 		borderRadius: '0.25rem',
+							// 		border: '1px #E5E7EB',
+							// 		boxShadow:
+							// 			'0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+							// 	},
+							// }}
+							// className='location-search-button'
+							value='Your location'
+							// onFocus={() => {
+							// 	setSearchQueryVisible(true), setFromLocation(true)
+							// }}
+							// onBlur={() => {
+							// 	setSearchQueryVisible(false), setFromLocation(false)
+							// }}
+						/>
+					</div>
+					<div className={`map-search-box ${fromLocation ? 'hidden' : null}`}>
+						<input
+							key='location-search-button'
+							type='text'
+							autoComplete='street-address'
+							placeholder='Choose a destination...'
+							onFocus={() => {
+								setSearchQueryVisible(true), setToLocation(true)
+							}}
+							onBlur={() => {
+								setSearchQueryVisible(false), setToLocation(false)
+							}}
+						/>
+					</div>
 				</div>
-				<div className='ml-3'>
-					<label>Work</label>
-					<p className='text-xs text-gray-400'>Set Location</p>
-				</div>
-			</span>
+			</Section>
 
-			{/* Recent locations */}
-			<label className='mt-6 mb-4 block text-xs font-bold uppercase tracking-wide text-gray-700'>
-				Recents
-			</label>
-
-			<div className='ml-3 mb-3'>
-				<p>Location</p>
-				<p className="text-xs text-gray-400">Address</p>
-			</div>
-			<div className='ml-3 mb-3'>
-				<p>Location</p>
-				<p className="text-xs text-gray-400">Address</p>
-			</div>
-			<div className='ml-3 mb-3'>
-				<p>Location</p>
-				<p className="text-xs text-gray-400">Address</p>
-			</div>
-		</Section>
-	</Page>
-)
+			{/* Show search bar on click */}
+			<Section>{searchQueryVisible ? <SearchLocations /> : null}</Section>
+		</Page>
+	)
+}
 
 export default Booking

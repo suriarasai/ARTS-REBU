@@ -63,7 +63,7 @@ const SignInForm = ({ setNumber, changeSignInForm }: any) => {
 				{/* Submit button */}
 				<button
 					type='submit'
-					className='self-end rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'
+					className='self-end blue-button'
 				>
 					{'Continue ᐳ'}
 				</button>
@@ -107,19 +107,18 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 
 				<div className='-mx-3 mb-2 flex flex-wrap items-center'>
 					<div className='w-full w-3/4 px-3 pb-6 md:mb-0'>
-						<label className='mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700'>
+						<label>
 							Enter OTP
 						</label>
 						<input
-							className='block w-full appearance-none rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none'
 							type='text'
 							placeholder='1234'
 						/>
 					</div>
 
-					<div className='w-full w-1/4 px-3 md:mb-0'>
+					<div className='w-full w-1/4 px-3 -mt-3 md:mb-0'>
 						<button
-							className='rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'
+							className='blue-button'
 							onClick={getOTP}
 						>
 							Get OTP
@@ -131,13 +130,13 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 
 				<div className='-mx-3 mb-2 flex self-end'>
 					<button
-						className='mr-3 rounded border border-zinc-500 py-3 px-4 text-xs font-bold text-zinc-500 hover:bg-zinc-700 hover:text-white'
+						className='mr-3 grey-button'
 						onClick={goBack}
 					>
 						{'Go Back'}
 					</button>
 					<button
-						className='mr-4 self-end rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700'
+						className='mr-8 blue-button'
 						onClick={continueButton}
 					>
 						{'Continue ᐳ'}
