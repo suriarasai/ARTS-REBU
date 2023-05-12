@@ -17,7 +17,7 @@ const Booking = () => {
 	const map = useRef(null)
 	const [lng, setLng] = useState(103.776958)
 	const [lat, setLat] = useState(1.29368)
-	const [zoom, setZoom] = useState(11)
+	const [zoom, setZoom] = useState(14)
 
 	const [toLocation, setToLocation] = useState(false)
 	const [fromLocation, setFromLocation] = useState(false)
@@ -25,12 +25,17 @@ const Booking = () => {
 
 	useEffect(() => {
 		if (map.current) return // initialize map only once
-		map.current = new mapboxgl.Map({
-			container: mapContainer.current,
-			style: 'mapbox://styles/mapbox/light-v11',
-			center: [lng, lat],
-			zoom: zoom,
+
+		// Centers map on current location
+		navigator.geolocation.getCurrentPosition((position) => {
+			map.current = new mapboxgl.Map({
+				container: mapContainer.current,
+				style: 'mapbox://styles/mapbox/light-v11',
+				center: [position.coords.longitude, position.coords.latitude],
+				zoom: zoom,
+			})
 		})
+	
 	})
 
 	return (
