@@ -50,22 +50,8 @@ const Booking = () => {
 						<SearchBox
 							accessToken={mapboxgl.accessToken}
 							options={{ language: 'en', country: 'SG' }}
-							// map={mapContainer}
-							// theme={{
-							// 	variables: {
-							// 		padding: '0.75rem 0.75rem 1rem 1rem',
-							// 		spacing: '0.75rem',
-							// 		colorBackground: '#E5E7EB',
-							// 		colorText: '#374151',
-							// 		lineHeight: '1.25',
-							// 		borderRadius: '0.25rem',
-							// 		border: '1px #E5E7EB',
-							// 		boxShadow:
-							// 			'0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-							// 	},
-							// }}
-							// className='location-search-button'
 							value='Your location'
+							map={map.current}
 							// onFocus={() => {
 							// 	setSearchQueryVisible(true), setFromLocation(true)
 							// }}
@@ -75,17 +61,17 @@ const Booking = () => {
 						/>
 					</div>
 					<div className={`map-search-box ${fromLocation ? 'hidden' : null}`}>
-						<input
-							key='location-search-button'
-							type='text'
-							autoComplete='street-address'
-							placeholder='Choose a destination...'
-							onFocus={() => {
-								setSearchQueryVisible(true), setToLocation(true)
-							}}
-							onBlur={() => {
-								setSearchQueryVisible(false), setToLocation(false)
-							}}
+						<SearchBox
+							accessToken={mapboxgl.accessToken}
+							options={{ language: 'en', country: 'SG' }}
+							value='Choose a destination'
+							map={map.current}
+							// onFocus={() => {
+							// 	setSearchQueryVisible(true), setToLocation(true)
+							// }}
+							// onBlur={() => {
+							// 	setSearchQueryVisible(false), setToLocation(false)
+							// }}
 						/>
 					</div>
 				</div>
