@@ -40,7 +40,7 @@ const Appbar = ({ sectionTitle }: appBarProps) => {
 										<a
 											className={`text-sm ${
 												router.pathname === href
-													? 'text-indigo-500 dark:text-indigo-400'
+													? 'text-cyan-600 dark:text-cyan-400'
 													: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
 											}`}
 											onClick={() => router.push(href)}

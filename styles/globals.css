@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-	@apply min-h-screen select-none bg-zinc-100 text-zinc-900 antialiased p-safe dark:bg-zinc-900 dark:text-zinc-50;
+	@apply min-h-screen select-none bg-zinc-100 text-zinc-900 antialiased p-safe dark:bg-zinc-900 dark:text-zinc-50 overflow-hidden;
 
 	/* PWA enhancements */
 	-webkit-overflow-scrolling: touch;
@@ -28,7 +28,7 @@ h5 {
 }
 
 .blue-button {
-	@apply rounded bg-blue-500 py-3 px-4 text-xs font-bold text-white hover:bg-blue-700 !important;
+	@apply rounded bg-cyan-600 py-3 px-4 text-xs font-bold text-white hover:bg-cyan-800 !important;
 }
 
 .grey-button {

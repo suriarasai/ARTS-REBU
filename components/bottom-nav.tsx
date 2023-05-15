@@ -15,7 +15,7 @@ const BottomNav = () => {
 							<a
 								className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
 									router.pathname === href
-										? 'text-indigo-500 dark:text-indigo-400'
+										? 'text-cyan-600 dark:text-cyan-400'
 										: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
 								}`}
 								key={label}

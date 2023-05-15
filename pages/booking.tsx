@@ -86,7 +86,7 @@ const Booking = () => {
 					'line-cap': 'round',
 				},
 				paint: {
-					'line-color': '#3887be',
+					'line-color': '#0891b2',
 					'line-width': 5,
 					'line-opacity': 0.75,
 				},
@@ -130,7 +130,7 @@ const Booking = () => {
 				},
 				paint: {
 					'circle-radius': 10,
-					'circle-color': label === 'from' ? '#3887be' : '#f30',
+					'circle-color': label === 'from' ? '#0891b2' : '#f30',
 				},
 			})
 		} else {
@@ -254,41 +254,67 @@ const RideOptions = () => {
 	return (
 		<div className='absolute bottom-0 w-11/12 bg-white pb-16 opacity-80 md:pb-4 lg:w-6/12 lg:pb-4'>
 			<div className='p-4'>
-				<label>Options</label>
-				{options.map((option) => (
-					<div
-						className='flow-root p-2 hover:bg-zinc-100'
-						key={option.id}
-						onClick={() => setShowModal(true)}
-					>
-						<div className='float-left mt-2'>
-							<b>{option.type}</b> - {option.people} people
-						</div>
-						<div className='float-right mr-8'>
-							<b>${option.price}</b> <br />
-							{option.dropoff} ETA
-						</div>
+				{!showModal ? (
+					<div>
+						<label>Options</label>
+						{options.map((option) => (
+							<ShowOption
+								option={option}
+								setShowModal={setShowModal}
+								key={option.id}
+							/>
+						))}
 					</div>
-				))}
-				{showModal ? (
-					<div className='absolute left-0 flex flex-col h-5/6 right-0 top-0 ml-auto mr-auto rounded-lg bg-zinc-50 p-7 shadow-xl'>
+				) : (
+					<div>
 						<label>Confirm Details</label>
-						<div className='gap-5 flex items-center justify-center'>
+
+						<ShowOption
+							option={options[0]}
+							setShowModal={setShowModal}
+							key={options[0].id}
+						/>
+
+						<label className='mt-2'>Pickup Location</label>
+
+						<div className='mb-4 p-2'>
+							<b>National University of Singapore, ISS</b>
+							<br />
+							25 Heng Mui Keng Terrace, Singapore 129959
+						</div>
+
+						<div className='flex items-center justify-center gap-5'>
 							<button
-								className='blue-button-hollow'
+								className='grey-button w-1/4'
 								onClick={() => setShowModal(false)}
 							>
 								Go Back
 							</button>
-							<button className='blue-button'>
+							<button className='blue-button w-3/4 bg-cyan-600'>
 								<div className='text-white' key='logout'>
 									Confirm
 								</div>
 							</button>
 						</div>
 					</div>
-				) : null}
+				)}
 			</div>
 		</div>
 	)
 }
+
+const ShowOption = ({ option, setShowModal }) => (
+	<div
+		className='flow-root p-2 hover:bg-zinc-100'
+		key={option.id}
+		onClick={() => setShowModal(true)}
+	>
+		<div className='float-left mt-2'>
+			<b>{option.type}</b> - {option.people} people
+		</div>
+		<div className='float-right mr-8'>
+			<b>${option.price}</b> <br />
+			{option.dropoff} ETA
+		</div>
+	</div>
+)

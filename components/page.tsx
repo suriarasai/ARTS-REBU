@@ -7,9 +7,10 @@ import BottomNav from '@/components/bottom-nav'
 interface Props {
 	title?: string
 	children: React.ReactNode
+	className?: string
 }
 
-const Page = ({ title, children }: Props) => (
+const Page = ({ title, children, className }: Props) => (
 	<>
 		{/* For web: Changes the name in the browser tab */}
 		{title ? (
@@ -22,7 +23,7 @@ const Page = ({ title, children }: Props) => (
 		<Appbar sectionTitle={title} />
 
 		{/* Inputed information goes here */}
-		<main className='mx-auto max-w-screen-md pb-16 px-safe sm:pb-0 pt-12'>
+		<main className={`mx-auto max-w-screen-md pb-16 px-safe sm:pb-0 pt-12 ${className}`}>
 			<div className='p-6'>{children}</div>
 		</main>
 
