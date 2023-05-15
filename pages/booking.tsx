@@ -33,8 +33,8 @@ const geojson = (coords, type = 'Point') => {
 const Booking = () => {
 	const mapContainer = useRef(null)
 	const map = useRef(null)
-	const [lng, setLng] = useState<number>()
-	const [lat, setLat] = useState<number>()
+	const [lng, setLng] = useState<number>(103.7729178)
+	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState(14)
 
 	const [toLocation, setToLocation] = useState(false)
