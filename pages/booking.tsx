@@ -12,11 +12,27 @@ import SearchLocations from './searchLocations'
 mapboxgl.accessToken =
 	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
 
+const geojson = (coords, type = 'Point') => {
+	return {
+		type: 'FeatureCollection',
+		features: [
+			{
+				type: 'Feature',
+				properties: {},
+				geometry: {
+					type: type,
+					coordinates: coords,
+				},
+			},
+		],
+	}
+}
+
 const Booking = () => {
 	const mapContainer = useRef(null)
 	const map = useRef(null)
-	const [lng, setLng] = useState(103.776958)
-	const [lat, setLat] = useState(1.29368)
+	const [lng, setLng] = useState<number>()
+	const [lat, setLat] = useState<number>()
 	const [zoom, setZoom] = useState(14)
 
 	const [toLocation, setToLocation] = useState(false)
@@ -30,42 +46,32 @@ const Booking = () => {
 		navigator.geolocation.getCurrentPosition((position) => {
 			setLng(position.coords.longitude)
 			setLat(position.coords.latitude)
-		})
 
-		// Creates the map object
-		map.current = new mapboxgl.Map({
-			container: mapContainer.current,
-			style: 'mapbox://styles/mapbox/light-v11',
-			center: [lng, lat],
-			zoom: zoom,
+			// Creates the map object
+			map.current = new mapboxgl.Map({
+				container: mapContainer.current,
+				style: 'mapbox://styles/mapbox/light-v11',
+				center: [position.coords.longitude, position.coords.latitude],
+				zoom: zoom,
+			})
 		})
 	})
 
-	const start = [103.773869, 1.299151]
-
 	// create a function to make a directions request
-	async function getRoute(end) {
+	async function getRoute(start, end) {
 		// make a directions request using cycling profile
 		// an arbitrary start will always be the same
 		// only the end or destination will change
 		const query = await fetch(
-			`https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
 			{ method: 'GET' }
 		)
 		const json = await query.json()
 		const data = json.routes[0]
 		const route = data.geometry.coordinates
-		const geojson = {
-			type: 'Feature',
-			properties: {},
-			geometry: {
-				type: 'LineString',
-				coordinates: route,
-			},
-		}
 		// if the route already exists on the map, we'll reset it using setData
 		if (map.current?.getSource('route')) {
-			map.current?.getSource('route').setData(geojson)
+			map.current?.getSource('route').setData(geojson(route, 'LineString'))
 		}
 		// otherwise, we'll make a new request
 		else {
@@ -74,7 +80,7 @@ const Booking = () => {
 				type: 'line',
 				source: {
 					type: 'geojson',
-					data: geojson,
+					data: geojson(route, 'LineString'),
 				},
 				layout: {
 					'line-join': 'round',
@@ -87,87 +93,54 @@ const Booking = () => {
 				},
 			})
 		}
-		// add turn instructions here at the end
 	}
 
+	// Add starting point to the map
 	map.current?.on('load', () => {
-		// make an initial directions request that
-		// starts and ends at the same location
-		getRoute(start)
+		setLocation([lng, lat], 'from')
 
-		// Add starting point to the map
-		map.current?.addLayer({
-			id: 'point',
-			type: 'circle',
-			source: {
-				type: 'geojson',
-				data: {
-					type: 'FeatureCollection',
-					features: [
-						{
-							type: 'Feature',
-							properties: {},
-							geometry: {
-								type: 'Point',
-								coordinates: start,
-							},
-						},
-					],
-				},
-			},
-			paint: {
-				'circle-radius': 10,
-				'circle-color': '#3887be',
-			},
-		})
-		
 		// Adds a marker where the user clicks on the map
 		map.current?.on('click', (event) => {
 			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key])
-			const end = {
-				type: 'FeatureCollection',
-				features: [
-					{
-						type: 'Feature',
-						properties: {},
-						geometry: {
-							type: 'Point',
-							coordinates: coords,
-						},
-					},
-				],
-			}
-			if (map.current?.getLayer('end')) {
-				map.current?.getSource('end').setData(end)
+			if (map.current?.getLayer('to')) {
+				map.current?.getSource('to').setData(geojson(coords))
 			} else {
-				map.current?.addLayer({
-					id: 'end',
-					type: 'circle',
-					source: {
-						type: 'geojson',
-						data: {
-							type: 'FeatureCollection',
-							features: [
-								{
-									type: 'Feature',
-									properties: {},
-									geometry: {
-										type: 'Point',
-										coordinates: coords,
-									},
-								},
-							],
-						},
-					},
-					paint: {
-						'circle-radius': 10,
-						'circle-color': '#f30',
-					},
-				})
+				setLocation(coords, 'to')
 			}
-			getRoute(coords)
+			getRoute([lng, lat], coords)
 		})
 	})
+
+	const addMarker = (coords, label) => {
+		if (!map.current?.getLayer(label)) {
+			map.current?.addLayer({
+				id: label,
+				type: 'circle',
+				source: {
+					type: 'geojson',
+					data: geojson(coords),
+				},
+				paint: {
+					'circle-radius': 10,
+					'circle-color': label === 'from' ? '#3887be' : '#f30',
+				},
+			})
+		} else {
+			map.current?.getSource(label).setData(geojson(coords))
+		}
+	}
+
+	// Sets the current and destination location
+	const setLocation = (coords, label) => {
+		if (label === 'to') {
+			addMarker(coords, label)
+			getRoute([lng, lat], coords)
+		} else {
+			setLng(coords[0])
+			setLat(coords[1])
+			addMarker(coords, label)
+		}
+	}
 
 	return (
 		<Page title='Booking'>
@@ -188,6 +161,9 @@ const Booking = () => {
 							options={{ language: 'en', country: 'SG' }}
 							value='Your location'
 							map={map.current}
+							onRetrieve={(e) =>
+								setLocation(e.features[0].geometry.coordinates, 'from')
+							}
 							// onFocus={() => {
 							// 	setSearchQueryVisible(true), setFromLocation(true)
 							// }}
@@ -202,6 +178,9 @@ const Booking = () => {
 							options={{ language: 'en', country: 'SG' }}
 							value='Choose a destination'
 							map={map.current}
+							onRetrieve={(e) =>
+								setLocation(e.features[0].geometry.coordinates, 'to')
+							}
 							// onFocus={() => {
 							// 	setSearchQueryVisible(true), setToLocation(true)
 							// }}
