@@ -35,7 +35,7 @@ const AccountSettings = () => {
 	const yearsArr = Array.from({ length: 70 }).map((_, i) => i + 1940)
 	// Array containing days from 1 to 31
 	const daysArr = Array.from({ length: 31 }).map((_, i) => i + 1)
-	const honorificsArr = ['Prefix', 'Ms.', 'Mr.', 'Mrs.']
+	const honorificsArr = ['Ms.', 'Mr.', 'Mrs.']
 
 	return (
 		<Page title='Settings'>

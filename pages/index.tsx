@@ -147,4 +147,8 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 	)
 }
 
+const RegistrationForm = () => {
+	
+}
+
 export default SignIn
