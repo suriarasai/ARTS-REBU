@@ -46,14 +46,13 @@ const Booking = () => {
 		navigator.geolocation.getCurrentPosition((position) => {
 			setLng(position.coords.longitude)
 			setLat(position.coords.latitude)
+		})
 
-			// Creates the map object
-			map.current = new mapboxgl.Map({
-				container: mapContainer.current,
-				style: 'mapbox://styles/mapbox/light-v11',
-				center: [position.coords.longitude, position.coords.latitude],
-				zoom: zoom,
-			})
+		// Creates the map object
+		map.current = new mapboxgl.Map({
+			container: mapContainer.current,
+			style: 'mapbox://styles/mapbox/light-v11',
+			zoom: zoom,
 		})
 	})
 
@@ -98,19 +97,26 @@ const Booking = () => {
 	// Add starting point to the map
 	map.current?.on('load', () => {
 		setLocation([lng, lat], 'from')
+		map.current?.setCenter([lng, lat])
 
 		// Adds a marker where the user clicks on the map
 		map.current?.on('click', (event) => {
+			// TODO: Set clicked location to be the SearchBox input
 			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key])
+
 			if (map.current?.getLayer('to')) {
 				map.current?.getSource('to').setData(geojson(coords))
 			} else {
 				setLocation(coords, 'to')
 			}
-			getRoute([lng, lat], coords)
+			getRoute(
+				map.current?.getSource('from')._data.features[0].geometry.coordinates,
+				coords
+			)
 		})
 	})
 
+	// Adds a location pin on the map
 	const addMarker = (coords, label) => {
 		if (!map.current?.getLayer(label)) {
 			map.current?.addLayer({
@@ -138,7 +144,13 @@ const Booking = () => {
 		} else {
 			setLng(coords[0])
 			setLat(coords[1])
-			addMarker(coords, label)
+			addMarker([lng, lat], label)
+			if (map.current?.getLayer('to')) {
+				getRoute(
+					coords,
+					map.current?.getSource('to')._data.features[0].geometry.coordinates
+				)
+			}
 		}
 	}
 
@@ -173,6 +185,7 @@ const Booking = () => {
 						/>
 					</div>
 					<div className={`map-search-box ${fromLocation ? 'hidden' : null}`}>
+						{/* TODO: Placeholder values? */}
 						<SearchBox
 							accessToken={mapboxgl.accessToken}
 							options={{ language: 'en', country: 'SG' }}
@@ -181,6 +194,7 @@ const Booking = () => {
 							onRetrieve={(e) =>
 								setLocation(e.features[0].geometry.coordinates, 'to')
 							}
+							// TODO: Fix the below code to render the search UI
 							// onFocus={() => {
 							// 	setSearchQueryVisible(true), setToLocation(true)
 							// }}
