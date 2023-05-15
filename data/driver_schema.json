@@ -2,6 +2,7 @@
 	"_id": "int",
 	"first_name": "string",
 	"last_name": "string",
+    "drivers_license": "string",
 	"country_code": "int",
 	"email": "string",
 	"password": "password",
@@ -51,7 +52,6 @@
 		{
 			"_id": "int",
 			"datetime": "datetime",
-			"driver_id": "int",
 			"rating": "int",
 			"body": "string"
 		}
@@ -59,12 +59,13 @@
 	"reviews_from_customer": [
 		{
 			"_id": "int",
-			"driver_id": "int",
+			"customer_id": "int",
 			"datetime": "datetime",
 			"rating": "int",
 			"politeness": "int",
 			"cleanliness": "int",
 			"body": "string"
 		}
-	]
+	],
+	"cars": ["string"]
 }
