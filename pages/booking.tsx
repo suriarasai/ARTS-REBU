@@ -223,7 +223,10 @@ const Booking = () => {
 
 export default Booking
 
+// TODO: Limit to 3 options
 const RideOptions = () => {
+	const [showModal, setShowModal] = useState(false)
+
 	const options = [
 		{
 			id: 0,
@@ -249,11 +252,15 @@ const RideOptions = () => {
 	]
 
 	return (
-		<div className='absolute bottom-0 bg-white opacity-80 pb-16 lg:pb-4 md:pb-4 w-11/12 lg:w-6/12'>
+		<div className='absolute bottom-0 w-11/12 bg-white pb-16 opacity-80 md:pb-4 lg:w-6/12 lg:pb-4'>
 			<div className='p-4'>
 				<label>Options</label>
 				{options.map((option) => (
-					<div className='flow-root p-2 ml-6' key={option.id}>
+					<div
+						className='flow-root p-2 hover:bg-zinc-100'
+						key={option.id}
+						onClick={() => setShowModal(true)}
+					>
 						<div className='float-left mt-2'>
 							<b>{option.type}</b> - {option.people} people
 						</div>
@@ -263,6 +270,24 @@ const RideOptions = () => {
 						</div>
 					</div>
 				))}
+				{showModal ? (
+					<div className='absolute left-0 flex flex-col h-5/6 right-0 top-0 ml-auto mr-auto rounded-lg bg-zinc-50 p-7 shadow-xl'>
+						<label>Confirm Details</label>
+						<div className='gap-5 flex items-center justify-center'>
+							<button
+								className='blue-button-hollow'
+								onClick={() => setShowModal(false)}
+							>
+								Go Back
+							</button>
+							<button className='blue-button'>
+								<div className='text-white' key='logout'>
+									Confirm
+								</div>
+							</button>
+						</div>
+					</div>
+				) : null}
 			</div>
 		</div>
 	)
