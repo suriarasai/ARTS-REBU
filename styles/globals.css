@@ -20,7 +20,7 @@ select {
 }
 
 label {
-	@apply mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700 !important;
+	@apply mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700;
 }
 
 h5 {
