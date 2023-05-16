@@ -2,92 +2,53 @@
 // Only accessible if the phone number from the sign-in
 // screen does not exist in the database
 
-export default Registration
+import React from 'react'
+import { EmailForm } from '@/components/EmailForm'
+import { useRouter } from 'next/router'
+import AccountInformation from '@/components/AccountInformation'
 
-function Registration() {
+const Registration = () => {
+	const router = useRouter()
+	const [nextStep, showNextStep] = React.useState<boolean>(false)
+
 	return (
-		<div className='card m-3'>
-			<h5 className='card-header'>Next.js - Form Validation Example</h5>
-			<div className='card-body'>
-				<form>
-					<div className='form-row'>
-						<div className='form-group col'>
-							<label>Title</label>
-							<select name='title'>
-								<option value=''></option>
-								<option value='Mr'>Mr</option>
-								<option value='Mrs'>Mrs</option>
-								<option value='Miss'>Miss</option>
-								<option value='Ms'>Ms</option>
-							</select>
-						</div>
-						<div className='form-group col-5'>
-							<label>First Name</label>
-							<input
-								name='firstName'
-								type='text'
-							/>
-						</div>
-						<div className='form-group col-5'>
-							<label>Last Name</label>
-							<input
-								name='lastName'
-								type='text'
-							/>
-						</div>
-					</div>
-					<div className='form-row'>
-						<div className='form-group col'>
-							<label>Date of Birth</label>
-							<input
-								name='dob'
-								type='date'
-							/>
-						</div>
-						<div className='form-group col'>
-							<label>Email</label>
-							<input
-								name='email'
-								type='text'
-							/>
-						</div>
-					</div>
-					<div className='form-row'>
-						<div className='form-group col'>
-							<label>Password</label>
-							<input
-								name='password'
-								type='password'
-							/>
-						</div>
-						<div className='form-group col'>
-							<label>Confirm Password</label>
-							<input
-								name='confirmPassword'
-								type='password'
-							/>
-						</div>
-					</div>
-					<div className='form-group form-check'>
-						<input
-							name='acceptTerms'
-							type='checkbox'
-							id='acceptTerms'
-						/>
-						<label htmlFor='acceptTerms' className='form-check-label'>
-							Accept Terms & Conditions
-						</label>
-					</div>
-					<div className='form-group'>
+		<main className='mx-auto mt-7 max-w-screen-md px-safe absolute overflow-hidden'>
+			<div className='flex flex-col p-6'>
+				<h2 className='pb-3 text-xl font-semibold'>Welcome to Rebu</h2>
+				<label className='pb-6'>Step {!nextStep ? 1 : 2} of 2</label>
+				<p className='mb-8'>
+					{
+						"We're glad to have you here! We just need you to fill out a bit more information to complete your profile"
+					}
+				</p>
+
+				{nextStep ? (
+					<AccountInformation newUser={true} />
+				) : (
+					<EmailForm existingUser={false} />
+				)}
+
+				<div className='mt-8 flex self-end'>
+					{nextStep ? (
 						<button
-							type='submit'
-							className='rounded-full bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700'
+							className='grey-button mr-3'
+							onClick={() => showNextStep(false)}
 						>
-							Register
+							{'Go Back'}
 						</button>
-					</div>
-				</form>
+					) : null}
+					<button
+						className='blue-button self-end'
+						onClick={() =>
+							nextStep ? router.push('/booking') : showNextStep(true)
+						}
+					>
+						{nextStep ? 'Finish' : 'Continue ᐳ'}
+					</button>
+				</div>
 			</div>
-		</div>
+		</main>
 	)
 }
+
+export default Registration

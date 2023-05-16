@@ -4,6 +4,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { MobileNumber } from '@/components/MobileNumber'
+import { EmailForm } from '@/components/EmailForm'
 
 // Main component
 const SignIn = () => {
@@ -117,29 +118,9 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 	return (
 		<>
 			{/* User form */}
-			<form className='flex w-full max-w-lg flex-col' onSubmit={handleSubmit}>
-				<div className='mt-5'>
-					<p className='mb-4 pb-3 text-zinc-600 dark:text-zinc-400'>
-						{'Sign in using your email'}
-					</p>
-				</div>
 
-				<div className='-mx-3 mb-2'>
-					<div className='w-full px-3 pb-6 md:mb-0'>
-						<label>Email</label>
-						<input type='text' placeholder='user@website.domain' />
-					</div>
-					<div className='w-full px-3 pb-6 md:mb-0'>
-						<label>Password</label>
-						<input type='password' placeholder='********' />
-					</div>
-				</div>
-
-				<div className='mb-4 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
-					<p>
-						<u>Forgot your password?</u>
-					</p>
-				</div>
+			<form className='flex w-full max-w-lg flex-col'>
+				<EmailForm />
 
 				<TermsOfService />
 
