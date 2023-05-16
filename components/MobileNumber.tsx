@@ -2,7 +2,7 @@ import React from 'react';
 
 export function MobileNumber(register: any, errors: any) {
 	return <div className='-mx-3 mb-2 flex flex-wrap'>
-		<div className='mb-6 w-full px-3 md:mb-0 w-1/4'>
+		<div className='mb-3 w-full px-3 md:mb-0 w-1/4'>
 			<label>
 				Area
 			</label>
@@ -20,7 +20,7 @@ export function MobileNumber(register: any, errors: any) {
 			</div>
 		</div>
 
-		<div className='w-full px-3 pb-6 md:mb-0 w-3/4'>
+		<div className='w-full px-3 pb-3 md:mb-0 w-3/4'>
 			<label>
 				Mobile Number
 			</label>

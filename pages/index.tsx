@@ -9,6 +9,7 @@ import { MobileNumber } from '@/components/MobileNumber'
 const SignIn = () => {
 	const [number, setNumber] = React.useState<string>()
 	const [signInForm, changeSignInForm] = React.useState<boolean>(true)
+	const [emailSignIn, changeEmailSignIn] = React.useState<boolean>(false)
 
 	return (
 		<main className='mx-auto max-w-screen-md pt-20 pb-16 px-safe sm:pb-0'>
@@ -17,6 +18,12 @@ const SignIn = () => {
 				{signInForm ? (
 					<SignInForm
 						setNumber={setNumber}
+						changeSignInForm={changeSignInForm}
+						changeEmailSignIn={changeEmailSignIn}
+					/>
+				) : emailSignIn ? (
+					<EmailSignIn
+						changeEmailSignIn={changeEmailSignIn}
 						changeSignInForm={changeSignInForm}
 					/>
 				) : (
@@ -35,7 +42,11 @@ const TermsOfService = () => (
 )
 
 // The default component that renders the mobile number input box
-const SignInForm = ({ setNumber, changeSignInForm }: any) => {
+const SignInForm = ({
+	setNumber,
+	changeSignInForm,
+	changeEmailSignIn,
+}: any) => {
 	const {
 		register,
 		handleSubmit,
@@ -58,15 +69,88 @@ const SignInForm = ({ setNumber, changeSignInForm }: any) => {
 
 				{MobileNumber(register, errors)}
 
+				<div className='mb-8 mt-3 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
+					<p>{"Don't have access to your number?"}</p>
+					<p>
+						<u
+							onClick={() => {
+								changeEmailSignIn(true)
+								changeSignInForm(false)
+							}}
+						>
+							Continue with email
+						</u>{' '}
+						instead
+					</p>
+				</div>
+
 				<TermsOfService />
 
 				{/* Submit button */}
-				<button
-					type='submit'
-					className='self-end blue-button'
-				>
+				<button type='submit' className='blue-button self-end'>
 					{'Continue ᐳ'}
 				</button>
+			</form>
+		</>
+	)
+}
+
+const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
+	const router = useRouter()
+
+	const handleSubmit = (data: any) => {
+		changeEmailSignIn(false)
+	}
+
+	// Navigates back to sign in screen
+	const goBack = (event: any) => {
+		event.preventDefault()
+		changeEmailSignIn(false)
+		changeSignInForm(true)
+	}
+
+	const continueButton = (e) => {
+		e.preventDefault()
+		router.push(false ? '/booking' : '/registration')
+	}
+
+	return (
+		<>
+			{/* User form */}
+			<form className='flex w-full max-w-lg flex-col' onSubmit={handleSubmit}>
+				<div className='mt-5'>
+					<p className='mb-4 pb-3 text-zinc-600 dark:text-zinc-400'>
+						{'Sign in using your email'}
+					</p>
+				</div>
+
+				<div className='-mx-3 mb-2'>
+					<div className='w-full px-3 pb-6 md:mb-0'>
+						<label>Email</label>
+						<input type='text' placeholder='user@website.domain' />
+					</div>
+					<div className='w-full px-3 pb-6 md:mb-0'>
+						<label>Password</label>
+						<input type='password' placeholder='********' />
+					</div>
+				</div>
+
+				<div className='mb-4 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
+					<p>
+						<u>Forgot your password?</u>
+					</p>
+				</div>
+
+				<TermsOfService />
+
+				<div className='-mx-3 flex self-end'>
+					<button className='grey-button mr-3' onClick={goBack}>
+						{'Go Back'}
+					</button>
+					<button className='blue-button mr-8' onClick={continueButton}>
+						{'Continue ᐳ'}
+					</button>
+				</div>
 			</form>
 		</>
 	)
@@ -92,7 +176,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 
 	const continueButton = (e) => {
 		e.preventDefault()
-		router.push('/booking')
+		router.push(false ? '/booking' : '/registration')
 	}
 
 	return (
@@ -107,20 +191,12 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 
 				<div className='-mx-3 mb-2 flex flex-wrap items-center'>
 					<div className='w-full w-3/4 px-3 pb-6 md:mb-0'>
-						<label>
-							Enter OTP
-						</label>
-						<input
-							type='text'
-							placeholder='1234'
-						/>
+						<label>Enter OTP</label>
+						<input type='text' placeholder='1234' />
 					</div>
 
-					<div className='w-full w-1/4 px-3 -mt-3 md:mb-0'>
-						<button
-							className='blue-button'
-							onClick={getOTP}
-						>
+					<div className='-mt-3 w-full w-1/4 px-3 md:mb-0'>
+						<button className='blue-button' onClick={getOTP}>
 							Get OTP
 						</button>
 					</div>
@@ -129,26 +205,16 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 				<TermsOfService />
 
 				<div className='-mx-3 mb-2 flex self-end'>
-					<button
-						className='mr-3 grey-button'
-						onClick={goBack}
-					>
+					<button className='grey-button mr-3' onClick={goBack}>
 						{'Go Back'}
 					</button>
-					<button
-						className='mr-8 blue-button'
-						onClick={continueButton}
-					>
+					<button className='blue-button mr-8' onClick={continueButton}>
 						{'Continue ᐳ'}
 					</button>
 				</div>
 			</form>
 		</>
 	)
-}
-
-const RegistrationForm = () => {
-	
 }
 
 export default SignIn
