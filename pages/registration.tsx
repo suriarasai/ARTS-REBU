@@ -12,7 +12,7 @@ const Registration = () => {
 	const [nextStep, showNextStep] = React.useState<boolean>(false)
 
 	return (
-		<main className='mx-auto mt-7 max-w-screen-md px-safe absolute overflow-hidden'>
+		<div className='mx-auto pt-9 max-w-screen-md overflow-hidden'>
 			<div className='flex flex-col p-6'>
 				<h2 className='pb-3 text-xl font-semibold'>Welcome to Rebu</h2>
 				<label className='pb-6'>Step {!nextStep ? 1 : 2} of 2</label>
@@ -47,7 +47,7 @@ const Registration = () => {
 					</button>
 				</div>
 			</div>
-		</main>
+		</div>
 	)
 }
 

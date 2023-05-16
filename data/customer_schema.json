@@ -24,14 +24,14 @@
 				"time_travelled": "time",
 				"time_expected": "time",
 				"voucher_used": "string",
-				"fare": "int",
-                "tips": "int",
-				"surcharges": "int",
-				"peak_charges": "int",
+				"fare": "float",
+				"tips": "float",
+				"surcharges": "float",
+				"peak_charges": "float",
 				"payment_method": "string",
 				"payment_model": "string",
 				"driver_id": "int",
-				"distance": "int",
+				"distance": "float",
 				"car_id": "int"
 			}
 		],
@@ -43,10 +43,13 @@
 	},
 	"favorite_locations": ["string"],
 	"reward_points": "int",
-	"reward_history": {
-		"datetime": "datetime",
-		"points": "points"
-	},
+	"reward_history": [
+		{
+			"id": "int",
+			"datetime": "datetime",
+			"points": "int"
+		}
+	],
 	"reviews_about_customer": [
 		{
 			"_id": "int",

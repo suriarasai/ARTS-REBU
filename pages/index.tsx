@@ -171,12 +171,12 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 				</div>
 
 				<div className='-mx-3 mb-2 flex flex-wrap items-center'>
-					<div className='w-full w-3/4 px-3 pb-6 md:mb-0'>
+					<div className='w-3/4 px-3 pb-6 md:mb-0'>
 						<label>Enter OTP</label>
 						<input type='text' placeholder='1234' />
 					</div>
 
-					<div className='-mt-3 w-full w-1/4 px-3 md:mb-0'>
+					<div className='-mt-3 w-1/4 px-3 md:mb-0'>
 						<button className='blue-button' onClick={getOTP}>
 							Get OTP
 						</button>

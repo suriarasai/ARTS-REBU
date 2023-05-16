@@ -8,4 +8,5 @@ node_modules
 **/public/workbox**
 **/public/sw**
 
-env.local
+.env
+.env.local
