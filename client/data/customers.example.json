@@ -1,5 +1,4 @@
 {
-	"_id": 1,
 	"first_name": "John",
 	"last_name": "Doe",
 	"country_code": 65,
@@ -17,7 +16,6 @@
 	  ],
 	  "travel_history": [
 		{
-		  "_id": 1,
 		  "from": "string",
 		  "to": "string",
 		  "status": "string",
@@ -29,14 +27,12 @@
 		  "time_expected": 20,
 		  "voucher_used": false,
 		  "fare": 5.5,
-		  "tips": 0.0,
-		  "surcharges": 0.0,
-		  "peak_charges": 0.0,
+		  "tips": 0,
+		  "surcharges": 0,
+		  "peak_charges": 0,
 		  "payment_method": "cash",
 		  "payment_model": "distance",
-		  "driver_id": 1,
-		  "distance": 5.5,
-		  "car_id": 1
+		  "distance": 5.5
 		}
 	  ],
 	  "receipts": [
@@ -53,14 +49,12 @@
 	"reward_points": 500,
 	"reward_history": [
 	  {
-		"id": 1,
 		"datetime": "datetime",
 		"points": 500
 	  }
 	],
 	"reviews_about_customer": [
 	  {
-		"_id": 1,
 		"datetime": "datetime",
 		"driver_id": 1,
 		"rating": 4,
@@ -69,8 +63,6 @@
 	],
 	"reviews_from_customer": [
 	  {
-		"_id": 1,
-		"driver_id": 1,
 		"datetime": "datetime",
 		"rating": 5,
 		"politeness": 5,

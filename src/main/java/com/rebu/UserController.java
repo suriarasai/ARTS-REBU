@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import com.rebu.data.User;
 
 @RestController
 @RequestMapping("/api/v1/customers")
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -30,12 +31,21 @@ public class UserController {
     }
 
     @GetMapping("/{_id}")
-    public ResponseEntity<Optional<User>> getSingleUser(@PathVariable Integer _id) {
+    public ResponseEntity<Optional<User>> getSingleUser(@PathVariable ObjectId _id) {
         return new ResponseEntity<Optional<User>>(userService.singleUser(_id), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody Map<String, String> payload) {
-        return new ResponseEntity<User>(userService.createUser(payload.get("_id"), payload.get("country_code"), payload.get("mobile_number")), HttpStatus.CREATED);
+        return new ResponseEntity<User>(
+                userService.createUser(payload.get("country_code"), payload.get("mobile_number")), HttpStatus.CREATED);
     }
+
+    @PostMapping("/update_user")
+    public ResponseEntity<Optional<User>> modifyUser(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<Optional<User>>(
+                userService.modifyUser(payload.get("_id"), payload.get("country_code"), payload.get("mobile_number")),
+                HttpStatus.OK);
+    }
+
 }

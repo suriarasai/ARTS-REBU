@@ -1,8 +1,8 @@
 package com.rebu.data;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Travel_History {
     @Id
-    private Integer _id;
+    private ObjectId _id;
     private String from;
     private String to;
     private String status;
@@ -31,7 +31,7 @@ public class Travel_History {
     private Float peak_charges;
     private String payment_method;
     private String payment_model;
-    private Integer driver_id;
+    private ObjectId driver_id;
     private Float distance;
-    private Integer car_id;
+    private ObjectId car_id;
 }
