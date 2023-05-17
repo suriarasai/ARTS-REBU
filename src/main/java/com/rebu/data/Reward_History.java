@@ -1,6 +1,5 @@
-package com.rebu;
+package com.rebu.data;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,13 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "user")
+@Document(collection = "customers")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Reward_History {
     @Id
-    private ObjectId _id;
+    private Integer _id;
     private String datetime;
     private Integer points;   
 }

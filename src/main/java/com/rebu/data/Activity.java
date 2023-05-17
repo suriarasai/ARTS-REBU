@@ -1,21 +1,20 @@
-package com.rebu;
+package com.rebu.data;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "user")
+@Document(collection = "customers")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Activity {
-    private String sign_in;
-    private String sign_out;
+    private List<String> sign_in;
+    private List<String> sign_out;
     private List<Travel_History> travel_history;
     private List<String> receipts;
 }

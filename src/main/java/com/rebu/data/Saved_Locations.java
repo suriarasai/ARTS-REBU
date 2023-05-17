@@ -1,4 +1,4 @@
-package com.rebu;
+package com.rebu.data;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "user")
+@Document(collection = "customers")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,6 +1,5 @@
-package com.rebu;
+package com.rebu.data;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
@@ -9,16 +8,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "user")
+@Document(collection = "customers")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Reviews_About_Customer {
+public class Reviews_From_Customer {
     @Id
-    private ObjectId _id;
+    private Integer _id;
+    private Integer driver_id;
     private String datetime;
-    @DocumentReference
-    private ObjectId driver_id;
     private Integer rating;
+    private Integer politeness;
+    private Integer cleanliness;
     private String body;
 }
