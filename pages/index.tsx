@@ -1,6 +1,7 @@
 // First page, for signing in
 
 import React from 'react'
+import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { MobileNumber } from '@/components/MobileNumber'
@@ -12,10 +13,19 @@ const SignIn = () => {
 	const [signInForm, changeSignInForm] = React.useState<boolean>(true)
 	const [emailSignIn, changeEmailSignIn] = React.useState<boolean>(false)
 
+	const getUsers = async () => {
+		try {
+			const response = await api.get("/api/v1/customers")
+			console.log(response.data)
+		} catch(err) {
+			console.log(err)
+		}
+	}
+
 	return (
 		<main className='mx-auto max-w-screen-md pt-20 pb-16 px-safe sm:pb-0'>
 			<div className='p-6'>
-				<h2 className='text-xl font-semibold'>Welcome to Rebu</h2>
+				<h2 onClick={() => getUsers()} className='text-xl font-semibold'>Welcome to Rebu</h2>
 				{signInForm ? (
 					<SignInForm
 						setNumber={setNumber}
