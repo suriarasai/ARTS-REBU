@@ -99,7 +99,7 @@ const SignInForm = ({
 					</p>
 				</div>
 
-				{MobileNumber(register, errors)}
+				<MobileNumber register={register} errors={errors} />
 
 				<div className='mb-8 mt-3 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
 					<p>{"Don't have access to your number?"}</p>

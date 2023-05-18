@@ -1,6 +1,7 @@
 import React from 'react'
+import { useForm } from 'react-hook-form'
 
-export function MobileNumber(register: any, errors: any) {
+export const MobileNumber = ({register, errors, newUser = true}) => {
 	return (
 		<div className='-mx-3 mb-2 flex flex-wrap'>
 			<div className='mb-3 w-1/4 px-3 md:mb-0'>
@@ -22,16 +23,14 @@ export function MobileNumber(register: any, errors: any) {
 					type='text'
 					placeholder='12345678'
 					{...register('mobileNumber', {
-						required: true,
+						required: newUser ? true : false,
 						minLength: 8,
 						maxLength: 8,
 						pattern: /^-?[0-9]\d*\.?\d*$/i,
 					})}
 				/>
 				{errors.mobileNumber && (
-					<p className='text-error'>
-						Please enter a 8-digit mobile number
-					</p>
+					<p className='text-error'>Please enter a 8-digit mobile number</p>
 				)}
 			</div>
 		</div>

@@ -8,11 +8,7 @@ import { MobileNumber } from '@/components/MobileNumber'
 import { useRouter } from 'next/router'
 
 // Main component
-const AccountInformation = ({
-	newUser = false,
-	register = null,
-	errors = null,
-}) => {
+const AccountInformation = ({ register, errors, newUser = false }) => {
 	const router = useRouter()
 
 	// Array containing days from 0 to 31
@@ -55,7 +51,7 @@ const AccountInformation = ({
 						<input
 							placeholder='First Name'
 							{...register('firstName', {
-								required: true,
+								required: newUser ? true : false,
 							})}
 						/>
 						{errors.firstName && (
@@ -69,7 +65,7 @@ const AccountInformation = ({
 						<input
 							placeholder='Last Name'
 							{...register('lastName', {
-								required: true,
+								required: newUser ? true : false,
 							})}
 						/>
 						{errors.lastName && (
@@ -84,11 +80,14 @@ const AccountInformation = ({
 					<div className='-mx-3 mb-6 flex flex-wrap'>
 						<div className='w-full px-3'>
 							<label>Email</label>
-							<input placeholder='youremail@site.domain' />
+							<input
+								{...register(newUser ? 'nullEmail' : 'email', {})}
+								placeholder='youremail@site.domain'
+							/>
 						</div>
 					</div>
 
-					{MobileNumber(register, errors)}
+					<MobileNumber register={register} errors={errors} newUser={newUser} />
 				</>
 			)}
 
@@ -133,7 +132,14 @@ const AccountInformation = ({
 	)
 }
 
-const DropDown = ({ label, array, arrayVal = array, value = label, register, name }: any) => (
+const DropDown = ({
+	label,
+	array,
+	arrayVal = array,
+	value = label,
+	register,
+	name,
+}: any) => (
 	<div className={`w-full px-3 ${label === 'Prefix' ? '' : 'w-1/3'}`}>
 		<label>{label}</label>
 		<div className='relative'>
