@@ -86,6 +86,14 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 							/>
 						</div>
 					</div>
+					<div className='w-full pb-6 md:mb-0'>
+						<label>Password</label>
+						<input
+							{...register(newUser ? 'nullPassword' : 'password', {})}
+							type='password'
+							placeholder='********'
+						/>
+					</div>
 
 					<MobileNumber register={register} errors={errors} newUser={newUser} />
 				</>
@@ -125,7 +133,9 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 					>
 						{'Go Back'}
 					</button>
-					<button className='blue-button mr-4'>{'Save Changes'}</button>
+					<button type='submit' className='blue-button mr-4'>
+						{'Save Changes'}
+					</button>
 				</div>
 			)}
 		</div>

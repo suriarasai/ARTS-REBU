@@ -1,10 +1,12 @@
 // For viewing and modifying account information
 
+import React, { useContext } from 'react'
 import Page from '@/components/page'
 import Section from '@/components/section'
 import AccountInformation from '@/components/AccountInformation'
 import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
+import { UserContext } from '@/components/context/UserContext'
 
 // Main component
 const AccountSettings = () => {
@@ -15,12 +17,19 @@ const AccountSettings = () => {
 	} = useForm()
 	const onSubmit = (data) => {}
 
+	const { user, setUser } = useContext(UserContext)
+
 	return (
+		// TODO: Populate form on load, add another variable
 		<Page title='Settings'>
 			<Section>
 				<h2 className='mt-3 mb-8 text-center text-xl font-bold'>Profile</h2>
 				<form onSubmit={handleSubmit(onSubmit)}>
-					<AccountInformation register={register} errors={errors} newUser={false} />
+					<AccountInformation
+						register={register}
+						errors={errors}
+						newUser={false}
+					/>
 				</form>
 			</Section>
 		</Page>
