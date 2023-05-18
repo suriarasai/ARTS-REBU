@@ -8,13 +8,12 @@ import { MobileNumber } from '@/components/MobileNumber'
 import { useRouter } from 'next/router'
 
 // Main component
-const AccountInformation = ({ newUser = false }) => {
+const AccountInformation = ({
+	newUser = false,
+	register = null,
+	errors = null,
+}) => {
 	const router = useRouter()
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm()
 
 	// Array containing days from 0 to 31
 	const monthsArr = [
@@ -27,6 +26,7 @@ const AccountInformation = ({ newUser = false }) => {
 		'Jul',
 		'Aug',
 		'Sep',
+		'Oct',
 		'Nov',
 		'Dec',
 	]
@@ -34,26 +34,58 @@ const AccountInformation = ({ newUser = false }) => {
 	const yearsArr = Array.from({ length: 70 }).map((_, i) => i + 1940)
 	// Array containing days from 1 to 31
 	const daysArr = Array.from({ length: 31 }).map((_, i) => i + 1)
+	// Array containing months from 1 to 12
+	const monthsArrNumeric = Array.from({ length: 12 }).map((_, i) => i + 1)
 	const honorificsArr = ['Ms.', 'Mr.', 'Mrs.']
 
 	return (
-		<form className='flex w-full flex-col'>
+		<div className='flex w-full flex-col'>
 			<div className='-mx-3 mb-6 flex flex-wrap'>
 				<div className='mb-6 w-1/4 md:mb-0 md:w-1/5'>
-					<DropDown label='Prefix' array={honorificsArr} />
+					<DropDown
+						register={register}
+						name='prefix'
+						label='Prefix'
+						array={honorificsArr}
+					/>
 				</div>
 				<div className='mb-6 w-3/4 md:mb-0 md:w-2/5'>
-					<TextField label='First Name' placeholder='First Name' />
+					<div className='w-full px-3'>
+						<label>First Name</label>
+						<input
+							placeholder='First Name'
+							{...register('firstName', {
+								required: true,
+							})}
+						/>
+						{errors.firstName && (
+							<p className='text-error px-3'>Please enter your last name</p>
+						)}
+					</div>
 				</div>
 				<div className='w-full md:w-2/5'>
-					<TextField label='Last Name' placeholder='Last Name' />
+					<div className='w-full px-3'>
+						<label>Last Name</label>
+						<input
+							placeholder='Last Name'
+							{...register('lastName', {
+								required: true,
+							})}
+						/>
+						{errors.lastName && (
+							<p className='text-error px-3'>Please enter your last name</p>
+						)}
+					</div>
 				</div>
 			</div>
 
 			{newUser ? null : (
 				<>
 					<div className='-mx-3 mb-6 flex flex-wrap'>
-						<TextField label='Email' placeholder='youremail@site.domain' />
+						<div className='w-full px-3'>
+							<label>Email</label>
+							<input placeholder='youremail@site.domain' />
+						</div>
 					</div>
 
 					{MobileNumber(register, errors)}
@@ -62,9 +94,28 @@ const AccountInformation = ({ newUser = false }) => {
 
 			{/* TODO: Replace with DatePicker... need to find a library */}
 			<div className='-mx-3 mb-2 flex flex-wrap'>
-				<DropDown label='Birth Year' array={yearsArr} value='Year' />
-				<DropDown label='Birth Month' array={monthsArr} value='Month' />
-				<DropDown label='Birth Day' array={daysArr} value='Day' />
+				<DropDown
+					register={register}
+					name='year'
+					label='Birth Year'
+					array={yearsArr}
+					value='Year'
+				/>
+				<DropDown
+					register={register}
+					name='month'
+					label='Birth Month'
+					arrayVal={monthsArrNumeric}
+					array={monthsArr}
+					value='Month'
+				/>
+				<DropDown
+					register={register}
+					name='day'
+					label='Birth Day'
+					array={daysArr}
+					value='Day'
+				/>
 			</div>
 
 			{newUser ? null : (
@@ -78,25 +129,20 @@ const AccountInformation = ({ newUser = false }) => {
 					<button className='blue-button mr-4'>{'Save Changes'}</button>
 				</div>
 			)}
-		</form>
+		</div>
 	)
 }
 
-const TextField = ({ label, placeholder }: any) => (
-	<div className='w-full px-3'>
-		<label>{label}</label>
-		<input placeholder={placeholder} />
-	</div>
-)
-
-const DropDown = ({ label, array, value=label }: any) => (
+const DropDown = ({ label, array, arrayVal = array, value = label, register, name }: any) => (
 	<div className={`w-full px-3 ${label === 'Prefix' ? '' : 'w-1/3'}`}>
 		<label>{label}</label>
 		<div className='relative'>
-			<select>
+			<select {...register(name)}>
 				<option value='0'>{value}</option>
-				{array.map((option: any) => (
-					<option key={option}>{option}</option>
+				{array.map((option: any, index) => (
+					<option value={arrayVal[index]} key={option}>
+						{option}
+					</option>
 				))}
 			</select>
 			<div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>

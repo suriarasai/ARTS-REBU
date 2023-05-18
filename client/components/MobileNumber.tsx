@@ -29,7 +29,7 @@ export function MobileNumber(register: any, errors: any) {
 					})}
 				/>
 				{errors.mobileNumber && (
-					<p className='text-xs text-red-500'>
+					<p className='text-error'>
 						Please enter a 8-digit mobile number
 					</p>
 				)}

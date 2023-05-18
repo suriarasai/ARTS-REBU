@@ -42,3 +42,7 @@ h5 {
 .blue-button-hollow {
 	@apply rounded border py-2 px-3 text-xs text-blue-700 hover:bg-blue-700 hover:text-white !important;
 }
+
+.text-error {
+	@apply text-xs text-red-500;
+}

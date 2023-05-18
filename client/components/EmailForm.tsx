@@ -1,6 +1,10 @@
 import { useRouter } from 'next/router'
 
-export function EmailForm({ existingUser = true }) {
+export function EmailForm({
+	existingUser = true,
+	register = null,
+	errors = null,
+}) {
 	const router = useRouter()
 
 	return (
@@ -14,11 +18,39 @@ export function EmailForm({ existingUser = true }) {
 			<div className='-mx-3 mb-2'>
 				<div className='w-full px-3 pb-6 md:mb-0'>
 					<label>Email</label>
-					<input type='text' placeholder='user@website.domain' />
+					<input
+						{...register('email', {
+							required: true,
+							maxLength: 30,
+							minLength: 5,
+							pattern:
+								/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/i,
+						})}
+						name='email'
+						type='text'
+						placeholder='user@website.domain'
+					/>
+					{errors.email && (
+						<p className='text-error'>Please enter a valid email</p>
+					)}
 				</div>
 				<div className='w-full px-3 pb-6 md:mb-0'>
 					<label>Password</label>
-					<input type='password' placeholder='********' />
+					<input
+						{...register('password', {
+							required: true,
+							maxLength: 20,
+							minLength: 5,
+						})}
+						type='password'
+						name='password'
+						placeholder='********'
+					/>
+					{errors.password && (
+						<p className='text-error'>
+							Please enter a password with 5-20 digits
+						</p>
+					)}
 				</div>
 			</div>
 
