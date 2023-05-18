@@ -1,11 +1,12 @@
 // First page, for signing in
 
-import React from 'react'
+import React, { useContext } from 'react'
 import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { MobileNumber } from '@/components/MobileNumber'
 import { EmailForm } from '@/components/EmailForm'
+import { UserContext } from '@/components/context/UserContext'
 
 // Main component
 const SignIn = () => {
@@ -50,7 +51,7 @@ const TermsOfService = () => (
 	</div>
 )
 
-// The default component that renders the mobile number input box
+// Sign in via Phone number
 const SignInForm = ({
 	setNumber,
 	changeSignInForm,
@@ -64,15 +65,28 @@ const SignInForm = ({
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		setNumber(data.countryCode + ' ' + data.mobileNumber)
-		checkIfUserExists(data.mobileNumber)
+		checkIfUserExists(data.mobileNumber, data.countryCode)
 		changeSignInForm(false)
 	})
 
-	const checkIfUserExists = async (mobileNumber) => {
+	const {user, setUser} = useContext(UserContext)
+
+	const checkIfUserExists = async (mobileNumber, countryCode) => {
 		const response = await api.post('/api/v1/customers/exists', {
 			mobileNumber: mobileNumber,
 		})
-		setNewUser(response.data === null ? true : false)
+
+		if (response.data === "") {
+			const createUser = await api.post('/api/v1/customers', {
+				mobileNumber: mobileNumber,
+				countryCode: countryCode
+			})
+			setUser(createUser.data)
+			setNewUser(true)
+		} else {
+			setUser(response.data)
+			setNewUser(false)
+		}
 	}
 
 	return (
@@ -113,6 +127,7 @@ const SignInForm = ({
 	)
 }
 
+// Sign in via Email 
 const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 	const router = useRouter()
 

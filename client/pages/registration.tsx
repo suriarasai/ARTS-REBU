@@ -2,14 +2,16 @@
 // Only accessible if the phone number from the sign-in
 // screen does not exist in the database
 
-import React from 'react'
+import React, { useContext } from 'react'
 import { EmailForm } from '@/components/EmailForm'
 import { useRouter } from 'next/router'
 import AccountInformation from '@/components/AccountInformation'
+import { UserContext } from '@/components/context/UserContext'
 
 const Registration = () => {
 	const router = useRouter()
 	const [nextStep, showNextStep] = React.useState<boolean>(false)
+	const {user, setUser} = useContext(UserContext)
 
 	return (
 		<div className='mx-auto pt-9 max-w-screen-md overflow-hidden'>

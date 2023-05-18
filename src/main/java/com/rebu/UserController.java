@@ -36,15 +36,15 @@ public class UserController {
     }
 
     @PostMapping("/exists")
-    public ResponseEntity<Optional<User>> getByMobileNumber(@RequestBody Map<String, String> payload) {
-        return new ResponseEntity<Optional<User>>(
+    public ResponseEntity<User> getByMobileNumber(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<User>(
                 userService.findByMobileNumber(payload.get("mobileNumber")),
                 HttpStatus.OK);
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<Optional<User>> signInWithMobileNumber(@RequestBody Map<String, String> payload) {
-        return new ResponseEntity<Optional<User>>(
+    public ResponseEntity<String> signInWithMobileNumber(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
                 userService.signInWithMobileNumber(payload.get("mobileNumber"), payload.get("countryCode")),
                 HttpStatus.OK);
     }
@@ -55,20 +55,16 @@ public class UserController {
                 userService.createUser(payload.get("countryCode"), payload.get("mobileNumber")), HttpStatus.CREATED);
     }
 
-    @PostMapping("/update_user")
-    public ResponseEntity<Optional<User>> modifyUser(@RequestBody Map<String, String> payload) {
+    @PostMapping("/registerUser")
+    public ResponseEntity<Optional<User>> registerUser(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Optional<User>>(
-                userService.modifyUser(payload.get("_id"),
-                        payload.get("countryCode"),
-                        payload.get("mobileNumber"),
+                userService.registerUser(payload.get("_id"),
                         payload.get("firstName"),
                         payload.get("lastName"),
+                        payload.get("prefix"),
+                        payload.get("birthdate"),
                         payload.get("email"),
-                        payload.get("password"),
-                        payload.get("joinedDate"),
-                        payload.get("rating"),
-                        payload.get("rewardPoints"),
-                        payload.get("favoriteLocations")),
+                        payload.get("password")),
                 HttpStatus.OK);
     }
 

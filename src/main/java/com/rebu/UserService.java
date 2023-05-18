@@ -40,19 +40,15 @@ public class UserService {
         return user;
     }
 
-    public Optional<User> modifyUser(String _id, String countryCode, String mobileNumber, String firstName,
-            String last_name, String email, String password, String joinedDate, String rating, String rewardPoints,
-            String favoriteLocations) {
+    public Optional<User> registerUser(String _id, String firstName, String last_name, String prefix, 
+    String birthdate, String email, String password) {
         Update update = new Update();
         update.set("firstName", firstName);
         update.set("lastName", last_name);
-        update.set("countryCode", Integer.parseInt(countryCode));
+        update.set("prefix", prefix);
+        update.set("birthdate", birthdate);
         update.set("email", email);
         update.set("password", password);
-        update.set("mobileNumber", mobileNumber);
-        update.set("joined_date", joinedDate);
-        update.set("rating", Integer.parseInt(rating));
-        update.set("rewardPoints", Integer.parseInt(rewardPoints));
         // update.set("activity", new Activity());
         // update.set("saved_locations", new Saved_Locations());
         // update.set("favorite_locations",
@@ -72,12 +68,11 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public Optional<User> findByMobileNumber(String mobileNumber) {
-
+    public User findByMobileNumber(String mobileNumber) {
         return userRepository.findFirstByMobileNumber(mobileNumber);
     }
 
-    public Optional<User> signInWithMobileNumber(String mobileNumber, String countryCode) {
+    public String signInWithMobileNumber(String mobileNumber, String countryCode) {
 
         Query query = new Query();
         query.addCriteria(Criteria.where("mobileNumber").is(mobileNumber));
@@ -86,6 +81,6 @@ public class UserService {
         update.set("countryCode", Integer.parseInt(countryCode));
         mongoTemplate.upsert(query, update, User.class);
 
-        return userRepository.findFirstByMobileNumber(mobileNumber);
+        return userRepository.findFirstByMobileNumber(mobileNumber).getId();
     }
 }

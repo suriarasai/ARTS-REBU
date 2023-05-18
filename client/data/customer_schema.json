@@ -2,6 +2,8 @@
 	"_id": "int",
 	"first_name": "string",
 	"last_name": "string",
+	"birthday": "date",
+	"prefix": "string",
 	"country_code": "int",
 	"email": "string",
 	"password": "password",
