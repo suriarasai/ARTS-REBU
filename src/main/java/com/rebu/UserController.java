@@ -35,16 +35,40 @@ public class UserController {
         return new ResponseEntity<Optional<User>>(userService.singleUser(_id), HttpStatus.OK);
     }
 
+    @PostMapping("/exists")
+    public ResponseEntity<Optional<User>> getByMobileNumber(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<Optional<User>>(
+                userService.findByMobileNumber(payload.get("mobileNumber")),
+                HttpStatus.OK);
+    }
+
+    @PostMapping("/signIn")
+    public ResponseEntity<Optional<User>> signInWithMobileNumber(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<Optional<User>>(
+                userService.signInWithMobileNumber(payload.get("mobileNumber"), payload.get("countryCode")),
+                HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<User>(
-                userService.createUser(payload.get("country_code"), payload.get("mobile_number")), HttpStatus.CREATED);
+                userService.createUser(payload.get("countryCode"), payload.get("mobileNumber")), HttpStatus.CREATED);
     }
 
     @PostMapping("/update_user")
     public ResponseEntity<Optional<User>> modifyUser(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Optional<User>>(
-                userService.modifyUser(payload.get("_id"), payload.get("country_code"), payload.get("mobile_number")),
+                userService.modifyUser(payload.get("_id"),
+                        payload.get("countryCode"),
+                        payload.get("mobileNumber"),
+                        payload.get("firstName"),
+                        payload.get("lastName"),
+                        payload.get("email"),
+                        payload.get("password"),
+                        payload.get("joinedDate"),
+                        payload.get("rating"),
+                        payload.get("rewardPoints"),
+                        payload.get("favoriteLocations")),
                 HttpStatus.OK);
     }
 

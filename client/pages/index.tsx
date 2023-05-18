@@ -12,33 +12,31 @@ const SignIn = () => {
 	const [number, setNumber] = React.useState<string>()
 	const [signInForm, changeSignInForm] = React.useState<boolean>(true)
 	const [emailSignIn, changeEmailSignIn] = React.useState<boolean>(false)
-
-	const getUsers = async () => {
-		try {
-			const response = await api.get("/api/v1/customers")
-			console.log(response.data)
-		} catch(err) {
-			console.log(err)
-		}
-	}
+	const [newUser, setNewUser] = React.useState<boolean>(true)
 
 	return (
 		<main className='mx-auto max-w-screen-md pt-20 pb-16 px-safe sm:pb-0'>
 			<div className='p-6'>
-				<h2 onClick={() => getUsers()} className='text-xl font-semibold'>Welcome to Rebu</h2>
+				<h2 className='text-xl font-semibold'>Welcome to Rebu</h2>
 				{signInForm ? (
 					<SignInForm
 						setNumber={setNumber}
 						changeSignInForm={changeSignInForm}
 						changeEmailSignIn={changeEmailSignIn}
+						setNewUser={setNewUser}
 					/>
 				) : emailSignIn ? (
 					<EmailSignIn
 						changeEmailSignIn={changeEmailSignIn}
 						changeSignInForm={changeSignInForm}
+						newUser={newUser}
 					/>
 				) : (
-					<OTPForm mobileNumber={number} changeSignInForm={changeSignInForm} />
+					<OTPForm
+						mobileNumber={number}
+						changeSignInForm={changeSignInForm}
+						newUser={newUser}
+					/>
 				)}
 			</div>
 		</main>
@@ -57,6 +55,7 @@ const SignInForm = ({
 	setNumber,
 	changeSignInForm,
 	changeEmailSignIn,
+	setNewUser,
 }: any) => {
 	const {
 		register,
@@ -65,8 +64,16 @@ const SignInForm = ({
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		setNumber(data.countryCode + ' ' + data.mobileNumber)
+		checkIfUserExists(data.mobileNumber)
 		changeSignInForm(false)
 	})
+
+	const checkIfUserExists = async (mobileNumber) => {
+		const response = await api.post('/api/v1/customers/exists', {
+			mobileNumber: mobileNumber,
+		})
+		setNewUser(response.data === null ? true : false)
+	}
 
 	return (
 		<>
@@ -106,7 +113,7 @@ const SignInForm = ({
 	)
 }
 
-const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
+const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 	const router = useRouter()
 
 	const handleSubmit = (data: any) => {
@@ -122,7 +129,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 
 	const continueButton = (e) => {
 		e.preventDefault()
-		router.push(false ? '/booking' : '/registration')
+		router.push(newUser ? '/registration' : '/booking')
 	}
 
 	return (
@@ -148,7 +155,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 }
 
 // 2nd screen to validate the user's mobile number via OTP (one-time password)
-const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
+const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 	const router = useRouter()
 
 	const handleSubmit = (data: any) => {
@@ -167,7 +174,8 @@ const OTPForm = ({ mobileNumber, changeSignInForm }: any) => {
 
 	const continueButton = (e) => {
 		e.preventDefault()
-		router.push(false ? '/booking' : '/registration')
+		console.log(newUser);
+		router.push(newUser ? '/registration' : '/booking')
 	}
 
 	return (

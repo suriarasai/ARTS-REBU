@@ -17,24 +17,24 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     private ObjectId _id;
-    private String first_name;
-    private String last_name;
-    private Integer country_code;
+    private String firstName;
+    private String lastName;
+    private Integer countryCode;
     private String email;
     private String password;
-    private String mobile_number;
-    private String joined_date;
+    private String mobileNumber;
+    private String joinedDate;
     private Integer rating;
-    private List<String> favorite_locations;
-    private Integer reward_points;
+    private List<String> favoriteLocations;
+    private Integer rewardPoints;
     private Activity activity;
-    private Saved_Locations saved_locations;
-    private List<Reward_History> reward_history;
-    private List<Reviews_About_Customer> reviews_about_customer;
-    private List<Reviews_From_Customer> reviews_from_customer;
+    private Saved_Locations savedLocations;
+    private List<Reward_History> rewardHistory;
+    private List<Reviews_About_Customer> reviewsAboutCustomer;
+    private List<Reviews_From_Customer> reviewsFromCustomer;
 
-    public User(Integer country_code, String mobile_number) {
-        this.country_code = country_code;
-        this.mobile_number = mobile_number;
+    public User(Integer countryCode, String mobileNumber) {
+        this.countryCode = countryCode;
+        this.mobileNumber = mobileNumber;
     }
 }
