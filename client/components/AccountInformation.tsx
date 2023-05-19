@@ -26,7 +26,7 @@ const AccountInformation = ({
 						<label>Prefix</label>
 						<div className='relative'>
 							<select
-								{...(register('prefix'))}
+								{...register('prefix')}
 								defaultValue={populateData['prefix']}
 							>
 								<option value=''>Prefix</option>
@@ -53,12 +53,13 @@ const AccountInformation = ({
 						<input
 							placeholder='First Name'
 							{...register('firstName', {
-								required: newUser ? true : false,
+								required: true,
+								minLength: 1,
 							})}
 							defaultValue={populateData['firstName']}
 						/>
 						{errors.firstName && (
-							<p className='text-error px-3'>Please enter your last name</p>
+							<p className='text-error px-3'>Please enter your first name</p>
 						)}
 					</div>
 				</div>
@@ -68,7 +69,8 @@ const AccountInformation = ({
 						<input
 							placeholder='Last Name'
 							{...register('lastName', {
-								required: newUser ? true : false,
+								required: true,
+								minLength: 1,
 							})}
 							defaultValue={populateData['lastName']}
 						/>
@@ -85,20 +87,36 @@ const AccountInformation = ({
 						<div className='w-full px-3'>
 							<label>Email</label>
 							<input
-								{...register(newUser ? 'nullEmail' : 'email', {})}
+								{...register(newUser ? 'nullEmail' : 'email', {
+									required: true,
+									maxLength: 30,
+									minLength: 5,
+									pattern:
+										/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/i,
+								})}
 								placeholder='youremail@site.domain'
 								defaultValue={populateData['email']}
 							/>
+							{errors.email && (
+								<p className='text-error px-3'>Please enter a valid email</p>
+							)}
 						</div>
 					</div>
 					<div className='w-full pb-6 md:mb-0'>
 						<label>Password</label>
 						<input
-							{...register(newUser ? 'nullPassword' : 'password', {})}
+							{...register(newUser ? 'nullPassword' : 'password', {
+								required: true,
+								maxLength: 20,
+								minLength: 5,
+							})}
 							type='password'
 							placeholder='********'
 							defaultValue={populateData['password']}
 						/>
+						{errors.password && (
+							<p className='text-error px-3'>Please enter a password with 5-20 digits</p>
+						)}
 					</div>
 
 					<MobileNumber

@@ -51,7 +51,7 @@ export const MobileNumber = ({
 					placeholder='12345678'
 					defaultValue={populateData['mobileNumber']}
 					{...register('mobileNumber', {
-						required: newUser ? true : false,
+						required: true,
 						minLength: 8,
 						maxLength: 8,
 						pattern: /^-?[0-9]\d*\.?\d*$/i,

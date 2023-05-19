@@ -68,6 +68,7 @@ const AccountSettings = () => {
 							className={`mr-4 ${
 								changesSaved ? 'green-button' : 'blue-button'
 							}`}
+							onClick={() => setChangesSaved(false)}
 						>
 							{changesSaved ? 'Changes Saved!' : 'Save Changes'}
 						</button>
