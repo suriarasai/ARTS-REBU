@@ -63,15 +63,6 @@ public class UserService {
             update.set("mobileNumber", mobileNumber);
         }
 
-        // update.set("activity", new Activity());
-        // update.set("saved_locations", new Saved_Locations());
-        // update.set("favorite_locations",
-        // Arrays.asList(favorite_locations.replaceAll("[\\[\\](){}]", "").split("\\,
-        // ")));
-        // update.set("reward_history", new Reward_History());
-        // update.set("reviews_about_customer", new Reviews_About_Customer);
-        // update.set("reviews_from_customer", new Reviews_From_Customer());
-
         ObjectId id = new ObjectId(_id);
 
         mongoTemplate.update(User.class)
@@ -97,7 +88,13 @@ public class UserService {
         update.set("countryCode", Integer.parseInt(countryCode));
         mongoTemplate.upsert(query, update, User.class);
 
-        return userRepository.findFirstByMobileNumber(mobileNumber).getId();
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+
+        if (user.getId() != null) {
+            user.addSignInTime(); // Adds a Sign-in timestamp
+        }
+
+        return user.getId();
     }
 
     // API: Return user password/credential
@@ -106,10 +103,30 @@ public class UserService {
         User user = userRepository.findFirstByEmail(email);
 
         if (user != null && user.getPassword().equals(password)) {
+            user.addSignInTime(); // Adds a Sign-in timestamp
             return user;
         } else {
             return null;
         }
 
     }
+    
+    public String addSignOutTime(String mobileNumber) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        user.addSignOutTime();
+        userRepository.save(user);
+
+        return "Done";
+    }
+
+    public List<String> getSignOutTimes(String mobileNumber) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        return user.getSignOutTimes();
+    }
+
+    public List<String> getSignInTimes(String mobileNumber) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        return user.getSignInTimes();
+    }
+    
 }

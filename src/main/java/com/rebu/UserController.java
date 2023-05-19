@@ -92,4 +92,25 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    @PostMapping("/addSignOutTime")
+    public ResponseEntity<String> addSignInTime(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
+                userService.addSignOutTime(payload.get("mobileNumber")),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/getSignInTimes")
+    public ResponseEntity<List<String>> getSignInTimes(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<List<String>>(
+                userService.getSignInTimes(payload.get("mobileNumber")),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/getSignOutTimes")
+    public ResponseEntity<List<String>> getSignOutTimes(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<List<String>>(
+                userService.getSignInTimes(payload.get("mobileNumber")),
+                HttpStatus.OK);
+    }
+
 }

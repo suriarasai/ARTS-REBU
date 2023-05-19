@@ -1,9 +1,11 @@
 // Main hub for options and account configuration
 
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Page from '@/components/page'
 import Section from '@/components/section'
 import { useRouter } from 'next/router'
+import api from '@/api/axiosConfig'
+import { UserContext } from '@/components/context/UserContext'
 
 const Settings = () => (
 	<Page title='Settings'>
@@ -45,6 +47,20 @@ const SignOutModal = () => {
 	const router = useRouter()
 	const [showModal, setShowModal] = useState(false)
 
+	const { user, setUser } = useContext(UserContext)
+
+	const handleSignOut = () => {
+		addSignOutTime(user.mobileNumber)
+		router.push('/')
+	}
+
+	const addSignOutTime = async (mobileNumber) => {
+		const response = await api.post('/api/v1/customers/addSignOutTime', {
+			mobileNumber: mobileNumber,
+		})
+		console.log(response)
+	}
+
 	return (
 		<div>
 			<div className='mt-12' onClick={() => setShowModal(true)}>
@@ -65,7 +81,11 @@ const SignOutModal = () => {
 								Cancel
 							</button>
 							<button className='red-button'>
-								<div className='text-red-500' key='logout' onClick={() => router.push('/')}>
+								<div
+									className='text-red-500'
+									key='logout'
+									onClick={() => handleSignOut()}
+								>
 									Logout
 								</div>
 							</button>

@@ -1,6 +1,7 @@
 package com.rebu.data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -29,27 +30,17 @@ public class User {
     private String mobileNumber;
     private String joinedDate = LocalDate.now().toString();
     private Integer rating;
-    private List<String> favoriteLocations;
     private Integer rewardPoints = 0;
-    private Activity activity;
-    private Saved_Locations savedLocations;
-    private List<Reward_History> rewardHistory;
-    private List<Reviews_About_Customer> reviewsAboutCustomer;
-    private List<Reviews_From_Customer> reviewsFromCustomer;
+    private List<String> favoriteLocations = new ArrayList<String>();
+    private Activity activity = new Activity();
+    private Saved_Locations savedLocations = new Saved_Locations();
+    private List<Reward_History> rewardHistory = new ArrayList<Reward_History>();
+    private List<Reviews_About_Customer> reviewsAboutCustomer = new ArrayList<Reviews_About_Customer>();
+    private List<Reviews_From_Customer> reviewsFromCustomer = new ArrayList<Reviews_From_Customer>();
 
     public User(Integer countryCode, String mobileNumber) {
         this.countryCode = countryCode;
         this.mobileNumber = mobileNumber;
-        // this.firstName = firstName;
-        // this.lastName = lastName;
-        // this.prefix = prefix;
-        // this.birthdate = birthdate;
-        // this.email = email;
-        // this.password = password;
-        // this.rewardPoints = 0;
-
-        // , String firstName, String lastName, String prefix,
-        // String birthdate, String email, String password
     }
 
     public String getId() {
@@ -62,5 +53,25 @@ public class User {
 
     public String getPassword() {
         return this.password;
+    }
+
+    public void addSignInTime() {
+        this.activity.appendSignInTime();
+    }
+
+    public void addSignOutTime() {
+        this.activity.appendSignOutTime();
+    }
+
+    public List<String> getSignInTimes() {
+        return this.activity.getSignInTimes();
+    }
+
+    public List<String> getSignOutTimes() {
+        return this.activity.getSignOutTimes();
+    }
+
+    public void addFavoriteLocation(String savedLocation) {
+        this.favoriteLocations.add(savedLocation);
     }
 }
