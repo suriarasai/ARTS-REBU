@@ -67,16 +67,18 @@ public class UserController {
     }
 
     // POST: Registers a new user by adding information to existing users
-    @PostMapping("/registerUser")
-    public ResponseEntity<Optional<User>> registerUser(@RequestBody Map<String, String> payload) {
+    @PostMapping("/updateUser")
+    public ResponseEntity<Optional<User>> updateUser(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Optional<User>>(
-                userService.registerUser(payload.get("_id"),
+                userService.updateUser(payload.get("_id"),
                         payload.get("firstName"),
                         payload.get("lastName"),
                         payload.get("prefix"),
                         payload.get("birthdate"),
                         payload.get("email"),
-                        payload.get("password")),
+                        payload.get("password"),
+                        payload.get("countryCode"),
+                        payload.get("mobileNumber")),
                 HttpStatus.OK);
     }
 

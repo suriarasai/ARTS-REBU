@@ -1,4 +1,5 @@
 // Email form for entering/modifying email and password
+// TODO: Forgot email/password?
 
 import { useRouter } from 'next/router'
 
@@ -6,12 +7,13 @@ export function EmailForm({
 	register,
 	errors,
 	existingUser = true,
-	signInError = false,
+	signInError = false
 }) {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks
 		existingUser 	: whether the user is registering or editing their information
+		signInError		: error during sign in if the email/password are incorrect
 	*/
 	const router = useRouter() // For navigation
 
@@ -52,7 +54,6 @@ export function EmailForm({
 							minLength: 5,
 						})}
 						type='password'
-						name='password'
 						placeholder='********'
 					/>
 					{errors.password && (

@@ -47,9 +47,9 @@ public class UserService {
         return user;
     }
 
-    // API: Registers a new user by adding information to existing users
-    public Optional<User> registerUser(String _id, String firstName, String last_name, String prefix,
-            String birthdate, String email, String password) {
+    // API: Registers/Updates a user by adding information to existing users
+    public Optional<User> updateUser(String _id, String firstName, String last_name, String prefix,
+            String birthdate, String email, String password, String countryCode, String mobileNumber) {
         Update update = new Update();
         update.set("firstName", firstName);
         update.set("lastName", last_name);
@@ -57,6 +57,12 @@ public class UserService {
         update.set("birthdate", birthdate);
         update.set("email", email);
         update.set("password", password);
+
+        if (mobileNumber != null && countryCode != null) {
+            update.set("countryCode", countryCode);
+            update.set("mobileNumber", mobileNumber);
+        }
+
         // update.set("activity", new Activity());
         // update.set("saved_locations", new Saved_Locations());
         // update.set("favorite_locations",

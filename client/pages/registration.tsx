@@ -3,6 +3,7 @@
 // screen does not exist in the database
 
 // Note: Validation checks aren't fully developed; duplicate emails are unchecked for
+// 		 TODO: No validation to enforce dropdown selection... 
 
 import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
@@ -39,7 +40,7 @@ const Registration = () => {
 	}
 
 	const registerUser = async (data) => {
-		const response = await api.post('/api/v1/customers/registerUser', {
+		const response = await api.post('/api/v1/customers/updateUser', {
 			_id: user.id,
 			firstName: data.firstName,
 			lastName: data.lastName,
@@ -48,6 +49,7 @@ const Registration = () => {
 			email: data.email,
 			password: data.password,
 		})
+		setUser(response.data)
 		router.push('/booking')
 	}
 

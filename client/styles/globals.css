@@ -31,6 +31,10 @@ h5 {
 	@apply rounded bg-cyan-600 py-3 px-4 text-xs font-bold text-white hover:bg-cyan-800 !important;
 }
 
+.green-button {
+	@apply rounded bg-lime-400 py-3 px-4 text-xs font-bold text-white hover:bg-lime-800 !important;
+}
+
 .grey-button {
 	@apply rounded border border-zinc-500 py-3 px-4 text-xs font-bold text-zinc-500 hover:bg-zinc-700 hover:text-white !important;
 }
