@@ -55,4 +55,12 @@ public class User {
     public String getId() {
         return this._id.toString();
     }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
 }

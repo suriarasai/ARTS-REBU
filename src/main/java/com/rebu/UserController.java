@@ -80,4 +80,14 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    // POST: Checks a user's password matches by querying their email for the
+    // associated password
+    @PostMapping("/validateCredentials")
+    public ResponseEntity<User> validateCredentials(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<User>(
+                userService.signInWithEmail(payload.get("email"),
+                        payload.get("password")),
+                HttpStatus.OK);
+    }
+
 }

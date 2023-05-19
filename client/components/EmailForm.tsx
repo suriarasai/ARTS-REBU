@@ -2,7 +2,12 @@
 
 import { useRouter } from 'next/router'
 
-export function EmailForm({ register, errors, existingUser = true }) {
+export function EmailForm({
+	register,
+	errors,
+	existingUser = true,
+	signInError = false,
+}) {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks
@@ -54,6 +59,9 @@ export function EmailForm({ register, errors, existingUser = true }) {
 						<p className='text-error'>
 							Please enter a password with 5-20 digits
 						</p>
+					)}
+					{signInError && (
+						<p className='text-error'>Incorrect email or password</p>
 					)}
 				</div>
 			</div>

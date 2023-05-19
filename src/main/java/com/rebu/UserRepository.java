@@ -12,4 +12,5 @@ import com.rebu.data.User;
 @Repository
 public interface UserRepository extends MongoRepository<User, ObjectId> {
     public User findFirstByMobileNumber(String mobileNumber);
+    public User findFirstByEmail(String email);
 }

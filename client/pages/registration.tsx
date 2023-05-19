@@ -2,6 +2,8 @@
 // Only accessible if the phone number from the sign-in
 // screen does not exist in the database
 
+// Note: Validation checks aren't fully developed; duplicate emails are unchecked for
+
 import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'

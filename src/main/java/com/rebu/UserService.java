@@ -81,8 +81,7 @@ public class UserService {
         return userRepository.findFirstByMobileNumber(mobileNumber);
     }
 
-    // API: (Not used) Upserts (update/insert if non-existant) users based on mobile
-    // number
+    // API: (Not used) Upserts (update/insert if non-existant) users by mobile #
     public String signInWithMobileNumber(String mobileNumber, String countryCode) {
 
         Query query = new Query();
@@ -93,5 +92,18 @@ public class UserService {
         mongoTemplate.upsert(query, update, User.class);
 
         return userRepository.findFirstByMobileNumber(mobileNumber).getId();
+    }
+
+    // API: Return user password/credential
+    public User signInWithEmail(String email, String password) {
+
+        User user = userRepository.findFirstByEmail(email);
+
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        } else {
+            return null;
+        }
+
     }
 }

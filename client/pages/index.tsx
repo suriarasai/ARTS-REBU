@@ -69,17 +69,17 @@ const SignInForm = ({
 		changeSignInForm(false)
 	})
 
-	const {user, setUser} = useContext(UserContext)
+	const { user, setUser } = useContext(UserContext)
 
 	const checkIfUserExists = async (mobileNumber, countryCode) => {
 		const response = await api.post('/api/v1/customers/exists', {
 			mobileNumber: mobileNumber,
 		})
 
-		if (response.data === "") {
+		if (response.data === '') {
 			const createUser = await api.post('/api/v1/customers', {
 				mobileNumber: mobileNumber,
-				countryCode: countryCode
+				countryCode: countryCode,
 			})
 			setUser(createUser.data)
 			setNewUser(true)
@@ -127,8 +127,8 @@ const SignInForm = ({
 	)
 }
 
-// Sign in via Email 
-const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
+// Sign in via Email
+const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 	const router = useRouter()
 
 	const {
@@ -137,9 +137,25 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 		formState: { errors: errors },
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
-		changeEmailSignIn(false)
-		router.push(newUser ? '/registration' : '/booking')
+		validateCredentials(data.email, data.password)
 	})
+
+	const { user, setUser } = useContext(UserContext)
+	const [signInError, setSignInError] = React.useState(false)
+
+	const validateCredentials = async (email, password) => {
+		const response = await api.post('/api/v1/customers/validateCredentials', {
+			email: email,
+			password: password,
+		})
+		if (response.data != '') {
+			setUser(response.data)
+			setSignInError(false)
+			router.push('/booking')
+		} else {
+			setSignInError(true)
+		}
+	}
 
 	// Navigates back to sign in screen
 	const goBack = (event: any) => {
@@ -153,7 +169,11 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 			{/* User form */}
 
 			<form className='flex w-full max-w-lg flex-col' onSubmit={onSubmit}>
-				<EmailForm register={register} errors={errors} />
+				<EmailForm
+					register={register}
+					errors={errors}
+					signInError={signInError}
+				/>
 
 				<TermsOfService />
 
@@ -190,7 +210,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 
 	const continueButton = (e) => {
 		e.preventDefault()
-		console.log(newUser);
+		console.log(newUser)
 		router.push(newUser ? '/registration' : '/booking')
 	}
 
