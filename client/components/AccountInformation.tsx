@@ -1,14 +1,16 @@
 // For viewing and modifying account information
 
 import React from 'react'
-import { useForm } from 'react-hook-form'
-import Page from '@/components/page'
-import Section from '@/components/section'
 import { MobileNumber } from '@/components/MobileNumber'
 import { useRouter } from 'next/router'
 
 // Main component
 const AccountInformation = ({ register, errors, newUser = false }) => {
+	/*
+		Register 		: assigns names to each input field to be accessed when reading the form
+		Errors 			: defines error conditions for validation checks
+		newUser 		: whether the user is registering or editing their information
+	*/
 	const router = useRouter()
 
 	// Array containing days from 0 to 31
@@ -37,6 +39,7 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 	return (
 		<div className='flex w-full flex-col'>
 			<div className='-mx-3 mb-6 flex flex-wrap'>
+				{/* Input fields */}
 				<div className='mb-6 w-1/4 md:mb-0 md:w-1/5'>
 					<DropDown
 						register={register}
@@ -125,6 +128,7 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 				/>
 			</div>
 
+			{/* Buttons for submiting data */}
 			{newUser ? null : (
 				<div className='-mx-3 mb-6 mt-8 flex justify-center md:self-end'>
 					<button

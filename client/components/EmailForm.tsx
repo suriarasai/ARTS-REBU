@@ -1,11 +1,14 @@
+// Email form for entering/modifying email and password
+
 import { useRouter } from 'next/router'
 
-export function EmailForm({
-	existingUser = true,
-	register = null,
-	errors = null,
-}) {
-	const router = useRouter()
+export function EmailForm({ register, errors, existingUser = true }) {
+	/*
+		Register 		: assigns names to each input field to be accessed when reading the form
+		Errors 			: defines error conditions for validation checks
+		existingUser 	: whether the user is registering or editing their information
+	*/
+	const router = useRouter() // For navigation
 
 	return (
 		<>
@@ -15,6 +18,7 @@ export function EmailForm({
 				</p>
 			) : null}
 
+			{/* Email and Password input */}
 			<div className='-mx-3 mb-2'>
 				<div className='w-full px-3 pb-6 md:mb-0'>
 					<label>Email</label>
@@ -54,6 +58,7 @@ export function EmailForm({
 				</div>
 			</div>
 
+			{/* Navigation */}
 			<div className='mb-4 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
 				{existingUser ? (
 					<p>

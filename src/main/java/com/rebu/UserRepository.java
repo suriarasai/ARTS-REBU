@@ -1,8 +1,8 @@
+// Database access object, custom queries go here (ex. find by mobile number)
+
 package com.rebu;
 
 import org.bson.types.ObjectId;
-
-import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

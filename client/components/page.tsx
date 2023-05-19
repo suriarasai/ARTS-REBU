@@ -1,4 +1,5 @@
 // Reusable template that includes the navbars and header
+// Used by pages where users are signed-in (grants access to navBar)
 
 import Head from 'next/head'
 import Appbar from '@/components/appbar'
@@ -11,6 +12,12 @@ interface Props {
 }
 
 const Page = ({ title, children, className }: Props) => (
+	/*
+		title		: the page title, renders in the navBar
+		children	: the content to render on the screen
+		className	: CSS customization options
+
+	*/
 	<>
 		{/* For web: Changes the name in the browser tab */}
 		{title ? (

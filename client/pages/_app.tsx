@@ -1,3 +1,5 @@
+// Main app component that defines the theme and context for the pages
+
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from 'next-themes'
 import { UserContext } from '@/components/context/UserContext'
@@ -7,10 +9,15 @@ import '@/styles/maps.css'
 import { useMemo, useState } from 'react'
 
 const App = ({ Component, pageProps }: AppProps) => {
-	const [user, setUser] = useState({})
-	const userProvider = useMemo(() => ({user, setUser}), [user, setUser])
+	/*
+		Component	: the page/component to be rendered
+		pageProps	: the props of each page/component
+	*/
+	const [user, setUser] = useState({}) // stores and updates user data
+	const userProvider = useMemo(() => ({ user, setUser }), [user, setUser]) // provider to operate on user data
 
 	return (
+		// Theme provider for site-wide styling (dark mode does not work)
 		<ThemeProvider
 			attribute='class'
 			defaultTheme='default'

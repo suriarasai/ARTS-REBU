@@ -1,6 +1,4 @@
-// Main hub for booking rides
-
-// Displays user activity (ex. booked rides, reviews)
+// Main hub for booking rides, calls external location API
 
 import React, { useRef, useEffect, useState } from 'react'
 import Page from '@/components/page'
@@ -12,7 +10,7 @@ import SearchLocations from './searchLocations'
 mapboxgl.accessToken =
 	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
 
-// Function to overlay a coordinate layer on the map
+// Function to overlay a coordinate layer on the map (ex. map pins)
 const geojson = (coords, type = 'Point') => {
 	return {
 		type: 'FeatureCollection',
@@ -37,10 +35,10 @@ const Booking = () => {
 	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState(14)
 
-	const [toLocation, setToLocation] = useState(false)
-	const [fromLocation, setFromLocation] = useState(false)
+	const [toLocation, setToLocation] = useState(false) // where you want to go
+	const [fromLocation, setFromLocation] = useState(false) // where you currently are
 	const [searchQueryVisible, setSearchQueryVisible] = useState(false)
-	const [showRides, setShowRides] = useState(false)
+	const [showRides, setShowRides] = useState(false) // show the ride options
 
 	useEffect(() => {
 		if (map.current) return // initialize map only once
@@ -59,7 +57,7 @@ const Booking = () => {
 		})
 	})
 
-	// Function to create a directions request
+	// Function to create a directions request and draws the path between 2 points
 	async function getRoute(start, end) {
 		const query = await fetch(
 			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
@@ -68,6 +66,7 @@ const Booking = () => {
 		const json = await query.json()
 		const data = json.routes[0]
 		const route = data.geometry.coordinates
+
 		// If a route already exists in the map, then overwrite it
 		if (map.current?.getSource('route')) {
 			map.current?.getSource('route').setData(geojson(route, 'LineString'))
@@ -120,6 +119,10 @@ const Booking = () => {
 
 	// Add a location pin on the map
 	const addMarker = (coords, label) => {
+		/*
+			coords	: the [longitude, latitude] to place the pin
+			label	: the layer ID (must be unique)
+		*/
 		if (!map.current?.getLayer(label)) {
 			map.current?.addLayer({
 				id: label,
@@ -133,17 +136,19 @@ const Booking = () => {
 					'circle-color': label === 'from' ? '#0891b2' : '#f30',
 				},
 			})
+			// If the label already exists, then overwrite itF
 		} else {
 			map.current?.getSource(label).setData(geojson(coords))
 		}
 	}
 
-	// Set the current or destination location
+	// Set the current or destination location ('to')
 	const setLocation = (coords, label) => {
 		if (label === 'to') {
-			addMarker(coords, label)
-			getRoute([lng, lat], coords)
-			setShowRides(true)
+			// for setting destination
+			addMarker(coords, label) // add the pin
+			getRoute([lng, lat], coords) // get the path
+			setShowRides(true) // show ride options
 		} else {
 			setLng(coords[0])
 			setLat(coords[1])
@@ -160,17 +165,17 @@ const Booking = () => {
 
 	return (
 		<Page title='Booking'>
+			{/* Show map API by default but hide it if the search buttons are clicked */}
 			<Section>
-				{/* Show map API by default but hide it if the search buttons are clicked */}
 				<div
 					ref={mapContainer}
 					className={`map-container ${searchQueryVisible ? 'hidden' : null}`}
 				/>
 			</Section>
 
+			{/* Search Bar input fields */}
 			<Section>
 				<div className='absolute w-11/12 lg:w-6/12'>
-					{/* Search Bar input fields */}
 					<div className={`${toLocation ? 'hidden' : null}`}>
 						<SearchBox
 							accessToken={mapboxgl.accessToken}
@@ -212,10 +217,10 @@ const Booking = () => {
 				</div>
 			</Section>
 
-			{/* Show search bar on click */}
+			{/* Show search UI on click */}
 			<Section>{searchQueryVisible ? <SearchLocations /> : null}</Section>
 
-			{/* Show list of options to book from */}
+			{/* Show list of ride options */}
 			<Section>{showRides === true ? <RideOptions /> : null}</Section>
 		</Page>
 	)
@@ -224,8 +229,9 @@ const Booking = () => {
 export default Booking
 
 // TODO: Limit to 3 options
+// Shows options of rides to choose from
 const RideOptions = () => {
-	const [showModal, setShowModal] = useState(false)
+	const [showModal, setShowModal] = useState(false) // UI for confirming the ride
 
 	const options = [
 		{
@@ -303,7 +309,12 @@ const RideOptions = () => {
 	)
 }
 
+// helper component to show rides
 const ShowOption = ({ option, setShowModal }) => (
+	/*
+		option			: the ride option
+		setShowModal	: whether to show the modal
+	*/
 	<div
 		className='flow-root p-2 hover:bg-zinc-100'
 		key={option.id}

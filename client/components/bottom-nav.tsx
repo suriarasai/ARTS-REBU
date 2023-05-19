@@ -3,7 +3,7 @@
 import { useRouter } from 'next/router'
 
 const BottomNav = () => {
-	const router = useRouter()
+	const router = useRouter() // For navigation
 
 	return (
 		<div className='sm:hidden'>
@@ -45,6 +45,12 @@ interface navIconProps {
 
 // Reusable function for creating NavBar buttons
 const navIcon = ({ label, href, image, fill, stroke }: navIconProps) => {
+	/* 
+		label	: the text on the navbar
+		href	: where to redirect to
+		image	: the icon to display in the navbar
+		stroke	: custom styling option
+	*/
 	return {
 		label: label,
 		href: href,

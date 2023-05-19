@@ -59,9 +59,9 @@ const SignInForm = ({
 	setNewUser,
 }: any) => {
 	const {
-		register,
-		handleSubmit,
-		formState: { errors },
+		register: register,
+		handleSubmit: handleSubmit,
+		formState: { errors: errors },
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		setNumber(data.countryCode + ' ' + data.mobileNumber)
@@ -131,9 +131,15 @@ const SignInForm = ({
 const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 	const router = useRouter()
 
-	const handleSubmit = (data: any) => {
+	const {
+		register: register,
+		handleSubmit: handleSubmit,
+		formState: { errors: errors },
+	} = useForm()
+	const onSubmit = handleSubmit((data) => {
 		changeEmailSignIn(false)
-	}
+		router.push(newUser ? '/registration' : '/booking')
+	})
 
 	// Navigates back to sign in screen
 	const goBack = (event: any) => {
@@ -142,17 +148,12 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 		changeSignInForm(true)
 	}
 
-	const continueButton = (e) => {
-		e.preventDefault()
-		router.push(newUser ? '/registration' : '/booking')
-	}
-
 	return (
 		<>
 			{/* User form */}
 
-			<form className='flex w-full max-w-lg flex-col'>
-				<EmailForm />
+			<form className='flex w-full max-w-lg flex-col' onSubmit={onSubmit}>
+				<EmailForm register={register} errors={errors} />
 
 				<TermsOfService />
 
@@ -160,7 +161,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 					<button className='grey-button mr-3' onClick={goBack}>
 						{'Go Back'}
 					</button>
-					<button className='blue-button mr-8' onClick={continueButton}>
+					<button className='blue-button mr-8' type='submit'>
 						{'Continue ᐳ'}
 					</button>
 				</div>

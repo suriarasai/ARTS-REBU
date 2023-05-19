@@ -8,16 +8,16 @@ import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { UserContext } from '@/components/context/UserContext'
 
-// Main component
 const AccountSettings = () => {
 	const {
-		register: register,
+		register: register, // assigns names to each input field to be accessed when reading the form
 		handleSubmit: handleSubmit,
 		formState: { errors: errors },
 	} = useForm()
+
 	const onSubmit = (data) => {}
 
-	const { user, setUser } = useContext(UserContext)
+	const { user, setUser } = useContext(UserContext) // Accesses user data for preloading into input boxes
 
 	return (
 		// TODO: Populate form on load, add another variable

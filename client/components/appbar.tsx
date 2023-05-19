@@ -15,6 +15,9 @@ interface appBarProps {
 }
 
 const Appbar = ({ sectionTitle }: appBarProps) => {
+	/*
+		sectionTitle	: the title that appears in the navBar
+	*/
 	const router = useRouter()
 
 	return (
