@@ -103,33 +103,18 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 				</>
 			)}
 
-			{/* TODO: Replace with DatePicker... need to find a library */}
-			<div className='-mx-3 mb-2 flex flex-wrap'>
-				<DropDown
-					register={register}
-					name='year'
-					label='Birth Year'
-					array={yearsArr}
-					value='Year'
-					errors={errors}
-				/>
-				<DropDown
-					register={register}
-					name='month'
-					label='Birth Month'
-					arrayVal={monthsArrNumeric}
-					array={monthsArr}
-					value='Month'
-					errors={errors}
-				/>
-				<DropDown
-					register={register}
-					name='day'
-					label='Birth Day'
-					array={daysArr}
-					value='Day'
-					errors={errors}
-				/>
+			<div className='-mx-3 mb-6 flex flex-wrap'>
+				<div className='w-full px-3'>
+					<label>Date of Birth</label>
+					<input
+						{...register('birthdate', { required: true })}
+						placeholder='youremail@site.domain'
+						type='date'
+					/>
+					{errors.birthdate && (
+						<p className='text-error px-3'>Please enter your date of birth</p>
+					)}
+				</div>
 			</div>
 
 			{/* Buttons for submiting data */}

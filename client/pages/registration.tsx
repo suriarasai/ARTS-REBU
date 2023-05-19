@@ -42,7 +42,7 @@ const Registration = () => {
 			firstName: data.firstName,
 			lastName: data.lastName,
 			prefix: data.prefix,
-			birthdate: data.day + '-' + data.month + '-' + data.year,
+			birthdate: data.birthdate.replace(/\//g, "-"),
 			email: data.email,
 			password: data.password,
 		})
