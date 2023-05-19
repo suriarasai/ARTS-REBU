@@ -75,7 +75,14 @@ public class UserService {
 
     // API: Finds a user by their mobile number
     public User findByMobileNumber(String mobileNumber) {
-        return userRepository.findFirstByMobileNumber(mobileNumber);
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+
+        if (user != null) {
+            user.addSignInTime(); // Adds a Sign-in timestamp
+            userRepository.save(user);
+        }
+
+        return user;
     }
 
     // API: (Not used) Upserts (update/insert if non-existant) users by mobile #
@@ -90,8 +97,9 @@ public class UserService {
 
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
 
-        if (user.getId() != null) {
+        if (user.getId() != "") {
             user.addSignInTime(); // Adds a Sign-in timestamp
+            userRepository.save(user);
         }
 
         return user.getId();
@@ -104,13 +112,14 @@ public class UserService {
 
         if (user != null && user.getPassword().equals(password)) {
             user.addSignInTime(); // Adds a Sign-in timestamp
+            userRepository.save(user);
             return user;
         } else {
             return null;
         }
 
     }
-    
+
     public String addSignOutTime(String mobileNumber) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         user.addSignOutTime();
@@ -128,5 +137,5 @@ public class UserService {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         return user.getSignInTimes();
     }
-    
+
 }

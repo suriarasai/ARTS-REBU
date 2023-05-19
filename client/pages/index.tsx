@@ -79,7 +79,7 @@ const SignInForm = ({
 
 		if (response.data === '') {
 			const createUser = await api.post('/api/v1/customers', {
-				mobileNumber: mobileNumber,
+				mobileNumber: countryCode + " " + mobileNumber,
 				countryCode: countryCode,
 			})
 			setUser(createUser.data)
