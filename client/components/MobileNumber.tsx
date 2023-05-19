@@ -23,9 +23,13 @@ export const MobileNumber = ({
 				<div className='relative'>
 					<select
 						{...register('countryCode')}
-						defaultValue={populateData['countryCode'] ? populateData['countryCode'] : ''}
+						defaultValue={
+							populateData['countryCode'] ? populateData['countryCode'] : ''
+						}
 					>
-						<option value='' disabled>+</option>
+						<option value='' disabled>
+							+
+						</option>
 						<option value={60}>+60</option>
 						<option value={61}>+61</option>
 						<option value={62}>+62</option>
@@ -49,7 +53,9 @@ export const MobileNumber = ({
 				<input
 					type='text'
 					placeholder='12345678'
-					defaultValue={populateData['mobileNumber']}
+					defaultValue={populateData['mobileNumber']?.substring(
+						populateData['mobileNumber']?.indexOf(' ') + 1
+					)}
 					{...register('mobileNumber', {
 						required: true,
 						minLength: 8,

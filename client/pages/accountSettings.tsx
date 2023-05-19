@@ -33,7 +33,7 @@ const AccountSettings = () => {
 			email: data.email,
 			password: data.password,
 			countryCode: data.countryCode,
-			mobileNumber: data.mobileNumber,
+			mobileNumber: data.countryCode + " " + data.mobileNumber,
 		})
 		console.log(response)
 		setUser(response.data)
