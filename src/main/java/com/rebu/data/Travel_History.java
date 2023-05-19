@@ -1,5 +1,7 @@
 package com.rebu.data;
 
+import java.time.LocalDateTime;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,7 +20,7 @@ public class Travel_History {
     private String from;
     private String to;
     private String status;
-    private String time_booked;
+    private String time_booked = LocalDateTime.now().toString();;
     private String time_boarded;
     private String time_arrived;
     private String time_cancelled;
@@ -34,4 +36,12 @@ public class Travel_History {
     private ObjectId driver_id;
     private Float distance;
     private ObjectId car_id;
+
+    public Travel_History(String from, String to, String status, ObjectId driver_id, ObjectId car_id) {
+        this.from = from;
+        this.to = to;
+        this.status = status; // Can pre-set to 'booked?'
+        this.driver_id = driver_id;
+        this.car_id = car_id;
+    }
 }

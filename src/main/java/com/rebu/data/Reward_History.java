@@ -6,15 +6,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Document(collection = "customers")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Reward_History {
     @Id
     private ObjectId _id;
     private String datetime;
-    private Integer points;   
+    private Integer points;
+
+    public Reward_History() {
+        this.datetime = null;
+        this.points = null;
+    }
 }

@@ -120,6 +120,7 @@ public class UserService {
 
     }
 
+    // Appends the current datetime to the sign out arraylist
     public String addSignOutTime(String mobileNumber) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         user.addSignOutTime();
@@ -128,14 +129,40 @@ public class UserService {
         return "Done";
     }
 
+    // Returns all the sign out times
     public List<String> getSignOutTimes(String mobileNumber) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         return user.getSignOutTimes();
     }
 
+    // Returns all the sign in times
     public List<String> getSignInTimes(String mobileNumber) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         return user.getSignInTimes();
+    }
+
+    // Updates reward points by the given number
+    public String updateRewardPoints(String mobileNumber, String newCount) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        user.updateRewardPoints(Integer.parseInt(newCount));
+        userRepository.save(user);
+        return "Done";
+    }
+
+    // Sets Home location
+    public String setHome(String mobileNumber, String home) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        user.setHome(home);
+        userRepository.save(user);
+        return "Done";
+    }
+
+    // Sets Work location
+    public String setWork(String mobileNumber, String work) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        user.setWork(work);
+        userRepository.save(user);
+        return "Done";
     }
 
 }

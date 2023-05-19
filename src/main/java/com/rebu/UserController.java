@@ -92,6 +92,7 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    // POST: Adds the current datetime to the arraylist of sign out times
     @PostMapping("/addSignOutTime")
     public ResponseEntity<String> addSignInTime(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<String>(
@@ -99,6 +100,7 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    // GET: Returns the list of all sign in times
     @GetMapping("/getSignInTimes")
     public ResponseEntity<List<String>> getSignInTimes(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<List<String>>(
@@ -106,6 +108,7 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    // GET: Returns the list of all sign out times
     @GetMapping("/getSignOutTimes")
     public ResponseEntity<List<String>> getSignOutTimes(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<List<String>>(
@@ -113,4 +116,27 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    // Updates reward points by the given number
+    @PostMapping("/updateRewardPoints")
+    public ResponseEntity<String> updateRewardPoints(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
+                userService.updateRewardPoints(payload.get("mobileNumber"), payload.get("newCount")),
+                HttpStatus.OK);
+    }
+
+    // Sets the home location to a coordinate pair [lat, lng]
+    @PostMapping("/setHome")
+    public ResponseEntity<String> setHome(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
+                userService.setHome(payload.get("mobileNumber"), payload.get("home")),
+                HttpStatus.OK);
+    }
+
+    // Sets the home location to a coordinate pair [lat, lng]
+    @PostMapping("/setWork")
+    public ResponseEntity<String> setWork(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
+                userService.setHome(payload.get("mobileNumber"), payload.get("work")),
+                HttpStatus.OK);
+    }
 }

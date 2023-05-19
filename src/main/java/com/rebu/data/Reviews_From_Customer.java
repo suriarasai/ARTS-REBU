@@ -21,4 +21,14 @@ public class Reviews_From_Customer {
     private Integer politeness;
     private Integer cleanliness;
     private String body;
+
+    public Reviews_From_Customer(ObjectId driver_id, String datetime, Integer rating, Integer politeness,
+            Integer cleanliness, String body) {
+        this.driver_id = driver_id;
+        this.datetime = datetime;
+        this.rating = rating;
+        this.politeness = politeness;
+        this.cleanliness = cleanliness;
+        this.body = body;
+    }
 }

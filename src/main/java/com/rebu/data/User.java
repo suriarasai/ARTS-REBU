@@ -55,12 +55,24 @@ public class User {
         return this.password;
     }
 
+    public void setHome(String home) {
+        this.savedLocations.setHome(home);
+    }
+
+    public void setWork(String work) {
+        this.savedLocations.setHome(work);
+    }
+
     public void addSignInTime() {
         this.activity.appendSignInTime();
     }
 
     public void addSignOutTime() {
         this.activity.appendSignOutTime();
+    }
+
+    public void updateRewardPoints(Integer newCount) {
+        this.rewardPoints = newCount;
     }
 
     public List<String> getSignInTimes() {
