@@ -44,7 +44,7 @@ const Registration = () => {
 			prefix: data.prefix,
 			birthdate: data.day + '-' + data.month + '-' + data.year,
 			email: data.email,
-			password: data.password
+			password: data.password,
 		})
 		router.push('/booking')
 	}
@@ -74,7 +74,10 @@ const Registration = () => {
 							{nextStep ? (
 								<button
 									className='grey-button mr-3'
-									onClick={() => showNextStep(false)}
+									onClick={(e) => {
+										e.preventDefault()
+										showNextStep(false)
+									}}
 								>
 									Go Back
 								</button>

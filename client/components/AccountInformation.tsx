@@ -46,6 +46,7 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 						name='prefix'
 						label='Prefix'
 						array={honorificsArr}
+						errors={errors}
 					/>
 				</div>
 				<div className='mb-6 w-3/4 md:mb-0 md:w-2/5'>
@@ -110,6 +111,7 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 					label='Birth Year'
 					array={yearsArr}
 					value='Year'
+					errors={errors}
 				/>
 				<DropDown
 					register={register}
@@ -118,6 +120,7 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 					arrayVal={monthsArrNumeric}
 					array={monthsArr}
 					value='Month'
+					errors={errors}
 				/>
 				<DropDown
 					register={register}
@@ -125,6 +128,7 @@ const AccountInformation = ({ register, errors, newUser = false }) => {
 					label='Birth Day'
 					array={daysArr}
 					value='Day'
+					errors={errors}
 				/>
 			</div>
 
@@ -152,13 +156,19 @@ const DropDown = ({
 	arrayVal = array,
 	value = label,
 	register,
+	errors,
 	name,
 }: any) => (
 	<div className={`w-full px-3 ${label === 'Prefix' ? '' : 'w-1/3'}`}>
 		<label>{label}</label>
 		<div className='relative'>
-			<select {...register(name)}>
-				<option value='0'>{value}</option>
+			<select
+				{...(register(name), { required: true, minLength: 1 })}
+				defaultValue=''
+			>
+				<option value='' disabled selected>
+					{value}
+				</option>
 				{array.map((option: any, index) => (
 					<option value={arrayVal[index]} key={option}>
 						{option}
