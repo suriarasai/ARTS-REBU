@@ -155,9 +155,10 @@ const Booking = () => {
 			.then(function (data) {
 				const coordinates = data.features[0].geometry.coordinates
 				const distances = []
+				const coord = map.current?.getSource('from')._data.features[0].geometry.coordinates
 
 				coordinates.forEach(([a, b]) =>
-					distances.push([Math.pow(a - 103.7740251, 2) + Math.pow(b - 1.292187, 2), a, b])
+					distances.push([Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2), a, b])
 				)
 				distances.sort()
 				console.log(distances[0])
@@ -177,6 +178,7 @@ const Booking = () => {
 		} else {
 			setLng(coords[0])
 			setLat(coords[1])
+			loadTaxis()
 			addMarker(coords, label)
 			if (map.current?.getLayer('to')) {
 				getRoute(
