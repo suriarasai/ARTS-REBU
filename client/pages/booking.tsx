@@ -6,6 +6,7 @@ import Section from '@/components/section'
 import mapboxgl from 'mapbox-gl'
 import { SearchBox } from '@mapbox/search-js-react'
 import SearchLocations from './searchLocations'
+import { RideOptions } from '../components/RideOptions'
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
@@ -39,6 +40,7 @@ const Booking = () => {
 	const [fromLocation, setFromLocation] = useState(false) // where you currently are
 	const [searchQueryVisible, setSearchQueryVisible] = useState(false)
 	const [showRides, setShowRides] = useState(false) // show the ride options
+	const [address, setAddress] = useState('') // Store the address of the seleted starting point
 
 	useEffect(() => {
 		if (map.current) return // initialize map only once
@@ -128,12 +130,37 @@ const Booking = () => {
 							properties: {},
 							geometry: {
 								type: 'MultiPoint',
-								coordinates: [[103.62839,1.29349],[103.62961,1.27449],[103.63752,1.30034],[103.64113,1.33568],[103.65717,1.30671],[103.66382,1.32378],[103.66601,1.32676],[103.66848,1.32845],[103.67287,1.32241],[103.67465,1.33123],[103.67594,1.33064],[103.67889,1.31364],[103.67926,1.33032],[103.68227,1.32285],[103.68642,1.3126],[103.68815,1.3423],[103.68996,1.35657],[103.69219,1.34],[103.692543833333,1.34214716666667],[103.69288,1.34857],[103.6946,1.35726],[103.69586,1.33815],[103.696689516667,1.35017843333333],[103.696689516667,1.35017843333333]],
+								coordinates: [
+									[103.62839, 1.29349],
+									[103.62961, 1.27449],
+									[103.63752, 1.30034],
+									[103.64113, 1.33568],
+									[103.65717, 1.30671],
+									[103.66382, 1.32378],
+									[103.66601, 1.32676],
+									[103.66848, 1.32845],
+									[103.67287, 1.32241],
+									[103.67465, 1.33123],
+									[103.67594, 1.33064],
+									[103.67889, 1.31364],
+									[103.67926, 1.33032],
+									[103.68227, 1.32285],
+									[103.68642, 1.3126],
+									[103.68815, 1.3423],
+									[103.68996, 1.35657],
+									[103.69219, 1.34],
+									[103.692543833333, 1.34214716666667],
+									[103.69288, 1.34857],
+									[103.6946, 1.35726],
+									[103.69586, 1.33815],
+									[103.696689516667, 1.35017843333333],
+									[103.696689516667, 1.35017843333333],
+								],
 							},
 						},
 					],
 				},
-			}
+			},
 		})
 	})
 
@@ -156,7 +183,7 @@ const Booking = () => {
 					'circle-color': label === 'from' ? '#0891b2' : '#f30',
 				},
 			})
-			// If the label already exists, then overwrite itF
+			// If the label already exists, then overwrite it
 		} else {
 			map.current?.getSource(label).setData(geojson(coords))
 		}
@@ -181,6 +208,19 @@ const Booking = () => {
 				setShowRides(true)
 			}
 		}
+		const coordinates =
+			map.current?.getSource('from')._data.features[0].geometry.coordinates
+
+		// Reverse Geolocator: Convert the coordinates to an address
+		fetch(
+			`https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates[0]},${coordinates[1]}.json?types=address&access_token=${mapboxgl.accessToken}`
+		)
+			.then(function (response) {
+				return response.json()
+			})
+			.then(function (data) {
+				setAddress(data.features[0].place_name)
+			})
 	}
 
 	return (
@@ -241,111 +281,13 @@ const Booking = () => {
 			<Section>{searchQueryVisible ? <SearchLocations /> : null}</Section>
 
 			{/* Show list of ride options */}
-			<Section>{showRides === true ? <RideOptions /> : null}</Section>
+			<Section>
+				{showRides === true ? <RideOptions addr={address} /> : null}
+			</Section>
 		</Page>
 	)
 }
 
 export default Booking
 
-// TODO: Limit to 3 options
-// Shows options of rides to choose from
-const RideOptions = () => {
-	const [showModal, setShowModal] = useState(false) // UI for confirming the ride
 
-	const options = [
-		{
-			id: 0,
-			type: 'RebuX',
-			people: 4,
-			price: 7.0,
-			dropoff: '7:00 PM',
-		},
-		{
-			id: 1,
-			type: 'RebuPool',
-			people: 2,
-			price: 12.0,
-			dropoff: '6:30 PM',
-		},
-		{
-			id: 2,
-			type: 'Rebu SUV',
-			people: 1,
-			price: 18.0,
-			dropoff: '6:00 PM',
-		},
-	]
-
-	return (
-		<div className='absolute bottom-0 w-11/12 bg-white pb-16 opacity-80 md:pb-4 lg:w-6/12 lg:pb-4'>
-			<div className='p-4'>
-				{!showModal ? (
-					<div>
-						<label>Options</label>
-						{options.map((option) => (
-							<ShowOption
-								option={option}
-								setShowModal={setShowModal}
-								key={option.id}
-							/>
-						))}
-					</div>
-				) : (
-					<div>
-						<label>Confirm Details</label>
-
-						<ShowOption
-							option={options[0]}
-							setShowModal={setShowModal}
-							key={options[0].id}
-						/>
-
-						<label className='mt-2'>Pickup Location</label>
-
-						<div className='mb-4 p-2'>
-							<b>National University of Singapore, ISS</b>
-							<br />
-							25 Heng Mui Keng Terrace, Singapore 129959
-						</div>
-
-						<div className='flex items-center justify-center gap-5'>
-							<button
-								className='grey-button w-1/4'
-								onClick={() => setShowModal(false)}
-							>
-								Go Back
-							</button>
-							<button className='blue-button w-3/4 bg-cyan-600'>
-								<div className='text-white' key='logout'>
-									Confirm
-								</div>
-							</button>
-						</div>
-					</div>
-				)}
-			</div>
-		</div>
-	)
-}
-
-// helper component to show rides
-const ShowOption = ({ option, setShowModal }) => (
-	/*
-		option			: the ride option
-		setShowModal	: whether to show the modal
-	*/
-	<div
-		className='flow-root p-2 hover:bg-zinc-100'
-		key={option.id}
-		onClick={() => setShowModal(true)}
-	>
-		<div className='float-left mt-2'>
-			<b>{option.type}</b> - {option.people} people
-		</div>
-		<div className='float-right mr-8'>
-			<b>${option.price}</b> <br />
-			{option.dropoff} ETA
-		</div>
-	</div>
-)
