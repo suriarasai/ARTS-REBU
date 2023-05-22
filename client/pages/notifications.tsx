@@ -47,11 +47,17 @@ function handleSubmit(params = {}) {
 		[103.70689, 1.34464],
 	]
 	const distances = []
-	coordinates.sort((a, b) => a[1] - b[1])
-	coordinates.forEach(([index, distance]) => console.log(index, ':', distance))
+	coordinates.forEach(([a, b]) =>
+		distances.push([
+			Math.pow(a - current[0], 2) + Math.pow(b - current[1], 2),
+			a,
+			b,
+		])
+	)
+	distances.sort((a, b) => a[0] - b[0])
 
 	for (let i = 0; i < 3; i++) {
-		console.log(coordinates)
+		console.log(distances[i])
 	}
 
 	// fetch('https://api.data.gov.sg/v1/transport/taxi-availability')

@@ -117,55 +117,11 @@ const Booking = () => {
 			setShowRides(true)
 		})
 
-		map.current?.addLayer({
-			id: 'testmarker',
-			type: 'circle',
-			source: {
-				type: 'geojson',
-				data: {
-					type: 'FeatureCollection',
-					features: [
-						{
-							type: 'Feature',
-							properties: {},
-							geometry: {
-								type: 'MultiPoint',
-								coordinates: [
-									[103.62839, 1.29349],
-									[103.62961, 1.27449],
-									[103.63752, 1.30034],
-									[103.64113, 1.33568],
-									[103.65717, 1.30671],
-									[103.66382, 1.32378],
-									[103.66601, 1.32676],
-									[103.66848, 1.32845],
-									[103.67287, 1.32241],
-									[103.67465, 1.33123],
-									[103.67594, 1.33064],
-									[103.67889, 1.31364],
-									[103.67926, 1.33032],
-									[103.68227, 1.32285],
-									[103.68642, 1.3126],
-									[103.68815, 1.3423],
-									[103.68996, 1.35657],
-									[103.69219, 1.34],
-									[103.692543833333, 1.34214716666667],
-									[103.69288, 1.34857],
-									[103.6946, 1.35726],
-									[103.69586, 1.33815],
-									[103.696689516667, 1.35017843333333],
-									[103.696689516667, 1.35017843333333],
-								],
-							},
-						},
-					],
-				},
-			},
-		})
+		loadTaxis()
 	})
 
 	// Add a location pin on the map
-	const addMarker = (coords, label) => {
+	const addMarker = (coords, label, type = 'Point') => {
 		/*
 			coords	: the [longitude, latitude] to place the pin
 			label	: the layer ID (must be unique)
@@ -176,17 +132,39 @@ const Booking = () => {
 				type: 'circle',
 				source: {
 					type: 'geojson',
-					data: geojson(coords),
+					data: geojson(coords, type),
 				},
 				paint: {
 					'circle-radius': 4,
-					'circle-color': label === 'from' ? '#0891b2' : '#f30',
+					'circle-color':
+						label === 'from' ? '#0891b2' : label === 'to' ? '#f30' : '#000',
 				},
 			})
 			// If the label already exists, then overwrite it
 		} else {
 			map.current?.getSource(label).setData(geojson(coords))
 		}
+	}
+
+	// Loads the nearest N taxis onto the map
+	const loadTaxis = (N = 10) => {
+		fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
+			.then(function (response) {
+				return response.json()
+			})
+			.then(function (data) {
+				const coordinates = data.features[0].geometry.coordinates
+				const distances = []
+
+				coordinates.forEach(([a, b]) =>
+					distances.push([Math.pow(a - 103.7740251, 2) + Math.pow(b - 1.292187, 2), a, b])
+				)
+				distances.sort()
+				console.log(distances[0])
+				for (let i = 0; i < N; i++) {
+					addMarker(distances[i].slice(1, 3), 'taxis' + i)
+				}
+			})
 	}
 
 	// Set the current or destination location ('to')
@@ -289,5 +267,3 @@ const Booking = () => {
 }
 
 export default Booking
-
-

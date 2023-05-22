@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 
 // TODO: Limit to 3 options
 // Shows options of rides to choose from
-export const RideOptions = ({ addr, carType, price, time }) => {
+export const RideOptions = ({ addr }) => {
+	// , carType, price, time
 	const [showModal, setShowModal] = useState(false) // UI for confirming the ride
 	const [address, setAddress] = React.useState(['Unknown Street', 'Unknown'])
 
