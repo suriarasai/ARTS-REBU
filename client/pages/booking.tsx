@@ -85,13 +85,12 @@ const Booking = () => {
 					'line-cap': 'round',
 				},
 				paint: {
-					'line-color': '#0891b2',
-					'line-width': 5,
+					'line-color': '#000',
+					'line-width': 3,
 					'line-opacity': 0.75,
 				},
 			})
 		}
-		map.current?.resize()
 	}
 
 	// Add starting point to the map
@@ -115,6 +114,27 @@ const Booking = () => {
 			)
 			setShowRides(true)
 		})
+
+		map.current?.addLayer({
+			id: 'testmarker',
+			type: 'circle',
+			source: {
+				type: 'geojson',
+				data: {
+					type: 'FeatureCollection',
+					features: [
+						{
+							type: 'Feature',
+							properties: {},
+							geometry: {
+								type: 'MultiPoint',
+								coordinates: [[103.62839,1.29349],[103.62961,1.27449],[103.63752,1.30034],[103.64113,1.33568],[103.65717,1.30671],[103.66382,1.32378],[103.66601,1.32676],[103.66848,1.32845],[103.67287,1.32241],[103.67465,1.33123],[103.67594,1.33064],[103.67889,1.31364],[103.67926,1.33032],[103.68227,1.32285],[103.68642,1.3126],[103.68815,1.3423],[103.68996,1.35657],[103.69219,1.34],[103.692543833333,1.34214716666667],[103.69288,1.34857],[103.6946,1.35726],[103.69586,1.33815],[103.696689516667,1.35017843333333],[103.696689516667,1.35017843333333]],
+							},
+						},
+					],
+				},
+			}
+		})
 	})
 
 	// Add a location pin on the map
@@ -132,7 +152,7 @@ const Booking = () => {
 					data: geojson(coords),
 				},
 				paint: {
-					'circle-radius': 10,
+					'circle-radius': 4,
 					'circle-color': label === 'from' ? '#0891b2' : '#f30',
 				},
 			})

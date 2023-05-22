@@ -143,8 +143,11 @@ public class UserService {
 
     // Updates reward points by the given number
     public String updateRewardPoints(String mobileNumber, String newCount) {
+        Integer points = Integer.parseInt(newCount);
+
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
-        user.updateRewardPoints(Integer.parseInt(newCount));
+        user.updateRewardPoints(points);
+        // user.addRewardHistory(points, user.getRewardPoints() - points);
         userRepository.save(user);
         return "Done";
     }

@@ -1,7 +1,7 @@
 package com.rebu.data;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
+import java.time.LocalDate;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -11,13 +11,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Reward_History {
-    @Id
-    private ObjectId _id;
-    private String datetime;
+    private String date;
     private Integer points;
+    private Integer totalPoints;
 
-    public Reward_History() {
-        this.datetime = null;
-        this.points = null;
+    public Reward_History(Integer points, Integer totalPoints) {
+        this.date = LocalDate.now().toString();
+        this.points = points;
+        this.totalPoints = totalPoints;
     }
 }

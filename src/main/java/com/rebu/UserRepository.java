@@ -1,5 +1,5 @@
 // Database access object, custom queries go here (ex. find by mobile number)
-
+// TODO: Migrate away from search by mobile number/email -- these are mutable fields
 package com.rebu;
 
 import org.bson.types.ObjectId;

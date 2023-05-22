@@ -34,7 +34,7 @@ public class User {
     private List<String> favoriteLocations = new ArrayList<String>();
     private Activity activity = new Activity();
     private Saved_Locations savedLocations = new Saved_Locations();
-    private List<Reward_History> rewardHistory = new ArrayList<Reward_History>();
+    // private Reward_History rewardHistory = new Reward_History();
     private List<Reviews_About_Customer> reviewsAboutCustomer = new ArrayList<Reviews_About_Customer>();
     private List<Reviews_From_Customer> reviewsFromCustomer = new ArrayList<Reviews_From_Customer>();
 
@@ -66,6 +66,11 @@ public class User {
     public void addSignInTime() {
         this.activity.appendSignInTime();
     }
+
+    // public void addRewardHistory(Integer points, Integer totalPoints) {
+        // Reward_History entry = new Reward_History(points, totalPoints);
+        // this.rewardHistory.addEntry(entry);
+    // }
 
     public void addSignOutTime() {
         this.activity.appendSignOutTime();

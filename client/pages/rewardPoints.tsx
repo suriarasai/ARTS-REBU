@@ -1,7 +1,39 @@
+// TODO: See if there's a way to pass user into the function w/o importing context
+
+import { useContext, useState, useRef } from 'react'
 import Page from '@/components/page'
 import Section from '@/components/section'
+import api from '@/api/axiosConfig'
+import { UserContext } from '@/components/context/UserContext'
 
 const RewardPoints = () => {
+	const { user, setUser } = useContext(UserContext)
+	const rewardsForm = useRef(null)
+
+	const [rewardPoints, updateRewardPoints] = useState(user.rewardPoints ? user.rewardPoints : 0)
+	const [invalidInput, updateInvalidInput] = useState(false) // Validation checks on redemption input box
+
+	const handleSubmit = (e) => {
+		const points = rewardsForm.current.points.value
+		e.preventDefault()
+
+		// Ensures the user has the number of points they want
+		if (rewardPoints - points >= 0 && points > 0) {
+			rewardPointsAPI(user.mobileNumber, rewardPoints - points)
+			setUser({...user, rewardPoints: rewardPoints - points})
+			updateRewardPoints(rewardPoints - points)
+		} else {
+			updateInvalidInput(true)
+		}
+	}
+
+	const rewardPointsAPI = async (mobileNumber, newCount) => {
+		await api.post('/api/v1/customers/updateRewardPoints', {
+			mobileNumber: mobileNumber,
+			newCount: newCount
+		})
+	}
+
 	return (
 		<Page title='Reward Points'>
 			<Section>
@@ -12,20 +44,34 @@ const RewardPoints = () => {
 					<div className='flex-cols flex pb-8 text-3xl'>
 						<div className='mr-3 w-1/2 rounded bg-cyan-700 p-4 text-zinc-100'>
 							<label className='text-zinc-100'>Total Reward Points</label>
-							{1552023}
+							{rewardPoints}
 						</div>
 						<div className='w-1/2 rounded bg-cyan-700 p-4 text-zinc-100'>
-							<label className='text-zinc-100'>Points Worth</label>${100}
+							<label className='text-zinc-100'>Points Worth</label>$
+							{rewardPoints ? rewardPoints / 100 : 0}
 						</div>
 					</div>
-					<div className='flex-cols flex pb-8'>
+
+					<form className='flex-cols flex pb-8' ref={rewardsForm}>
 						<div className='mr-3 w-3/4'>
-							<input placeholder='Enter Points to Redeem' />
+							<input
+								type='number'
+								name='points'
+								placeholder='Enter Points to Redeem'
+							/>
+							{invalidInput && (
+								<p className='text-error px-3'>The maximum you can redeem is {rewardPoints}</p>
+							)}
 						</div>
 						<div className='mt-1 w-1/4'>
-							<button className='blue-button w-full uppercase'>Redeem</button>
+							<button
+								className='blue-button w-full uppercase'
+								onClick={(e) => handleSubmit(e)}
+							>
+								Redeem
+							</button>
 						</div>
-					</div>
+					</form>
 
 					<label className='pb-3'>Reward History</label>
 

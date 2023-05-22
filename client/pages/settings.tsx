@@ -1,4 +1,5 @@
 // Main hub for options and account configuration
+// TODO: Set signout to clear context
 
 import React, { useState, useContext } from 'react'
 import Page from '@/components/page'

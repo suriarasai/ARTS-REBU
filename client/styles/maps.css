@@ -12,6 +12,10 @@
 	z-index: 0 !important;
 }
 
+.marker {
+	background-image: url('../public/images/taxi-front-view.png') !important;
+}
+
 [class$='--Input'] {
 	@apply mb-3 w-full rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 shadow-xl focus:bg-white focus:outline-none !important
 }
