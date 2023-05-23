@@ -4,10 +4,13 @@ import React, { useEffect, useState } from 'react'
 // Shows options of rides to choose from
 export const RideOptions = ({ addr, distance = 0 }) => {
 	// , carType, price, time
-	const [showModal, setShowModal] = useState(false) // UI for confirming the ride
-	const [address, setAddress] = useState(['Unknown Street', 'Unknown'])
-	const [date, setDate] = useState(new Date())
-	const [options, setOptions] = useState([])
+	const [address, setAddress] = useState<Array<String>>([
+		'Unknown Street',
+		'Unknown',
+	])
+	const [date, setDate] = useState<Date>(new Date())
+	const [options, setOptions] = useState<Array<any>>([])
+	const [clickedOption, setClickedOption] = useState<number>()
 
 	// Post-processing on address name to separate city and postal code
 	useEffect(() => {
@@ -20,21 +23,21 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 	useEffect(() => {
 		setOptions([
 			{
-				id: 0,
+				id: 1,
 				type: 'RebuX',
 				people: 4,
 				price: 3.9 + distance * 0.5,
 				dropoff: new Date().getTime() + 1000 * 60 * distance * 10,
 			},
 			{
-				id: 1,
+				id: 2,
 				type: 'RebuPool',
 				people: 2,
 				price: 4.1 + distance + 0.75,
 				dropoff: new Date().getTime() + 1000 * 60 * distance * 8,
 			},
 			{
-				id: 2,
+				id: 3,
 				type: 'Rebu SUV',
 				people: 1,
 				price: 4.3 + distance,
@@ -43,22 +46,20 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 		])
 	}, [date, distance])
 
-	const handleSubmit = () => {
-		console.log(addr)
-	}
+	const handleSubmit = () => {}
 
 	return (
 		<div className='absolute bottom-0 w-11/12 bg-white pb-16 opacity-80 md:pb-4 lg:w-6/12 lg:pb-4'>
 			<div className='p-4'>
-				{!showModal ? (
+				{!clickedOption ? (
 					<div>
 						{/* Show all the options */}
 						<label>Options</label>
 						{options.map((option) => (
 							<ShowOption
 								option={option}
-								setShowModal={setShowModal}
 								key={option.id}
+								setClickedOption={setClickedOption}
 							/>
 						))}
 					</div>
@@ -68,9 +69,9 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 						<label>Confirm Details</label>
 
 						<ShowOption
-							option={options[0]}
-							setShowModal={setShowModal}
-							key={options[0].id}
+							option={options[clickedOption-1]}
+							key={options[clickedOption-1].id}
+							setClickedOption={setClickedOption}
 						/>
 
 						<label className='mt-2'>Pickup Location</label>
@@ -84,7 +85,7 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 						<div className='flex items-center justify-center gap-5'>
 							<button
 								className='grey-button w-1/4'
-								onClick={() => setShowModal(false)}
+								onClick={() => setClickedOption(null)}
 							>
 								Go Back
 							</button>
@@ -103,15 +104,15 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 	)
 }
 // helper component to show rides
-const ShowOption = ({ option, setShowModal }) => (
+const ShowOption = ({ option, setClickedOption }) => (
 	/*
-		option			: the ride option
-		setShowModal	: whether to show the modal
+		option				: the ride option
+		setClickedOption	: tracks which ride option was clicked 
 	*/
 	<div
 		className='flow-root p-2 hover:bg-zinc-100'
 		key={option.id}
-		onClick={() => setShowModal(true)}
+		onClick={() => setClickedOption(option.id)}
 	>
 		<div className='float-left mt-2'>
 			<b>{option.type}</b> - {option.people} people
@@ -121,7 +122,8 @@ const ShowOption = ({ option, setShowModal }) => (
 			{new Date(option.dropoff).toLocaleTimeString('en-US', {
 				hour: 'numeric',
 				minute: 'numeric',
-			})}{' ETA'}
+			})}
+			{' ETA'}
 		</div>
 	</div>
 )
