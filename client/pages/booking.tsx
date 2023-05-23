@@ -1,6 +1,6 @@
 // Main hub for booking rides, calls external location API
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useContext } from 'react'
 import Page from '@/components/page'
 import Section from '@/components/section'
 import mapboxgl from 'mapbox-gl'
@@ -10,12 +10,15 @@ import { RideOptions } from '../components/RideOptions'
 import * as turf from '@turf/turf'
 import { addMarker, geojson } from '@/components/common/addMarker'
 import { loadTaxis } from '@/components/common/loadTaxis'
+import { UserContext } from '@/components/context/UserContext'
+import { getCoords } from '@/components/common/getCoords'
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
 
 // Main function
 const Booking = () => {
+	const { user, setUser } = useContext(UserContext)
 	const mapContainer = useRef(null)
 	const map = useRef(null)
 	const [lng, setLng] = useState<number>(103.7729178)
@@ -213,7 +216,7 @@ const Booking = () => {
 			{/* Show list of ride options */}
 			<Section>
 				{showRides === true ? (
-					<RideOptions addr={address} distance={distance} />
+						<RideOptions map={map} addr={address} distance={distance} />
 				) : null}
 			</Section>
 		</Page>

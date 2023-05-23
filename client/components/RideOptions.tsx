@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
+import { getCoords } from '@/components/common/getCoords'
+import { UserContext } from './context/UserContext'
 
 // TODO: Limit to 3 options
 // Shows options of rides to choose from
-export const RideOptions = ({ addr, distance = 0 }) => {
+export const RideOptions = ({ map, addr, distance = 0 }) => {
+	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
+
 	const [address, setAddress] = useState<Array<String>>([
 		'Unknown Street',
 		'Unknown',
@@ -48,6 +52,8 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 	}, [date, distance])
 
 	const handleSubmit = () => {
+		console.log([getCoords(map, 'from'), getCoords(map, 'to')])
+		setUser({...user, temp: [getCoords(map, 'from'), getCoords(map, 'to')]})
 		router.push('/tracking')
 	}
 
