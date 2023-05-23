@@ -5,7 +5,9 @@ import React, { useEffect, useState } from 'react'
 export const RideOptions = ({ addr, distance = 0 }) => {
 	// , carType, price, time
 	const [showModal, setShowModal] = useState(false) // UI for confirming the ride
-	const [address, setAddress] = React.useState(['Unknown Street', 'Unknown'])
+	const [address, setAddress] = useState(['Unknown Street', 'Unknown'])
+	const [date, setDate] = useState(new Date())
+	const [options, setOptions] = useState([])
 
 	// Post-processing on address name to separate city and postal code
 	useEffect(() => {
@@ -15,29 +17,31 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 		])
 	}, [addr])
 
-	const options = [
-		{
-			id: 0,
-			type: 'RebuX',
-			people: 4,
-			price: 3.9 + distance * 0.5,
-			dropoff: '7:00 PM',
-		},
-		{
-			id: 1,
-			type: 'RebuPool',
-			people: 2,
-			price: 4.1 + distance + 0.75,
-			dropoff: '6:30 PM',
-		},
-		{
-			id: 2,
-			type: 'Rebu SUV',
-			people: 1,
-			price: 4.3 + distance,
-			dropoff: '6:00 PM',
-		},
-	]
+	useEffect(() => {
+		setOptions([
+			{
+				id: 0,
+				type: 'RebuX',
+				people: 4,
+				price: 3.9 + distance * 0.5,
+				dropoff: new Date().getTime() + 1000 * 60 * distance * 10,
+			},
+			{
+				id: 1,
+				type: 'RebuPool',
+				people: 2,
+				price: 4.1 + distance + 0.75,
+				dropoff: new Date().getTime() + 1000 * 60 * distance * 8,
+			},
+			{
+				id: 2,
+				type: 'Rebu SUV',
+				people: 1,
+				price: 4.3 + distance,
+				dropoff: new Date().getTime() + 1000 * 60 * distance * 5,
+			},
+		])
+	}, [date, distance])
 
 	const handleSubmit = () => {
 		console.log(addr)
@@ -114,7 +118,10 @@ const ShowOption = ({ option, setShowModal }) => (
 		</div>
 		<div className='float-right mr-8'>
 			<b>${option.price.toFixed(2)}</b> <br />
-			{option.dropoff} ETA
+			{new Date(option.dropoff).toLocaleTimeString('en-US', {
+				hour: 'numeric',
+				minute: 'numeric',
+			})}{' ETA'}
 		</div>
 	</div>
 )
