@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 // TODO: Limit to 3 options
 // Shows options of rides to choose from
-export const RideOptions = ({ addr }) => {
+export const RideOptions = ({ addr, distance = 0 }) => {
 	// , carType, price, time
 	const [showModal, setShowModal] = useState(false) // UI for confirming the ride
 	const [address, setAddress] = React.useState(['Unknown Street', 'Unknown'])
@@ -20,21 +20,21 @@ export const RideOptions = ({ addr }) => {
 			id: 0,
 			type: 'RebuX',
 			people: 4,
-			price: 7,
+			price: 3.9 + distance * 0.5,
 			dropoff: '7:00 PM',
 		},
 		{
 			id: 1,
 			type: 'RebuPool',
 			people: 2,
-			price: 12,
+			price: 4.1 + distance + 0.75,
 			dropoff: '6:30 PM',
 		},
 		{
 			id: 2,
 			type: 'Rebu SUV',
 			people: 1,
-			price: 18,
+			price: 4.3 + distance,
 			dropoff: '6:00 PM',
 		},
 	]
@@ -113,7 +113,7 @@ const ShowOption = ({ option, setShowModal }) => (
 			<b>{option.type}</b> - {option.people} people
 		</div>
 		<div className='float-right mr-8'>
-			<b>${option.price}</b> <br />
+			<b>${option.price.toFixed(2)}</b> <br />
 			{option.dropoff} ETA
 		</div>
 	</div>

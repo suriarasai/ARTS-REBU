@@ -7,6 +7,7 @@ import mapboxgl from 'mapbox-gl'
 import { SearchBox } from '@mapbox/search-js-react'
 import SearchLocations from './searchLocations'
 import { RideOptions } from '../components/RideOptions'
+import * as turf from '@turf/turf'
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
@@ -35,6 +36,7 @@ const Booking = () => {
 	const [lng, setLng] = useState<number>(103.7729178)
 	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState(14)
+	const [distance, setDistance] = useState(0)
 
 	const [toLocation, setToLocation] = useState(false) // where you want to go
 	const [fromLocation, setFromLocation] = useState(false) // where you currently are
@@ -54,7 +56,7 @@ const Booking = () => {
 		// Creates the map object
 		map.current = new mapboxgl.Map({
 			container: mapContainer.current,
-			style: 'mapbox://styles/mapbox/light-v11',
+			style: 'mapbox://styles/issv374/clhymkicc003e01rbarxs6ryv',
 			zoom: zoom,
 		})
 	})
@@ -93,6 +95,15 @@ const Booking = () => {
 				},
 			})
 		}
+		// Sets the distance of the route for fare calculation
+		setDistance(
+			turf.length(
+				turf.lineString(
+					map.current?.getSource('route')._data.features[0].geometry.coordinates
+				),
+				{ units: 'kilometers' }
+			)
+		)
 	}
 
 	// Add starting point to the map
@@ -155,13 +166,17 @@ const Booking = () => {
 			.then(function (data) {
 				const coordinates = data.features[0].geometry.coordinates
 				const distances = []
-				const coord = map.current?.getSource('from')._data.features[0].geometry.coordinates
+				const coord =
+					map.current?.getSource('from')._data.features[0].geometry.coordinates
 
 				coordinates.forEach(([a, b]) =>
-					distances.push([Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2), a, b])
+					distances.push([
+						Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
+						a,
+						b,
+					])
 				)
 				distances.sort()
-				console.log(distances[0])
 				for (let i = 0; i < N; i++) {
 					addMarker(distances[i].slice(1, 3), 'taxis' + i)
 				}
@@ -262,7 +277,7 @@ const Booking = () => {
 
 			{/* Show list of ride options */}
 			<Section>
-				{showRides === true ? <RideOptions addr={address} /> : null}
+				{showRides === true ? <RideOptions addr={address} distance={distance}/> : null}
 			</Section>
 		</Page>
 	)
