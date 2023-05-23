@@ -53,7 +53,7 @@ export const RideOptions = ({ map, addr, distance = 0 }) => {
 
 	const handleSubmit = () => {
 		console.log([getCoords(map, 'from'), getCoords(map, 'to')])
-		setUser({...user, temp: [getCoords(map, 'from'), getCoords(map, 'to')]})
+		setUser({...user, temp: [getCoords(map, 'from'), getCoords(map, 'to')], tripInfo: options[clickedOption - 1], addr: address})
 		router.push('/tracking')
 	}
 

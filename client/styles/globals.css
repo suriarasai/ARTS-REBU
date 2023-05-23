@@ -50,3 +50,7 @@ h5 {
 .text-error {
 	@apply text-xs text-red-500;
 }
+/* 
+.bottom-container {
+	@apply m-auto !important;
+} */
