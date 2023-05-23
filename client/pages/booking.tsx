@@ -8,26 +8,11 @@ import { SearchBox } from '@mapbox/search-js-react'
 import SearchLocations from './searchLocations'
 import { RideOptions } from '../components/RideOptions'
 import * as turf from '@turf/turf'
+import { addMarker, geojson } from '@/components/common/addMarker'
+import { loadTaxis } from '@/components/common/loadTaxis'
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
-
-// Function to overlay a coordinate layer on the map (ex. map pins)
-const geojson = (coords, type = 'Point') => {
-	return {
-		type: 'FeatureCollection',
-		features: [
-			{
-				type: 'Feature',
-				properties: {},
-				geometry: {
-					type: type,
-					coordinates: coords,
-				},
-			},
-		],
-	}
-}
 
 // Main function
 const Booking = () => {
@@ -62,7 +47,7 @@ const Booking = () => {
 	})
 
 	// Function to create a directions request and draws the path between 2 points
-	async function getRoute(start, end) {
+	async function getRoute(map, start, end) {
 		const query = await fetch(
 			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
 			{ method: 'GET' }
@@ -122,81 +107,31 @@ const Booking = () => {
 				setLocation(coords, 'to')
 			}
 			getRoute(
+				map,
 				map.current?.getSource('from')._data.features[0].geometry.coordinates,
 				coords
 			)
 			setShowRides(true)
 		})
 
-		loadTaxis()
+		loadTaxis(map)
 	})
-
-	// Add a location pin on the map
-	const addMarker = (coords, label, type = 'Point') => {
-		/*
-			coords	: the [longitude, latitude] to place the pin
-			label	: the layer ID (must be unique)
-		*/
-		if (!map.current?.getLayer(label)) {
-			map.current?.addLayer({
-				id: label,
-				type: 'circle',
-				source: {
-					type: 'geojson',
-					data: geojson(coords, type),
-				},
-				paint: {
-					'circle-radius': 4,
-					'circle-color':
-						label === 'from' ? '#0891b2' : label === 'to' ? '#f30' : '#000',
-				},
-			})
-			// If the label already exists, then overwrite it
-		} else {
-			map.current?.getSource(label).setData(geojson(coords))
-		}
-	}
-
-	// Loads the nearest N taxis onto the map
-	const loadTaxis = (N = 10) => {
-		fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
-			.then(function (response) {
-				return response.json()
-			})
-			.then(function (data) {
-				const coordinates = data.features[0].geometry.coordinates
-				const distances = []
-				const coord =
-					map.current?.getSource('from')._data.features[0].geometry.coordinates
-
-				coordinates.forEach(([a, b]) =>
-					distances.push([
-						Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
-						a,
-						b,
-					])
-				)
-				distances.sort()
-				for (let i = 0; i < N; i++) {
-					addMarker(distances[i].slice(1, 3), 'taxis' + i)
-				}
-			})
-	}
 
 	// Set the current or destination location ('to')
 	const setLocation = (coords, label) => {
 		if (label === 'to') {
 			// for setting destination
-			addMarker(coords, label) // add the pin
-			getRoute([lng, lat], coords) // get the path
+			addMarker(map, coords, label) // add the pin
+			getRoute(map, [lng, lat], coords) // get the path
 			setShowRides(true) // show ride options
 		} else {
 			setLng(coords[0])
 			setLat(coords[1])
-			loadTaxis()
-			addMarker(coords, label)
+			loadTaxis(map)
+			addMarker(map, coords, label)
 			if (map.current?.getLayer('to')) {
 				getRoute(
+					map,
 					coords,
 					map.current?.getSource('to')._data.features[0].geometry.coordinates
 				)
@@ -277,7 +212,9 @@ const Booking = () => {
 
 			{/* Show list of ride options */}
 			<Section>
-				{showRides === true ? <RideOptions addr={address} distance={distance}/> : null}
+				{showRides === true ? (
+					<RideOptions addr={address} distance={distance} />
+				) : null}
 			</Section>
 		</Page>
 	)

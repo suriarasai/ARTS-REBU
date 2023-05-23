@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 
 // TODO: Limit to 3 options
 // Shows options of rides to choose from
 export const RideOptions = ({ addr, distance = 0 }) => {
-	// , carType, price, time
+	const router = useRouter()
 	const [address, setAddress] = useState<Array<String>>([
 		'Unknown Street',
 		'Unknown',
@@ -46,7 +47,9 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 		])
 	}, [date, distance])
 
-	const handleSubmit = () => {}
+	const handleSubmit = () => {
+		router.push('/tracking')
+	}
 
 	return (
 		<div className='absolute bottom-0 w-11/12 bg-white pb-16 opacity-80 md:pb-4 lg:w-6/12 lg:pb-4'>
@@ -69,8 +72,8 @@ export const RideOptions = ({ addr, distance = 0 }) => {
 						<label>Confirm Details</label>
 
 						<ShowOption
-							option={options[clickedOption-1]}
-							key={options[clickedOption-1].id}
+							option={options[clickedOption - 1]}
+							key={options[clickedOption - 1].id}
 							setClickedOption={setClickedOption}
 						/>
 
