@@ -43,7 +43,7 @@ const Tracking = () => {
 	// Add starting point to the map
 	map.current?.on('load', () => {
 		map.current?.setCenter([lng, lat])
-		addMarker(map, [lng, lat], 'current') // Current location
+		// addMarker(map, [lng, lat], 'current') // Current location
 		addMarker(map, user.temp[0], 'from') // Starting location
 		addMarker(map, [lng, lat], 'to') // Destination location
 		getRoute(user.temp[0], user.temp[1], 'toDestination', '#000000')
