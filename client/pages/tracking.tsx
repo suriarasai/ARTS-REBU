@@ -1,4 +1,5 @@
 // Tracking page for post-confirmation process (ride tracking)
+// TODO: The taxiLocator tracks the closest taxi, which can change
 
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import mapboxgl from 'mapbox-gl'
@@ -16,7 +17,8 @@ const Tracking = () => {
 	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState<number>(14)
 	const { user, setUser } = useContext(UserContext)
-    const router = useRouter()
+	const router = useRouter()
+	let taxiLocator = null
 
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
@@ -48,6 +50,13 @@ const Tracking = () => {
 		loadTaxis(map, 1, function () {
 			getRoute(user.temp[0], getCoords(map, 'taxis0'), 'toUser', '#BC544B')
 		})
+
+		taxiLocator = window.setInterval(function () {
+			loadTaxis(map, 1, function () {
+				getRoute(user.temp[0], getCoords(map, 'taxis0'), 'toUser', '#BC544B')
+			})
+			console.log('Updated')
+		}, 45000)
 	})
 
 	async function getRoute(start, end, id, color) {
@@ -57,23 +66,34 @@ const Tracking = () => {
 		)
 		const json = await query.json()
 
-		map.current?.addLayer({
-			id: id,
-			type: 'line',
-			source: {
-				type: 'geojson',
-				data: geojson(json.routes[0].geometry.coordinates, 'LineString'),
-			},
-			layout: {
-				'line-join': 'round',
-				'line-cap': 'round',
-			},
-			paint: {
-				'line-color': color,
-				'line-width': 3,
-				'line-opacity': 0.75,
-			},
-		})
+		if (map.current?.getSource(id)) {
+			map.current
+				?.getSource(id)
+				.setData(geojson(json.routes[0].geometry.coordinates, 'LineString'))
+		} else {
+			map.current?.addLayer({
+				id: id,
+				type: 'line',
+				source: {
+					type: 'geojson',
+					data: geojson(json.routes[0].geometry.coordinates, 'LineString'),
+				},
+				layout: {
+					'line-join': 'round',
+					'line-cap': 'round',
+				},
+				paint: {
+					'line-color': color,
+					'line-width': 3,
+					'line-opacity': 0.75,
+				},
+			})
+		}
+	}
+
+	const handleCancel = () => {
+		window.clearInterval(taxiLocator)
+		router.push('/booking')
 	}
 
 	return (
@@ -95,13 +115,13 @@ const Tracking = () => {
 						Pickup at <b>{user.addr[0]}</b>
 					</div>
 					<div className='flex flex-wrap pt-3 pb-3'>
-						<div className='h-auto w-3/5 lg:w-3/4 md:w-3/4 text-sm'>
+						<div className='h-auto w-3/5 text-sm md:w-3/4 lg:w-3/4'>
 							<input placeholder='Pickup Notes' />
 						</div>
-						<div className='blue-button ml-2 text-center h-1/5'>
+						<div className='blue-button ml-2 h-1/5 text-center'>
 							<button>Done</button>
 						</div>
-						<div className='blue-button ml-2 text-center h-1/5'>
+						<div className='blue-button ml-2 h-1/5 text-center'>
 							{/* Done/Edit toggle */}
 							<button>Phone</button>
 						</div>
@@ -120,7 +140,12 @@ const Tracking = () => {
 						<div className='w-4/5'>
 							Car Description: <b>{'Black Honda Civic'}</b>
 						</div>
-						<button className='red-button float-right w-1/5' onClick={() => router.push('/booking')}>Cancel</button>
+						<button
+							className='red-button float-right w-1/5'
+							onClick={() => handleCancel()}
+						>
+							Cancel
+						</button>
 					</div>
 				</div>
 			</div>
