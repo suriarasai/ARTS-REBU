@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
-import { getCoords } from '@/components/common/getCoords'
+import { getCoords } from '@/components/booking/getCoords'
 import { UserContext } from '../context/UserContext'
+import { UserContextType, User } from '@/redux/types'
 
 // TODO: Limit to 3 options
 // Shows options of rides to choose from
 export const RideOptions = ({ map, addr, distance = 0 }) => {
-	const { user, setUser } = useContext(UserContext)
+	const { user, setUser } = useContext<UserContextType>(UserContext)
 	const router = useRouter()
 
 	const [address, setAddress] = useState<Array<String>>([
@@ -15,7 +16,7 @@ export const RideOptions = ({ map, addr, distance = 0 }) => {
 	])
 	const [date, setDate] = useState<Date>(new Date())
 	const [options, setOptions] = useState<Array<any>>([])
-	const [clickedOption, setClickedOption] = useState<number>()
+	const [clickedOption, setClickedOption] = useState<number | null>(null)
 
 	// Post-processing on address name to separate city and postal code
 	useEffect(() => {
@@ -53,7 +54,7 @@ export const RideOptions = ({ map, addr, distance = 0 }) => {
 
 	const handleSubmit = () => {
 		console.log([getCoords(map, 'from'), getCoords(map, 'to')])
-		setUser({...user, temp: [getCoords(map, 'from'), getCoords(map, 'to')], tripInfo: options[clickedOption - 1], addr: address})
+		setUser({...user, temp: [getCoords(map, 'from'), getCoords(map, 'to')], tripInfo: options[clickedOption! - 1], addr: address})
 		router.push('/tracking')
 	}
 

@@ -7,14 +7,15 @@ import Meta from '@/components/ui/meta'
 import '@/styles/globals.css'
 import '@/styles/maps.css'
 import { useMemo, useState } from 'react'
+import { User, UserContextType } from '@/redux/types'
 
 const App = ({ Component, pageProps }: AppProps) => {
 	/*
 		Component	: the page/component to be rendered
 		pageProps	: the props of each page/component
 	*/
-	const [user, setUser] = useState({}) // stores and updates user data
-	const userProvider = useMemo(() => ({ user, setUser }), [user, setUser]) // provider to operate on user data
+	const [user, setUser] = useState<User>({}) // stores and updates user data
+	const userProvider = useMemo<UserContextType>(() => ({ user, setUser }), [user, setUser]) // provider to operate on user data
 
 	return (
 		// Theme provider for site-wide styling (dark mode does not work)

@@ -51,7 +51,7 @@ const SignOutModal = () => {
 	const { user, setUser } = useContext(UserContext)
 
 	const handleSignOut = () => {
-		addSignOutTime(user.mobileNumber)
+		addSignOutTime(user?.mobileNumber)
 		router.push('/')
 	}
 

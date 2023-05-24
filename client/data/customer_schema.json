@@ -7,7 +7,7 @@
 	"country_code": "int",
 	"email": "string",
 	"password": "password",
-	"mobile_number": "int",
+	"mobile_number": "string",
 	"joined_date": "datetime",
 	"rating": "int",
 	"activity": {

@@ -8,13 +8,13 @@ import { UserContext } from '@/components/context/UserContext'
 
 const RewardPoints = () => {
 	const { user, setUser } = useContext(UserContext)
-	const rewardsForm = useRef(null)
+	const rewardsForm = useRef<any>(null)
 
-	const [rewardPoints, updateRewardPoints] = useState(user.rewardPoints ? user.rewardPoints : 0)
-	const [invalidInput, updateInvalidInput] = useState(false) // Validation checks on redemption input box
+	const [rewardPoints, updateRewardPoints] = useState<number>(user.rewardPoints ? user.rewardPoints : 0)
+	const [invalidInput, updateInvalidInput] = useState<boolean>(false) // Validation checks on redemption input box
 
 	const handleSubmit = (e) => {
-		const points = rewardsForm.current.points.value
+		const points: number = rewardsForm.current?.points.value
 		e.preventDefault()
 
 		// Ensures the user has the number of points they want

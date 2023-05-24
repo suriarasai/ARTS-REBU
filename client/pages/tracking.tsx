@@ -6,22 +6,21 @@ import mapboxgl from 'mapbox-gl'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
 import { useRouter } from 'next/router'
-import { addMarker, geojson } from '@/components/common/addMarker'
-import { loadTaxis } from '@/components/common/loadTaxis'
-import { getCoords } from '@/components/common/getCoords'
+import { addMarker, geojson } from '@/components/booking/addMarker'
+import { loadTaxis } from '@/components/booking/loadTaxis'
+import { getCoords } from '@/components/booking/getCoords'
 
 const Tracking = () => {
 	const mapContainer = useRef(null)
-	const map = useRef(null)
+	const map = useRef<any>(null)
 	const [lng, setLng] = useState<number>(103.7729178)
 	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState<number>(14)
 	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
-	let taxiLocator = null
+	let taxiLocator: number | null = null
 
-	mapboxgl.accessToken =
-		'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
+	mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY
 
 	useEffect(() => {
 		if (map.current) return // initialize map only once
@@ -44,16 +43,16 @@ const Tracking = () => {
 	map.current?.on('load', () => {
 		map.current?.setCenter([lng, lat])
 		// addMarker(map, [lng, lat], 'current') // Current location
-		addMarker(map, user.temp[0], 'from') // Starting location
+		addMarker(map, user.temp![0], 'from') // Starting location
 		addMarker(map, [lng, lat], 'to') // Destination location
-		getRoute(user.temp[0], user.temp[1], 'toDestination', '#000000')
+		getRoute(user.temp![0], user.temp![1], 'toDestination', '#000000')
 		loadTaxis(map, 1, function () {
-			getRoute(user.temp[0], getCoords(map, 'taxis0'), 'toUser', '#BC544B')
+			getRoute(user.temp![0], getCoords(map, 'taxis0'), 'toUser', '#BC544B')
 		})
 
 		taxiLocator = window.setInterval(function () {
 			loadTaxis(map, 1, function () {
-				getRoute(user.temp[0], getCoords(map, 'taxis0'), 'toUser', '#BC544B')
+				getRoute(user.temp![0], getCoords(map, 'taxis0'), 'toUser', '#BC544B')
 			})
 			console.log('Updated')
 		}, 45000)
@@ -92,7 +91,7 @@ const Tracking = () => {
 	}
 
 	const handleCancel = () => {
-		window.clearInterval(taxiLocator)
+		window.clearInterval(taxiLocator!)
 		router.push('/booking')
 	}
 
@@ -103,8 +102,8 @@ const Tracking = () => {
 				<div className='p-7'>
 					<div className='flex flex-initial'>
 						<label className='w-4/5 md:w-5/6'>Ride Confirmed!</label>
-						<div className='w-1/5 md:w-1/6 text-sm'>
-							{new Date(user.tripInfo.dropoff).toLocaleTimeString('en-US', {
+						<div className='w-1/5 text-sm md:w-1/6'>
+							{new Date(user.tripInfo!.dropoff).toLocaleTimeString('en-US', {
 								hour: 'numeric',
 								minute: 'numeric',
 							})}{' '}
@@ -112,7 +111,7 @@ const Tracking = () => {
 						</div>
 					</div>
 					<div className='w-full'>
-						Pickup at <b>{user.addr[0]}</b>
+						Pickup at <b>{user.addr![0]}</b>
 					</div>
 					<div className='flex flex-wrap pt-3 pb-3'>
 						<div className='h-auto w-3/5 text-sm md:w-3/4 lg:w-3/4'>

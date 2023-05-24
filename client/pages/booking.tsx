@@ -8,18 +8,17 @@ import { SearchBox } from '@mapbox/search-js-react'
 import SearchLocations from './searchLocations'
 import { RideOptions } from '../components/booking/RideOptions'
 import * as turf from '@turf/turf'
-import { addMarker, geojson } from '@/components/common/addMarker'
-import { loadTaxis } from '@/components/common/loadTaxis'
+import { addMarker, geojson } from '@/components/booking/addMarker'
+import { loadTaxis } from '@/components/booking/loadTaxis'
 import { UserContext } from '@/components/context/UserContext'
 
-mapboxgl.accessToken =
-	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY
 
 // Main function
 const Booking = () => {
 	const { user, setUser } = useContext(UserContext)
 	const mapContainer = useRef(null)
-	const map = useRef(null)
+	const map = useRef<any>(null)
 	const [lng, setLng] = useState<number>(103.7729178)
 	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState(14)
@@ -268,10 +267,10 @@ const InsertSVG = ({
 	color,
 	text,
 	d,
-	fill = null,
-	stroke = null,
-	strokeLinecap = null,
-}) => (
+	fill = '',
+	stroke = '',
+	strokeLinecap = undefined,
+}: any) => (
 	<>
 		<svg
 			viewBox='0 0 15 15'

@@ -11,8 +11,10 @@
 	"dependencies": {
 		"@hookform/resolvers": "^3.1.0",
 		"@mapbox/search-js-react": "^1.0.0-beta.16",
+		"@reduxjs/toolkit": "^1.9.5",
 		"@turf/length": "^6.5.0",
 		"@turf/turf": "^6.5.0",
+		"@types/react-redux": "^7.1.25",
 		"axios": "^1.4.0",
 		"mangodb": "^1.0.0",
 		"mapbox-gl": "^2.14.1",
@@ -22,7 +24,9 @@
 		"next-themes": "^0.2.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"react-hook-form": "^7.43.9"
+		"react-hook-form": "^7.43.9",
+		"react-redux": "^8.0.5",
+		"redux": "^4.2.1"
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.35",

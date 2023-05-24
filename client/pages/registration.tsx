@@ -41,7 +41,7 @@ const Registration = () => {
 
 	const registerUser = async (data) => {
 		const response = await api.post('/api/v1/customers/updateUser', {
-			_id: user.id,
+			_id: user?.id,
 			firstName: data.firstName,
 			lastName: data.lastName,
 			prefix: data.prefix,
