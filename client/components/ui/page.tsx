@@ -2,8 +2,8 @@
 // Used by pages where users are signed-in (grants access to navBar)
 
 import Head from 'next/head'
-import Appbar from '@/components/appbar'
-import BottomNav from '@/components/bottom-nav'
+import Appbar from '@/components/ui/appbar'
+import BottomNav from '@/components/ui/bottom-nav'
 
 interface Props {
 	title?: string

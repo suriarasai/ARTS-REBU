@@ -1,7 +1,7 @@
 // Displays user activity (ex. booked rides, reviews)
 
-import Page from '@/components/page'
-import Section from '@/components/section'
+import Page from '@/components/ui/page'
+import Section from '@/components/ui/section'
 
 const Activity = () => {
 

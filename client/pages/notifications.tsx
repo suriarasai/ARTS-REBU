@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef, useContext } from 'react'
 
-import Page from '@/components/page'
-import Section from '@/components/section'
+import Page from '@/components/ui/page'
+import Section from '@/components/ui/section'
 
 const Notifications = () => {
 

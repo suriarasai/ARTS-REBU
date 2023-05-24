@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { getCoords } from '@/components/common/getCoords'
-import { UserContext } from './context/UserContext'
+import { UserContext } from '../context/UserContext'
 
 // TODO: Limit to 3 options
 // Shows options of rides to choose from

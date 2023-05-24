@@ -8,8 +8,8 @@
 import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
-import { EmailForm } from '@/components/EmailForm'
-import AccountInformation from '@/components/AccountInformation'
+import { EmailForm } from '@/components/account/EmailForm'
+import AccountInformation from '@/components/account/AccountInformation'
 import { UserContext } from '@/components/context/UserContext'
 import api from '@/api/axiosConfig'
 

@@ -1,7 +1,7 @@
 // For viewing and modifying account information
 
 import React from 'react'
-import { MobileNumber } from '@/components/MobileNumber'
+import { MobileNumber } from '@/components/account/MobileNumber'
 
 // Main component
 const AccountInformation = ({

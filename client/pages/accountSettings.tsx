@@ -1,9 +1,9 @@
 // For viewing and modifying account information
 
 import React, { useContext, useState, useEffect } from 'react'
-import Page from '@/components/page'
-import Section from '@/components/section'
-import AccountInformation from '@/components/AccountInformation'
+import Page from '@/components/ui/page'
+import Section from '@/components/ui/section'
+import AccountInformation from '@/components/account/AccountInformation'
 import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { UserContext } from '@/components/context/UserContext'

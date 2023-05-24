@@ -1,12 +1,12 @@
 // Main hub for booking rides, calls external location API
 
 import React, { useRef, useEffect, useState, useContext } from 'react'
-import Page from '@/components/page'
-import Section from '@/components/section'
+import Page from '@/components/ui/page'
+import Section from '@/components/ui/section'
 import mapboxgl from 'mapbox-gl'
 import { SearchBox } from '@mapbox/search-js-react'
 import SearchLocations from './searchLocations'
-import { RideOptions } from '../components/RideOptions'
+import { RideOptions } from '../components/booking/RideOptions'
 import * as turf from '@turf/turf'
 import { addMarker, geojson } from '@/components/common/addMarker'
 import { loadTaxis } from '@/components/common/loadTaxis'

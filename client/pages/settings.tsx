@@ -2,8 +2,8 @@
 // TODO: Set signout to clear context
 
 import React, { useState, useContext } from 'react'
-import Page from '@/components/page'
-import Section from '@/components/section'
+import Page from '@/components/ui/page'
+import Section from '@/components/ui/section'
 import { useRouter } from 'next/router'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'

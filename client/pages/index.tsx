@@ -5,8 +5,8 @@ import React, { useContext } from 'react'
 import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
-import { MobileNumber } from '@/components/MobileNumber'
-import { EmailForm } from '@/components/EmailForm'
+import { MobileNumber } from '@/components/account/MobileNumber'
+import { EmailForm } from '@/components/account/EmailForm'
 import { UserContext } from '@/components/context/UserContext'
 
 // Main component
