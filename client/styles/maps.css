@@ -16,6 +16,30 @@
 	background-image: url('../public/images/taxi-front-view.png') !important;
 }
 
-[class$='--Input'] {
+/* [class$='--Input'] {
 	@apply mb-3 w-full rounded border border-gray-200 bg-gray-200 py-3 px-4 leading-tight text-gray-700 shadow-xl focus:bg-white focus:outline-none !important
+} */
+
+[class$='--ResultsAttribution'] {
+	@apply hidden;
+}
+
+[class$='--Suggestion'] {
+	@apply bg-zinc-100 border-none shadow-none;
+	@apply lg:w-full md:w-full hover:bg-white !important;
+}
+
+[class$='--Results'] {
+	@apply border-0;
+	border-radius: 0;
+	box-shadow: none !important;
+	transition: none;
+}
+
+[class$='--SuggestionName'] {
+	@apply font-medium pb-1 !important;
+}
+
+[class$='--SuggestionDesc'] {
+	@apply text-xs pb-3;
 }

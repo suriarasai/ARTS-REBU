@@ -103,7 +103,7 @@ const Tracking = () => {
 				<div className='p-7'>
 					<div className='flex flex-initial'>
 						<label className='w-4/5 md:w-5/6'>Ride Confirmed!</label>
-						<div className='w-1/5 md:w-1/6'>
+						<div className='w-1/5 md:w-1/6 text-sm'>
 							{new Date(user.tripInfo.dropoff).toLocaleTimeString('en-US', {
 								hour: 'numeric',
 								minute: 'numeric',

@@ -168,8 +168,46 @@ const Booking = () => {
 
 			{/* Search Bar input fields */}
 			<Section>
-				<div className='absolute w-11/12 lg:w-6/12'>
-					<div className={`${toLocation ? 'hidden' : null}`}>
+				<div className='absolute flex w-11/12 flex-wrap lg:w-6/12'>
+					<div className={`${toLocation ? 'hidden' : null} w-2/12 pt-1 pr-3`}>
+						{!searchQueryVisible ? (
+							<div className='flex h-8 flex-wrap rounded-full bg-white p-2'>
+								<svg
+									viewBox='0 0 15 15'
+									fill='none'
+									xmlns='http://www.w3.org/2000/svg'
+									width='15'
+									height='15'
+									color='#30D5C8'
+									className='w-1/3'
+								>
+									<path
+										d='M7.5.5v14m7-7.005H.5m13 0a6.006 6.006 0 01-6 6.005c-3.313 0-6-2.694-6-6.005a5.999 5.999 0 016-5.996 6 6 0 016 5.996z'
+										stroke='currentColor'
+										strokeLinecap='square'
+									></path>
+								</svg>
+								<p className='-ml-1 w-1/3 pl-2 text-center text-xs'>From</p>
+							</div>
+						) : (
+							<button
+								className='red-button mt-1 text-sm'
+								onClick={() => {
+									setSearchQueryVisible(false), setFromLocation(false)
+								}}
+							>
+								Cancel
+							</button>
+						)}
+					</div>
+					<div
+						className={`${toLocation ? 'hidden' : null} w-10/12`}
+						onFocus={() => {
+							setSearchQueryVisible(true),
+								setFromLocation(true),
+								setShowRides(false)
+						}}
+					>
 						<SearchBox
 							accessToken={mapboxgl.accessToken}
 							options={{ language: 'en', country: 'SG' }}
@@ -179,15 +217,49 @@ const Booking = () => {
 								setLocation(e.features[0].geometry.coordinates, 'from')
 							}
 							onChange={(e) => setShowRides(false)}
-							// onFocus={() => {
-							// 	setSearchQueryVisible(true), setFromLocation(true)
-							// }}
-							// onBlur={() => {
-							// 	setSearchQueryVisible(false), setFromLocation(false)
-							// }}
+							popoverOptions={{ offset: 110 }}
 						/>
 					</div>
-					<div className={`map-search-box ${fromLocation ? 'hidden' : null}`}>
+
+					<div className={`${fromLocation ? 'hidden' : null} w-2/12 pt-1 pr-3`}>
+						{!searchQueryVisible ? (
+							<div className='flex h-8 flex-wrap rounded-full bg-white p-2'>
+								<svg
+									viewBox='0 0 15 15'
+									fill='none'
+									xmlns='http://www.w3.org/2000/svg'
+									width='15'
+									height='15'
+									color='#8B0000'
+									className='w-1/3'
+								>
+									<path
+										d='M12.5 6.5l.224.447a.5.5 0 00.033-.876L12.5 6.5zm-10-6l.257-.429A.5.5 0 002 .5h.5zm10.257 5.571l-10-6-.514.858 10 6 .514-.858zM2 .5v11h1V.5H2zm.724 11.447l10-5-.448-.894-10 5 .448.894zM3 15v-3.5H2V15h1z'
+										fill='currentColor'
+									></path>
+								</svg>
+								<p className='-ml-1 w-1/3 pl-2 text-center text-xs'>To</p>
+							</div>
+						) : (
+							<button
+								className='red-button mt-1 text-sm'
+								onClick={() => {
+									setSearchQueryVisible(false)
+									setToLocation(false)
+								}}
+							>
+								Cancel
+							</button>
+						)}
+					</div>
+					<div
+						className={`${fromLocation ? 'hidden' : null} w-10/12`}
+						onFocus={() => {
+							setSearchQueryVisible(true),
+								setToLocation(true),
+								setShowRides(false)
+						}}
+					>
 						{/* TODO: Placeholder values? */}
 						<SearchBox
 							accessToken={mapboxgl.accessToken}
@@ -198,13 +270,7 @@ const Booking = () => {
 								setLocation(e.features[0].geometry.coordinates, 'to')
 							}
 							onChange={(e) => setShowRides(false)}
-							// TODO: Fix the below code to render the search UI
-							// onFocus={() => {
-							// 	setSearchQueryVisible(true), setToLocation(true)
-							// }}
-							// onBlur={() => {
-							// 	setSearchQueryVisible(false), setToLocation(false)
-							// }}
+							popoverOptions={{ offset: 110 }}
 						/>
 					</div>
 				</div>
@@ -216,7 +282,7 @@ const Booking = () => {
 			{/* Show list of ride options */}
 			<Section>
 				{showRides === true ? (
-						<RideOptions map={map} addr={address} distance={distance} />
+					<RideOptions map={map} addr={address} distance={distance} />
 				) : null}
 			</Section>
 		</Page>
