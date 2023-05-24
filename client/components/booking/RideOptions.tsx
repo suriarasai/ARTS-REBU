@@ -3,10 +3,11 @@ import { useRouter } from 'next/router'
 import { getCoords } from '@/components/booking/getCoords'
 import { UserContext } from '../context/UserContext'
 import { UserContextType, User } from '@/redux/types'
+import { showOptionInterface, optionsInterface } from '@/redux/types'
 
 // TODO: Limit to 3 options
 // Shows options of rides to choose from
-export const RideOptions = ({ map, addr, distance = 0 }) => {
+export const RideOptions = ({ map, addr, distance = 0 }: optionsInterface) => {
 	const { user, setUser } = useContext<UserContextType>(UserContext)
 	const router = useRouter()
 
@@ -54,7 +55,12 @@ export const RideOptions = ({ map, addr, distance = 0 }) => {
 
 	const handleSubmit = () => {
 		console.log([getCoords(map, 'from'), getCoords(map, 'to')])
-		setUser({...user, temp: [getCoords(map, 'from'), getCoords(map, 'to')], tripInfo: options[clickedOption! - 1], addr: address})
+		setUser({
+			...user,
+			temp: [getCoords(map, 'from'), getCoords(map, 'to')],
+			tripInfo: options[clickedOption! - 1],
+			addr: address,
+		})
 		router.push('/tracking')
 	}
 
@@ -113,8 +119,9 @@ export const RideOptions = ({ map, addr, distance = 0 }) => {
 		</div>
 	)
 }
+
 // helper component to show rides
-const ShowOption = ({ option, setClickedOption }) => (
+const ShowOption = ({ option, setClickedOption }: showOptionInterface) => (
 	/*
 		option				: the ride option
 		setClickedOption	: tracks which ride option was clicked 

@@ -8,6 +8,7 @@ import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { UserContext } from '@/components/context/UserContext'
 import { useRouter } from 'next/router'
+import { User } from '@/redux/types'
 
 const AccountSettings = () => {
 	const router = useRouter()
@@ -19,17 +20,17 @@ const AccountSettings = () => {
 		formState: { errors: errors },
 	} = useForm()
 
-	const onSubmit = (data) => {
+	const onSubmit = (data: User) => {
 		updateUser(data)
 	}
 
-	const updateUser = async (data) => {
+	const updateUser = async (data: User) => {
 		const response = await api.post('/api/v1/customers/updateUser', {
 			_id: user.id,
 			firstName: data.firstName,
 			lastName: data.lastName,
 			prefix: data.prefix,
-			birthdate: data.birthdate.replace(/\//g, '-'),
+			birthdate: data.birthdate!.replace(/\//g, '-'),
 			email: data.email,
 			password: data.password,
 			countryCode: data.countryCode,

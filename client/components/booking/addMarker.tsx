@@ -1,5 +1,5 @@
 // Add a location pin on the map
-export const addMarker = (map, coords, label, type = 'Point') => {
+export const addMarker = (map: mapboxgl.Map | any, coords: Array<number>, label: string, type = 'Point') => {
 	/*
 		coords	: the [longitude, latitude] to place the pin
 		label	: the layer ID (must be unique)
@@ -25,7 +25,7 @@ export const addMarker = (map, coords, label, type = 'Point') => {
 
 
 // Function to overlay a coordinate layer on the map (ex. map pins)
-export const geojson = (coords, type = 'Point') => {
+export const geojson = (coords: Array<number>, type = 'Point') => {
 	return {
 		type: 'FeatureCollection',
 		features: [

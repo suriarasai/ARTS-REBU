@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState, useContext } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
-import mapboxgl from 'mapbox-gl'
+import mapboxgl, { GeoJSONSource } from 'mapbox-gl'
 import { SearchBox } from '@mapbox/search-js-react'
 import SearchLocations from './searchLocations'
 import { RideOptions } from '../components/booking/RideOptions'
@@ -11,14 +11,15 @@ import * as turf from '@turf/turf'
 import { addMarker, geojson } from '@/components/booking/addMarker'
 import { loadTaxis } from '@/components/booking/loadTaxis'
 import { UserContext } from '@/components/context/UserContext'
+import { SearchFieldInterface } from '@/redux/types'
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string
 
 // Main function
 const Booking = () => {
 	const { user, setUser } = useContext(UserContext)
 	const mapContainer = useRef(null)
-	const map = useRef<any>(null)
+	const map = useRef<mapboxgl.Map | any>(null)
 	const [lng, setLng] = useState<number>(103.7729178)
 	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState(14)
@@ -41,14 +42,14 @@ const Booking = () => {
 
 		// Creates the map object
 		map.current = new mapboxgl.Map({
-			container: mapContainer.current,
+			container: mapContainer.current!,
 			style: 'mapbox://styles/issv374/clhymkicc003e01rbarxs6ryv',
 			zoom: zoom,
 		})
 	})
 
 	// Function to create a directions request and draws the path between 2 points
-	async function getRoute(map, start, end) {
+	async function getRoute(map: mapboxgl.Map | any, start: Array<number>, end: Array<number>) {
 		const query = await fetch(
 			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
 			{ method: 'GET' }
@@ -98,7 +99,7 @@ const Booking = () => {
 		map.current?.setCenter([lng, lat])
 
 		// Adds a marker where the user clicks on the map
-		map.current?.on('click', (event) => {
+		map.current?.on('click', (event: any) => {
 			// TODO: Set clicked location to be the SearchBox input
 			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key])
 
@@ -119,7 +120,7 @@ const Booking = () => {
 	})
 
 	// Set the current or destination location ('to')
-	const setLocation = (coords, label) => {
+	const setLocation = (coords: Array<number>, label: string): void => {
 		if (label === 'to') {
 			// for setting destination
 			addMarker(map, coords, label) // add the pin
@@ -203,7 +204,12 @@ const Booking = () => {
 	)
 }
 
-const SearchField = (props) => (
+interface setLocationInterface {
+	coords: Array<number>
+	label: string
+}
+
+const SearchField = (props: SearchFieldInterface) => (
 	<>
 		<div className={`${props.fromLocation ? 'hidden' : null} w-2/12 pt-1 pr-3`}>
 			{!props.searchQueryVisible ? (

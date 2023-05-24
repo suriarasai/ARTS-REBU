@@ -72,7 +72,7 @@ const SignInForm = ({
 
 	const { user, setUser } = useContext(UserContext)
 
-	const checkIfUserExists = async (mobileNumber, countryCode) => {
+	const checkIfUserExists = async (mobileNumber: string, countryCode: number) => {
 		const response = await api.post('/api/v1/customers/exists', {
 			mobileNumber: countryCode + " " + mobileNumber,
 		})
@@ -144,7 +144,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 	const { user, setUser } = useContext(UserContext)
 	const [signInError, setSignInError] = React.useState(false)
 
-	const validateCredentials = async (email, password) => {
+	const validateCredentials = async (email: string, password: string) => {
 		const response = await api.post('/api/v1/customers/validateCredentials', {
 			email: email,
 			password: password,
@@ -209,7 +209,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 		event.preventDefault()
 	}
 
-	const continueButton = (e) => {
+	const continueButton = (e: React.MouseEvent<HTMLButtonElement>): void => {
 		e.preventDefault()
 		console.log(newUser)
 		router.push(newUser ? '/registration' : '/booking')

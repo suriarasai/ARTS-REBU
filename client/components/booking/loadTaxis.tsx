@@ -1,7 +1,7 @@
 import { addMarker } from '@/components/booking/addMarker'
 
 // Loads the nearest N taxis onto the map
-export const loadTaxis = (map, N = 10, _callback = () => {}) => {
+export const loadTaxis = (map: mapboxgl.Map | any, N = 10, _callback = () => {}) => {
 	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
 		.then(function (response) {
 			return response.json()

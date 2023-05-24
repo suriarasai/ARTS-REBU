@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { MobileNumber } from '@/components/account/MobileNumber'
+import { ProfileInterface } from '@/redux/types'
 
 // Main component
 const AccountInformation = ({
@@ -9,7 +10,7 @@ const AccountInformation = ({
 	errors,
 	newUser = false,
 	populateData = {},
-}) => {
+}: ProfileInterface) => {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks

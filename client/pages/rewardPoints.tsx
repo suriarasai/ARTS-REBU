@@ -13,13 +13,13 @@ const RewardPoints = () => {
 	const [rewardPoints, updateRewardPoints] = useState<number>(user.rewardPoints ? user.rewardPoints : 0)
 	const [invalidInput, updateInvalidInput] = useState<boolean>(false) // Validation checks on redemption input box
 
-	const handleSubmit = (e) => {
+	const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		const points: number = rewardsForm.current?.points.value
 		e.preventDefault()
 
 		// Ensures the user has the number of points they want
 		if (rewardPoints - points >= 0 && points > 0) {
-			rewardPointsAPI(user.mobileNumber, rewardPoints - points)
+			rewardPointsAPI(user.mobileNumber!, rewardPoints - points)
 			setUser({...user, rewardPoints: rewardPoints - points})
 			updateRewardPoints(rewardPoints - points)
 		} else {
@@ -27,7 +27,7 @@ const RewardPoints = () => {
 		}
 	}
 
-	const rewardPointsAPI = async (mobileNumber, newCount) => {
+	const rewardPointsAPI = async (mobileNumber: string, newCount: number) => {
 		await api.post('/api/v1/customers/updateRewardPoints', {
 			mobileNumber: mobileNumber,
 			newCount: newCount

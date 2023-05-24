@@ -1,5 +1,6 @@
 // Form elements for adding/editing a country code and mobile number
 
+import { ProfileInterface } from '@/redux/types'
 import React from 'react'
 
 export const MobileNumber = ({
@@ -7,7 +8,7 @@ export const MobileNumber = ({
 	errors,
 	newUser = true,
 	populateData = {},
-}) => {
+}: ProfileInterface) => {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks

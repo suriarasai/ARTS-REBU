@@ -20,7 +20,7 @@ const Tracking = () => {
 	const router = useRouter()
 	let taxiLocator: number | null = null
 
-	mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY
+	mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string
 
 	useEffect(() => {
 		if (map.current) return // initialize map only once
@@ -33,7 +33,7 @@ const Tracking = () => {
 
 		// Creates the map object
 		map.current = new mapboxgl.Map({
-			container: mapContainer.current,
+			container: mapContainer.current!,
 			style: 'mapbox://styles/issv374/clhymkicc003e01rbarxs6ryv',
 			zoom: zoom,
 		})
@@ -58,7 +58,7 @@ const Tracking = () => {
 		}, 45000)
 	})
 
-	async function getRoute(start, end, id, color) {
+	async function getRoute(start: Array<number>, end: Array<number>, id: string, color: string) {
 		const query = await fetch(
 			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
 			{ method: 'GET' }

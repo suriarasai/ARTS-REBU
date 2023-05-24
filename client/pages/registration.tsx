@@ -12,6 +12,7 @@ import { EmailForm } from '@/components/account/EmailForm'
 import AccountInformation from '@/components/account/AccountInformation'
 import { UserContext } from '@/components/context/UserContext'
 import api from '@/api/axiosConfig'
+import { User } from '@/redux/types'
 
 const Registration = () => {
 	const router = useRouter()
@@ -31,21 +32,21 @@ const Registration = () => {
 		formState: { errors: errorsProfile },
 	}: any = useForm()
 
-	const onSubmitEmail = (data) => {
+	const onSubmitEmail = (data: User) => {
 		showNextStep(true)
 		updateFormData(data)
 	}
-	const onSubmitProfile = (data) => {
+	const onSubmitProfile = (data: User) => {
 		registerUser({ ...formData, ...data })
 	}
 
-	const registerUser = async (data) => {
+	const registerUser = async (data: User) => {
 		const response = await api.post('/api/v1/customers/updateUser', {
 			_id: user?.id,
 			firstName: data.firstName,
 			lastName: data.lastName,
 			prefix: data.prefix,
-			birthdate: data.birthdate.replace(/\//g, "-"),
+			birthdate: data.birthdate!.replace(/\//g, "-"),
 			email: data.email,
 			password: data.password,
 		})
