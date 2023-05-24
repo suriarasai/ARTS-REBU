@@ -11,7 +11,6 @@ import * as turf from '@turf/turf'
 import { addMarker, geojson } from '@/components/common/addMarker'
 import { loadTaxis } from '@/components/common/loadTaxis'
 import { UserContext } from '@/components/context/UserContext'
-import { getCoords } from '@/components/common/getCoords'
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoiaXNzdjM3NCIsImEiOiJjbGhpdnRwbnAwYzA5M2pwNTN3ZzE1czk3In0.tfjsg4-ZXDxsMDuoyu_-SQ'
@@ -169,117 +168,33 @@ const Booking = () => {
 			{/* Search Bar input fields */}
 			<Section>
 				<div className='absolute flex w-11/12 flex-wrap lg:w-6/12'>
-					<div className={`${toLocation ? 'hidden' : null} w-2/12 pt-1 pr-3`}>
-						{!searchQueryVisible ? (
-							<div className='flex h-8 flex-wrap rounded-full bg-white p-2'>
-								<svg
-									viewBox='0 0 15 15'
-									fill='none'
-									xmlns='http://www.w3.org/2000/svg'
-									width='15'
-									height='15'
-									color='#30D5C8'
-									className='w-1/3'
-								>
-									<path
-										d='M7.5.5v14m7-7.005H.5m13 0a6.006 6.006 0 01-6 6.005c-3.313 0-6-2.694-6-6.005a5.999 5.999 0 016-5.996 6 6 0 016 5.996z'
-										stroke='currentColor'
-										strokeLinecap='square'
-									></path>
-								</svg>
-								<p className='-ml-1 w-1/3 pl-2 text-center text-xs'>From</p>
-							</div>
-						) : (
-							<button
-								className='red-button mt-1 text-sm'
-								onClick={() => {
-									setSearchQueryVisible(false), setFromLocation(false)
-								}}
-							>
-								Cancel
-							</button>
-						)}
-					</div>
-					<div
-						className={`${toLocation ? 'hidden' : null} w-10/12`}
-						onFocus={() => {
-							setSearchQueryVisible(true),
-								setFromLocation(true),
-								setShowRides(false)
-						}}
-					>
-						<SearchBox
-							accessToken={mapboxgl.accessToken}
-							options={{ language: 'en', country: 'SG' }}
-							value='Your location'
-							map={map.current}
-							onRetrieve={(e) =>
-								setLocation(e.features[0].geometry.coordinates, 'from')
-							}
-							onChange={(e) => setShowRides(false)}
-							popoverOptions={{ offset: 110 }}
-						/>
-					</div>
-
-					<div className={`${fromLocation ? 'hidden' : null} w-2/12 pt-1 pr-3`}>
-						{!searchQueryVisible ? (
-							<div className='flex h-8 flex-wrap rounded-full bg-white p-2'>
-								<svg
-									viewBox='0 0 15 15'
-									fill='none'
-									xmlns='http://www.w3.org/2000/svg'
-									width='15'
-									height='15'
-									color='#8B0000'
-									className='w-1/3'
-								>
-									<path
-										d='M12.5 6.5l.224.447a.5.5 0 00.033-.876L12.5 6.5zm-10-6l.257-.429A.5.5 0 002 .5h.5zm10.257 5.571l-10-6-.514.858 10 6 .514-.858zM2 .5v11h1V.5H2zm.724 11.447l10-5-.448-.894-10 5 .448.894zM3 15v-3.5H2V15h1z'
-										fill='currentColor'
-									></path>
-								</svg>
-								<p className='-ml-1 w-1/3 pl-2 text-center text-xs'>To</p>
-							</div>
-						) : (
-							<button
-								className='red-button mt-1 text-sm'
-								onClick={() => {
-									setSearchQueryVisible(false)
-									setToLocation(false)
-								}}
-							>
-								Cancel
-							</button>
-						)}
-					</div>
-					<div
-						className={`${fromLocation ? 'hidden' : null} w-10/12`}
-						onFocus={() => {
-							setSearchQueryVisible(true),
-								setToLocation(true),
-								setShowRides(false)
-						}}
-					>
-						{/* TODO: Placeholder values? */}
-						<SearchBox
-							accessToken={mapboxgl.accessToken}
-							options={{ language: 'en', country: 'SG' }}
-							value='Choose a destination'
-							map={map.current}
-							onRetrieve={(e) =>
-								setLocation(e.features[0].geometry.coordinates, 'to')
-							}
-							onChange={(e) => setShowRides(false)}
-							popoverOptions={{ offset: 110 }}
-						/>
-					</div>
+					<SearchField
+						setLocation={setLocation}
+						setSearchQueryVisible={setSearchQueryVisible}
+						setToLocation={setFromLocation}
+						setShowRides={setShowRides}
+						searchQueryVisible={searchQueryVisible}
+						fromLocation={toLocation}
+						type='from'
+						map={map}
+					/>
+					<SearchField
+						setLocation={setLocation}
+						setSearchQueryVisible={setSearchQueryVisible}
+						setToLocation={setToLocation}
+						setShowRides={setShowRides}
+						searchQueryVisible={searchQueryVisible}
+						fromLocation={fromLocation}
+						type='to'
+						map={map}
+					/>
 				</div>
 			</Section>
 
-			{/* Show search UI on click */}
+			{/* Show search UI upon clicking the searchboxes*/}
 			<Section>{searchQueryVisible ? <SearchLocations /> : null}</Section>
 
-			{/* Show list of ride options */}
+			{/* Show list of ride options upon selecting a location */}
 			<Section>
 				{showRides === true ? (
 					<RideOptions map={map} addr={address} distance={distance} />
@@ -288,5 +203,94 @@ const Booking = () => {
 		</Page>
 	)
 }
+
+const SearchField = (props) => (
+	<>
+		<div className={`${props.fromLocation ? 'hidden' : null} w-2/12 pt-1 pr-3`}>
+			{!props.searchQueryVisible ? (
+				<div className='flex h-8 flex-wrap rounded-full bg-white p-2'>
+					{props.type === 'from' ? (
+						<InsertSVG
+							color='#30D5C8'
+							text='From'
+							stroke='currentColor'
+							strokeLinecap='square'
+							d='M7.5.5v14m7-7.005H.5m13 0a6.006 6.006 0 01-6 6.005c-3.313 0-6-2.694-6-6.005a5.999 5.999 0 016-5.996 6 6 0 016 5.996z'
+						/>
+					) : (
+						<InsertSVG
+							color='#8B0000'
+							text='To'
+							fill='currentColor'
+							d='M12.5 6.5l.224.447a.5.5 0 00.033-.876L12.5 6.5zm-10-6l.257-.429A.5.5 0 002 .5h.5zm10.257 5.571l-10-6-.514.858 10 6 .514-.858zM2 .5v11h1V.5H2zm.724 11.447l10-5-.448-.894-10 5 .448.894zM3 15v-3.5H2V15h1z'
+						/>
+					)}
+				</div>
+			) : (
+				<button
+					className='red-button mt-1 text-sm'
+					onClick={() => {
+						props.setSearchQueryVisible(false)
+						props.setToLocation(false)
+					}}
+				>
+					Cancel
+				</button>
+			)}
+		</div>
+		<div
+			className={`${props.fromLocation ? 'hidden' : null} w-10/12`}
+			onFocus={() => {
+				props.setSearchQueryVisible(true),
+					props.setToLocation(true),
+					props.setShowRides(false)
+			}}
+		>
+			{/* TODO: Placeholder values? */}
+			<SearchBox
+				accessToken={mapboxgl.accessToken}
+				options={{ language: 'en', country: 'SG' }}
+				value={props.type === 'to' ? 'Choose a destination' : 'Your location'}
+				map={props.map.current}
+				onRetrieve={(e) => {
+					props.setLocation(e.features[0].geometry.coordinates, 'to')
+					props.setSearchQueryVisible(false)
+					props.setToLocation(false)
+				}}
+				onChange={(e) => props.setShowRides(false)}
+				popoverOptions={{ offset: 110 }}
+			/>
+		</div>
+	</>
+)
+
+const InsertSVG = ({
+	color,
+	text,
+	d,
+	fill = null,
+	stroke = null,
+	strokeLinecap = null,
+}) => (
+	<>
+		<svg
+			viewBox='0 0 15 15'
+			fill='none'
+			xmlns='http://www.w3.org/2000/svg'
+			width='15'
+			height='15'
+			color={color}
+			className='w-1/3'
+		>
+			<path
+				d={d}
+				fill={fill}
+				stroke={stroke}
+				strokeLinecap={strokeLinecap}
+			></path>
+		</svg>
+		<p className='-ml-1 w-1/3 pl-2 text-center text-xs'>{text}</p>
+	</>
+)
 
 export default Booking
