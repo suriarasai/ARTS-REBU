@@ -2,7 +2,7 @@
 // TODO: Forgot email/password?
 
 import { useRouter } from 'next/router'
-import { EmailErrors, EmailInterface } from '@/redux/types'
+import { EmailInterface } from '@/redux/types'
 
 export function EmailForm({
 	register,

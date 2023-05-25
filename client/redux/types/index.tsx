@@ -1,4 +1,4 @@
-import {UseFormRegister, FieldValues } from 'react-hook-form'
+import {UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form'
 
 // Context provider
 export type UserContextType = {
@@ -66,25 +66,25 @@ export interface SearchFieldInterface {
 // EmailForm
 export interface EmailInterface {
 	register: UseFormRegister<FieldValues>
-	errors: Errors
+	errors: FieldErrors<FieldValues>
 	existingUser?: boolean
 	signInError?: boolean
 }
 
 // General errors: Email, Mobile, AccountInformation
 export interface Errors {
-    mobileNumber: string
-    firstName: string
-    lastName: string
-    email: string
-    password: string
-    birthdate: string
+    mobileNumber?: string
+    firstName?: string
+    lastName?: string
+    email?: string
+    password?: string
+    birthdate?: string
 }
 
 // AccountInformation
 export interface ProfileInterface {
     register: UseFormRegister<FieldValues>
-    errors: Errors
+    errors: FieldErrors<FieldValues>
     newUser?: boolean
     populateData?: User
 }
