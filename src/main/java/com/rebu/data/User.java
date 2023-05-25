@@ -13,9 +13,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Document(collection = "customers")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class User {
     // TODO: Date objects
     @Id
@@ -31,10 +31,10 @@ public class User {
     private String joinedDate = LocalDate.now().toString();
     private Integer rating;
     private Integer rewardPoints = 0;
-    private List<String> favoriteLocations = new ArrayList<String>();
+    private List<String> favoriteLocations = new ArrayList<String>(); // merge into saved locations?
     private Activity activity = new Activity();
     private Saved_Locations savedLocations = new Saved_Locations();
-    // private Reward_History rewardHistory = new Reward_History();
+    private List<Reward_History> rewardHistory = new ArrayList<Reward_History>();
     private List<Reviews_About_Customer> reviewsAboutCustomer = new ArrayList<Reviews_About_Customer>();
     private List<Reviews_From_Customer> reviewsFromCustomer = new ArrayList<Reviews_From_Customer>();
 
@@ -47,30 +47,23 @@ public class User {
         return this._id.toString();
     }
 
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public void setHome(String home) {
+    public void setHome(List<Float> home) {
         this.savedLocations.setHome(home);
     }
 
-    public void setWork(String work) {
-        this.savedLocations.setHome(work);
+    public void setWork(List<Float> work) {
+        this.savedLocations.setWork(work);
     }
 
     public void addSignInTime() {
         this.activity.appendSignInTime();
     }
 
-    // public void addRewardHistory(Integer points, Integer totalPoints) {
-        // Reward_History entry = new Reward_History(points, totalPoints);
-        // this.rewardHistory.addEntry(entry);
-    // }
+    private void addRewardHistory(Integer points) {
+        Reward_History rewardEntry = new Reward_History();
+        rewardEntry.setEntry(points, this.rewardPoints - points);
+        this.rewardHistory.add(rewardEntry);
+    }
 
     public void addSignOutTime() {
         this.activity.appendSignOutTime();
@@ -78,6 +71,7 @@ public class User {
 
     public void updateRewardPoints(Integer newCount) {
         this.rewardPoints = newCount;
+        this.addRewardHistory(newCount);
     }
 
     public List<String> getSignInTimes() {

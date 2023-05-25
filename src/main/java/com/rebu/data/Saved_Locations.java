@@ -1,5 +1,7 @@
 package com.rebu.data;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -9,11 +11,17 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Saved_Locations {
-    private String home;
-    private String work;
+    private List<Float> home;
+    private List<Float> work;
 
     public Saved_Locations() {
-        this.home = null;
-        this.work = null;
+    }
+
+    public void setHome(List<Float> newHome) {
+        this.home = newHome;
+    }
+
+    public void setWork(List<Float> newWork) {
+        this.work = newWork;
     }
 }

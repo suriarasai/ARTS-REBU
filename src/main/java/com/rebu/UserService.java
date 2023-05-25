@@ -2,6 +2,8 @@
 
 package com.rebu;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -142,18 +144,16 @@ public class UserService {
     }
 
     // Updates reward points by the given number
-    public String updateRewardPoints(String mobileNumber, String newCount) {
+    public List<Reward_History> updateRewardPoints(String mobileNumber, String newCount) {
         Integer points = Integer.parseInt(newCount);
-
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         user.updateRewardPoints(points);
-        // user.addRewardHistory(points, user.getRewardPoints() - points);
         userRepository.save(user);
-        return "Done";
+        return user.getRewardHistory();
     }
 
     // Sets Home location
-    public String setHome(String mobileNumber, String home) {
+    public String setHome(String mobileNumber, ArrayList<Float> home) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         user.setHome(home);
         userRepository.save(user);
@@ -161,7 +161,7 @@ public class UserService {
     }
 
     // Sets Work location
-    public String setWork(String mobileNumber, String work) {
+    public String setWork(String mobileNumber, ArrayList<Float> work) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
         user.setWork(work);
         userRepository.save(user);

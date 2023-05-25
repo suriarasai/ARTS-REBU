@@ -2,6 +2,7 @@
 
 package com.rebu;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rebu.data.Reward_History;
 import com.rebu.data.User;
+import com.rebu.data.interfaces.LocationInterface;
 
 @RestController
 @RequestMapping("/api/v1/customers") // Access DB through this URL
@@ -118,25 +121,25 @@ public class UserController {
 
     // Updates reward points by the given number
     @PostMapping("/updateRewardPoints")
-    public ResponseEntity<String> updateRewardPoints(@RequestBody Map<String, String> payload) {
-        return new ResponseEntity<String>(
+    public ResponseEntity<List<Reward_History>> updateRewardPoints(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<List<Reward_History>>(
                 userService.updateRewardPoints(payload.get("mobileNumber"), payload.get("newCount")),
                 HttpStatus.OK);
     }
 
     // Sets the home location to a coordinate pair [lat, lng]
     @PostMapping("/setHome")
-    public ResponseEntity<String> setHome(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> setHome(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.setHome(payload.get("mobileNumber"), payload.get("home")),
+                userService.setHome(payload.getMobileNumber(), payload.getHome()),
                 HttpStatus.OK);
     }
 
     // Sets the home location to a coordinate pair [lat, lng]
     @PostMapping("/setWork")
-    public ResponseEntity<String> setWork(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> setWork(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.setHome(payload.get("mobileNumber"), payload.get("work")),
+                userService.setWork(payload.getMobileNumber(), payload.getWork()),
                 HttpStatus.OK);
     }
 }

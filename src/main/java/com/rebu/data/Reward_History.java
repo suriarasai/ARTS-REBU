@@ -11,12 +11,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Reward_History {
-    private String date;
+    private String date = LocalDate.now().toString();
     private Integer points;
     private Integer totalPoints;
 
-    public Reward_History(Integer points, Integer totalPoints) {
-        this.date = LocalDate.now().toString();
+    public Reward_History() {}
+
+    public void setEntry(Integer points, Integer totalPoints) {
         this.points = points;
         this.totalPoints = totalPoints;
     }
