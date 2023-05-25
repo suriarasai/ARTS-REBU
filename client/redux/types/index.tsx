@@ -1,35 +1,45 @@
-import {UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form'
+import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form'
 
 // Context provider
 export type UserContextType = {
-    user: User,
-    setUser: React.Dispatch<React.SetStateAction<User>>
+	user: User
+	setUser: React.Dispatch<React.SetStateAction<User>>
 }
 
 // User data schema
 export type User = {
-    id?: number,
-    firstName?: string,
-    lastName?: string,
-    birthdate?: string,
-    prefix?: string,
-    countryCode?: number,
-    email?: string,
-    password?: string,
-    mobileNumber?: string,
-    joinedDate?: string,
-    rating?: number,
-    activity?: any,
-    savedLocations?: Array<any>,
-    favoriteLocations?: Array<string>,
-    rewardPoints?: number,
-    rewardHistory?: Array<any>,
-    reviewsAboutCustomer?: Array<any>,
-    reviewsFromCustomer?: Array<any>,
+	id?: number
+	firstName?: string
+	lastName?: string
+	birthdate?: string
+	prefix?: string
+	countryCode?: number
+	email?: string
+	password?: string
+	mobileNumber?: string
+	joinedDate?: string
+	rating?: number
+	activity?: any
+	savedLocations?: SavedLocation
+	favoriteLocations?: Array<FavoriteLocation>
+	rewardPoints?: number
+	rewardHistory?: Array<any>
+	reviewsAboutCustomer?: Array<any>
+	reviewsFromCustomer?: Array<any>
 
-    temp?: Array<any>,
-    tripInfo?: any,
-    addr?: String[]
+	temp?: Array<any>
+	tripInfo?: any
+	addr?: String[]
+}
+
+interface SavedLocation {
+	work?: Array<number>
+	home?: Array<number>
+}
+interface FavoriteLocation {
+	name: string
+	address: string
+	coordinates: Array<number>
 }
 
 // Booking
@@ -61,6 +71,17 @@ export interface SearchFieldInterface {
 	setSearchQueryVisible: React.Dispatch<React.SetStateAction<boolean>>
 	setShowRides: React.Dispatch<React.SetStateAction<boolean>>
 	setLocation: Function
+	setToAddress: React.Dispatch<React.SetStateAction<String>>
+	toAddress: string
+}
+
+export interface SearchLocationInterface {
+	user: User
+	type: string
+	setSearchQueryVisible:React.Dispatch<React.SetStateAction<boolean>>
+	setToLocation:React.Dispatch<React.SetStateAction<boolean>>
+	setFromLocation:React.Dispatch<React.SetStateAction<boolean>>
+	callback: Function
 }
 
 // EmailForm
@@ -73,25 +94,25 @@ export interface EmailInterface {
 
 // General errors: Email, Mobile, AccountInformation
 export interface Errors {
-    mobileNumber?: string
-    firstName?: string
-    lastName?: string
-    email?: string
-    password?: string
-    birthdate?: string
+	mobileNumber?: string
+	firstName?: string
+	lastName?: string
+	email?: string
+	password?: string
+	birthdate?: string
 }
 
 // AccountInformation
 export interface ProfileInterface {
-    register: UseFormRegister<FieldValues>
-    errors: FieldErrors<FieldValues>
-    newUser?: boolean
-    populateData?: User
+	register: UseFormRegister<FieldValues>
+	errors: FieldErrors<FieldValues>
+	newUser?: boolean
+	populateData?: User
 }
 
 // Reward Points
 export interface rewardPoints {
-    date: String
-    points: number
-    totalPoints: number
+	date: String
+	points: number
+	totalPoints: number
 }

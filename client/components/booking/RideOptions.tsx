@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { getCoords } from '@/components/booking/getCoords'
-import { UserContext } from '../context/UserContext'
-import { UserContextType, User } from '@/redux/types'
+import { UserContext } from '@/components/context/UserContext'
+import { UserContextType } from '@/redux/types'
 import { showOptionInterface, optionsInterface } from '@/redux/types'
 
 // TODO: Limit to 3 options

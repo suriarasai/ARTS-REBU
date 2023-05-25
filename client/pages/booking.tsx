@@ -1,13 +1,14 @@
 // Main hub for booking rides, calls external location API
 
 import React, { useRef, useEffect, useState, useContext } from 'react'
+import mapboxgl from 'mapbox-gl'
+import { SearchBox } from '@mapbox/search-js-react'
+import * as turf from '@turf/turf'
+
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
-import mapboxgl, { GeoJSONSource } from 'mapbox-gl'
-import { SearchBox } from '@mapbox/search-js-react'
-import SearchLocations from './searchLocations'
-import { RideOptions } from '../components/booking/RideOptions'
-import * as turf from '@turf/turf'
+import SearchLocations from '@/components/booking/searchLocations'
+import { RideOptions } from '@/components/booking/RideOptions'
 import { addMarker, geojson } from '@/components/booking/addMarker'
 import { loadTaxis } from '@/components/booking/loadTaxis'
 import { UserContext } from '@/components/context/UserContext'
@@ -31,6 +32,9 @@ const Booking = () => {
 	const [showRides, setShowRides] = useState(false) // show the ride options
 	const [address, setAddress] = useState('') // Store the address of the seleted starting point
 
+	const [toAddress, setToAddress] = useState<string>('Enter your destination') // Search box value
+	const [fromAddress, setFromAddress] = useState<string>('Your location') // Search box value
+
 	useEffect(() => {
 		if (map.current) return // initialize map only once
 
@@ -49,7 +53,11 @@ const Booking = () => {
 	})
 
 	// Function to create a directions request and draws the path between 2 points
-	async function getRoute(map: mapboxgl.Map | any, start: Array<number>, end: Array<number>) {
+	async function getRoute(
+		map: mapboxgl.Map | any,
+		start: Array<number>,
+		end: Array<number>
+	) {
 		const query = await fetch(
 			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
 			{ method: 'GET' }
@@ -177,6 +185,8 @@ const Booking = () => {
 						fromLocation={toLocation}
 						type='from'
 						map={map}
+						setToAddress={setFromAddress}
+						toAddress={fromAddress}
 					/>
 					<SearchField
 						setLocation={setLocation}
@@ -187,12 +197,26 @@ const Booking = () => {
 						fromLocation={fromLocation}
 						type='to'
 						map={map}
+						setToAddress={setToAddress}
+						toAddress={toAddress}
 					/>
 				</div>
 			</Section>
 
 			{/* Show search UI upon clicking the searchboxes*/}
-			<Section>{searchQueryVisible ? <SearchLocations /> : null}</Section>
+			<Section>
+				{searchQueryVisible ? (
+					// TODO: Clean by having destination array as a state to be returned
+					<SearchLocations
+						user={user}
+						type={toLocation ? 'to' : 'from'}
+						setSearchQueryVisible={setSearchQueryVisible}
+						setToLocation={setToLocation}
+						setFromLocation={setFromLocation}
+						callback={setLocation}
+					/>
+				) : null}
+			</Section>
 
 			{/* Show list of ride options upon selecting a location */}
 			<Section>
@@ -202,11 +226,6 @@ const Booking = () => {
 			</Section>
 		</Page>
 	)
-}
-
-interface setLocationInterface {
-	coords: Array<number>
-	label: string
 }
 
 const SearchField = (props: SearchFieldInterface) => (
@@ -255,14 +274,17 @@ const SearchField = (props: SearchFieldInterface) => (
 			<SearchBox
 				accessToken={mapboxgl.accessToken}
 				options={{ language: 'en', country: 'SG' }}
-				value={props.type === 'to' ? 'Choose a destination' : 'Your location'}
+				value={props.toAddress}
 				map={props.map.current}
 				onRetrieve={(e) => {
 					props.setLocation(e.features[0].geometry.coordinates, props.type)
 					props.setSearchQueryVisible(false)
 					props.setToLocation(false)
 				}}
-				onChange={(e) => props.setShowRides(false)}
+				onChange={(e) => {
+					props.setToAddress
+					props.setShowRides(false)
+				}}
 				popoverOptions={{ offset: 110 }}
 			/>
 		</div>
