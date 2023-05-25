@@ -31,7 +31,7 @@ public class User {
     private String joinedDate = LocalDate.now().toString();
     private Integer rating;
     private Integer rewardPoints = 0;
-    private List<String> favoriteLocations = new ArrayList<String>(); // merge into saved locations?
+    private List<FavoriteLocation> favoriteLocations = new ArrayList<FavoriteLocation>();
     private Activity activity = new Activity();
     private Saved_Locations savedLocations = new Saved_Locations();
     private List<Reward_History> rewardHistory = new ArrayList<Reward_History>();
@@ -82,7 +82,9 @@ public class User {
         return this.activity.getSignOutTimes();
     }
 
-    public void addFavoriteLocation(String savedLocation) {
-        this.favoriteLocations.add(savedLocation);
+    public void addFavoriteLocation(String name, String address, ArrayList<Float> coordinates) {
+        FavoriteLocation location = new FavoriteLocation();
+        location.setLocation(name, address, coordinates);
+        this.favoriteLocations.add(location);
     }
 }

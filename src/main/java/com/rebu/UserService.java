@@ -168,4 +168,12 @@ public class UserService {
         return "Done";
     }
 
+    // Sets a favorite location
+    public String addFavoriteLocation(String mobileNumber, String name, String address, ArrayList<Float> coordinates) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        user.addFavoriteLocation(name, address, coordinates);
+        userRepository.save(user);
+        return "Done";
+    }
+
 }

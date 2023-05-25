@@ -2,7 +2,6 @@
 
 package com.rebu;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -135,11 +134,20 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    // Sets the home location to a coordinate pair [lat, lng]
+    // Sets the work location to a coordinate pair [lat, lng]
     @PostMapping("/setWork")
     public ResponseEntity<String> setWork(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
                 userService.setWork(payload.getMobileNumber(), payload.getWork()),
+                HttpStatus.OK);
+    }
+
+    // Adds a favorite location
+    @PostMapping("/addFavoriteLocation")
+    public ResponseEntity<String> addFavoriteLocation(@RequestBody LocationInterface payload) {
+        return new ResponseEntity<String>(
+                userService.addFavoriteLocation(payload.getMobileNumber(), payload.getName(), payload.getAddress(),
+                        payload.getCoordinates()),
                 HttpStatus.OK);
     }
 }

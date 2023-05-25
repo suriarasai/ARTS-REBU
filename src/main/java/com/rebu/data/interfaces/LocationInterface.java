@@ -9,6 +9,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class LocationInterface {
     private String MobileNumber;
+    private String name;
+    private String address;
+    private ArrayList<Float> coordinates;
     private ArrayList<Float> work;
     private ArrayList<Float> home;
 
