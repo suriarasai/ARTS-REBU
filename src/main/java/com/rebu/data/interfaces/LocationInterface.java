@@ -1,3 +1,5 @@
+// Data class for defining a schema to use in APIs involving location data (ex. saved/favorite locations)
+
 package com.rebu.data.interfaces;
 
 import java.util.ArrayList;

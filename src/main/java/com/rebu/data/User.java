@@ -63,7 +63,7 @@ public class User {
 
     private void addRewardHistory(Integer points) {
         Reward_History rewardEntry = new Reward_History();
-        rewardEntry.setEntry(points, this.rewardPoints - points);
+        rewardEntry.setEntry(this.rewardPoints-points, points);
         this.rewardHistory.add(rewardEntry);
     }
 
@@ -72,8 +72,8 @@ public class User {
     }
 
     public void updateRewardPoints(Integer newCount) {
-        this.rewardPoints = newCount;
         this.addRewardHistory(newCount);
+        this.rewardPoints = newCount;
     }
 
     public List<String> getSignInTimes() {

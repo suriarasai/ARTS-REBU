@@ -88,3 +88,10 @@ export interface ProfileInterface {
     newUser?: boolean
     populateData?: User
 }
+
+// Reward Points
+export interface rewardPoints {
+    date: String
+    points: number
+    totalPoints: number
+}

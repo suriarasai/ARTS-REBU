@@ -5,12 +5,18 @@ import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
+import { rewardPoints } from '@/redux/types'
 
 const RewardPoints = () => {
 	const { user, setUser } = useContext(UserContext)
 	const rewardsForm = useRef<any>(null)
 
-	const [rewardPoints, updateRewardPoints] = useState<number>(user.rewardPoints ? user.rewardPoints : 0)
+	const [rewardPoints, updateRewardPoints] = useState<number>(
+		user.rewardPoints ? user.rewardPoints : 0
+	)
+	const [rewardHistory, updateRewardHistory] = useState<rewardPoints[]>(
+		user.rewardHistory!
+	)
 	const [invalidInput, updateInvalidInput] = useState<boolean>(false) // Validation checks on redemption input box
 
 	const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -20,7 +26,7 @@ const RewardPoints = () => {
 		// Ensures the user has the number of points they want
 		if (rewardPoints - points >= 0 && points > 0) {
 			rewardPointsAPI(user.mobileNumber!, rewardPoints - points)
-			setUser({...user, rewardPoints: rewardPoints - points})
+			setUser({ ...user, rewardPoints: rewardPoints - points })
 			updateRewardPoints(rewardPoints - points)
 		} else {
 			updateInvalidInput(true)
@@ -28,10 +34,16 @@ const RewardPoints = () => {
 	}
 
 	const rewardPointsAPI = async (mobileNumber: string, newCount: number) => {
-		await api.post('/api/v1/customers/updateRewardPoints', {
-			mobileNumber: mobileNumber,
-			newCount: newCount
-		})
+		const response = await api.post(
+			'/api/v1/customers/updateRewardPoints',
+			{
+				mobileNumber: mobileNumber,
+				newCount: newCount,
+			}
+		)
+		updateRewardHistory(response.data)
+
+		setUser({ ...user, rewardHistory: response.data })
 	}
 
 	return (
@@ -60,7 +72,9 @@ const RewardPoints = () => {
 								placeholder='Enter Points to Redeem'
 							/>
 							{invalidInput && (
-								<p className='text-error px-3'>The maximum you can redeem is {rewardPoints}</p>
+								<p className='text-error px-3'>
+									The maximum you can redeem is {rewardPoints}
+								</p>
 							)}
 						</div>
 						<div className='mt-1 w-1/4'>
@@ -75,30 +89,28 @@ const RewardPoints = () => {
 
 					<label className='pb-3'>Reward History</label>
 
-					<table className='w-full table-auto text-left'>
-						<thead>
-							<tr>
-								<th>Date</th>
-								<th>Event</th>
-								<th>Points</th>
-								<th>Total Points</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>16/05/2023</td>
-								<td>Promotion A</td>
-								<td>165</td>
-								<td>375</td>
-							</tr>
-							<tr>
-								<td>16/04/2023</td>
-								<td>Points Redeemed</td>
-								<td>-300</td>
-								<td>675</td>
-							</tr>
-						</tbody>
-					</table>
+					{rewardHistory ? (
+						<table className='w-full table-auto text-left'>
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>Points</th>
+									<th>Total Points</th>
+								</tr>
+							</thead>
+							<tbody>
+								{rewardHistory.map((transaction, index) => (
+									<tr key={index}>
+										<td>{transaction.date}</td>
+										<td>{transaction.points * -1}</td>
+										<td>{transaction.totalPoints}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					) : (
+						'No transactions to date'
+					)}
 				</div>
 			</Section>
 		</Page>
