@@ -258,7 +258,7 @@ const SearchField = (props: SearchFieldInterface) => (
 				value={props.type === 'to' ? 'Choose a destination' : 'Your location'}
 				map={props.map.current}
 				onRetrieve={(e) => {
-					props.setLocation(e.features[0].geometry.coordinates, 'to')
+					props.setLocation(e.features[0].geometry.coordinates, props.type)
 					props.setSearchQueryVisible(false)
 					props.setToLocation(false)
 				}}
