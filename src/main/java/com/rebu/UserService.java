@@ -176,4 +176,12 @@ public class UserService {
         return "Done";
     }
 
+    // Sets a favorite location
+    public String removeFavoriteLocation(String mobileNumber, String name) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        user.removeFavoriteLocation(name);
+        userRepository.save(user);
+        return "Done";
+    }
+
 }

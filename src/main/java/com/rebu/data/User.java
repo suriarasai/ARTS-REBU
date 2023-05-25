@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Iterator;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -86,5 +88,14 @@ public class User {
         FavoriteLocation location = new FavoriteLocation();
         location.setLocation(name, address, coordinates);
         this.favoriteLocations.add(location);
+    }
+
+    public void removeFavoriteLocation(String name) {
+        for (Iterator<FavoriteLocation> iter = this.favoriteLocations.listIterator(); iter.hasNext();) {
+            FavoriteLocation location = iter.next();
+            if (location.getName().equals(name)) {
+                iter.remove();
+            }
+        }
     }
 }

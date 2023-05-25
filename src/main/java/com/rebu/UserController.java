@@ -150,4 +150,12 @@ public class UserController {
                         payload.getCoordinates()),
                 HttpStatus.OK);
     }
+
+    // Removes a favorite location
+    @PostMapping("/removeFavoriteLocation")
+    public ResponseEntity<String> removeFavoriteLocation(@RequestBody LocationInterface payload) {
+        return new ResponseEntity<String>(
+                userService.removeFavoriteLocation(payload.getMobileNumber(), payload.getName()),
+                HttpStatus.OK);
+    }
 }
