@@ -12,9 +12,11 @@ import { SearchBox } from '@mapbox/search-js-react'
 const SavedPlaces = () => {
 	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
+	const [searchBoxValue, setSearchBoxValue] = useState<string>('Add a place')
 
 	const addPlace = (e) => {
 		AddPlaceAPI(e)
+		setSearchBoxValue('Add a place')
 		// console.log(e)
 	}
 
@@ -47,12 +49,15 @@ const SavedPlaces = () => {
 		<Page title='Saved Locations'>
 			<Section>
 				{/* <button className='grey-button' onClick={() => router.push('/settings')}>Go Back</button> */}
-				<SearchBox
-					accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
-					options={{ language: 'en', country: 'SG' }}
-					onRetrieve={(e) => addPlace(e.features[0])}
-					value='Add a place'
-				/>
+				<div onFocus={() => {searchBoxValue === 'Add a place' ? setSearchBoxValue('') : searchBoxValue}}>
+					<SearchBox
+						accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
+						options={{ language: 'en', country: 'SG' }}
+						onRetrieve={(e) => addPlace(e.features[0])}
+						value={searchBoxValue}
+						onChange={(e) => setSearchBoxValue(e)}
+					/>
+				</div>
 
 				<SavedLocation
 					user={user}
@@ -126,6 +131,7 @@ const SetFavoriteLocationAPI = async (
 
 const SavedLocation = ({ user, setUser, label, place }) => {
 	const [editLocation, updateEditLocation] = useState<boolean>(false)
+	const [value, setValue] = useState<string>('Enter a new address')
 
 	const editEntry = (e) => {
 		const name = e.properties.address ? e.properties.address : e.properties.name
@@ -138,16 +144,23 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 		<div className='flex flex-wrap pl-5 pt-3'>
 			<div className='w-5/6'>
 				{editLocation ? (
-					<SearchBox
-						accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
-						options={{ language: 'en', country: 'SG' }}
-						onRetrieve={(e) => editEntry(e.features[0])}
-						value='Enter a new address'
-					/>
+					<div
+						onFocus={() =>
+							value === 'Enter a new address' ? setValue('') : value
+						}
+					>
+						<SearchBox
+							accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
+							options={{ language: 'en', country: 'SG' }}
+							onRetrieve={(e) => editEntry(e.features[0])}
+							value={value}
+							onChange={(e) => setValue(e)}
+						/>
+					</div>
 				) : (
 					<div>
 						<p>{label}</p>
-						<h5>{place}</h5>
+						<h5>{place ? place : 'Set Location'}</h5>
 					</div>
 				)}
 			</div>

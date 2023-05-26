@@ -161,7 +161,7 @@ const SearchLocations = ({
 				{['Enter your destination', 'Your location', ''].includes(
 					searchBoxInput
 				) || searchBoxSuggestions?.length == 0 ? (
-					user.favoriteLocations ? (
+					user.favoriteLocations && user.favoriteLocations.length > 0 ? (
 						user.favoriteLocations.map((item, index) => (
 							<div
 								className='ml-3 mb-3'
@@ -173,7 +173,7 @@ const SearchLocations = ({
 							</div>
 						))
 					) : (
-						<>No saved locations</>
+						"No saved locations"
 					)
 				) : null}
 

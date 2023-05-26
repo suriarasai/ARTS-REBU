@@ -274,6 +274,9 @@ const SearchField = (props: SearchFieldInterface) => (
 				props.setSearchQueryVisible(true),
 					props.setToLocation(true),
 					props.setShowRides(false)
+				props.toAddress === 'Your Location' || 'Enter your destination'
+					? props.setToAddress('')
+					: props.toAddress
 			}}
 		>
 			{/* TODO: Placeholder values? */}
