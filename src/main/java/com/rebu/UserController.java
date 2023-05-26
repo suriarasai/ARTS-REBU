@@ -130,7 +130,7 @@ public class UserController {
     @PostMapping("/setHome")
     public ResponseEntity<String> setHome(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.setHome(payload.getMobileNumber(), payload.getHome()),
+                userService.setHome(payload.getMobileNumber(), payload.getHome(), payload.getHomeName()),
                 HttpStatus.OK);
     }
 
@@ -138,7 +138,7 @@ public class UserController {
     @PostMapping("/setWork")
     public ResponseEntity<String> setWork(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.setWork(payload.getMobileNumber(), payload.getWork()),
+                userService.setWork(payload.getMobileNumber(), payload.getWork(), payload.getWorkName()),
                 HttpStatus.OK);
     }
 

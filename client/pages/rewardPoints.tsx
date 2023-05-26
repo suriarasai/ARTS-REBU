@@ -1,5 +1,3 @@
-// TODO: See if there's a way to pass user into the function w/o importing context
-
 import { useContext, useState, useRef } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'

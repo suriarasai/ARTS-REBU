@@ -208,7 +208,6 @@ const Booking = () => {
 				{searchQueryVisible ? (
 					// TODO: Clean by having destination array as a state to be returned
 					<SearchLocations
-						user={user}
 						type={toLocation ? 'to' : 'from'}
 						setSearchQueryVisible={setSearchQueryVisible}
 						setToLocation={setToLocation}

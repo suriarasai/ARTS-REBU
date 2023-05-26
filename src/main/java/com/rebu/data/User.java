@@ -49,12 +49,12 @@ public class User {
         return this._id.toString();
     }
 
-    public void setHome(List<Float> home) {
-        this.savedLocations.setHome(home);
+    public void setHome(List<Float> home, String homeName) {
+        this.savedLocations.setHome(home, homeName);
     }
 
-    public void setWork(List<Float> work) {
-        this.savedLocations.setWork(work);
+    public void setWork(List<Float> work, String workName) {
+        this.savedLocations.setWork(work, workName);
     }
 
     public void addSignInTime() {

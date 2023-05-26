@@ -32,9 +32,11 @@ export type User = {
 	addr?: String[]
 }
 
-interface SavedLocation {
+export interface SavedLocation {
 	work?: Array<number>
+	workName?: string
 	home?: Array<number>
+	homeName?: string
 }
 interface FavoriteLocation {
 	name: string
@@ -76,7 +78,6 @@ export interface SearchFieldInterface {
 }
 
 export interface SearchLocationInterface {
-	user: User
 	type: string
 	setSearchQueryVisible:React.Dispatch<React.SetStateAction<boolean>>
 	setToLocation:React.Dispatch<React.SetStateAction<boolean>>

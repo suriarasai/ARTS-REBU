@@ -3,7 +3,6 @@
 package com.rebu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,11 +14,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.rebu.data.Activity;
-import com.rebu.data.Reviews_About_Customer;
-import com.rebu.data.Reviews_From_Customer;
 import com.rebu.data.Reward_History;
-import com.rebu.data.Saved_Locations;
 import com.rebu.data.User;
 
 @Service
@@ -153,17 +148,17 @@ public class UserService {
     }
 
     // Sets Home location
-    public String setHome(String mobileNumber, ArrayList<Float> home) {
+    public String setHome(String mobileNumber, ArrayList<Float> home, String homeName) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
-        user.setHome(home);
+        user.setHome(home, homeName);
         userRepository.save(user);
         return "Done";
     }
 
     // Sets Work location
-    public String setWork(String mobileNumber, ArrayList<Float> work) {
+    public String setWork(String mobileNumber, ArrayList<Float> work, String workName) {
         User user = userRepository.findFirstByMobileNumber(mobileNumber);
-        user.setWork(work);
+        user.setWork(work, workName);
         userRepository.save(user);
         return "Done";
     }

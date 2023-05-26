@@ -15,7 +15,9 @@ public class LocationInterface {
     private String address;
     private ArrayList<Float> coordinates;
     private ArrayList<Float> work;
+    private String workName;
     private ArrayList<Float> home;
+    private String homeName;
 
     public LocationInterface() {
     }
