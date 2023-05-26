@@ -34,6 +34,7 @@ const Booking = () => {
 
 	const [toAddress, setToAddress] = useState<string>('Enter your destination') // Search box value
 	const [fromAddress, setFromAddress] = useState<string>('Your location') // Search box value
+	const [searchBoxSuggestions, setSearchBoxSuggestions] = useState<any>([])
 
 	useEffect(() => {
 		if (map.current) return // initialize map only once
@@ -187,6 +188,7 @@ const Booking = () => {
 						map={map}
 						setToAddress={setFromAddress}
 						toAddress={fromAddress}
+						setSearchBoxSuggestions={setSearchBoxSuggestions}
 					/>
 					<SearchField
 						setLocation={setLocation}
@@ -199,6 +201,7 @@ const Booking = () => {
 						map={map}
 						setToAddress={setToAddress}
 						toAddress={toAddress}
+						setSearchBoxSuggestions={setSearchBoxSuggestions}
 					/>
 				</div>
 			</Section>
@@ -213,6 +216,8 @@ const Booking = () => {
 						setToLocation={setToLocation}
 						setFromLocation={setFromLocation}
 						callback={setLocation}
+						searchBoxInput={toLocation ? toAddress : fromAddress}
+						searchBoxSuggestions={searchBoxSuggestions}
 					/>
 				) : null}
 			</Section>
@@ -281,9 +286,10 @@ const SearchField = (props: SearchFieldInterface) => (
 					props.setToLocation(false)
 				}}
 				onChange={(e) => {
-					props.setToAddress
+					props.setToAddress(e)
 					props.setShowRides(false)
 				}}
+				onSuggest={(e) => props.setSearchBoxSuggestions(e?.suggestions)}
 				popoverOptions={{ offset: 110 }}
 			/>
 		</div>

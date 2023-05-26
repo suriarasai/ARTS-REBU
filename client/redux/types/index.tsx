@@ -74,6 +74,7 @@ export interface SearchFieldInterface {
 	setShowRides: React.Dispatch<React.SetStateAction<boolean>>
 	setLocation: Function
 	setToAddress: React.Dispatch<React.SetStateAction<String>>
+	setSearchBoxSuggestions: React.Dispatch<React.SetStateAction<any>>
 	toAddress: string
 }
 
@@ -82,7 +83,9 @@ export interface SearchLocationInterface {
 	setSearchQueryVisible:React.Dispatch<React.SetStateAction<boolean>>
 	setToLocation:React.Dispatch<React.SetStateAction<boolean>>
 	setFromLocation:React.Dispatch<React.SetStateAction<boolean>>
+	searchBoxSuggestions: any
 	callback: Function
+	searchBoxInput: string
 }
 
 // EmailForm

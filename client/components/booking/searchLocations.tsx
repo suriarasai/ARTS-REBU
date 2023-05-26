@@ -1,4 +1,3 @@
-import Section from '@/components/ui/section'
 import { SavedLocation, SearchLocationInterface } from '@/redux/types'
 import { SearchBox } from '@mapbox/search-js-react'
 import { useState, useContext } from 'react'
@@ -11,6 +10,8 @@ const SearchLocations = ({
 	setSearchQueryVisible,
 	setToLocation,
 	setFromLocation,
+	searchBoxInput,
+	searchBoxSuggestions
 }: SearchLocationInterface) => {
 	function setDestination(destination: Array<number>) {
 		callback(destination, type)
@@ -81,7 +82,10 @@ const SearchLocations = ({
 			{/* TODO: Home/Work Icons */}
 			<div>
 				<div className='flex flex-wrap'>
-					<div className='mt-2 w-1/5' onClick={() => handleSavedLocation('home')}>
+					<div
+						className='mt-2 w-1/5'
+						onClick={() => handleSavedLocation('home')}
+					>
 						<svg
 							viewBox='0 0 15 15'
 							fill='none'
@@ -106,7 +110,10 @@ const SearchLocations = ({
 					</div>
 				</div>
 			</div>
-			<div className='-ml-3 flex flex-wrap' onClick={() => handleSavedLocation('work')}>
+			<div
+				className='-ml-3 flex flex-wrap'
+				onClick={() => handleSavedLocation('work')}
+			>
 				<div className='mt-2 w-1/5'>
 					<svg
 						viewBox='0 0 15 15'
@@ -143,21 +150,29 @@ const SearchLocations = ({
 
 				{/* TODO: Recent locations */}
 				{/* Recent locations */}
-				<label className='mt-6 mb-4'>Saved Locations</label>
+				<label className='mt-6 mb-4'>
+					{['Enter your destination', 'Your location', ''].includes(searchBoxInput) || searchBoxSuggestions?.length == 0
+						? 'Saved Locations'
+						: 'Results'}
+				</label>
 
-				{user.favoriteLocations ? (
-					user.favoriteLocations.map((item, index) => (
-						<div
-							className='ml-3 mb-3'
-							key={index}
-							onClick={() => setDestination(item.coordinates)}
-						>
-							<p>{item.name}</p>
-							<h5>{item.address}</h5>
-						</div>
-					))
+				{['Enter your destination', 'Your location', ''].includes(searchBoxInput) || searchBoxSuggestions?.length == 0 ? (
+					user.favoriteLocations ? (
+						user.favoriteLocations.map((item, index) => (
+							<div
+								className='ml-3 mb-3'
+								key={index}
+								onClick={() => setDestination(item.coordinates)}
+							>
+								<p>{item.name}</p>
+								<h5>{item.address}</h5>
+							</div>
+						))
+					) : (
+						<>No saved locations</>
+					)
 				) : (
-					<>No saved locations</>
+					null
 				)}
 
 				{showModal ? (
