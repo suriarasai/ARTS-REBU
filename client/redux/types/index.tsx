@@ -38,7 +38,7 @@ export interface SavedLocation {
 	home?: Array<number>
 	homeName?: string
 }
-interface FavoriteLocation {
+export interface FavoriteLocation {
 	name: string
 	address: string
 	coordinates: Array<number>

@@ -14,7 +14,7 @@ const Settings = () => (
 			<NavButton label='Edit Account Information' href='/accountSettings' />
 			<NavButton label='Reward Points' href='/rewardPoints' />
 			<NavButton label='Manage Payment Options' href='/managePayment' />
-			<NavButton label='Saved Places' href='/managePayment' />
+			<NavButton label='Saved Places' href='/savedPlaces' />
 
 			<SignOutModal />
 		</Section>
