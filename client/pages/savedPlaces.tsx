@@ -1,6 +1,6 @@
 // TODO: Button to route to Booking and set a route to that place
 
-import { useContext, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
@@ -47,7 +47,6 @@ const SavedPlaces = () => {
 		<Page title='Saved Locations'>
 			<Section>
 				{/* <button className='grey-button' onClick={() => router.push('/settings')}>Go Back</button> */}
-
 				<SearchBox
 					accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
 					options={{ language: 'en', country: 'SG' }}
@@ -55,11 +54,31 @@ const SavedPlaces = () => {
 					value='Add a place'
 				/>
 
+				<SavedLocation
+					user={user}
+					setUser={setUser}
+					label={'Home'}
+					place={user.savedLocations.homeName}
+				/>
+
+				<SavedLocation
+					user={user}
+					setUser={setUser}
+					label={'Work'}
+					place={user.savedLocations.workName}
+				/>
+
+				<label className='pt-5'>Saved Places</label>
 				{user.favoriteLocations.length == 0 ? (
 					<div className='pt-5'>{'No saved places'}</div>
 				) : (
 					user.favoriteLocations.map((location, index) => (
-						<Location location={location} setUser={setUser} user={user} key={index} />
+						<Location
+							location={location}
+							setUser={setUser}
+							user={user}
+							key={index}
+						/>
 					))
 				)}
 			</Section>
@@ -67,19 +86,118 @@ const SavedPlaces = () => {
 	)
 }
 
+const SetFavoriteLocationAPI = async (
+	user,
+	setUser,
+	name,
+	coordinates,
+	label
+) => {
+	if (label === 'Home') {
+		await api.post('/api/v1/customers/setHome', {
+			home: coordinates,
+			homeName: name,
+			mobileNumber: user.mobileNumber,
+		})
+		setUser({
+			...user,
+			savedLocations: {
+				...user.savedLocations,
+				home: coordinates,
+				homeName: name,
+			},
+		})
+	} else {
+		await api.post('/api/v1/customers/setWork', {
+			work: coordinates,
+			workName: name,
+			mobileNumber: user.mobileNumber,
+		})
+		setUser({
+			...user,
+			savedLocations: {
+				...user.savedLocations,
+				work: coordinates,
+				workName: name,
+			},
+		})
+	}
+}
+
+const SavedLocation = ({ user, setUser, label, place }) => {
+	const [editLocation, updateEditLocation] = useState<boolean>(false)
+
+	const editEntry = (e) => {
+		const name = e.properties.address ? e.properties.address : e.properties.name
+		const coordinates = e.geometry.coordinates
+		SetFavoriteLocationAPI(user, setUser, name, coordinates, label)
+		updateEditLocation(false)
+	}
+
+	return (
+		<div className='flex flex-wrap pl-5 pt-3'>
+			<div className='w-5/6'>
+				{editLocation ? (
+					<SearchBox
+						accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
+						options={{ language: 'en', country: 'SG' }}
+						onRetrieve={(e) => editEntry(e.features[0])}
+						value='Enter a new address'
+					/>
+				) : (
+					<div>
+						<p>{label}</p>
+						<h5>{place}</h5>
+					</div>
+				)}
+			</div>
+			<div className='flex w-1/6 items-center justify-center'>
+				{editLocation ? (
+					<button
+						className='red-button mb-3'
+						onClick={() => updateEditLocation(false)}
+					>
+						Cancel
+					</button>
+				) : (
+					<svg
+						viewBox='0 0 15 15'
+						fill='none'
+						xmlns='http://www.w3.org/2000/svg'
+						width='15'
+						height='15'
+						onClick={() => {
+							updateEditLocation(true)
+						}}
+					>
+						<path
+							d='M.5 9.5l-.354-.354L0 9.293V9.5h.5zm9-9l.354-.354a.5.5 0 00-.708 0L9.5.5zm5 5l.354.354a.5.5 0 000-.708L14.5 5.5zm-9 9v.5h.207l.147-.146L5.5 14.5zm-5 0H0a.5.5 0 00.5.5v-.5zm.354-4.646l9-9-.708-.708-9 9 .708.708zm8.292-9l5 5 .708-.708-5-5-.708.708zm5 4.292l-9 9 .708.708 9-9-.708-.708zM5.5 14h-5v1h5v-1zm-4.5.5v-5H0v5h1zM6.146 3.854l5 5 .708-.708-5-5-.708.708zM8 15h7v-1H8v1z'
+							fill='currentColor'
+						></path>
+					</svg>
+				)}
+			</div>
+		</div>
+	)
+}
+
 const RemovePlaceAPI = async (user, name) => {
-    await api.post('/api/v1/customers/removeFavoriteLocation', {
-        mobileNumber: user.mobileNumber,
-        name: name
-    })
+	await api.post('/api/v1/customers/removeFavoriteLocation', {
+		mobileNumber: user.mobileNumber,
+		name: name,
+	})
 }
 
 const Location = ({ location, setUser, user }) => {
-
-    const removeEntry = () => {
-        RemovePlaceAPI(user, location.name)
-        setUser({...user, favoriteLocations: [...user.favoriteLocations.filter(item => item.name !== location.name)]})
-    }
+	const removeEntry = () => {
+		RemovePlaceAPI(user, location.name)
+		setUser({
+			...user,
+			favoriteLocations: [
+				...user.favoriteLocations.filter((item) => item.name !== location.name),
+			],
+		})
+	}
 
 	return (
 		<div className='ml-5 flex flex-wrap pt-3'>

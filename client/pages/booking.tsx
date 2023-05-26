@@ -1,4 +1,6 @@
 // Main hub for booking rides, calls external location API
+// TODO: Update to the latest route optimization API (time-optimized)
+// TODO: Implement traffic API
 
 import React, { useRef, useEffect, useState, useContext } from 'react'
 import mapboxgl from 'mapbox-gl'
