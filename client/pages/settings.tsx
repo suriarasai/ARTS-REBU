@@ -81,14 +81,8 @@ const SignOutModal = () => {
 							>
 								Cancel
 							</button>
-							<button className='red-button'>
-								<div
-									className='text-red-500'
-									key='logout'
-									onClick={() => handleSignOut()}
-								>
-									Logout
-								</div>
+							<button className='red-button text-red-500 hover:text-white' onClick={() => handleSignOut()}>
+								<div>Logout</div>
 							</button>
 						</div>
 					</div>

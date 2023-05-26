@@ -11,7 +11,7 @@ const SearchLocations = ({
 	setToLocation,
 	setFromLocation,
 	searchBoxInput,
-	searchBoxSuggestions
+	searchBoxSuggestions,
 }: SearchLocationInterface) => {
 	function setDestination(destination: Array<number>) {
 		callback(destination, type)
@@ -81,11 +81,11 @@ const SearchLocations = ({
 		<span className='mt-16 ml-3 flex inline-grid w-full grid-cols-2'>
 			{/* TODO: Home/Work Icons */}
 			<div>
-				<div className='flex flex-wrap'>
-					<div
-						className='mt-2 w-1/5'
-						onClick={() => handleSavedLocation('home')}
-					>
+				<div
+					className='flex flex-wrap'
+					onClick={() => handleSavedLocation('home')}
+				>
+					<div className='mt-2 w-1/5'>
 						<svg
 							viewBox='0 0 15 15'
 							fill='none'
@@ -151,12 +151,16 @@ const SearchLocations = ({
 				{/* TODO: Recent locations */}
 				{/* Recent locations */}
 				<label className='mt-6 mb-4'>
-					{['Enter your destination', 'Your location', ''].includes(searchBoxInput) || searchBoxSuggestions?.length == 0
+					{['Enter your destination', 'Your location', ''].includes(
+						searchBoxInput
+					) || searchBoxSuggestions?.length == 0
 						? 'Saved Locations'
 						: 'Results'}
 				</label>
 
-				{['Enter your destination', 'Your location', ''].includes(searchBoxInput) || searchBoxSuggestions?.length == 0 ? (
+				{['Enter your destination', 'Your location', ''].includes(
+					searchBoxInput
+				) || searchBoxSuggestions?.length == 0 ? (
 					user.favoriteLocations ? (
 						user.favoriteLocations.map((item, index) => (
 							<div
@@ -171,9 +175,7 @@ const SearchLocations = ({
 					) : (
 						<>No saved locations</>
 					)
-				) : (
-					null
-				)}
+				) : null}
 
 				{showModal ? (
 					<div className='absolute left-0 right-0 top-48 ml-auto mr-auto flex h-auto w-10/12 flex-col items-center justify-center bg-zinc-50 p-7'>
