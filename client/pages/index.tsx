@@ -72,14 +72,17 @@ const SignInForm = ({
 
 	const { user, setUser } = useContext(UserContext)
 
-	const checkIfUserExists = async (mobileNumber: string, countryCode: number) => {
+	const checkIfUserExists = async (
+		mobileNumber: string,
+		countryCode: number
+	) => {
 		const response = await api.post('/api/v1/customers/exists', {
-			mobileNumber: countryCode + " " + mobileNumber,
+			mobileNumber: countryCode + ' ' + mobileNumber,
 		})
 
 		if (response.data === '') {
 			const createUser = await api.post('/api/v1/customers', {
-				mobileNumber: countryCode + " " + mobileNumber,
+				mobileNumber: countryCode + ' ' + mobileNumber,
 				countryCode: countryCode,
 			})
 			setUser(createUser.data)
@@ -194,6 +197,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 // 2nd screen to validate the user's mobile number via OTP (one-time password)
 const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 	const router = useRouter()
+	const [loginSuccessful, setLoginSuccesssful] = React.useState<boolean>(false)
 
 	const handleSubmit = (data: any) => {
 		changeSignInForm(false)
@@ -211,7 +215,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 
 	const continueButton = (e: React.MouseEvent<HTMLButtonElement>): void => {
 		e.preventDefault()
-		console.log(newUser)
+		setLoginSuccesssful(true)
 		router.push(newUser ? '/registration' : '/booking')
 	}
 
@@ -241,11 +245,17 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 				<TermsOfService />
 
 				<div className='-mx-3 mb-2 flex self-end'>
-					<button className='grey-button mr-3' onClick={goBack}>
+					<button className='grey-button mr-3' onClick={goBack} disabled={loginSuccessful ? true : false}>
 						{'Go Back'}
 					</button>
-					<button className='blue-button mr-8' onClick={continueButton}>
-						{'Continue ᐳ'}
+					<button
+						className={`mr-8 ${
+							loginSuccessful ? 'green-button' : 'blue-button'
+						}`}
+						onClick={continueButton}
+						disabled={loginSuccessful ? true : false}
+					>
+						{loginSuccessful ? 'Signing in...' : 'Continue ᐳ'}
 					</button>
 				</div>
 			</form>

@@ -3,7 +3,7 @@
 // screen does not exist in the database
 
 // Note: Validation checks aren't fully developed; duplicate emails are unchecked for
-// 		 TODO: No validation to enforce dropdown selection... 
+// 		 TODO: No validation to enforce dropdown selection...
 
 import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
@@ -19,6 +19,8 @@ const Registration = () => {
 	const [nextStep, showNextStep] = React.useState<boolean>(false)
 	const { user, setUser } = useContext(UserContext)
 	const [formData, updateFormData] = React.useState<Object>({})
+	const [registrationSuccessful, setRegistrationSuccessful] =
+		React.useState<boolean>(false)
 
 	const {
 		register: registerEmail,
@@ -46,11 +48,12 @@ const Registration = () => {
 			firstName: data.firstName,
 			lastName: data.lastName,
 			prefix: data.prefix,
-			birthdate: data.birthdate!.replace(/\//g, "-"),
+			birthdate: data.birthdate!.replace(/\//g, '-'),
 			email: data.email,
 			password: data.password,
 		})
 		setUser(response.data)
+		setRegistrationSuccessful(true)
 		router.push('/booking')
 	}
 
@@ -87,8 +90,14 @@ const Registration = () => {
 									Go Back
 								</button>
 							) : null}
-							<button className='blue-button self-end' type='submit'>
-								Finish
+							<button
+								className={`${
+									registrationSuccessful ? 'green-button' : 'blue-button'
+								} self-end`}
+								type='submit'
+								disabled={registrationSuccessful ? true : false}
+							>
+								{registrationSuccessful ? 'Creating account...' : 'Finish'}
 							</button>
 						</div>
 					</form>
@@ -103,7 +112,11 @@ const Registration = () => {
 							errors={errorsEmail}
 						/>
 						<div className='mt-8 flex self-end'>
-							<button className='blue-button self-end' type='submit'>
+							<button
+								className='blue-button self-end'
+								type='submit'
+								disabled={registrationSuccessful ? true : false}
+							>
 								Continue ᐳ
 							</button>
 						</div>

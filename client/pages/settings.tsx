@@ -46,18 +46,20 @@ export default Settings
 
 const SignOutModal = () => {
 	const router = useRouter()
-	const [showModal, setShowModal] = useState(false)
+	const [showModal, setShowModal] = useState<boolean>(false)
+	const [logoutSuccessful, setLogoutSuccessful] = useState<boolean>(false)
 
 	const { user, setUser } = useContext(UserContext)
 
 	const handleSignOut = () => {
 		addSignOutTime(user.id)
+		setLogoutSuccessful(true)
 		router.push('/')
 	}
 
 	const addSignOutTime = async (id: string) => {
 		const response = await api.post('/api/v1/customers/addSignOutTime', {
-			id: id
+			id: id,
 		})
 		console.log(response)
 	}
@@ -78,11 +80,18 @@ const SignOutModal = () => {
 							<button
 								className='blue-button-hollow'
 								onClick={() => setShowModal(false)}
+								disabled={logoutSuccessful ? true : false}
 							>
 								Cancel
 							</button>
-							<button className='red-button text-red-500 hover:text-white' onClick={() => handleSignOut()}>
-								<div>Logout</div>
+							<button
+								className={`${
+									logoutSuccessful ? 'green-button' : 'red-button text-red-500'
+								}  hover:text-white`}
+								onClick={() => handleSignOut()}
+								disabled={logoutSuccessful ? true : false}
+							>
+								<div>{logoutSuccessful ? 'Logging out...' : 'Log out'}</div>
 							</button>
 						</div>
 					</div>

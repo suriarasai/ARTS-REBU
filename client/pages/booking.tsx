@@ -93,6 +93,20 @@ const Booking = () => {
 				},
 			})
 		}
+
+		// Fitting the map to the LineString
+		// Coordinates of the LineString connecting the origin place to the destination
+		const coordinates =
+			map.current?.getSource('route')._options.data.features[0].geometry
+				.coordinates
+		const bounds = new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
+		for (const coord of coordinates) {
+			bounds.extend(coord)
+		}
+		map.current?.fitBounds(bounds, {
+			padding: 100,
+		})
+
 		// Sets the distance of the route for fare calculation
 		setDistance(
 			turf.length(
@@ -111,7 +125,6 @@ const Booking = () => {
 
 		// Adds a marker where the user clicks on the map
 		map.current?.on('click', (event: any) => {
-			// TODO: Set clicked location to be the SearchBox input
 			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key])
 
 			if (map.current?.getLayer('to')) {
@@ -273,7 +286,9 @@ const SearchField = (props: SearchFieldInterface) => (
 					onClick={() => {
 						props.setSearchQueryVisible(false)
 						props.setToLocation(false)
-						props.setToAddress(props.type === 'from' ? 'Your Location' : 'Enter your destination')
+						props.setToAddress(
+							props.type === 'from' ? 'Your Location' : 'Enter your destination'
+						)
 					}}
 				>
 					Cancel
