@@ -2,7 +2,7 @@ import { SavedLocation, SearchLocationInterface } from '@/redux/types'
 import { useState, useContext } from 'react'
 import api from '@/api/axiosConfig'
 import { UserContext } from '../context/UserContext'
-import { editFavoriteLocation } from './editFavoriteLocation'
+import { EditFavoriteLocation } from './editFavoriteLocation'
 
 const SearchLocations = ({
 	type,
@@ -12,6 +12,7 @@ const SearchLocations = ({
 	setFromLocation,
 	searchBoxInput,
 	searchBoxSuggestions,
+	setToAddress,
 }: SearchLocationInterface) => {
 	function setDestination(destination: Array<number>) {
 		callback(destination, type)
@@ -32,12 +33,14 @@ const SearchLocations = ({
 		workName: '',
 	})
 
+	// Handler for clicking either 'Home' or 'Work'
 	const handleSavedLocation = (label: string) => {
 		setLabel(label)
 		// If the user set a home/work location...
 		if (user.savedLocations[label]) {
 			// ...navigate to the saved location
 			setDestination(user.savedLocations[label])
+			setToAddress(user.savedLocations[label + 'Name'])
 		} else {
 			// ...start the process to save a home/work location
 			setShowModal(true)
@@ -45,6 +48,7 @@ const SearchLocations = ({
 	}
 
 	// TODO: Validation checks for non-empty and valid input
+	// API to set/modify the Home or Work location
 	const SetFavoriteLocationAPI = async (favoriteLocation: SavedLocation) => {
 		if (favoriteLocation.homeName !== '') {
 			await api.post('/api/v1/customers/setHome', {
@@ -77,6 +81,7 @@ const SearchLocations = ({
 		setShowModal(false)
 	}
 
+	// UI for the Home/Saved menus
 	const SavedLocations = (
 		<span className='mt-16 ml-3 flex inline-grid w-full grid-cols-2'>
 			{/* TODO: Home/Work Icons */}
@@ -149,7 +154,6 @@ const SearchLocations = ({
 				{SavedLocations}
 
 				{/* TODO: Recent locations */}
-				{/* Recent locations */}
 				<label className='mt-6 mb-4'>
 					{['Enter your destination', 'Your location', ''].includes(
 						searchBoxInput
@@ -160,37 +164,36 @@ const SearchLocations = ({
 
 				{['Enter your destination', 'Your location', ''].includes(
 					searchBoxInput
-				) || searchBoxSuggestions?.length == 0 ? (
-					user.favoriteLocations && user.favoriteLocations.length > 0 ? (
-						user.favoriteLocations.map((item, index) => (
-							<div
-								className='ml-3 mb-3'
-								key={index}
-								onClick={() => setDestination(item.coordinates)}
-							>
-								<p>{item.name}</p>
-								<h5>{item.address}</h5>
-							</div>
-						))
-					) : (
-						"No saved locations"
-					)
-				) : null}
-
-				{showModal
-					? editFavoriteLocation(
-							label,
-							setFavoriteLocation,
-							favoriteLocation,
-							setShowModal,
-							SetFavoriteLocationAPI
-					  )
+				) || searchBoxSuggestions?.length == 0
+					? user.favoriteLocations && user.favoriteLocations.length > 0
+						? user.favoriteLocations.map((item, index) => (
+								<div
+									className='ml-3 mb-3'
+									key={index}
+									onClick={() => {
+										setDestination(item.coordinates)
+										setToAddress(item.name)
+									}}
+								>
+									<p>{item.name}</p>
+									<h5>{item.address}</h5>
+								</div>
+						  ))
+						: 'No saved locations'
 					: null}
+
+				{showModal ? (
+					<EditFavoriteLocation
+						label={label}
+						setFavoriteLocation={setFavoriteLocation}
+						favoriteLocation={favoriteLocation}
+						setShowModal={setShowModal}
+						SetFavoriteLocationAPI={SetFavoriteLocationAPI}
+					/>
+				) : null}
 			</div>
 		</div>
 	)
 }
 
 export default SearchLocations
-
-

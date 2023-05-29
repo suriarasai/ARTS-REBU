@@ -119,6 +119,16 @@ const Booking = () => {
 			} else {
 				setLocation(coords, 'to')
 			}
+			// Reverse Geolocator: Convert the coordinates to an address
+			fetch(
+				`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?types=address&access_token=${mapboxgl.accessToken}`
+			)
+				.then(function (response) {
+					return response.json()
+				})
+				.then(function (data) {
+					setToAddress(data.features[0].place_name)
+				})
 			getRoute(
 				map,
 				map.current?.getSource('from')._data.features[0].geometry.coordinates,
@@ -220,6 +230,7 @@ const Booking = () => {
 						callback={setLocation}
 						searchBoxInput={toLocation ? toAddress : fromAddress}
 						searchBoxSuggestions={searchBoxSuggestions}
+						setToAddress={toLocation ? setToAddress : setFromAddress}
 					/>
 				) : null}
 			</Section>
@@ -262,6 +273,7 @@ const SearchField = (props: SearchFieldInterface) => (
 					onClick={() => {
 						props.setSearchQueryVisible(false)
 						props.setToLocation(false)
+						props.setToAddress(props.type === 'from' ? 'Your Location' : 'Enter your destination')
 					}}
 				>
 					Cancel
@@ -279,7 +291,6 @@ const SearchField = (props: SearchFieldInterface) => (
 					: props.toAddress
 			}}
 		>
-			{/* TODO: Placeholder values? */}
 			<SearchBox
 				accessToken={mapboxgl.accessToken}
 				options={{ language: 'en', country: 'SG' }}

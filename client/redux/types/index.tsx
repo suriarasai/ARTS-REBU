@@ -83,6 +83,7 @@ export interface SearchLocationInterface {
 	setSearchQueryVisible:React.Dispatch<React.SetStateAction<boolean>>
 	setToLocation:React.Dispatch<React.SetStateAction<boolean>>
 	setFromLocation:React.Dispatch<React.SetStateAction<boolean>>
+	setToAddress: React.Dispatch<React.SetStateAction<string>>
 	searchBoxSuggestions: any
 	callback: Function
 	searchBoxInput: string

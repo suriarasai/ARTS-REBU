@@ -155,6 +155,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 							onRetrieve={(e) => editEntry(e.features[0])}
 							value={value}
 							onChange={(e) => setValue(e)}
+							popoverOptions={{ offset: 110 }}
 						/>
 					</div>
 				) : (
