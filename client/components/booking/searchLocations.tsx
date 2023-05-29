@@ -104,7 +104,7 @@ const SearchLocations = ({
 							></path>
 						</svg>
 					</div>
-					<div className='w-4/5'>
+					<div className='w-4/5 pr-5'>
 						<p>Home</p>
 						<h5>
 							{user.savedLocations?.homeName
