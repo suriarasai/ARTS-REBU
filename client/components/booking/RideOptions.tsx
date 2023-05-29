@@ -18,6 +18,7 @@ export const RideOptions = ({ map, addr, distance = 0 }: optionsInterface) => {
 	const [date, setDate] = useState<Date>(new Date())
 	const [options, setOptions] = useState<Array<any>>([])
 	const [clickedOption, setClickedOption] = useState<number | null>(null)
+	const [collapsed, setCollapsed] = useState<boolean>(false)
 
 	// Post-processing on address name to separate city and postal code
 	useEffect(() => {
@@ -65,57 +66,79 @@ export const RideOptions = ({ map, addr, distance = 0 }: optionsInterface) => {
 	}
 
 	return (
-		<div className='absolute bottom-0 w-11/12 bg-white pb-16 opacity-80 md:pb-4 lg:w-6/12 lg:pb-4'>
-			<div className='p-4'>
-				{!clickedOption ? (
-					<div>
-						{/* Show all the options */}
-						<label>Options</label>
-						{options.map((option) => (
+		<div
+			className={`${
+				collapsed ? '' : ' opacity-90'
+			} absolute bottom-0 w-11/12 rounded bg-white pb-16 md:pb-4 lg:w-6/12 lg:pb-4`}
+		>
+			<div
+				className='accordion-header pl-4 pt-4 flex flex-wrap'
+				onClick={() => setCollapsed(!collapsed)}
+			>
+				<label className='w-10/12'>{clickedOption ? 'Confirm Details' : 'Options'}</label>
+				<svg
+					className='w-2/12'
+					viewBox='0 0 15 15'
+					fill='none'
+					xmlns='http://www.w3.org/2000/svg'
+					width='15'
+					height='15'
+				>
+					<path
+						d='M10 1.5h3.5m0 0V5m0-3.5l-4 4m-8 4.5v3.5m0 0H5m-3.5 0l4-4'
+						stroke='currentColor'
+					></path>
+				</svg>
+			</div>
+			{collapsed ? null : (
+				<div className='accordion-content pl-4 pr-4 pb-4'>
+					{!clickedOption ? (
+						<div>
+							{/* Show available taxis */}
+							{options.map((option) => (
+								<ShowOption
+									option={option}
+									key={option.id}
+									setClickedOption={setClickedOption}
+								/>
+							))}
+						</div>
+					) : (
+						<div>
+							{/* Confirm details */}
 							<ShowOption
-								option={option}
-								key={option.id}
+								option={options[clickedOption - 1]}
+								key={options[clickedOption - 1].id}
 								setClickedOption={setClickedOption}
 							/>
-						))}
-					</div>
-				) : (
-					<div>
-						{/* Confirmation of details screen */}
-						<label>Confirm Details</label>
 
-						<ShowOption
-							option={options[clickedOption - 1]}
-							key={options[clickedOption - 1].id}
-							setClickedOption={setClickedOption}
-						/>
+							<label className='mt-2'>Pickup Location</label>
 
-						<label className='mt-2'>Pickup Location</label>
+							<div className='mb-4 p-2'>
+								<b>{address[0]}</b>
+								<br />
+								{address[1]}
+							</div>
 
-						<div className='mb-4 p-2'>
-							<b>{address[0]}</b>
-							<br />
-							{address[1]}
+							<div className='flex items-center justify-center gap-5'>
+								<button
+									className='grey-button w-1/4'
+									onClick={() => setClickedOption(null)}
+								>
+									Go Back
+								</button>
+								<button
+									className='blue-button w-3/4 bg-cyan-600 text-white'
+									key='logout'
+									onClick={() => handleSubmit()}
+								>
+									Confirm
+								</button>
+							</div>
 						</div>
-
-						<div className='flex items-center justify-center gap-5'>
-							<button
-								className='grey-button w-1/4'
-								onClick={() => setClickedOption(null)}
-							>
-								Go Back
-							</button>
-							<button
-								className='blue-button w-3/4 bg-cyan-600 text-white'
-								key='logout'
-								onClick={() => handleSubmit()}
-							>
-								Confirm
-							</button>
-						</div>
-					</div>
-				)}
-			</div>
+					)}
+				</div>
+			)}
 		</div>
 	)
 }

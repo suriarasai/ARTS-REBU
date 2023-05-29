@@ -140,7 +140,11 @@ const Booking = () => {
 					return response.json()
 				})
 				.then(function (data) {
-					setToAddress(data.features[0]?.place_name ? data.feataures[0]?.place_name : 'Unknown')
+					try {
+						setToAddress(data.features[0]?.place_name)
+					} catch (e) {
+						setToAddress('Unknown')
+					}
 				})
 			getRoute(
 				map,
