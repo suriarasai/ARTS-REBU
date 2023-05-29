@@ -118,8 +118,8 @@ public class UserService {
     }
 
     // Appends the current datetime to the sign out arraylist
-    public String addSignOutTime(String mobileNumber) {
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+    public String addSignOutTime(String _id) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         user.addSignOutTime();
         userRepository.save(user);
 
@@ -127,53 +127,53 @@ public class UserService {
     }
 
     // Returns all the sign out times
-    public List<String> getSignOutTimes(String mobileNumber) {
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+    public List<String> getSignOutTimes(String _id) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         return user.getSignOutTimes();
     }
 
     // Returns all the sign in times
-    public List<String> getSignInTimes(String mobileNumber) {
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+    public List<String> getSignInTimes(String _id) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         return user.getSignInTimes();
     }
 
     // Updates reward points by the given number
-    public List<Reward_History> updateRewardPoints(String mobileNumber, String newCount) {
+    public List<Reward_History> updateRewardPoints(String _id, String newCount) {
         Integer points = Integer.parseInt(newCount);
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         user.updateRewardPoints(points);
         userRepository.save(user);
         return user.getRewardHistory();
     }
 
     // Sets Home location
-    public String setHome(String mobileNumber, ArrayList<Float> home, String homeName) {
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+    public String setHome(String _id, ArrayList<Float> home, String homeName) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         user.setHome(home, homeName);
         userRepository.save(user);
         return "Done";
     }
 
     // Sets Work location
-    public String setWork(String mobileNumber, ArrayList<Float> work, String workName) {
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+    public String setWork(String _id, ArrayList<Float> work, String workName) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         user.setWork(work, workName);
         userRepository.save(user);
         return "Done";
     }
 
     // Sets a favorite location
-    public String addFavoriteLocation(String mobileNumber, String name, String address, ArrayList<Float> coordinates) {
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+    public String addFavoriteLocation(String _id, String name, String address, ArrayList<Float> coordinates) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         user.addFavoriteLocation(name, address, coordinates);
         userRepository.save(user);
         return "Done";
     }
 
     // Sets a favorite location
-    public String removeFavoriteLocation(String mobileNumber, String name) {
-        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+    public String removeFavoriteLocation(String _id, String name) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
         user.removeFavoriteLocation(name);
         userRepository.save(user);
         return "Done";

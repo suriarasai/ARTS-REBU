@@ -8,7 +8,7 @@ export type UserContextType = {
 
 // User data schema
 export type User = {
-	id?: number
+	id?: string
 	firstName?: string
 	lastName?: string
 	birthdate?: string

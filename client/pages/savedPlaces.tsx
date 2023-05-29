@@ -31,7 +31,7 @@ const SavedPlaces = () => {
 		const name = e.properties.address ? e.properties.address : e.properties.name
 
 		const data = {
-			mobileNumber: user.mobileNumber,
+			id: user.id,
 			coordinates: e.geometry.coordinates,
 			name: name,
 			address: country + ' ' + postcode,
@@ -102,7 +102,7 @@ const SetFavoriteLocationAPI = async (
 		await api.post('/api/v1/customers/setHome', {
 			home: coordinates,
 			homeName: name,
-			mobileNumber: user.mobileNumber,
+			id: user.id,
 		})
 		setUser({
 			...user,
@@ -116,7 +116,7 @@ const SetFavoriteLocationAPI = async (
 		await api.post('/api/v1/customers/setWork', {
 			work: coordinates,
 			workName: name,
-			mobileNumber: user.mobileNumber,
+			id: user.id,
 		})
 		setUser({
 			...user,
@@ -197,7 +197,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 
 const RemovePlaceAPI = async (user, name) => {
 	await api.post('/api/v1/customers/removeFavoriteLocation', {
-		mobileNumber: user.mobileNumber,
+		id: user.id,
 		name: name,
 	})
 }

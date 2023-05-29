@@ -51,13 +51,13 @@ const SignOutModal = () => {
 	const { user, setUser } = useContext(UserContext)
 
 	const handleSignOut = () => {
-		addSignOutTime(user.mobileNumber!)
+		addSignOutTime(user.id)
 		router.push('/')
 	}
 
-	const addSignOutTime = async (mobileNumber: string) => {
+	const addSignOutTime = async (id: string) => {
 		const response = await api.post('/api/v1/customers/addSignOutTime', {
-			mobileNumber: mobileNumber,
+			id: id
 		})
 		console.log(response)
 	}

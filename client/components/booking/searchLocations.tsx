@@ -53,7 +53,7 @@ const SearchLocations = ({
 		if (favoriteLocation.homeName !== '') {
 			await api.post('/api/v1/customers/setHome', {
 				...favoriteLocation,
-				mobileNumber: user.mobileNumber,
+				id: user.id,
 			})
 			setUser({
 				...user,
@@ -67,7 +67,7 @@ const SearchLocations = ({
 		if (favoriteLocation.workName !== '') {
 			await api.post('/api/v1/customers/setWork', {
 				...favoriteLocation,
-				mobileNumber: user.mobileNumber,
+				id: user.id,
 			})
 			setUser({
 				...user,
@@ -84,7 +84,6 @@ const SearchLocations = ({
 	// UI for the Home/Saved menus
 	const SavedLocations = (
 		<span className='mt-16 ml-3 flex inline-grid w-full grid-cols-2'>
-			{/* TODO: Home/Work Icons */}
 			<div>
 				<div
 					className='flex flex-wrap'

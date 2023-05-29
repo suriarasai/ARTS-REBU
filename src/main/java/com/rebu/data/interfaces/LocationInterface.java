@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LocationInterface {
-    private String MobileNumber;
+    private String id;
     private String name;
     private String address;
     private ArrayList<Float> coordinates;

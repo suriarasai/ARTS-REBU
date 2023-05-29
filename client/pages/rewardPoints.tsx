@@ -23,7 +23,7 @@ const RewardPoints = () => {
 
 		// Ensures the user has the number of points they want
 		if (rewardPoints - points >= 0 && points > 0) {
-			rewardPointsAPI(user.mobileNumber!, rewardPoints - points)
+			rewardPointsAPI(user.id!, rewardPoints - points)
 			setUser({ ...user, rewardPoints: rewardPoints - points })
 			updateRewardPoints(rewardPoints - points)
 		} else {
@@ -31,11 +31,11 @@ const RewardPoints = () => {
 		}
 	}
 
-	const rewardPointsAPI = async (mobileNumber: string, newCount: number) => {
+	const rewardPointsAPI = async (id: string, newCount: number) => {
 		const response = await api.post(
 			'/api/v1/customers/updateRewardPoints',
 			{
-				mobileNumber: mobileNumber,
+				id: id,
 				newCount: newCount,
 			}
 		)

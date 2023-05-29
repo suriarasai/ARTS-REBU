@@ -96,9 +96,9 @@ public class UserController {
 
     // POST: Adds the current datetime to the arraylist of sign out times
     @PostMapping("/addSignOutTime")
-    public ResponseEntity<String> addSignInTime(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> addSignOutTime(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<String>(
-                userService.addSignOutTime(payload.get("mobileNumber")),
+                userService.addSignOutTime(payload.get("id")),
                 HttpStatus.OK);
     }
 
@@ -106,7 +106,7 @@ public class UserController {
     @GetMapping("/getSignInTimes")
     public ResponseEntity<List<String>> getSignInTimes(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<List<String>>(
-                userService.getSignInTimes(payload.get("mobileNumber")),
+                userService.getSignInTimes(payload.get("id")),
                 HttpStatus.OK);
     }
 
@@ -114,7 +114,7 @@ public class UserController {
     @GetMapping("/getSignOutTimes")
     public ResponseEntity<List<String>> getSignOutTimes(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<List<String>>(
-                userService.getSignInTimes(payload.get("mobileNumber")),
+                userService.getSignOutTimes(payload.get("id")),
                 HttpStatus.OK);
     }
 
@@ -122,7 +122,7 @@ public class UserController {
     @PostMapping("/updateRewardPoints")
     public ResponseEntity<List<Reward_History>> updateRewardPoints(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<List<Reward_History>>(
-                userService.updateRewardPoints(payload.get("mobileNumber"), payload.get("newCount")),
+                userService.updateRewardPoints(payload.get("id"), payload.get("newCount")),
                 HttpStatus.OK);
     }
 
@@ -130,7 +130,7 @@ public class UserController {
     @PostMapping("/setHome")
     public ResponseEntity<String> setHome(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.setHome(payload.getMobileNumber(), payload.getHome(), payload.getHomeName()),
+                userService.setHome(payload.getId(), payload.getHome(), payload.getHomeName()),
                 HttpStatus.OK);
     }
 
@@ -138,7 +138,7 @@ public class UserController {
     @PostMapping("/setWork")
     public ResponseEntity<String> setWork(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.setWork(payload.getMobileNumber(), payload.getWork(), payload.getWorkName()),
+                userService.setWork(payload.getId(), payload.getWork(), payload.getWorkName()),
                 HttpStatus.OK);
     }
 
@@ -146,7 +146,7 @@ public class UserController {
     @PostMapping("/addFavoriteLocation")
     public ResponseEntity<String> addFavoriteLocation(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.addFavoriteLocation(payload.getMobileNumber(), payload.getName(), payload.getAddress(),
+                userService.addFavoriteLocation(payload.getId(), payload.getName(), payload.getAddress(),
                         payload.getCoordinates()),
                 HttpStatus.OK);
     }
@@ -155,7 +155,7 @@ public class UserController {
     @PostMapping("/removeFavoriteLocation")
     public ResponseEntity<String> removeFavoriteLocation(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
-                userService.removeFavoriteLocation(payload.getMobileNumber(), payload.getName()),
+                userService.removeFavoriteLocation(payload.getId(), payload.getName()),
                 HttpStatus.OK);
     }
 }
