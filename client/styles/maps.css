@@ -25,8 +25,8 @@
 }
 
 [class$='--Suggestion'] {
-	@apply bg-zinc-100 border-none shadow-none;
-	@apply lg:w-full md:w-full hover:bg-white !important;
+	@apply border-none bg-zinc-100 shadow-none;
+	@apply hover:bg-white md:w-full lg:w-full !important;
 }
 
 [class$='--Results'] {
@@ -37,9 +37,16 @@
 }
 
 [class$='--SuggestionName'] {
-	@apply font-medium pb-1 !important;
+	@apply pb-1 font-medium !important;
 }
 
 [class$='--SuggestionDesc'] {
-	@apply text-xs pb-3;
+	@apply pb-3 text-xs;
+}
+
+#map-canvas{
+    position: absolute;
+    left: 0;
+	top: 0;
+	@apply w-full h-full overflow-hidden !important;
 }
