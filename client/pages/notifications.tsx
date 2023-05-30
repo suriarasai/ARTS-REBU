@@ -24,7 +24,7 @@ const Notifications = () => {
 
 	const { isLoaded } = useJsApiLoader({
 		id: 'google-map-script',
-		googleMapsApiKey: 'AIzaSyBlLkgcqDfwG3deUqF0mNhNVXqK00n2e4c',
+		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
 	})
 
 	const [map, setMap] = React.useState(null)
