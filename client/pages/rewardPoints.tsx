@@ -4,6 +4,7 @@ import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
 import { rewardPoints } from '@/redux/types'
+import { RewardPointsAPI } from '@/server'
 
 const RewardPoints = () => {
 	const { user, setUser } = useContext(UserContext)
@@ -17,31 +18,20 @@ const RewardPoints = () => {
 	)
 	const [invalidInput, updateInvalidInput] = useState<boolean>(false) // Validation checks on redemption input box
 
-	const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		const points: number = rewardsForm.current?.points.value
 		e.preventDefault()
 
 		// Ensures the user has the number of points they want
 		if (rewardPoints - points >= 0 && points > 0) {
-			rewardPointsAPI(user.id!, rewardPoints - points)
-			setUser({ ...user, rewardPoints: rewardPoints - points })
+			const rewardData = await RewardPointsAPI(user.id!, rewardPoints - points)
+			
+			setUser({ ...user, rewardHistory: rewardData, rewardPoints: rewardPoints - points })
+			updateRewardHistory(rewardData)
 			updateRewardPoints(rewardPoints - points)
 		} else {
 			updateInvalidInput(true)
 		}
-	}
-
-	const rewardPointsAPI = async (id: string, newCount: number) => {
-		const response = await api.post(
-			'/api/v1/customers/updateRewardPoints',
-			{
-				id: id,
-				newCount: newCount,
-			}
-		)
-		updateRewardHistory(response.data)
-
-		setUser({ ...user, rewardHistory: response.data })
 	}
 
 	return (

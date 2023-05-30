@@ -53,6 +53,10 @@ const Booking = () => {
 			style: 'mapbox://styles/issv374/clhymkicc003e01rbarxs6ryv',
 			zoom: zoom,
 		})
+
+		map.current?.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+		
+		// return map.current?.remove();
 	})
 
 	// Function to create a directions request and draws the path between 2 points
@@ -156,6 +160,15 @@ const Booking = () => {
 
 		loadTaxis(map)
 	})
+
+	const geolocate = new mapboxgl.GeolocateControl({
+		positionOptions: {
+		  enableHighAccuracy: true
+		},
+		trackUserLocation: true
+	  });
+	  
+	  map.current?.addControl(geolocate, "bottom-right")
 
 	// Set the current or destination location ('to')
 	const setLocation = (coords: Array<number>, label: string): void => {

@@ -5,22 +5,14 @@ import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
-import { FavoriteLocation } from '@/redux/types'
-import { useRouter } from 'next/router'
 import { SearchBox } from '@mapbox/search-js-react'
+import { AddPlaceAPI, RemovePlaceAPI } from '@/server'
 
 const SavedPlaces = () => {
 	const { user, setUser } = useContext(UserContext)
-	const router = useRouter()
 	const [searchBoxValue, setSearchBoxValue] = useState<string>('Add a place')
 
-	const addPlace = (e) => {
-		AddPlaceAPI(e)
-		setSearchBoxValue('Add a place')
-		// console.log(e)
-	}
-
-	const AddPlaceAPI = async (e) => {
+	const addPlace = async (e) => {
 		// The API has an inconsitsent return type for large areas like the airport
 		const country = e.properties.context.country?.name
 			? e.properties.context.country?.name
@@ -36,20 +28,25 @@ const SavedPlaces = () => {
 			name: name,
 			address: country + ' ' + postcode,
 		}
-		await api.post('/api/v1/customers/addFavoriteLocation', {
-			...data,
-		})
+		await AddPlaceAPI(data)
 		setUser({
 			...user,
-			favoriteLocations: [...user.favoriteLocations, { ...data }],
+			favoriteLocations: [...user.favoriteLocations, data],
 		})
+		setSearchBoxValue('Add a place')
 	}
 
 	return (
 		<Page title='Saved Locations'>
 			<Section>
 				{/* <button className='grey-button' onClick={() => router.push('/settings')}>Go Back</button> */}
-				<div onFocus={() => {searchBoxValue === 'Add a place' ? setSearchBoxValue('') : searchBoxValue}}>
+				<div
+					onFocus={() => {
+						searchBoxValue === 'Add a place'
+							? setSearchBoxValue('')
+							: searchBoxValue
+					}}
+				>
 					<SearchBox
 						accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
 						options={{ language: 'en', country: 'SG' }}
@@ -194,16 +191,9 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 	)
 }
 
-const RemovePlaceAPI = async (user, name) => {
-	await api.post('/api/v1/customers/removeFavoriteLocation', {
-		id: user.id,
-		name: name,
-	})
-}
-
 const Location = ({ location, setUser, user }) => {
 	const removeEntry = () => {
-		RemovePlaceAPI(user, location.name)
+		RemovePlaceAPI(user.id, location.name)
 		setUser({
 			...user,
 			favoriteLocations: [

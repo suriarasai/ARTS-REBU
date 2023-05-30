@@ -16,6 +16,7 @@ const Tracking = () => {
 	const [lng, setLng] = useState<number>(103.7729178)
 	const [lat, setLat] = useState<number>(1.2981255)
 	const [zoom, setZoom] = useState<number>(14)
+	const [collapsed, setCollapsed] = useState<boolean>(false)
 	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
 	let taxiLocator: number | null = null
@@ -58,7 +59,12 @@ const Tracking = () => {
 		}, 45000)
 	})
 
-	async function getRoute(start: Array<number>, end: Array<number>, id: string, color: string) {
+	async function getRoute(
+		start: Array<number>,
+		end: Array<number>,
+		id: string,
+		color: string
+	) {
 		const query = await fetch(
 			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
 			{ method: 'GET' }
@@ -100,51 +106,71 @@ const Tracking = () => {
 			<div ref={mapContainer} className={'map-container'} />
 			<div className='absolute bottom-0 w-full bg-white md:pb-4 lg:w-7/12 lg:pb-4'>
 				<div className='p-7'>
-					<div className='flex flex-initial'>
-						<label className='w-4/5 md:w-5/6'>Ride Confirmed!</label>
-						<div className='w-1/5 text-sm md:w-1/6'>
+					<div
+						className='flex flex-initial'
+						onClick={() => setCollapsed(!collapsed)}
+					>
+						<label className='w-8/12 md:w-5/6'>Ride Confirmed!</label>
+						<div className='w-3/12 text-sm md:w-1/6'>
 							{new Date(user.tripInfo!.dropoff).toLocaleTimeString('en-US', {
 								hour: 'numeric',
 								minute: 'numeric',
 							})}{' '}
 							ETA
 						</div>
-					</div>
-					<div className='w-full'>
-						Pickup at <b>{user.addr![0]}</b>
-					</div>
-					<div className='flex flex-wrap pt-3 pb-3'>
-						<div className='h-auto w-3/5 text-sm md:w-3/4 lg:w-3/4'>
-							<input placeholder='Pickup Notes' />
-						</div>
-						<div className='blue-button ml-2 h-1/5 text-center'>
-							<button>Done</button>
-						</div>
-						<div className='blue-button ml-2 h-1/5 text-center'>
-							{/* Done/Edit toggle */}
-							<button>Phone</button>
-						</div>
+						<svg
+							viewBox='0 0 15 15'
+							fill='none'
+							xmlns='http://www.w3.org/2000/svg'
+							width='15'
+							height='15'
+							className='w-1/12'
+						>
+							<path
+								d='M10 1.5h3.5m0 0V5m0-3.5l-4 4m-8 4.5v3.5m0 0H5m-3.5 0l4-4'
+								stroke='currentColor'
+							></path>
+						</svg>
 					</div>
 
-					<div className='mt-3 w-full'>
-						<label>Driver Information</label>
-					</div>
-					<div className='w-full'>
-						Name: <b>{'Mr. Driver'}</b>
-					</div>
-					<div className='w-full'>
-						License Plate: <b>{'SG 1234 5678'}</b>
-					</div>
-					<div className='flex flex-wrap'>
-						<div className='w-4/5'>
-							Car Description: <b>{'Black Honda Civic'}</b>
+					<div className={collapsed ? 'hidden' : ''}>
+						<div className='w-full'>
+							Pickup at <b>{user.addr![0]}</b>
 						</div>
-						<button
-							className='red-button float-right w-1/5'
-							onClick={() => handleCancel()}
-						>
-							Cancel
-						</button>
+						
+						<div className='flex flex-wrap pt-3 pb-3'>
+							<div className='h-auto w-3/5 text-sm md:w-3/4 lg:w-3/4'>
+								<input placeholder='Pickup Notes' />
+							</div>
+							<div className='blue-button ml-2 h-1/5 text-center'>
+								<button>Done</button>
+							</div>
+							<div className='blue-button ml-2 h-1/5 text-center'>
+								{/* Done/Edit toggle */}
+								<button>Phone</button>
+							</div>
+						</div>
+
+						<div className='mt-3 w-full'>
+							<label>Driver Information</label>
+						</div>
+						<div className='w-full'>
+							Name: <b>{'Mr. Driver'}</b>
+						</div>
+						<div className='w-full'>
+							License Plate: <b>{'SG 1234 5678'}</b>
+						</div>
+						<div className='flex flex-wrap'>
+							<div className='w-4/5'>
+								Car Description: <b>{'Black Honda Civic'}</b>
+							</div>
+							<button
+								className='red-button float-right w-1/5'
+								onClick={() => handleCancel()}
+							>
+								Cancel
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

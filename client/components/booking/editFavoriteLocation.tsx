@@ -1,4 +1,3 @@
-import { SavedLocation } from '@/redux/types'
 import { SearchBox } from '@mapbox/search-js-react'
 import { useState } from 'react'
 

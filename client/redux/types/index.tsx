@@ -121,3 +121,8 @@ export interface rewardPoints {
 	points: number
 	totalPoints: number
 }
+export interface navButtonProps {
+	label: string
+	href: string
+	className?: string
+}

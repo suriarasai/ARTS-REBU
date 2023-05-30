@@ -8,6 +8,8 @@ import '@/styles/globals.css'
 import '@/styles/maps.css'
 import { useMemo, useState } from 'react'
 import { User, UserContextType } from '@/redux/types'
+import { Provider } from 'react-redux'
+import store from '@/redux/store'
 
 const App = ({ Component, pageProps }: AppProps) => {
 	/*
@@ -15,7 +17,10 @@ const App = ({ Component, pageProps }: AppProps) => {
 		pageProps	: the props of each page/component
 	*/
 	const [user, setUser] = useState<User>({}) // stores and updates user data
-	const userProvider = useMemo<UserContextType>(() => ({ user, setUser }), [user, setUser]) // provider to operate on user data
+	const userProvider = useMemo<UserContextType>(
+		() => ({ user, setUser }),
+		[user, setUser]
+	) // provider to operate on user data
 
 	return (
 		// Theme provider for site-wide styling (dark mode does not work)
@@ -27,7 +32,9 @@ const App = ({ Component, pageProps }: AppProps) => {
 		>
 			<Meta />
 			<UserContext.Provider value={userProvider}>
-				<Component {...pageProps} />
+				<Provider store={store}>
+					<Component {...pageProps} />
+				</Provider>
 			</UserContext.Provider>
 		</ThemeProvider>
 	)

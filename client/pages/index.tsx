@@ -144,7 +144,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 		validateCredentials(data.email, data.password)
 	})
 
-	const { user, setUser } = useContext(UserContext)
+	const { setUser } = useContext(UserContext)
 	const [signInError, setSignInError] = React.useState(false)
 
 	const validateCredentials = async (email: string, password: string) => {
@@ -159,6 +159,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 		} else {
 			setSignInError(true)
 		}
+		return response.data
 	}
 
 	// Navigates back to sign in screen
