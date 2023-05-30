@@ -6,7 +6,7 @@ import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
 import { SearchBox } from '@mapbox/search-js-react'
-import { AddPlaceAPI, RemovePlaceAPI } from '@/server'
+import { AddPlaceAPI, RemovePlaceAPI, SetHome, SetWork } from '@/server'
 
 const SavedPlaces = () => {
 	const { user, setUser } = useContext(UserContext)
@@ -88,52 +88,36 @@ const SavedPlaces = () => {
 	)
 }
 
-const SetFavoriteLocationAPI = async (
-	user,
-	setUser,
-	name,
-	coordinates,
-	label
-) => {
-	if (label === 'Home') {
-		await api.post('/api/v1/customers/setHome', {
-			home: coordinates,
-			homeName: name,
-			id: user.id,
-		})
-		setUser({
-			...user,
-			savedLocations: {
-				...user.savedLocations,
-				home: coordinates,
-				homeName: name,
-			},
-		})
-	} else {
-		await api.post('/api/v1/customers/setWork', {
-			work: coordinates,
-			workName: name,
-			id: user.id,
-		})
-		setUser({
-			...user,
-			savedLocations: {
-				...user.savedLocations,
-				work: coordinates,
-				workName: name,
-			},
-		})
-	}
-}
-
 const SavedLocation = ({ user, setUser, label, place }) => {
 	const [editLocation, updateEditLocation] = useState<boolean>(false)
 	const [value, setValue] = useState<string>('Enter a new address')
 
-	const editEntry = (e) => {
+	const editEntry = async (e) => {
 		const name = e.properties.address ? e.properties.address : e.properties.name
 		const coordinates = e.geometry.coordinates
-		SetFavoriteLocationAPI(user, setUser, name, coordinates, label)
+
+		if (label === 'Home') {
+			await SetHome(coordinates, name, user.id)
+			setUser({
+				...user,
+				savedLocations: {
+					...user.savedLocations,
+					home: coordinates,
+					homeName: name,
+				},
+			})
+		} else {
+			await SetWork(coordinates, name, user.id)
+			setUser({
+				...user,
+				savedLocations: {
+					...user.savedLocations,
+					work: coordinates,
+					workName: name,
+				},
+			})
+		}
+
 		updateEditLocation(false)
 	}
 

@@ -3,7 +3,6 @@
 
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import mapboxgl from 'mapbox-gl'
-import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
 import { useRouter } from 'next/router'
 import { addMarker, geojson } from '@/components/booking/addMarker'

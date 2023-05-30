@@ -1,5 +1,4 @@
 // First page, for signing in
-// TODO: User account is created upon entering their phone number rather than after registration...
 
 import React, { useContext } from 'react'
 import api from '@/api/axiosConfig'
@@ -70,7 +69,7 @@ const SignInForm = ({
 		changeSignInForm(false)
 	})
 
-	const { user, setUser } = useContext(UserContext)
+	const { setUser } = useContext(UserContext)
 
 	const checkIfUserExists = async (
 		mobileNumber: string,
@@ -80,16 +79,20 @@ const SignInForm = ({
 			mobileNumber: countryCode + ' ' + mobileNumber,
 		})
 
-		if (response.data === '') {
+		if (response.data === '' ) {
 			const createUser = await api.post('/api/v1/customers', {
 				mobileNumber: countryCode + ' ' + mobileNumber,
 				countryCode: countryCode,
 			})
 			setUser(createUser.data)
 			setNewUser(true)
+		} else if (response.data.firstName == null) {
+			setUser(response.data)
+			setNewUser(true)
 		} else {
 			setUser(response.data)
 			setNewUser(false)
+			
 		}
 	}
 
