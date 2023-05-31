@@ -70,3 +70,12 @@ p {
 .main-visual { 
 	background: linear-gradient(90deg, hsla(119, 73%, 45%, 1) 0%, hsla(120, 100%, 91%, 1) 100%);
 }
+
+.bottom-nav {
+	@apply fixed bottom-0 w-full bg-zinc-100 pb-safe;
+	box-shadow: 0 -7px 7px -7px rgb(0 0 0 / 0.1);
+}
+
+.back-button {
+	@apply rounded-full shadow-xl bg-green-500 text-white z-50 w-12 h-12 font-medium;
+}

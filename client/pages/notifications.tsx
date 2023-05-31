@@ -17,25 +17,29 @@ import {
 	ComboboxOption,
 } from '@reach/combobox'
 
+import '@reach/combobox/styles.css'
+import { useRouter } from 'next/router'
+
+const libraries = ['places']
 const mapContainerStyle = {
 	height: '100vh',
 	width: '100vw',
-	position: 'absolute',
-	top: '0',
-	left: '0'
 }
 const options = {
 	disableDefaultUI: true,
-	zoomControl: true,
+	zoomControl: false,
 }
 const center = {
-	lat: 1.2981255,
-	lng: 103.7729178,
+	lat: 1.2988975,
+	lng: 103.7636757,
 }
 
 export default function App() {
+	const router = useRouter()
 	const { isLoaded, loadError } = useLoadScript({
 		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+		// @ts-ignore
+		libraries,
 	})
 	const [markers, setMarkers] = React.useState([])
 	const [selected, setSelected] = React.useState(null)
@@ -51,14 +55,14 @@ export default function App() {
 		])
 	}, [])
 
-	const mapRef = React.useRef()
+	const mapRef = React.useRef(null)
 	const onMapLoad = React.useCallback((map) => {
 		mapRef.current = map
 	}, [])
 
 	const panTo = React.useCallback(({ lat, lng }) => {
 		mapRef.current.panTo({ lat, lng })
-		mapRef.current.setZoom(14)
+		mapRef.current.setZoom(17)
 	}, [])
 
 	if (loadError) return 'Error'
@@ -66,17 +70,24 @@ export default function App() {
 
 	return (
 		<div>
-			<Locate panTo={panTo} />
+			<button
+				className='back-button m-3 absolute'
+				onClick={() => router.push('/home')}
+			>
+				{'🡠'}
+			</button>
+			{/* <Locate panTo={panTo} /> */}
 			<Search panTo={panTo} />
 
 			<GoogleMap
 				id='map'
 				mapContainerStyle={mapContainerStyle}
-				zoom={8}
+				zoom={15}
 				center={center}
 				options={options}
 				onClick={onMapClick}
 				onLoad={onMapLoad}
+				mapContainerClassName='top-0 bottom-0 absolute'
 			>
 				{markers.map((marker) => (
 					<Marker
@@ -108,7 +119,7 @@ export default function App() {
 								</span>{' '}
 								Alert
 							</h2>
-							<p>Text goes here</p>
+							<p>Test</p>
 						</div>
 					</InfoWindow>
 				) : null}
@@ -133,26 +144,7 @@ function Locate({ panTo }) {
 				)
 			}}
 		>
-			<svg
-				viewBox='0 0 15 15'
-				fill='none'
-				xmlns='http://www.w3.org/2000/svg'
-				width='23'
-				height='23'
-			>
-				<path
-					clipRule='evenodd'
-					d='M7.5 8.495a2 2 0 002-1.999 2 2 0 00-4 0 2 2 0 002 1.999z'
-					stroke='currentColor'
-					strokeLinecap='square'
-				></path>
-				<path
-					clipRule='evenodd'
-					d='M13.5 6.496c0 4.997-5 7.995-6 7.995s-6-2.998-6-7.995A5.999 5.999 0 017.5.5c3.313 0 6 2.685 6 5.996z'
-					stroke='currentColor'
-					strokeLinecap='square'
-				></path>
-			</svg>
+			Center
 		</button>
 	)
 }
@@ -166,8 +158,8 @@ function Search({ panTo }) {
 		clearSuggestions,
 	} = usePlacesAutocomplete({
 		requestOptions: {
-			location: { lat: () => 1.2981255, lng: () => 103.7729178 },
 			radius: 100 * 1000,
+			componentRestrictions: { country: 'sg' },
 		},
 	})
 
@@ -184,13 +176,13 @@ function Search({ panTo }) {
 			const { lat, lng } = await getLatLng(results[0])
 			panTo({ lat, lng })
 		} catch (error) {
-			console.log('Error: ', error)
+			console.log('😱 Error: ', error)
 		}
 	}
 
 	return (
-		<div className='search'>
-			<Combobox onSelect={handleSelect} className='absolute z-50 w-full'>
+		<div className='absolute z-20 bottom-0 flex flex-col bg-white p-3 w-screen'>
+			<Combobox onSelect={handleSelect}>
 				<ComboboxInput
 					value={value}
 					onChange={handleInput}
@@ -200,8 +192,8 @@ function Search({ panTo }) {
 				<ComboboxPopover>
 					<ComboboxList>
 						{status === 'OK' &&
-							data.map(({ id, description }) => (
-								<ComboboxOption key={id} value={description} />
+							data.map(({ description }, index) => (
+								<ComboboxOption key={index} value={description} />
 							))}
 					</ComboboxList>
 				</ComboboxPopover>
