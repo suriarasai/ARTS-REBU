@@ -17,7 +17,7 @@ const BottomNav = () => {
 									? 'text-green-400 dark:text-green-400'
 									: label === ''
 									? 'hover:text-green-300'
-									: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
+									: 'text-zinc-400 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
 							} ${
 								label === ''
 									? 'mb-6 h-16 w-80 rounded-full ml-3 mr-3 bg-green-500  text-green-200'

@@ -12,7 +12,7 @@ const Home = () => {
 	return (
 		<div className='h-screen overflow-hidden'>
 			{/* Top Visual */}
-			<div className='main-visual flex h-2/5 w-screen flex-col items-center justify-center bg-gradient-to-r from-green-400 to-green-300 shadow-xl'>
+			<div className='main-visual flex h-2/5 w-screen flex-col items-center justify-center bg-gradient-to-r from-green-500 to-green-300 shadow-xl'>
 				<div className='flex h-16 w-16 items-center justify-center overflow-hidden rounded bg-white shadow-xl'>
 					<svg
 						viewBox='0 0 15 15'
