@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 
 // Links to be rendered
 const links = [
-	{ label: 'Booking', href: '/booking' },
+	{ label: 'Home', href: '/home' },
 	{ label: 'Activity', href: '/activity' },
 	{ label: 'Notifications', href: '/notifications' },
 	{ label: 'Settings', href: '/settings' },

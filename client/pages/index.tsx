@@ -158,7 +158,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 		if (response.data != '') {
 			setUser(response.data)
 			setSignInError(false)
-			router.push('/booking')
+			router.push('/home')
 		} else {
 			setSignInError(true)
 		}
@@ -220,7 +220,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 	const continueButton = (e: React.MouseEvent<HTMLButtonElement>): void => {
 		e.preventDefault()
 		setLoginSuccesssful(true)
-		router.push(newUser ? '/registration' : '/booking')
+		router.push(newUser ? '/registration' : '/home')
 	}
 
 	return (
