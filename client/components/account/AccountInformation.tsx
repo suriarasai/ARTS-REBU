@@ -29,6 +29,7 @@ const AccountInformation = ({
 							<select
 								{...register('prefix')}
 								defaultValue={populateData['prefix']}
+								className='py-2 px-4'
 							>
 								<option value=''>Prefix</option>
 								<option value='Mr.'>Mr.</option>
@@ -58,6 +59,7 @@ const AccountInformation = ({
 								minLength: 1,
 							})}
 							defaultValue={populateData['firstName']}
+							className='py-2 px-4'
 						/>
 						{errors.firstName && (
 							<p className='text-error px-3'>Please enter your first name</p>
@@ -74,6 +76,7 @@ const AccountInformation = ({
 								minLength: 1,
 							})}
 							defaultValue={populateData['lastName']}
+							className='py-2 px-4'
 						/>
 						{errors.lastName && (
 							<p className='text-error px-3'>Please enter your last name</p>
@@ -97,6 +100,7 @@ const AccountInformation = ({
 								})}
 								placeholder='youremail@site.domain'
 								defaultValue={populateData['email']}
+								className='py-2 px-4'
 							/>
 							{errors.email && (
 								<p className='text-error px-3'>Please enter a valid email</p>
@@ -114,6 +118,7 @@ const AccountInformation = ({
 							type='password'
 							placeholder='********'
 							defaultValue={populateData['password']}
+							className='py-2 px-4'
 						/>
 						{errors.password && (
 							<p className='text-error px-3'>Please enter a password with 5-20 digits</p>
@@ -136,6 +141,7 @@ const AccountInformation = ({
 						{...register('birthdate', { required: true })}
 						type='date'
 						defaultValue={populateData['birthdate']}
+						className='py-2 px-4'
 					/>
 					{errors.birthdate && (
 						<p className='text-error px-3'>Please enter your date of birth</p>

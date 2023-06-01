@@ -41,6 +41,7 @@ export function EmailForm({
 						name='email'
 						type='text'
 						placeholder='user@website.domain'
+						className='py-2 px-4'
 					/>
 					{errors.email && (
 						<p className='text-error'>Please enter a valid email</p>
@@ -56,6 +57,7 @@ export function EmailForm({
 						})}
 						type='password'
 						placeholder='********'
+						className='py-2 px-4'
 					/>
 					{errors.password && (
 						<p className='text-error'>

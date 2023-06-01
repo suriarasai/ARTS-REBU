@@ -58,6 +58,7 @@ const RewardPoints = () => {
 								type='number'
 								name='points'
 								placeholder='Enter Points to Redeem'
+								className='py-2 px-4'
 							/>
 							{invalidInput && (
 								<p className='text-error px-3'>
@@ -67,7 +68,7 @@ const RewardPoints = () => {
 						</div>
 						<div className='mt-1 w-1/4'>
 							<button
-								className='blue-button w-full uppercase'
+								className='blue-button w-full uppercase -mt-1'
 								onClick={(e) => handleSubmit(e)}
 							>
 								Redeem

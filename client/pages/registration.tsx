@@ -41,7 +41,7 @@ const Registration = () => {
 	const onSubmitProfile = async (data: User) => {
 		setUser(await RegisterUser({ ...formData, ...data }, user.id))
 		setRegistrationSuccessful(true)
-		router.push('/booking')
+		router.push('/home')
 	}
 
 	return (

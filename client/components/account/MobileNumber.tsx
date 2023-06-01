@@ -27,6 +27,7 @@ export const MobileNumber = ({
 						defaultValue={
 							populateData['countryCode'] ? populateData['countryCode'] : ''
 						}
+						className='py-2 px-4'
 					>
 						<option value='' disabled>
 							+
@@ -53,6 +54,7 @@ export const MobileNumber = ({
 				<label>Mobile Number</label>
 				<input
 					type='text'
+					className='py-2 px-4'
 					placeholder='12345678'
 					defaultValue={populateData['mobileNumber']?.substring(
 						populateData['mobileNumber']?.indexOf(' ') + 1

@@ -313,7 +313,7 @@ const SearchField = (props: SearchFieldInterface) => (
 			)}
 		</div>
 		<div
-			className={`${props.fromLocation ? 'hidden' : null} w-10/12`}
+			className={`${props.fromLocation ? 'hidden' : null} w-10/12 mb-3`}
 			onFocus={() => {
 				props.setSearchQueryVisible(true),
 					props.setToLocation(true),
