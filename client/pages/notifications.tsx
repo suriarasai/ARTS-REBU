@@ -21,9 +21,9 @@ import {
 
 import '@reach/combobox/styles.css'
 import { useRouter } from 'next/router'
-import { SVGFlag } from '@/public/SVG/SVGFlag'
-import { SVGLocation } from '@/public/SVG/SVGLocation'
 import locationPin from '@/public/images/location-pin.svg'
+import SearchLocations from '@/components/booking/searchLocations'
+import ExpandSearch from '@/components/booking/expandSearch'
 
 const libraries = ['places']
 const mapContainerStyle = {
@@ -135,7 +135,14 @@ export default function App() {
 						setLocation={setDestination}
 					/>
 				</div>
-				<div className='justify-bottom flex w-1/12 items-end pb-4 text-4xl font-thin'>
+				<div
+					className='justify-bottom flex w-1/12 items-end pb-4 text-4xl font-thin'
+					onClick={() => {
+						// TODO: Logic for setting location
+						panTo({ lat: 1.2988975, lng: 103.7636757 })
+						setDestination({ lat: 1.2988975, lng: 103.7636757 })
+					}}
+				>
 					+
 				</div>
 			</div>
@@ -183,19 +190,6 @@ export default function App() {
 								travelMode: google.maps.TravelMode.DRIVING,
 							}}
 							callback={(e) => directionsCallback(e)}
-							onLoad={(directionsService) => {
-								console.log(
-									'DirectionsService onLoad directionsService: ',
-									directionsService
-								)
-							}}
-							// optional
-							onUnmount={(directionsService) => {
-								console.log(
-									'DirectionsService onUnmount directionsService: ',
-									directionsService
-								)
-							}}
 						/>
 					)}
 
@@ -203,20 +197,6 @@ export default function App() {
 						<DirectionsRenderer
 							options={{
 								directions: response,
-							}}
-							// optional
-							onLoad={(directionsRenderer) => {
-								console.log(
-									'DirectionsRenderer onLoad directionsRenderer: ',
-									directionsRenderer
-								)
-							}}
-							// optional
-							onUnmount={(directionsRenderer) => {
-								console.log(
-									'DirectionsRenderer onUnmount directionsRenderer: ',
-									directionsRenderer
-								)
 							}}
 						/>
 					)}
@@ -262,6 +242,7 @@ function Locate({ panTo }) {
 }
 
 function Search({ panTo, type, placeholder, setLocation }) {
+	const [expandSearch, setExpandSearch] = React.useState(false)
 	const {
 		ready,
 		value,
@@ -297,24 +278,28 @@ function Search({ panTo, type, placeholder, setLocation }) {
 	}
 
 	return (
-		<Combobox onSelect={handleSelect}>
-			<ComboboxInput
-				value={value}
-				onChange={handleInput}
-				disabled={!ready}
-				placeholder={placeholder}
-				className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
-			/>
-			{type === 'from' ? <SVGLocation /> : <SVGFlag />}
-			<ComboboxPopover className='z-50'>
-				<ComboboxList>
-					{status === 'OK' &&
-						data.map(({ description }, index) => (
-							<ComboboxOption key={index} value={description} />
-						))}
-				</ComboboxList>
-			</ComboboxPopover>
-		</Combobox>
+		<div>
+			<Combobox onSelect={handleSelect}>
+				<ComboboxInput
+					value={value}
+					onChange={handleInput}
+					disabled={!ready}
+					placeholder={placeholder}
+					className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+					onFocus={() => setExpandSearch(true)}
+				/>
+				{type === 'from' ? <SVGLocation /> : <SVGFlag />}
+				<ComboboxPopover className='z-50'>
+					<ComboboxList>
+						{status === 'OK' &&
+							data.map(({ description }, index) => (
+								<ComboboxOption key={index} value={description} />
+							))}
+					</ComboboxList>
+				</ComboboxPopover>
+			</Combobox>
+			{expandSearch && <ExpandSearch />}
+		</div>
 	)
 }
 
@@ -333,3 +318,41 @@ function reverseGeocoder(
 		return response
 	})
 }
+
+const SVGLocation = () => (
+	<svg
+		viewBox='0 0 15 15'
+		fill='none'
+		xmlns='http://www.w3.org/2000/svg'
+		width='18'
+		height='18'
+		className='absolute -mt-9 ml-2 text-green-700'
+	>
+		<path
+			d='M6 6.496a1.5 1.5 0 013 0 1.5 1.5 0 01-3 0z'
+			fill='currentColor'
+		></path>
+		<path
+			fillRule='evenodd'
+			clipRule='evenodd'
+			d='M1 6.496A6.499 6.499 0 017.5 0C11.089 0 14 2.909 14 6.496c0 2.674-1.338 4.793-2.772 6.225a10.865 10.865 0 01-2.115 1.654c-.322.19-.623.34-.885.442-.247.098-.506.174-.728.174-.222 0-.481-.076-.728-.174a6.453 6.453 0 01-.885-.442 10.868 10.868 0 01-2.115-1.654C2.338 11.289 1 9.17 1 6.496zm6.5-2.499a2.5 2.5 0 00-2.5 2.5 2.5 2.5 0 005 0 2.5 2.5 0 00-2.5-2.5z'
+			fill='currentColor'
+		></path>
+	</svg>
+)
+
+const SVGFlag = () => (
+	<svg
+		viewBox='0 0 15 15'
+		fill='none'
+		xmlns='http://www.w3.org/2000/svg'
+		width='19'
+		height='19'
+		className='absolute -mt-9 ml-2 text-green-700'
+	>
+		<path
+			d='M2.254.065a.5.5 0 01.503.006l10 6a.5.5 0 01-.033.876L3 11.81V15H2V.5a.5.5 0 01.254-.435z'
+			fill='currentColor'
+		></path>
+	</svg>
+)
