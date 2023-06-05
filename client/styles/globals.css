@@ -24,7 +24,7 @@ label {
 }
 
 h5 {
-	@apply text-xs text-gray-400 !important
+	@apply text-xs text-gray-400 !important;
 }
 
 h1 {
@@ -33,10 +33,10 @@ h1 {
 	font-weight: 300 !important;
 }
 
-p { 
+p {
 	font-family: 'Segoe UI';
 	font-weight: 300;
-	src: local("Segoe UI Light");
+	src: local('Segoe UI Light');
 }
 
 .blue-button {
@@ -64,11 +64,15 @@ p {
 }
 
 .main-screen-box {
-	@apply border rounded-full p-5 w-20 h-20 bg-green-300;
+	@apply h-20 w-20 rounded-full border bg-green-300 p-5;
 }
 
-.main-visual { 
-	background: linear-gradient(90deg, hsla(119, 73%, 45%, 1) 0%, hsla(120, 100%, 91%, 1) 100%);
+.main-visual {
+	background: linear-gradient(
+		90deg,
+		hsla(119, 73%, 45%, 1) 0%,
+		hsla(120, 100%, 91%, 1) 100%
+	);
 }
 
 .bottom-nav {
@@ -77,5 +81,5 @@ p {
 }
 
 .back-button {
-	@apply rounded-full shadow-xl bg-green-500 text-white z-50 w-12 h-12 font-medium;
+	@apply z-50 h-12 w-12 rounded-full bg-green-500 font-medium text-white shadow-xl;
 }
