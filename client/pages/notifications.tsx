@@ -1,12 +1,14 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
 	GoogleMap,
 	useLoadScript,
 	Marker,
 	InfoWindow,
 	DirectionsRenderer,
+	Polyline,
 	DirectionsService,
 } from '@react-google-maps/api'
+import {Loader} from '@googlemaps/js-api-loader';
 import usePlacesAutocomplete, {
 	getGeocode,
 	getLatLng,
@@ -50,6 +52,7 @@ export default function App() {
 	const [markers, setMarkers] = React.useState([])
 	const [selected, setSelected] = React.useState(null)
 	const [validInput, setValidInput] = React.useState<boolean>(false)
+	const [expandSearch, setExpandSearch] = React.useState<number>(0)
 	let count = React.useRef(0)
 
 	const onMapClick = React.useCallback((e) => {
@@ -86,25 +89,43 @@ export default function App() {
 
 	const [response, setResponse] = React.useState(null)
 
-	function directionsCallback(response) {
-		if (response !== null && count.current < 2) {
-			if (response.status === 'OK') {
-				count.current += 1
-				setResponse(response)
-				console.log(response)
-			} else {
-				count.current = 0
-				console.log('response: ', response)
-			}
-		}
-	}
+	// function directionsCallback(response) {
+	// 	if (response !== null && count.current < 2) {
+	// 		if (response.status === 'OK') {
+	// 			count.current += 1
+	// 			setResponse(response.routes[0].overview_path)
+	// 			setValidInput(true)
+	// 		} else {
+	// 			count.current = 0
+	// 		}
+	// 	}
+	// }
 
-	const [origin, setOrigin] = React.useState(null)
-	const [destination, setDestination] = React.useState(null)
+	const [origin, setOrigin] = React.useState('')
+	const [destination, setDestination] = React.useState('')
+
+	function handleCallback() {
+		setResponse(null)
+		CalculateRoute()
+	}
 
 	React.useEffect(() => {
 		count.current = 0
 	}, [destination, origin])
+
+	async function CalculateRoute() {
+		if (destination !== '' && origin !== '') {
+			// eslint-disable-next-line no-undef
+			const directionsService = new google.maps.DirectionsService()
+			const results = await directionsService.route({
+				origin: origin,
+				destination: destination,
+				// eslint-disable-next-line no-undef
+				travelMode: google.maps.TravelMode.DRIVING,
+			})
+			setResponse(results.routes[0].overview_path)
+		}
+	}
 
 	if (loadError) return 'Error'
 	if (!isLoaded) return 'Loading...'
@@ -115,32 +136,46 @@ export default function App() {
 				<div className='w-1/12 pl-1 text-2xl'>
 					<button
 						className='m-3 font-medium'
-						onClick={() => router.push('/home')}
+						onClick={() =>
+							expandSearch !== 0 ? setExpandSearch(0) : router.push('/home')
+						}
 					>
 						{'🡠'}
 					</button>
 				</div>
 				<div className='w-10/12 px-3 pt-3 pb-1'>
 					{/* <Locate panTo={panTo} /> */}
-					<Search
-						panTo={panTo}
-						type='from'
-						placeholder='Current location'
-						setLocation={setOrigin}
-					/>
-					<Search
-						panTo={panTo}
-						type='to'
-						placeholder='Where to?'
-						setLocation={setDestination}
-					/>
+					<div className={expandSearch === 2 && 'hidden'}>
+						<Search
+							panTo={panTo}
+							type='from'
+							placeholder='Current location'
+							setLocation={setOrigin}
+							expandSearch={expandSearch}
+							setExpandSearch={setExpandSearch}
+							callback={() => handleCallback()}
+						/>
+					</div>
+					<div className={expandSearch === 1 && 'hidden'}>
+						<Search
+							panTo={panTo}
+							type='to'
+							placeholder='Where to?'
+							setLocation={setDestination}
+							expandSearch={expandSearch}
+							setExpandSearch={setExpandSearch}
+							callback={() => handleCallback()}
+						/>
+					</div>
 				</div>
 				<div
-					className='justify-bottom flex w-1/12 items-end pb-4 text-4xl font-thin'
+					className={`justify-bottom flex w-1/12 items-end pb-4 text-4xl font-thin ${
+						expandSearch !== 0 ? 'hidden' : ''
+					}`}
 					onClick={() => {
-						// TODO: Logic for setting location
-						panTo({ lat: 1.2988975, lng: 103.7636757 })
-						setDestination({ lat: 1.2988975, lng: 103.7636757 })
+						setResponse(null)
+						setDestination(null)
+						setOrigin(null)
 					}}
 				>
 					+
@@ -148,14 +183,22 @@ export default function App() {
 			</div>
 
 			{validInput ? (
-				<div className='absolute bottom-0 z-20 flex w-full justify-center p-3 pb-8'>
+				<div
+					className={`absolute bottom-0 z-20 flex w-full justify-center p-3 pb-8 ${
+						expandSearch !== 0 ? 'hidden' : ''
+					}`}
+				>
 					<button className='w-full bg-green-600 p-3 uppercase text-white lg:w-1/2'>
 						Done
 					</button>
 				</div>
 			) : null}
 
-			<div className='h-10/12 overflow-hidden'>
+			<div
+				className={`h-10/12 overflow-hidden ${
+					expandSearch !== 0 ? 'hidden' : ''
+				}`}
+			>
 				<GoogleMap
 					id='map'
 					mapContainerStyle={mapContainerStyle}
@@ -182,21 +225,13 @@ export default function App() {
 						/>
 					))}
 
-					{destination !== '' && origin !== '' && (
-						<DirectionsService
-							options={{
-								destination: destination,
-								origin: origin,
-								travelMode: google.maps.TravelMode.DRIVING,
-							}}
-							callback={(e) => directionsCallback(e)}
-						/>
-					)}
-
 					{response !== null && (
-						<DirectionsRenderer
+						<Polyline
+							path={response}
 							options={{
-								directions: response,
+								strokeColor: '#38B44F',
+								strokeOpacity: 1,
+								strokeWeight: 4,
 							}}
 						/>
 					)}
@@ -241,8 +276,15 @@ function Locate({ panTo }) {
 	)
 }
 
-function Search({ panTo, type, placeholder, setLocation }) {
-	const [expandSearch, setExpandSearch] = React.useState(false)
+function Search({
+	panTo,
+	type,
+	placeholder,
+	setLocation,
+	expandSearch,
+	setExpandSearch,
+	callback
+}) {
 	const {
 		ready,
 		value,
@@ -266,6 +308,8 @@ function Search({ panTo, type, placeholder, setLocation }) {
 	const handleSelect = async (address) => {
 		setValue(address, false)
 		clearSuggestions()
+		setExpandSearch(0)
+		callback()
 
 		try {
 			const results = await getGeocode({ address })
@@ -273,7 +317,7 @@ function Search({ panTo, type, placeholder, setLocation }) {
 			panTo({ lat, lng })
 			setLocation({ lat, lng })
 		} catch (error) {
-			console.log('😱 Error: ', error)
+			console.log('Error: ', error)
 		}
 	}
 
@@ -286,7 +330,7 @@ function Search({ panTo, type, placeholder, setLocation }) {
 					disabled={!ready}
 					placeholder={placeholder}
 					className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
-					onFocus={() => setExpandSearch(true)}
+					onClick={() => setExpandSearch(type === 'from' ? 1 : 2)}
 				/>
 				{type === 'from' ? <SVGLocation /> : <SVGFlag />}
 				<ComboboxPopover className='z-50'>
@@ -298,7 +342,14 @@ function Search({ panTo, type, placeholder, setLocation }) {
 					</ComboboxList>
 				</ComboboxPopover>
 			</Combobox>
-			{expandSearch && <ExpandSearch />}
+			{expandSearch !== 0 && (
+				<ExpandSearch
+					panTo={panTo}
+					setLocation={setLocation}
+					setExpandSearch={setExpandSearch}
+					setValue={setValue}
+				/>
+			)}
 		</div>
 	)
 }

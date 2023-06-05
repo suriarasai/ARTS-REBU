@@ -6,10 +6,11 @@ import { useState, useContext } from 'react'
 import api from '@/api/axiosConfig'
 import { UserContext } from '../context/UserContext'
 import { EditFavoriteLocation } from './editFavoriteLocation'
+import { useRouter } from 'next/router'
 
-const ExpandSearch = () => {
-
+const ExpandSearch = ({ panTo, setLocation, setExpandSearch, setValue }) => {
 	const { user, setUser } = useContext(UserContext)
+	const router = useRouter()
 
 	const [label, setLabel] = useState<string>('')
 	const [favoriteLocation, setFavoriteLocation] = useState<SavedLocation>({
@@ -25,13 +26,25 @@ const ExpandSearch = () => {
 		// If the user set a home/work location...
 		if (user.savedLocations[label]) {
 			// ...navigate to the saved location
-			return user.savedLocations[label]
+			navigateToLocation(
+				user.savedLocations[label],
+				user.savedLocations[label + 'Name']
+			)
+		} else {
+			router.push('/savedPlaces')
 		}
+	}
+
+	function navigateToLocation(coords, label) {
+		panTo({ lat: coords[0], lng: coords[1] })
+		setLocation({ lat: coords[0], lng: coords[1] })
+		setExpandSearch(0)
+		setValue(label)
 	}
 
 	// UI for the Home/Saved menus
 	const SavedLocations = (
-		<span className='mt-16 ml-3 flex inline-grid w-full grid-cols-2'>
+		<span className='mt-3 flex inline-grid w-full grid-cols-2'>
 			<div>
 				<div
 					className='flex flex-wrap'
@@ -94,7 +107,7 @@ const ExpandSearch = () => {
 	)
 
 	return (
-		<div className='flex flex-wrap h-screen'>
+		<div className='-ml-12 flex h-screen flex-wrap'>
 			<div className='w-2/12'></div>
 			<div className='w-10/12'>
 				{/* Saved locations: Home and Work */}
@@ -108,7 +121,7 @@ const ExpandSearch = () => {
 								className='ml-3 mb-3'
 								key={index}
 								onClick={() => {
-									return item.coordinates
+									navigateToLocation(item.coordinates, item.name)
 								}}
 							>
 								<p>{item.name}</p>
