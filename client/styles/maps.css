@@ -52,11 +52,15 @@
 }
 
 .map {
-	height: 83.33vh;
+	height: 83.33vh !important;
 	@apply w-screen;
 }
 
-.searchInput {
+.search-container {
+	@apply h-1/6 z-10 flex w-screen flex-wrap bg-white shadow-2xl !important;
+}
+
+/* .searchInput {
 	position: absolute;
 	top: 1rem;
 	right: 1rem;
@@ -67,11 +71,6 @@
 	padding-left: 0.5rem;
 	font-family: sans-serif;
 	border: 1px solid #f0f0f0;
-}
-
-/* Hide label visually. To use for A11y only. */
-label {
-	z-index: -1000;
 }
 
 .suggestions {
@@ -106,4 +105,4 @@ label {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-}
+} */

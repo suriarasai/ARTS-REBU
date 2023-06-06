@@ -126,3 +126,8 @@ export interface navButtonProps {
 	href: string
 	className?: string
 }
+
+export interface PlacesAutocompleteServiceSuggestion {
+	id: string
+	label: string
+}

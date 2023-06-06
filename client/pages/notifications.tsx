@@ -3,19 +3,21 @@ import React, {
 	useState,
 	useCallback,
 	ChangeEvent,
-	forwardRef,
 	useRef,
 	useEffect,
 } from 'react'
 import {
 	GoogleMapsProvider,
-	useDirectionsService,
 	useAutocompleteService,
 	useGoogleMap,
 	usePlacesService,
 } from '@ubilabs/google-maps-react-hooks'
 
 import styles from '@/styles/places-autocomplete-service.module.css'
+import { BackButton } from '@/components/booking/backButton'
+import { PlacesAutocompleteServiceSuggestion } from '@/redux/types'
+import { MapCanvas } from '@/components/booking/MapCanvas'
+import { DirectionsService } from '@/components/booking/DirectionsService'
 
 // Map initialization parameters
 const mapOptions = {
@@ -26,55 +28,9 @@ const mapOptions = {
 	clickableIcons: false,
 }
 
-const DirectionsService = () => {
-	const directionsOptions = {
-		renderOnMap: true,
-		renderOptions: {
-			suppressMarkers: true,
-			polylineOptions: { strokeColor: '#FB2576', strokeWeight: 4 },
-		},
-	}
-
-	// Render the path between 2 points
-	const { findAndRenderRoute, directionsRenderer } =
-		useDirectionsService(directionsOptions)
-
-	useEffect(() => {
-		if (!findAndRenderRoute) {
-			return () => {}
-		}
-
-		const request = {
-			travelMode: google.maps.TravelMode.DRIVING,
-			origin: { lat: 1.292203, lng: 103.7663002 },
-			destination: { lat: 1.2979853, lng: 103.7668717 },
-			drivingOptions: {
-				departureTime: new Date(),
-				trafficModel: google.maps.TrafficModel.BEST_GUESS,
-			},
-		}
-
-		findAndRenderRoute(request)
-			.then((result: google.maps.DirectionsResult) => {
-				// eslint-disable-next-line no-console
-				console.log(result)
-			})
-			.catch((errorStatus: google.maps.DirectionsStatus) => {
-				console.error(errorStatus)
-			})
-
-		return () => {
-			if (directionsRenderer) {
-				directionsRenderer.setMap(null)
-			}
-		}
-	}, [directionsRenderer, findAndRenderRoute])
-
-	return null
-}
-
 const App: FunctionComponent<Record<string, unknown>> = () => {
 	const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null)
+	const [expandSearch, setExpandSearch] = useState(0)
 
 	const mapRef = useCallback(
 		(node: React.SetStateAction<HTMLDivElement | null>) => {
@@ -91,28 +47,33 @@ const App: FunctionComponent<Record<string, unknown>> = () => {
 			libraries={['places']}
 		>
 			<React.StrictMode>
-				<div id='container'>
-					<MapCanvas ref={mapRef} />
-					<DirectionsService />
-					<PlacesAutocompleteService />
+				<div className='search-container'>
+					<div className='w-1/12 pl-1'>
+						<BackButton
+							expandSearch={expandSearch}
+							setExpandSearch={setExpandSearch}
+						/>
+					</div>
+					<div className='w-10/12 px-3 pt-3 pb-1'>
+						<PlacesAutocompleteService />
+						<PlacesAutocompleteService />
+					</div>
+					<div
+						className={`justify-bottom flex w-1/12 items-end pb-4 text-4xl font-thin ${
+							expandSearch !== 0 ? 'hidden' : ''
+						}`}
+					>
+						+
+					</div>
 				</div>
+				<DirectionsService />
+				<MapCanvas ref={mapRef} />
 			</React.StrictMode>
 		</GoogleMapsProvider>
 	)
 }
 
 export default App
-
-const MapCanvas = forwardRef<HTMLDivElement, Record<string, unknown>>(
-	(_, ref) => <div className='h-screen w-screen' ref={ref} />
-)
-
-MapCanvas.displayName = 'MapCanvas'
-
-export interface PlacesAutocompleteServiceSuggestion {
-	id: string
-	label: string
-}
 
 const maxNumberOfSuggestions = 5
 
@@ -217,11 +178,11 @@ const PlacesAutocompleteService: FunctionComponent<
 	}, [autocompleteService, inputValue])
 
 	return (
-		<>
-			<label htmlFor='places-search-autocomplete'>Search for a location:</label>
+		<div>
 			<input
 				ref={inputRef}
-				className={styles.searchInput}
+				// className={styles.searchInput}
+				className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
 				value={inputValue}
 				onChange={handleInputChange}
 				autoComplete='off'
@@ -230,6 +191,7 @@ const PlacesAutocompleteService: FunctionComponent<
 				aria-controls='search-suggestions'
 				aria-expanded={suggestionsAreVisible}
 				id='places-search-autocomplete'
+				onBlur={() => setSuggestionsAreVisible(false)}
 			/>
 
 			{suggestionsAreVisible && (
@@ -252,6 +214,6 @@ const PlacesAutocompleteService: FunctionComponent<
 					))}
 				</ul>
 			)}
-		</>
+		</div>
 	)
 }
