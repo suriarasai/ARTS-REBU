@@ -1,219 +1,164 @@
-import React, {
-	FunctionComponent,
-	useState,
-	useCallback,
-	ChangeEvent,
-	useRef,
-	useEffect,
-} from 'react'
 import {
-	GoogleMapsProvider,
-	useAutocompleteService,
-	useGoogleMap,
-	usePlacesService,
-} from '@ubilabs/google-maps-react-hooks'
+	FaCrosshairs,
+	FaFontAwesomeFlag,
+	FaLocationArrow,
+	FaPlusCircle,
+	FaPlusSquare,
+	FaTimes,
+} from 'react-icons/fa'
 
-import styles from '@/styles/places-autocomplete-service.module.css'
+import {
+	useJsApiLoader,
+	GoogleMap,
+	Marker,
+	Autocomplete,
+	DirectionsRenderer,
+} from '@react-google-maps/api'
+import { useRef, useState } from 'react'
 import { BackButton } from '@/components/booking/backButton'
-import { PlacesAutocompleteServiceSuggestion } from '@/redux/types'
-import { MapCanvas } from '@/components/booking/MapCanvas'
-import { DirectionsService } from '@/components/booking/DirectionsService'
 
-// Map initialization parameters
-const mapOptions = {
-	center: { lat: 1.2988975, lng: 103.7636757 },
-	zoom: 17,
-	disableDefaultUI: true,
-	zoomControl: false,
-	clickableIcons: false,
-}
+const center = { lat: 1.2952078, lng: 103.773675 }
+var directionsDisplay;
 
-const App: FunctionComponent<Record<string, unknown>> = () => {
-	const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null)
+function App() {
+	const { isLoaded } = useJsApiLoader({
+		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+		libraries: ['places'],
+	})
+
+	const [map, setMap] = useState(/** @type google.maps.Map */ null)
+	const [directionsResponse, setDirectionsResponse] = useState(null)
+	const [distance, setDistance] = useState('')
+	const [duration, setDuration] = useState('')
+
 	const [expandSearch, setExpandSearch] = useState(0)
 
-	const mapRef = useCallback(
-		(node: React.SetStateAction<HTMLDivElement | null>) => {
-			node && setMapContainer(node)
-		},
-		[]
-	)
+	/** @type React.MutableRefObject<HTMLinputElement> */
+	const originRef = useRef(null)
+	/** @type React.MutableRefObject<HTMLinputElement> */
+	const destinationRef = useRef(null)
+
+	if (!isLoaded) {
+		return 'loading'
+	}
+
+	async function calculateRoute() {
+		if (originRef.current.value === '' || destinationRef.current.value === '') {
+			return
+		}
+		// eslint-disable-next-line no-undef
+		const directionsService = new google.maps.DirectionsService()
+		
+		if (directionsDisplay != null) {
+			directionsDisplay.set('directions', null)
+			directionsDisplay.setMap(null)
+			directionsDisplay = null
+		}
+
+		directionsDisplay = new google.maps.DirectionsRenderer()
+
+		const results = await directionsService.route({
+			origin: originRef.current.value,
+			destination: destinationRef.current.value,
+			// eslint-disable-next-line no-undef
+			travelMode: google.maps.TravelMode.DRIVING,
+		})
+		setDirectionsResponse(results)
+		setDistance(results.routes[0].legs[0].distance.text)
+		setDuration(results.routes[0].legs[0].duration.text)
+
+		directionsDisplay.setMap(map)
+		directionsDisplay.setDirections(results)
+	}
+
+	function clearRoute() {
+		setDirectionsResponse(null)
+		setDistance('')
+		setDuration('')
+		originRef.current.value = ''
+		destinationRef.current.value = ''
+	}
 
 	return (
-		<GoogleMapsProvider
-			googleMapsAPIKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-			mapContainer={mapContainer}
-			mapOptions={mapOptions}
-			libraries={['places']}
-		>
-			<React.StrictMode>
-				<div className='search-container'>
-					<div className='w-1/12 pl-1'>
-						<BackButton
-							expandSearch={expandSearch}
-							setExpandSearch={setExpandSearch}
-						/>
-					</div>
-					<div className='w-10/12 px-3 pt-3 pb-1'>
-						<PlacesAutocompleteService />
-						<PlacesAutocompleteService />
-					</div>
-					<div
-						className={`justify-bottom flex w-1/12 items-end pb-4 text-4xl font-thin ${
-							expandSearch !== 0 ? 'hidden' : ''
-						}`}
-					>
-						+
-					</div>
+		<div className='relative h-screen w-screen'>
+			<div className='absolute left-0 top-0 h-full w-full'>
+				{/* Google Map div */}
+				<GoogleMap
+					center={center}
+					zoom={15}
+					mapContainerStyle={{ width: '100%', height: '100%' }}
+					options={{
+						zoomControl: false,
+						streetViewControl: false,
+						mapTypeControl: false,
+						fullscreenControl: false,
+					}}
+					onLoad={(map) => setMap(map)}
+				>
+					<Marker position={center} />
+					{/* {directionsResponse && (
+						<DirectionsRenderer directions={directionsResponse} />
+					)} */}
+				</GoogleMap>
+			</div>
+			<div className='h-2/12 absolute z-20 flex w-screen flex-wrap bg-white p-2 shadow-xl'>
+				<div className='w-1/12'>
+					<BackButton
+						expandSearch={expandSearch}
+						setExpandSearch={setExpandSearch}
+					/>
 				</div>
-				<DirectionsService />
-				<MapCanvas ref={mapRef} />
-			</React.StrictMode>
-		</GoogleMapsProvider>
+				<div className='w-10/12'>
+					<Autocomplete>
+						<input
+							type='text'
+							className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+							placeholder='Origin'
+							ref={originRef}
+						/>
+					</Autocomplete>
+					<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
+					<Autocomplete>
+						<input
+							type='text'
+							className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+							placeholder='Destination'
+							ref={destinationRef}
+						/>
+					</Autocomplete>
+					<FaFontAwesomeFlag className='absolute -mt-9 ml-2 text-xl text-green-500' />
+				</div>
+				<div className='justify-bottom flex w-1/12 items-end p-3 pb-4 text-2xl text-green-500'>
+					<FaPlusSquare />
+				</div>
+			</div>
+			<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
+				<button
+					className='w-10/12 rounded bg-green-500 py-2 px-4 text-white'
+					type='submit'
+					onClick={calculateRoute}
+				>
+					Calculate Route
+				</button>
+				<div aria-label='center back' onClick={clearRoute}>
+					{<FaTimes />}
+				</div>
+			</div>
+			{/* <div className='justify-space m-4'>
+				<p>Distance: {distance} </p>
+				<p>Duration: {duration} </p>
+				<div
+					aria-label='center back'
+					onClick={() => {
+						map.panTo(center)
+						map.setZoom(15)
+					}}
+				>
+					<FaLocationArrow />
+				</div>
+			</div> */}
+		</div>
 	)
 }
 
 export default App
-
-const maxNumberOfSuggestions = 5
-
-const PlacesAutocompleteService: FunctionComponent<
-	Record<string, unknown>
-> = () => {
-	const inputRef = useRef<HTMLInputElement | null>(null)
-	const timeout = useRef<NodeJS.Timeout | null>(null)
-
-	const [inputValue, setInputValue] = useState<string>('')
-	const [suggestions, setSuggestions] = useState<
-		Array<PlacesAutocompleteServiceSuggestion>
-	>([])
-	const [suggestionsAreVisible, setSuggestionsAreVisible] =
-		useState<boolean>(false)
-
-	const map = useGoogleMap()
-	const autocompleteService = useAutocompleteService()
-	const placesService = usePlacesService()
-
-	// Update the user input value
-	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setInputValue(event.target.value)
-
-		if (timeout.current) {
-			clearTimeout(timeout.current)
-		}
-
-		// Show dropdown with a little delay
-		timeout.current = setTimeout(() => {
-			setSuggestionsAreVisible(true)
-		}, 300)
-	}
-
-	// Handle suggestion selection
-	const selectSuggestion = (
-		suggestion: PlacesAutocompleteServiceSuggestion
-	) => {
-		inputRef.current?.focus()
-		setInputValue(suggestion.label)
-
-		// Close dropdown
-		setSuggestionsAreVisible(false)
-
-		// Get the location from Places Service of the selected place and zoom to it
-		placesService?.getDetails(
-			{ placeId: suggestion.id },
-			(
-				placeResult: google.maps.places.PlaceResult | null,
-				status: google.maps.places.PlacesServiceStatus
-			) => {
-				if (
-					status !== google.maps.places.PlacesServiceStatus.OK ||
-					!placeResult
-				) {
-					return
-				}
-
-				// Get position of the suggestion to move map
-				const position = placeResult.geometry?.location
-
-				if (map && position) {
-					map.setZoom(14)
-					map.panTo(position)
-				}
-			}
-		)
-	}
-
-	// Update suggestions and get autocomplete place suggestions
-	useEffect(() => {
-		if (inputValue.length >= 2) {
-			autocompleteService?.getPlacePredictions(
-				{
-					input: inputValue,
-				},
-				(
-					predictions: google.maps.places.AutocompletePrediction[] | null,
-					status: google.maps.places.PlacesServiceStatus
-				) => {
-					if (
-						status !== google.maps.places.PlacesServiceStatus.OK ||
-						!predictions
-					) {
-						return
-					}
-
-					const autocompleteSuggestions = predictions
-						.slice(0, maxNumberOfSuggestions)
-						.map((prediction) => ({
-							id: prediction.place_id,
-							label: prediction.description,
-						}))
-
-					// Update suggestions for dropdown suggestions list
-					setSuggestions(autocompleteSuggestions)
-				}
-			)
-		} else {
-			setSuggestions([])
-		}
-	}, [autocompleteService, inputValue])
-
-	return (
-		<div>
-			<input
-				ref={inputRef}
-				// className={styles.searchInput}
-				className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
-				value={inputValue}
-				onChange={handleInputChange}
-				autoComplete='off'
-				role='combobox'
-				aria-autocomplete='list'
-				aria-controls='search-suggestions'
-				aria-expanded={suggestionsAreVisible}
-				id='places-search-autocomplete'
-				onBlur={() => setSuggestionsAreVisible(false)}
-			/>
-
-			{suggestionsAreVisible && (
-				<ul
-					className={styles.suggestions}
-					id='search-suggestions'
-					role='listbox'
-					aria-label='Suggested locations:'
-				>
-					{suggestions.map((suggestion) => (
-						<li
-							key={suggestion.id}
-							onClick={() => selectSuggestion(suggestion)}
-							id={suggestion.id}
-							role='option'
-							aria-selected
-						>
-							<span>{suggestion.label}</span>
-						</li>
-					))}
-				</ul>
-			)}
-		</div>
-	)
-}
