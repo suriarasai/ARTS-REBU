@@ -1,7 +1,6 @@
 import {
 	FaCrosshairs,
 	FaFontAwesomeFlag,
-	FaLocationArrow,
 	FaPlusCircle,
 	FaPlusSquare,
 	FaTimes,
@@ -14,8 +13,10 @@ import {
 	Autocomplete,
 	DirectionsRenderer,
 } from '@react-google-maps/api'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BackButton } from '@/components/booking/backButton'
+import { Locate } from '@/components/booking/Locate'
+import ExpandSearch from '@/components/booking/expandSearch'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 var directionsDisplay
@@ -33,17 +34,32 @@ function App() {
 
 	const [expandSearch, setExpandSearch] = useState(0)
 
-	/** @type React.MutableRefObject<HTMLinputElement> */
+	const [origin, setOrigin] = useState('')
+	const [destination, setDestination] = useState('')
+
+	/** @type React.MutableRefObject<HTMLInputElement> */
 	const originRef = useRef(null)
-	/** @type React.MutableRefObject<HTMLinputElement> */
+	/** @type React.MutableRefObject<HTMLInputElement> */
 	const destinationRef = useRef(null)
+
+	useEffect(() => {
+		if (origin !== '' || null) {
+			originRef.current.value = origin
+		}
+	}, [origin, originRef])
+
+	useEffect(() => {
+		if (destination !== '' || null) {
+			destinationRef.current.value = destination
+		}
+	}, [destination, destinationRef])
 
 	if (!isLoaded) {
 		return 'loading'
 	}
 
 	async function calculateRoute() {
-		if (originRef.current.value === '' || destinationRef.current.value === '') {
+		if (origin === '' || destination === '') {
 			return
 		}
 		// eslint-disable-next-line no-undef
@@ -58,8 +74,8 @@ function App() {
 		directionsDisplay = new google.maps.DirectionsRenderer()
 
 		const results = await directionsService.route({
-			origin: originRef.current.value,
-			destination: destinationRef.current.value,
+			origin: origin,
+			destination: destination,
 			// eslint-disable-next-line no-undef
 			travelMode: google.maps.TravelMode.DRIVING,
 		})
@@ -75,14 +91,18 @@ function App() {
 		setDirectionsResponse(null)
 		setDistance('')
 		setDuration('')
-		originRef.current.value = ''
-		destinationRef.current.value = ''
+		setOrigin('')
+		setDestination('')
 	}
 
 	return (
 		<div className='relative h-screen w-screen'>
-			<div className='absolute left-0 top-0 h-full w-full'>
-				{/* Google Map div */}
+			{/* Google Maps screen */}
+			<div
+				className={`absolute left-0 top-0 h-full w-full ${
+					expandSearch === 0 ? '' : 'hidden'
+				}`}
+			>
 				<GoogleMap
 					center={center}
 					zoom={15}
@@ -101,7 +121,13 @@ function App() {
 					)} */}
 				</GoogleMap>
 			</div>
-			<div className='h-2/12 absolute z-20 flex w-screen flex-wrap bg-white p-2 shadow-xl'>
+
+			{/* Search elements */}
+			<div
+				className={`absolute z-20 flex w-screen flex-wrap bg-white p-2 ${
+					expandSearch === 0 ? 'shadow-xl' : ''
+				}`}
+			>
 				<div className='w-1/12'>
 					<BackButton
 						expandSearch={expandSearch}
@@ -109,80 +135,89 @@ function App() {
 					/>
 				</div>
 				<div className='w-10/12'>
-					<Autocomplete>
-						<input
-							type='text'
-							className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
-							placeholder='Origin'
-							ref={originRef}
-						/>
-					</Autocomplete>
-					<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
-					<Autocomplete>
-						<input
-							type='text'
-							className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
-							placeholder='Destination'
-							ref={destinationRef}
-						/>
-					</Autocomplete>
-					<FaFontAwesomeFlag className='absolute -mt-9 ml-2 text-xl text-green-500' />
+					{/* Origin Search */}
+					<div className={expandSearch === 2 ? 'hidden' : ''}>
+						<Autocomplete
+							onPlaceChanged={() => setExpandSearch(0)}
+							options={{ componentRestrictions: { country: 'sg' } }}
+						>
+							<input
+								type='text'
+								className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+								placeholder='Origin'
+								ref={originRef}
+								// value={origin}
+								onChange={(e) => setOrigin(e.target.value)}
+								onClick={() => setExpandSearch(1)}
+							/>
+						</Autocomplete>
+						<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
+					</div>
+
+					{/* Destination Search */}
+					<div className={expandSearch === 1 ? 'hidden' : ''}>
+						<Autocomplete onPlaceChanged={() => setExpandSearch(0)}>
+							<input
+								type='text'
+								className='rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+								placeholder='Destination'
+								ref={destinationRef}
+								// value={destination}
+								onChange={(e) => setDestination(e.target.value)}
+								onClick={() => setExpandSearch(2)}
+							/>
+						</Autocomplete>
+						<FaFontAwesomeFlag className='absolute -mt-7 ml-2 text-xl text-green-500' />
+					</div>
 				</div>
-				<div className='justify-bottom flex w-1/12 items-end p-3 pb-4 text-2xl text-green-500'>
-					<FaPlusSquare />
-				</div>
-			</div>
-			<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
-				<button
-					className='w-10/12 rounded bg-green-500 py-2 px-4 text-white'
-					type='submit'
-					onClick={calculateRoute}
+				<div
+					className={`justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500 ${
+						expandSearch !== 0 ? 'hidden' : 0
+					}`}
 				>
-					Calculate Route
-				</button>
-				{/* <div aria-label='center back' onClick={clearRoute}>
-					{<FaTimes />}
-				</div> */}
+					<FaPlusSquare
+						onClick={() =>
+							// setOrigin('Lee Kong Chian Natural History Museum, Singapore')
+							(destinationRef.current.value = 'NUS ISS')
+						}
+					/>
+				</div>
 			</div>
 
-			<Locate map={map} />
+			{expandSearch === 0 ? (
+				<>
+					{/* Bottom button */}
+					<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
+						<button
+							className='w-10/12 rounded bg-green-500 py-2 px-4 text-white'
+							type='submit'
+							onClick={calculateRoute}
+						>
+							Calculate Route
+						</button>
+						{/* <div aria-label='center back' onClick={clearRoute}>
+					{<FaTimes />}
+				</div> */}
+					</div>
+
+					<Locate map={map} />
+				</>
+			) : (
+				<div className='pt-16'>
+					{/* Expanded search UI with saved locations */}
+					<ExpandSearch
+						setExpandSearch={setExpandSearch}
+						setLocation={expandSearch === 1 ? setOrigin : setDestination}
+					/>
+				</div>
+			)}
 
 			{/* <div className='justify-space m-4'>
 				<p>Distance: {distance} </p>
 				<p>Duration: {duration} </p>
-				<div
-					aria-label='center back'
-					onClick={() => {
-						map.panTo(center)
-						map.setZoom(15)
-					}}
-				>
-					<FaLocationArrow />
-				</div>
 			</div> */}
 		</div>
 	)
 }
 
 export default App
-
-function Locate({ map }) {
-	return (
-		<div
-			className='absolute bottom-0 right-0 m-8 mb-28 flex h-12 w-12 items-center  justify-center rounded-full bg-green-500'
-			onClick={() => {
-				navigator.geolocation.getCurrentPosition(
-					(position) => {
-						map.panTo({
-							lat: position.coords.latitude,
-							lng: position.coords.longitude,
-						})
-					},
-					() => null
-				)
-			}}
-		>
-			<FaLocationArrow className='text-xl text-white' />
-		</div>
-	)
-}

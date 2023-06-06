@@ -8,7 +8,7 @@ import { UserContext } from '../context/UserContext'
 import { EditFavoriteLocation } from './editFavoriteLocation'
 import { useRouter } from 'next/router'
 
-const ExpandSearch = ({ panTo, setLocation, setExpandSearch, setValue }) => {
+const ExpandSearch = ({ setExpandSearch, setLocation }) => {
 	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
 
@@ -36,10 +36,8 @@ const ExpandSearch = ({ panTo, setLocation, setExpandSearch, setValue }) => {
 	}
 
 	function navigateToLocation(coords, label) {
-		panTo({ lat: coords[0], lng: coords[1] })
-		setLocation({ lat: coords[0], lng: coords[1] })
 		setExpandSearch(0)
-		setValue(label)
+		setLocation(label)
 	}
 
 	// UI for the Home/Saved menus
