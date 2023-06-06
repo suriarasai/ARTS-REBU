@@ -18,7 +18,7 @@ import { useRef, useState } from 'react'
 import { BackButton } from '@/components/booking/backButton'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
-var directionsDisplay;
+var directionsDisplay
 
 function App() {
 	const { isLoaded } = useJsApiLoader({
@@ -48,7 +48,7 @@ function App() {
 		}
 		// eslint-disable-next-line no-undef
 		const directionsService = new google.maps.DirectionsService()
-		
+
 		if (directionsDisplay != null) {
 			directionsDisplay.set('directions', null)
 			directionsDisplay.setMap(null)
@@ -140,10 +140,13 @@ function App() {
 				>
 					Calculate Route
 				</button>
-				<div aria-label='center back' onClick={clearRoute}>
+				{/* <div aria-label='center back' onClick={clearRoute}>
 					{<FaTimes />}
-				</div>
+				</div> */}
 			</div>
+
+			<Locate map={map} />
+
 			{/* <div className='justify-space m-4'>
 				<p>Distance: {distance} </p>
 				<p>Duration: {duration} </p>
@@ -162,3 +165,24 @@ function App() {
 }
 
 export default App
+
+function Locate({ map }) {
+	return (
+		<div
+			className='absolute bottom-0 right-0 m-8 mb-28 flex h-12 w-12 items-center  justify-center rounded-full bg-green-500'
+			onClick={() => {
+				navigator.geolocation.getCurrentPosition(
+					(position) => {
+						map.panTo({
+							lat: position.coords.latitude,
+							lng: position.coords.longitude,
+						})
+					},
+					() => null
+				)
+			}}
+		>
+			<FaLocationArrow className='text-xl text-white' />
+		</div>
+	)
+}
