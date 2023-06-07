@@ -6,7 +6,7 @@ export const DirectionsService = () => {
 		renderOnMap: true,
 		renderOptions: {
 			suppressMarkers: true,
-			polylineOptions: { strokeColor: '#FB2576', strokeWeight: 4 },
+			polylineOptions: { strokeColor: '#22c55e', strokeWeight: 4 },
 		},
 	};
 

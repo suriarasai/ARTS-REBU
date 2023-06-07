@@ -211,6 +211,7 @@ function App() {
 					{/* Expanded search UI with saved locations */}
 					<ExpandSearch
 						setExpandSearch={setExpandSearch}
+						location={expandSearch === 1 ? origin : destination}
 						setLocation={expandSearch === 1 ? setOrigin : setDestination}
 					/>
 				</div>

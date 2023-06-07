@@ -1,6 +1,6 @@
 // TODO: Button to route to Booking and set a route to that place
 
-import { useContext, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
@@ -27,6 +27,7 @@ const SavedPlaces = () => {
 	const { user, setUser } = useContext(UserContext)
 
 	const [autoComplete, setAutoComplete] = useState(null)
+	const [valueObserver, setValueObserver] = useState('')
 
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const searchRef = useRef(null)
@@ -55,7 +56,11 @@ const SavedPlaces = () => {
 				{/* <button className='grey-button' onClick={() => router.push('/settings')}>Go Back</button> */}
 
 				<Autocomplete
-					onPlaceChanged={() => addPlace()}
+					onPlaceChanged={() => {
+						addPlace()
+						searchRef.current.value = ''
+						setValueObserver('')
+					}}
 					onLoad={(e) => setAutoComplete(e)}
 					fields={['address_components', 'geometry', 'formatted_address']}
 					options={{ componentRestrictions: { country: 'sg' } }}
@@ -65,37 +70,42 @@ const SavedPlaces = () => {
 						className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
 						placeholder='Add a place'
 						ref={searchRef}
+						onChange={((e) => setValueObserver(e.target.value))}
 					/>
 				</Autocomplete>
 				<FaSearchLocation className='absolute -mt-7 ml-2 text-xl text-green-500' />
 
-				<SavedLocation
-					user={user}
-					setUser={setUser}
-					label={'Home'}
-					place={user.savedLocations.homeName}
-				/>
-
-				<SavedLocation
-					user={user}
-					setUser={setUser}
-					label={'Work'}
-					place={user.savedLocations.workName}
-				/>
-
-				<label className='pt-5'>Saved Places</label>
-				{user.favoriteLocations.length == 0 ? (
-					<div className='pt-5'>{'No saved places'}</div>
-				) : (
-					user.favoriteLocations.map((location, index) => (
-						<Location
-							location={location}
-							setUser={setUser}
+				{(valueObserver === '') ? (
+					<>
+						<SavedLocation
 							user={user}
-							key={index}
+							setUser={setUser}
+							label={'Home'}
+							place={user.savedLocations.homeName}
 						/>
-					))
-				)}
+
+						<SavedLocation
+							user={user}
+							setUser={setUser}
+							label={'Work'}
+							place={user.savedLocations.workName}
+						/>
+
+						<label className='pt-5'>Saved Places</label>
+						{user.favoriteLocations.length == 0 ? (
+							<div className='pt-5'>{'No saved places'}</div>
+						) : (
+							user.favoriteLocations.map((location, index) => (
+								<Location
+									location={location}
+									setUser={setUser}
+									user={user}
+									key={index}
+								/>
+							))
+						)}
+					</>
+				) : ""}
 			</Section>
 		</Page>
 	)

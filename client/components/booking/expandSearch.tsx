@@ -2,13 +2,13 @@
 // TODO: Merge fav and saved locations in data model?
 
 import { SavedLocation, SearchLocationInterface } from '@/redux/types'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import api from '@/api/axiosConfig'
 import { UserContext } from '../context/UserContext'
 import { EditFavoriteLocation } from './editFavoriteLocation'
 import { useRouter } from 'next/router'
 
-const ExpandSearch = ({ setExpandSearch, setLocation }) => {
+const ExpandSearch = ({ setExpandSearch, location, setLocation }) => {
 	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
 
@@ -107,27 +107,31 @@ const ExpandSearch = ({ setExpandSearch, setLocation }) => {
 	return (
 		<div className='-ml-12 flex h-screen flex-wrap'>
 			<div className='w-2/12'></div>
-			<div className='w-10/12'>
-				{/* Saved locations: Home and Work */}
-				{SavedLocations}
+			{location === '' ? (
+				<div className='w-10/12'>
+					{/* Saved locations: Home and Work */}
+					{SavedLocations}
 
-				<label className='mt-6 mb-4'>Saved Locations</label>
+					<label className='mt-6 mb-4'>Saved Locations</label>
 
-				{user.favoriteLocations && user.favoriteLocations.length > 0
-					? user.favoriteLocations.map((item, index) => (
-							<div
-								className='ml-3 mb-3'
-								key={index}
-								onClick={() => {
-									navigateToLocation(item.coordinates, item.name)
-								}}
-							>
-								<p>{item.name}</p>
-								<h5>{item.address}</h5>
-							</div>
-					  ))
-					: 'No saved locations'}
-			</div>
+					{user.favoriteLocations && user.favoriteLocations.length > 0
+						? user.favoriteLocations.map((item, index) => (
+								<div
+									className='ml-3 mb-3'
+									key={index}
+									onClick={() => {
+										navigateToLocation(item.coordinates, item.name)
+									}}
+								>
+									<p>{item.name}</p>
+									<h5>{item.address}</h5>
+								</div>
+						  ))
+						: 'No saved locations'}
+				</div>
+			) : (
+				''
+			)}
 		</div>
 	)
 }

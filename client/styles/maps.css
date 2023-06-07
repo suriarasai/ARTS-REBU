@@ -106,3 +106,20 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 } */
+
+/* Hiding the Google Maps logo... please remove if this goes public */
+.pac-container.pac-logo.hdpi::after {
+	@apply hidden !important;
+}
+
+.pac-matched {
+	@apply text-green-800;
+}
+
+.pac-container {
+	@apply shadow-none border-none mt-5 bg-zinc-100
+}
+
+.pac-item {
+	@apply border-none py-3
+}
