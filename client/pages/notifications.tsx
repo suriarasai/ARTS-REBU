@@ -11,9 +11,9 @@ import {
 	GoogleMap,
 	Marker,
 	Autocomplete,
-	DirectionsRenderer,
 } from '@react-google-maps/api'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useContext } from 'react'
+import { UserContext } from '@/components/context/UserContext'
 import { BackButton } from '@/components/booking/backButton'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
@@ -25,6 +25,7 @@ var directionsDisplay
 const libraries = ['places']
 
 function App() {
+	const { user, setUser } = useContext(UserContext)
 	const { isLoaded } = useJsApiLoader({
 		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
 		// @ts-ignore
@@ -46,6 +47,41 @@ function App() {
 	const originRef = useRef(null)
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const destinationRef = useRef(null)
+
+	const [marker, setMarker] = useState([])
+
+	function initiateMarkers() {
+		const markerFacade = []
+
+		user.favoriteLocations.map((location) =>
+			markerFacade.push({
+				lat: location.coordinates[0],
+				lng: location.coordinates[1],
+			})
+		)
+		setMarker(markerFacade)
+		console.log(markerFacade)
+		// user.savedLocations.work &&
+		// 	setMarker([
+		// 		marker,
+		// 		{
+		// 			lat: user.savedLocations.work[0],
+		// 			lng: user.savedLocations.work[1],
+		// 		},
+		// 	])
+		// user.savedLocations.home &&
+		// 	setMarker(marker + [
+		// 		{
+		// 			lat: user.savedLocations.home[0],
+		// 			lng: user.savedLocations.home[1],
+		// 		},
+		// 	])
+	}
+
+	useEffect(() => {
+		initiateMarkers()
+		console.log('test')
+	}, [])
 
 	// Set origin address after clicking a saved location
 	useEffect(() => {
@@ -135,10 +171,21 @@ function App() {
 					}}
 					onLoad={(map) => setMap(map)}
 				>
-					<Marker position={center} />
-					{/* {directionsResponse && (
-						<DirectionsRenderer directions={directionsResponse} />
-					)} */}
+					{marker?.length !== 0 &&
+						marker?.map((location, index) => (
+							<Marker
+								key={index + '-' + location.lat + '-' + location.lng}
+								position={location}
+								icon={{
+									path: 'M8 12l-4.7023 2.4721.898-5.236L.3916 5.5279l5.2574-.764L8 0l2.3511 4.764 5.2574.7639-3.8043 3.7082.898 5.236z',
+									fillColor: 'yellow',
+									fillOpacity: 0.9,
+									scale: 1,
+									strokeColor: 'gold',
+									strokeWeight: 2,
+								}}
+							/>
+						))}
 				</GoogleMap>
 			</div>
 
@@ -148,7 +195,12 @@ function App() {
 					expandSearch === 0 ? 'shadow-xl' : ''
 				}`}
 			>
-				<div className='w-1/12'>
+				<div
+					className='w-1/12'
+					onClick={() => {
+						setMarker(null)
+					}}
+				>
 					<BackButton
 						expandSearch={expandSearch}
 						setExpandSearch={setExpandSearch}
@@ -231,7 +283,6 @@ function App() {
 export default App
 
 async function CoordinateToAddress(coordinates, setLocation) {
-
 	await fetch(
 		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 	)
