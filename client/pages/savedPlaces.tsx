@@ -5,56 +5,69 @@ import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
-import { SearchBox } from '@mapbox/search-js-react'
 import { AddPlaceAPI, RemovePlaceAPI, SetHome, SetWork } from '@/server'
+import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
+import {
+	FaEdit,
+	FaHome,
+	FaRegTimesCircle,
+	FaSearchLocation,
+	FaSuitcase,
+} from 'react-icons/fa'
+
+const libraries = ['places']
 
 const SavedPlaces = () => {
+	const { isLoaded } = useJsApiLoader({
+		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+		// @ts-ignore
+		libraries: libraries,
+	})
+
 	const { user, setUser } = useContext(UserContext)
-	const [searchBoxValue, setSearchBoxValue] = useState<string>('Add a place')
 
-	const addPlace = async (e) => {
-		// The API has an inconsitsent return type for large areas like the airport
-		const country = e.properties.context.country?.name
-			? e.properties.context.country?.name
-			: e.properties.context.place.name
-		const postcode = e.properties.context.postcode?.name
-			? e.properties.context.postcode?.name
-			: ''
-		const name = e.properties.address ? e.properties.address : e.properties.name
+	const [autoComplete, setAutoComplete] = useState(null)
 
+	/** @type React.MutableRefObject<HTMLInputElement> */
+	const searchRef = useRef(null)
+
+	const addPlace = async () => {
+		const [name, address, coordinates] = getAddress(autoComplete.getPlace())
 		const data = {
-			id: user.id,
-			coordinates: e.geometry.coordinates,
-			name: name,
-			address: country + ' ' + postcode,
+			coordinates: coordinates as Array<number>,
+			name: name as string,
+			address: 'Singapore ' + address,
 		}
-		await AddPlaceAPI(data)
+		await AddPlaceAPI({ id: user.id, ...data })
 		setUser({
 			...user,
 			favoriteLocations: [...user.favoriteLocations, data],
 		})
-		setSearchBoxValue('Add a place')
+	}
+
+	if (!isLoaded) {
+		return 'loading'
 	}
 
 	return (
 		<Page title='Saved Locations'>
 			<Section>
 				{/* <button className='grey-button' onClick={() => router.push('/settings')}>Go Back</button> */}
-				<div
-					onFocus={() => {
-						searchBoxValue === 'Add a place'
-							? setSearchBoxValue('')
-							: searchBoxValue
-					}}
+
+				<Autocomplete
+					onPlaceChanged={() => addPlace()}
+					onLoad={(e) => setAutoComplete(e)}
+					fields={['address_components', 'geometry', 'formatted_address']}
+					options={{ componentRestrictions: { country: 'sg' } }}
 				>
-					<SearchBox
-						accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
-						options={{ language: 'en', country: 'SG' }}
-						onRetrieve={(e) => addPlace(e.features[0])}
-						value={searchBoxValue}
-						onChange={(e) => setSearchBoxValue(e)}
+					<input
+						type='text'
+						className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
+						placeholder='Add a place'
+						ref={searchRef}
 					/>
-				</div>
+				</Autocomplete>
+				<FaSearchLocation className='absolute -mt-7 ml-2 text-xl text-green-500' />
 
 				<SavedLocation
 					user={user}
@@ -90,12 +103,13 @@ const SavedPlaces = () => {
 
 const SavedLocation = ({ user, setUser, label, place }) => {
 	const [editLocation, updateEditLocation] = useState<boolean>(false)
-	const [value, setValue] = useState<string>('Enter a new address')
+	const [autoComplete, setAutoComplete] = useState(null)
 
-	const editEntry = async (e) => {
-		const name = e.properties.address ? e.properties.address : e.properties.name
-		const coordinates = e.geometry.coordinates
+	/** @type React.MutableRefObject<HTMLInputElement> */
+	const searchRef = useRef(null)
 
+	const editEntry = async () => {
+		const [name, address, coordinates] = getAddress(autoComplete.getPlace())
 		if (label === 'Home') {
 			await SetHome(coordinates, name, user.id)
 			setUser({
@@ -125,18 +139,24 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 		<div className='flex flex-wrap pl-5 pt-3'>
 			<div className='w-5/6'>
 				{editLocation ? (
-					<div
-						onFocus={() =>
-							value === 'Enter a new address' ? setValue('') : value
-						}
-					>
-						<SearchBox
-							accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string}
-							options={{ language: 'en', country: 'SG' }}
-							onRetrieve={(e) => editEntry(e.features[0])}
-							value={value}
-							onChange={(e) => setValue(e)}
-						/>
+					<div>
+						<Autocomplete
+							onPlaceChanged={() => editEntry()}
+							onLoad={(e) => setAutoComplete(e)}
+							fields={['address_components', 'geometry', 'formatted_address']}
+							options={{ componentRestrictions: { country: 'sg' } }}
+						>
+							<input
+								type='text'
+								className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
+								placeholder='Enter a new address'
+								ref={searchRef}
+							/>
+						</Autocomplete>
+						<div className='absolute -mt-7 ml-2 text-xl text-green-500'>
+							{label === 'Home' && <FaHome />}
+							{label === 'Work' && <FaSuitcase />}
+						</div>
 					</div>
 				) : (
 					<div>
@@ -154,21 +174,12 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 						Cancel
 					</button>
 				) : (
-					<svg
-						viewBox='0 0 15 15'
-						fill='none'
-						xmlns='http://www.w3.org/2000/svg'
-						width='15'
-						height='15'
+					<FaEdit
 						onClick={() => {
 							updateEditLocation(true)
 						}}
-					>
-						<path
-							d='M.5 9.5l-.354-.354L0 9.293V9.5h.5zm9-9l.354-.354a.5.5 0 00-.708 0L9.5.5zm5 5l.354.354a.5.5 0 000-.708L14.5 5.5zm-9 9v.5h.207l.147-.146L5.5 14.5zm-5 0H0a.5.5 0 00.5.5v-.5zm.354-4.646l9-9-.708-.708-9 9 .708.708zm8.292-9l5 5 .708-.708-5-5-.708.708zm5 4.292l-9 9 .708.708 9-9-.708-.708zM5.5 14h-5v1h5v-1zm-4.5.5v-5H0v5h1zM6.146 3.854l5 5 .708-.708-5-5-.708.708zM8 15h7v-1H8v1z'
-							fill='currentColor'
-						></path>
-					</svg>
+						className='text-zinc-500'
+					/>
 				)}
 			</div>
 		</div>
@@ -196,22 +207,46 @@ const Location = ({ location, setUser, user }) => {
 				className='flex w-1/6 items-center justify-center'
 				onClick={() => removeEntry()}
 			>
-				<svg
-					viewBox='0 0 15 15'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-					width='15'
-					height='15'
-					color='darkred'
-				>
-					<path
-						d='M4.5 4.5l6 6m-6 0l6-6m-3 10a7 7 0 110-14 7 7 0 010 14z'
-						stroke='currentColor'
-					></path>
-				</svg>
+				<FaRegTimesCircle className='text-red-700' />
 			</div>
 		</div>
 	)
 }
 
 export default SavedPlaces
+
+function getAddress(place) {
+	let address1 = ''
+	let postcode = ''
+	let coordinates = [
+		place.geometry.location.lat(),
+		place.geometry.location.lng(),
+	]
+
+	for (const component of place.address_components as google.maps.GeocoderAddressComponent[]) {
+		const componentType = component.types[0]
+
+		switch (componentType) {
+			case 'street_number': {
+				address1 = `${component.long_name} ${address1}`
+				break
+			}
+
+			case 'route': {
+				address1 += component.short_name
+				break
+			}
+
+			case 'postal_code': {
+				postcode = component.long_name
+				break
+			}
+		}
+	}
+
+	if (address1 === '') {
+		address1 = place.formatted_address
+	}
+
+	return [address1, postcode, coordinates]
+}

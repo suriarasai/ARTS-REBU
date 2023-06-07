@@ -37,7 +37,7 @@ const ExpandSearch = ({ setExpandSearch, setLocation }) => {
 
 	function navigateToLocation(coords, label) {
 		setExpandSearch(0)
-		setLocation(label)
+		setLocation(coords)
 	}
 
 	// UI for the Home/Saved menus

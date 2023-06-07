@@ -47,15 +47,27 @@ function App() {
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const destinationRef = useRef(null)
 
+	// Set origin address after clicking a saved location
 	useEffect(() => {
 		if (origin !== '' || null) {
-			originRef.current.value = origin
+			if (typeof origin === 'object') {
+				CoordinateToAddress(origin, setOrigin)
+			} else {
+				originRef.current.value = origin
+			}
+			isValidInput(false)
 		}
 	}, [origin, originRef])
 
+	// Set destination address after clicking a saved location
 	useEffect(() => {
 		if (destination !== '' || null) {
-			destinationRef.current.value = destination
+			if (typeof destination === 'object') {
+				CoordinateToAddress(destination, setDestination)
+			} else {
+				destinationRef.current.value = destination
+			}
+			isValidInput(false)
 		}
 	}, [destination, destinationRef])
 
@@ -166,12 +178,7 @@ function App() {
 						expandSearch !== 0 ? 'hidden' : 0
 					}`}
 				>
-					<FaPlusSquare
-						onClick={() =>
-							// setOrigin('Lee Kong Chian Natural History Museum, Singapore')
-							(destinationRef.current.value = 'NUS ISS')
-						}
-					/>
+					<FaPlusSquare onClick={() => {}} />
 				</div>
 			</div>
 
@@ -222,6 +229,19 @@ function App() {
 
 export default App
 
+async function CoordinateToAddress(coordinates, setLocation) {
+
+	await fetch(
+		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	)
+		.then(function (response) {
+			return response.json()
+		})
+		.then(function (data) {
+			setLocation(data.results[0].formatted_address)
+		})
+}
+
 function InputDestinationLocation(
 	expandSearch: number,
 	setExpandSearch,
@@ -231,7 +251,11 @@ function InputDestinationLocation(
 ) {
 	return (
 		<div className={expandSearch === 1 ? 'hidden' : ''}>
-			<Autocomplete onPlaceChanged={() => setExpandSearch(0)}>
+			<Autocomplete
+				onPlaceChanged={() => setExpandSearch(0)}
+				options={{ componentRestrictions: { country: 'sg' } }}
+				fields={['address_components', 'geometry', 'formatted_address']}
+			>
 				<input
 					type='text'
 					className='rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
@@ -262,6 +286,7 @@ function InputCurrentLocation(
 			<Autocomplete
 				onPlaceChanged={() => setExpandSearch(0)}
 				options={{ componentRestrictions: { country: 'sg' } }}
+				fields={['address_components', 'geometry', 'formatted_address']}
 			>
 				<input
 					type='text'
