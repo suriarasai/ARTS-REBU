@@ -17,20 +17,25 @@ import { useEffect, useRef, useState } from 'react'
 import { BackButton } from '@/components/booking/backButton'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
+import { RideConfirmation } from '@/components/booking/RideConfirmation'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 var directionsDisplay
 
+const libraries = ['places']
+
 function App() {
 	const { isLoaded } = useJsApiLoader({
 		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-		libraries: ['places'],
+		// @ts-ignore
+		libraries: libraries,
 	})
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
 	const [directionsResponse, setDirectionsResponse] = useState(null)
 	const [distance, setDistance] = useState('')
 	const [duration, setDuration] = useState('')
+	const [validInput, isValidInput] = useState(false)
 
 	const [expandSearch, setExpandSearch] = useState(0)
 
@@ -60,6 +65,7 @@ function App() {
 
 	async function calculateRoute() {
 		if (origin === '' || destination === '') {
+			isValidInput(false)
 			return
 		}
 		// eslint-disable-next-line no-undef
@@ -85,6 +91,8 @@ function App() {
 
 		directionsDisplay.setMap(map)
 		directionsDisplay.setDirections(results)
+
+		isValidInput(true)
 	}
 
 	function clearRoute() {
@@ -136,39 +144,22 @@ function App() {
 				</div>
 				<div className='w-10/12'>
 					{/* Origin Search */}
-					<div className={expandSearch === 2 ? 'hidden' : ''}>
-						<Autocomplete
-							onPlaceChanged={() => setExpandSearch(0)}
-							options={{ componentRestrictions: { country: 'sg' } }}
-						>
-							<input
-								type='text'
-								className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
-								placeholder='Origin'
-								ref={originRef}
-								// value={origin}
-								onChange={(e) => setOrigin(e.target.value)}
-								onClick={() => setExpandSearch(1)}
-							/>
-						</Autocomplete>
-						<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
-					</div>
+					{InputCurrentLocation(
+						expandSearch,
+						setExpandSearch,
+						originRef,
+						setOrigin,
+						isValidInput
+					)}
 
 					{/* Destination Search */}
-					<div className={expandSearch === 1 ? 'hidden' : ''}>
-						<Autocomplete onPlaceChanged={() => setExpandSearch(0)}>
-							<input
-								type='text'
-								className='rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
-								placeholder='Destination'
-								ref={destinationRef}
-								// value={destination}
-								onChange={(e) => setDestination(e.target.value)}
-								onClick={() => setExpandSearch(2)}
-							/>
-						</Autocomplete>
-						<FaFontAwesomeFlag className='absolute -mt-7 ml-2 text-xl text-green-500' />
-					</div>
+					{InputDestinationLocation(
+						expandSearch,
+						setExpandSearch,
+						destinationRef,
+						setDestination,
+						isValidInput
+					)}
 				</div>
 				<div
 					className={`justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500 ${
@@ -185,23 +176,29 @@ function App() {
 			</div>
 
 			{expandSearch === 0 ? (
-				<>
-					{/* Bottom button */}
-					<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
-						<button
-							className='w-10/12 rounded bg-green-500 py-2 px-4 text-white'
-							type='submit'
-							onClick={calculateRoute}
-						>
-							Calculate Route
-						</button>
-						{/* <div aria-label='center back' onClick={clearRoute}>
-					{<FaTimes />}
-				</div> */}
-					</div>
+				validInput ? (
+					// Confirmation procedure
+					<RideConfirmation
+						distance={parseFloat(distance.match(/\d+/)[0])}
+						origin={originRef.current.value.split(',')}
+						destination={destinationRef.current.value.split(',')}
+					/>
+				) : (
+					// Prompt to calculate route
+					<>
+						<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
+							<button
+								className='w-10/12 rounded bg-green-500 py-2 px-4 text-white'
+								type='submit'
+								onClick={calculateRoute}
+							>
+								Calculate Route
+							</button>
+						</div>
 
-					<Locate map={map} />
-				</>
+						<Locate map={map} />
+					</>
+				)
 			) : (
 				<div className='pt-16'>
 					{/* Expanded search UI with saved locations */}
@@ -216,8 +213,70 @@ function App() {
 				<p>Distance: {distance} </p>
 				<p>Duration: {duration} </p>
 			</div> */}
+			{/* <div aria-label='center back' onClick={clearRoute}>
+					{<FaTimes />}
+				</div> */}
 		</div>
 	)
 }
 
 export default App
+
+function InputDestinationLocation(
+	expandSearch: number,
+	setExpandSearch,
+	destinationRef,
+	setDestination,
+	isValidInput
+) {
+	return (
+		<div className={expandSearch === 1 ? 'hidden' : ''}>
+			<Autocomplete onPlaceChanged={() => setExpandSearch(0)}>
+				<input
+					type='text'
+					className='rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+					placeholder='Destination'
+					ref={destinationRef}
+					// value={destination}
+					onChange={(e) => {
+						setDestination(e.target.value)
+						isValidInput(false)
+					}}
+					onClick={() => setExpandSearch(2)}
+				/>
+			</Autocomplete>
+			<FaFontAwesomeFlag className='absolute -mt-7 ml-2 text-xl text-green-500' />
+		</div>
+	)
+}
+
+function InputCurrentLocation(
+	expandSearch: number,
+	setExpandSearch,
+	originRef,
+	setOrigin,
+	isValidInput
+) {
+	return (
+		<div className={expandSearch === 2 ? 'hidden' : ''}>
+			<Autocomplete
+				onPlaceChanged={() => setExpandSearch(0)}
+				options={{ componentRestrictions: { country: 'sg' } }}
+			>
+				<input
+					type='text'
+					className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+					placeholder='Origin'
+					ref={originRef}
+					// value={origin}
+					onChange={(e) => {
+						setOrigin(e.target.value)
+						isValidInput(false)
+					}}
+					onClick={() => setExpandSearch(1)}
+				/>
+			</Autocomplete>
+			<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
+		</div>
+	)
+}

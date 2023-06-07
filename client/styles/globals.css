@@ -44,7 +44,7 @@ p {
 }
 
 .green-button {
-	@apply rounded bg-lime-400 py-3 px-4 text-xs font-bold text-white hover:bg-lime-800 !important;
+	@apply rounded bg-green-500 py-3 px-4 text-xs font-bold text-white hover:bg-lime-800 !important;
 }
 
 .grey-button {
@@ -82,4 +82,14 @@ p {
 
 .back-button {
 	@apply z-50 h-12 w-12 rounded-full bg-green-500 font-medium text-white shadow-xl;
+}
+
+.ride-option {
+	@apply flow-root p-2;
+	border: 1.5px solid transparent;
+}
+
+.ride-option:hover {
+	@apply bg-green-50 rounded-lg;
+	border: 1.5px solid #22c55e;
 }
