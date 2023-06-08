@@ -117,8 +117,12 @@
 }
 
 .pac-container {
-	@apply shadow-none border-none bg-zinc-100 z-0 absolute top-0 mt-28 !important;
+	@apply shadow-none border-none bg-zinc-100 z-0 absolute mt-28 top-0 !important;
 }
+/* 
+.origin div.pac-container.pac-logo.hdpi {
+	@apply hidden;
+} */
 
 .pac-item {
 	@apply border-none py-3

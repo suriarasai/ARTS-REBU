@@ -7,9 +7,14 @@ import api from '@/api/axiosConfig'
 import { UserContext } from '../context/UserContext'
 import { EditFavoriteLocation } from './editFavoriteLocation'
 import { useRouter } from 'next/router'
-import { FaHouseUser, FaSearchLocation, FaStar, FaSuitcase } from 'react-icons/fa'
+import {
+	FaHouseUser,
+	FaSearchLocation,
+	FaStar,
+	FaSuitcase,
+} from 'react-icons/fa'
 
-const ExpandSearch = ({ setExpandSearch, location, setLocation }) => {
+const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
 
@@ -90,12 +95,15 @@ const ExpandSearch = ({ setExpandSearch, location, setLocation }) => {
 						{SavedLocations}
 					</div>
 
-					<div className='mt-2 flex flex-wrap bg-white p-3 px-5'>
+					<div
+						className='mt-2 flex flex-wrap bg-white p-3 px-5'
+						onClick={() => setExpandSearch(mode === 1 ? 3 : 4)}
+					>
 						<FaSearchLocation className='mr-6 text-xl text-green-500' />
 						<b className='text-sm'>Set Location on Map</b>
 					</div>
 
-					<div className='mt-2 bg-white p-5 flex flex-wrap'>
+					<div className='mt-2 flex flex-wrap bg-white p-5'>
 						<FaStar className='mr-6 text-xl text-green-500' />
 						<b className='mb-4 text-sm'>Saved Locations</b>
 

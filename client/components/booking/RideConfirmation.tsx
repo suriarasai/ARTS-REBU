@@ -1,16 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
-import { getCoords } from '@/components/booking/getCoords'
 import { UserContext } from '@/components/context/UserContext'
 import { UserContextType } from '@/redux/types'
-import { showOptionInterface, optionsInterface } from '@/redux/types'
+import { showOptionInterface } from '@/redux/types'
 import {
 	FaCar,
 	FaCarAlt,
 	FaCrosshairs,
 	FaExpandAlt,
 	FaFontAwesomeFlag,
-	FaLongArrowAltDown,
 } from 'react-icons/fa'
 
 // Shows options of rides to choose from
@@ -18,22 +16,9 @@ export const RideConfirmation = (data) => {
 	const { user, setUser } = useContext<UserContextType>(UserContext)
 	const router = useRouter()
 
-	const [address, setAddress] = useState<Array<String>>([
-		'Unknown Street',
-		'Unknown',
-	])
-	const [date, setDate] = useState<Date>(new Date())
 	const [options, setOptions] = useState<Array<any>>([])
 	const [clickedOption, setClickedOption] = useState<number | null>(null)
 	const [collapsed, setCollapsed] = useState<boolean>(false)
-
-	// Post-processing on address name to separate city and postal code
-	// useEffect(() => {
-	// 	setAddress([
-	// 		addr.slice(0, addr?.indexOf(',')),
-	// 		addr.slice(addr?.indexOf(',') + 1),
-	// 	])
-	// }, [addr])
 
 	useEffect(() => {
 		console.log(data.distance, typeof data.distance)
@@ -58,17 +43,6 @@ export const RideConfirmation = (data) => {
 			},
 		])
 	}, [data])
-
-	// const handleSubmit = () => {
-	// 	console.log([getCoords(map, 'from'), getCoords(map, 'to')])
-	// 	setUser({
-	// 		...user,
-	// 		temp: [getCoords(map, 'from'), getCoords(map, 'to')],
-	// 		tripInfo: options[clickedOption! - 1],
-	// 		addr: address,
-	// 	})
-	// 	router.push('/tracking')
-	// }
 
 	return (
 		<div className='absolute bottom-0 w-screen border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
@@ -96,36 +70,9 @@ export const RideConfirmation = (data) => {
 								setClickedOption={setClickedOption}
 							/>
 
+							{/* Origin and Destination Confirmation */}
 							<label className='mt-2'>Route</label>
-
-							{/* <div className='float-left items-center p-2 px-3 pt-4'>
-								<FaLongArrowAltDown className='text-3xl text-green-500' />
-							</div> */}
-
-							<div className='mb-2 pl-2 pb-2'>
-								<tr className='flex items-center'>
-									<th className='p-1 text-right'>
-										<FaCrosshairs className='text-xl text-green-500' />
-									</th>
-									<th className='text-left'>
-										<p className='p-2 text-sm'>
-											<b>{data.origin[0]}</b>
-											{data.origin[1]}
-										</p>
-									</th>
-								</tr>
-								<tr className='flex items-center'>
-									<th className='p-1 text-right'>
-										<FaFontAwesomeFlag className='text-xl text-green-500' />
-									</th>
-									<th className='text-left'>
-										<p className='p-2 text-sm'>
-											<b>{data.destination[0]}</b>
-											{data.destination[1]}
-										</p>
-									</th>
-								</tr>
-							</div>
+							{RouteConfirmation(data)}
 
 							<div className='flex items-center justify-center gap-5'>
 								<button
@@ -183,6 +130,33 @@ const ShowOption = ({ option, setClickedOption }: showOptionInterface) => (
 		</div>
 	</div>
 )
+
+function RouteConfirmation(data: any) {
+	return <div className='mb-2 pl-2 pb-2'>
+		<tr className='flex items-center'>
+			<th className='p-1 text-right'>
+				<FaCrosshairs className='text-xl text-green-500' />
+			</th>
+			<th className='text-left'>
+				<p className='p-2 text-sm'>
+					<b>{data.origin[0]}</b>
+					{data.origin[1]}
+				</p>
+			</th>
+		</tr>
+		<tr className='flex items-center'>
+			<th className='p-1 text-right'>
+				<FaFontAwesomeFlag className='text-xl text-green-500' />
+			</th>
+			<th className='text-left'>
+				<p className='p-2 text-sm'>
+					<b>{data.destination[0]}</b>
+					{data.destination[1]}
+				</p>
+			</th>
+		</tr>
+	</div>
+}
 
 function AccordionHeader(
 	clickedOption: number,

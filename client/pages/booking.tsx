@@ -1,376 +1,381 @@
-// Main hub for booking rides, calls external location API
-// TODO: Update to the latest route optimization API (time-optimized)
-// TODO: Implement traffic API
+import { FaCrosshairs, FaFontAwesomeFlag, FaPlusSquare } from 'react-icons/fa'
 
-import React, { useRef, useEffect, useState, useContext } from 'react'
-import mapboxgl from 'mapbox-gl'
-import { SearchBox } from '@mapbox/search-js-react'
-import * as turf from '@turf/turf'
-
-import Page from '@/components/ui/page'
-import Section from '@/components/ui/section'
-import SearchLocations from '@/components/booking/searchLocations'
-import { RideOptions } from '@/components/booking/RideOptions'
-import { addMarker, geojson } from '@/components/booking/addMarker'
-import { loadTaxis } from '@/components/booking/loadTaxis'
+import {
+	useJsApiLoader,
+	GoogleMap,
+	Marker,
+	Autocomplete,
+} from '@react-google-maps/api'
+import { useEffect, useRef, useState, useContext } from 'react'
 import { UserContext } from '@/components/context/UserContext'
-import { SearchFieldInterface } from '@/redux/types'
+import { BackButton } from '@/components/booking/backButton'
+import { Locate } from '@/components/booking/Locate'
+import ExpandSearch from '@/components/booking/expandSearch'
+import { RideConfirmation } from '@/components/booking/RideConfirmation'
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string
+const center = { lat: 1.2952078, lng: 103.773675 }
+var directionsDisplay
 
-// Main function
-const Booking = () => {
+const libraries = ['places']
+
+function Booking() {
 	const { user, setUser } = useContext(UserContext)
-	const mapContainer = useRef(null)
-	const map = useRef<mapboxgl.Map | any>(null)
-	const [lng, setLng] = useState<number>(103.7729178)
-	const [lat, setLat] = useState<number>(1.2981255)
-	const [zoom, setZoom] = useState(14)
-	const [distance, setDistance] = useState(0)
+	const { isLoaded } = useJsApiLoader({
+		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+		// @ts-ignore
+		libraries: libraries,
+	})
 
-	const [toLocation, setToLocation] = useState(false) // where you want to go
-	const [fromLocation, setFromLocation] = useState(false) // where you currently are
-	const [searchQueryVisible, setSearchQueryVisible] = useState(false)
-	const [showRides, setShowRides] = useState(false) // show the ride options
-	const [address, setAddress] = useState('') // Store the address of the seleted starting point
+	const [map, setMap] = useState(/** @type google.maps.Map */ null)
+	const [directionsResponse, setDirectionsResponse] = useState(null)
+	const [distance, setDistance] = useState('')
+	const [duration, setDuration] = useState('')
+	const [validInput, isValidInput] = useState(false)
 
-	const [toAddress, setToAddress] = useState<string>('Enter your destination') // Search box value
-	const [fromAddress, setFromAddress] = useState<string>('Your location') // Search box value
-	const [searchBoxSuggestions, setSearchBoxSuggestions] = useState<any>([])
+	// Tracks which input box to trigger
+	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
+	const [expandSearch, setExpandSearch] = useState(0)
+
+	const [origin, setOrigin] = useState('') // Address of the origin location
+	const [destination, setDestination] = useState('') // Address of the destination location
+
+	/** @type React.MutableRefObject<HTMLInputElement> */
+	const originRef = useRef(null) // Tracks input value of origin box
+	/** @type React.MutableRefObject<HTMLInputElement> */
+	const destinationRef = useRef(null) // Tracks input value of destination box
+
+	const [marker, setMarker] = useState([])
 
 	useEffect(() => {
-		if (map.current) return // initialize map only once
+		if (marker?.length == 0) {
+			const markerFacade = []
 
-		// Centers map on current location
-		navigator.geolocation.getCurrentPosition((position) => {
-			setLng(position.coords.longitude)
-			setLat(position.coords.latitude)
-		})
-
-		// Creates the map object
-		map.current = new mapboxgl.Map({
-			container: mapContainer.current!,
-			style: 'mapbox://styles/issv374/clhymkicc003e01rbarxs6ryv',
-			zoom: zoom,
-		})
-
-		map.current?.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-		
-		// return map.current?.remove();
-	})
-
-	// Function to create a directions request and draws the path between 2 points
-	async function getRoute(
-		map: mapboxgl.Map | any,
-		start: Array<number>,
-		end: Array<number>
-	) {
-		const query = await fetch(
-			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-			{ method: 'GET' }
-		)
-		const json = await query.json()
-		const data = json.routes[0]
-		const route = data.geometry.coordinates
-
-		// If a route already exists in the map, then overwrite it
-		if (map.current?.getSource('route')) {
-			map.current?.getSource('route').setData(geojson(route, 'LineString'))
-		}
-		// otherwise make a new request
-		else {
-			map.current?.addLayer({
-				id: 'route',
-				type: 'line',
-				source: {
-					type: 'geojson',
-					data: geojson(route, 'LineString'),
-				},
-				layout: {
-					'line-join': 'round',
-					'line-cap': 'round',
-				},
-				paint: {
-					'line-color': '#000',
-					'line-width': 3,
-					'line-opacity': 0.75,
-				},
-			})
-		}
-
-		// Fitting the map to the LineString
-		// Coordinates of the LineString connecting the origin place to the destination
-		const coordinates =
-			map.current?.getSource('route')._options.data.features[0].geometry
-				.coordinates
-		const bounds = new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
-		for (const coord of coordinates) {
-			bounds.extend(coord)
-		}
-		map.current?.fitBounds(bounds, {
-			padding: 100,
-		})
-
-		// Sets the distance of the route for fare calculation
-		setDistance(
-			turf.length(
-				turf.lineString(
-					map.current?.getSource('route')._data.features[0].geometry.coordinates
-				),
-				{ units: 'kilometers' }
+			user.favoriteLocations.map((location) =>
+				markerFacade.push({
+					lat: location.coordinates[0],
+					lng: location.coordinates[1],
+				})
 			)
-		)
+			if (user.savedLocations.work) {
+				markerFacade.push({
+					lat: user.savedLocations.work[0],
+					lng: user.savedLocations.work[1],
+				})
+			}
+			if (user.savedLocations.home) {
+				markerFacade.push({
+					lat: user.savedLocations.home[0],
+					lng: user.savedLocations.home[1],
+				})
+			}
+			setMarker(markerFacade)
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
+
+	// Set origin address after clicking a saved location
+	useEffect(() => {
+		if (origin !== '' || null) {
+			if (typeof origin === 'object') {
+				CoordinateToAddress(origin, setOrigin)
+			} else {
+				originRef.current.value = origin
+			}
+			isValidInput(false)
+		}
+	}, [origin, originRef])
+
+	// Set destination address after clicking a saved location
+	useEffect(() => {
+		if (destination !== '' || null) {
+			if (typeof destination === 'object') {
+				CoordinateToAddress(destination, setDestination)
+			} else {
+				destinationRef.current.value = destination
+			}
+			isValidInput(false)
+		}
+	}, [destination, destinationRef])
+
+	if (!isLoaded) {
+		return 'loading'
 	}
 
-	// Add starting point to the map
-	map.current?.on('load', () => {
-		setLocation([lng, lat], 'from')
-		map.current?.setCenter([lng, lat])
-
-		// Adds a marker where the user clicks on the map
-		map.current?.on('click', (event: any) => {
-			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key])
-
-			if (map.current?.getLayer('to')) {
-				map.current?.getSource('to').setData(geojson(coords))
-			} else {
-				setLocation(coords, 'to')
-			}
-			// Reverse Geolocator: Convert the coordinates to an address
-			fetch(
-				`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?types=address&access_token=${mapboxgl.accessToken}`
-			)
-				.then(function (response) {
-					return response.json()
-				})
-				.then(function (data) {
-					try {
-						setToAddress(data.features[0]?.place_name)
-					} catch (e) {
-						setToAddress('Unknown')
-					}
-				})
-			getRoute(
-				map,
-				map.current?.getSource('from')._data.features[0].geometry.coordinates,
-				coords
-			)
-			setShowRides(true)
-		})
-
-		loadTaxis(map)
-	})
-
-	const geolocate = new mapboxgl.GeolocateControl({
-		positionOptions: {
-		  enableHighAccuracy: true
-		},
-		trackUserLocation: true
-	  });
-	  
-	  map.current?.addControl(geolocate, "bottom-right")
-
-	// Set the current or destination location ('to')
-	const setLocation = (coords: Array<number>, label: string): void => {
-		if (label === 'to') {
-			// for setting destination
-			addMarker(map, coords, label) // add the pin
-			getRoute(map, [lng, lat], coords) // get the path
-			setShowRides(true) // show ride options
-		} else {
-			setLng(coords[0])
-			setLat(coords[1])
-			loadTaxis(map)
-			addMarker(map, coords, label)
-			if (map.current?.getLayer('to')) {
-				getRoute(
-					map,
-					coords,
-					map.current?.getSource('to')._data.features[0].geometry.coordinates
-				)
-				setShowRides(true)
-			}
+	async function calculateRoute() {
+		if (origin === '' || destination === '') {
+			isValidInput(false)
+			return
 		}
-		const coordinates =
-			map.current?.getSource('from')._data.features[0].geometry.coordinates
+		// eslint-disable-next-line no-undef
+		const directionsService = new google.maps.DirectionsService()
 
-		// Reverse Geolocator: Convert the coordinates to an address
-		fetch(
-			`https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates[0]},${coordinates[1]}.json?types=address&access_token=${mapboxgl.accessToken}`
-		)
-			.then(function (response) {
-				return response.json()
-			})
-			.then(function (data) {
-				setAddress(data.features[0].place_name)
-			})
+		if (directionsDisplay != null) {
+			directionsDisplay.set('directions', null)
+			directionsDisplay.setMap(null)
+			directionsDisplay = null
+		}
+
+		directionsDisplay = new google.maps.DirectionsRenderer()
+
+		const results = await directionsService.route({
+			origin: origin,
+			destination: destination,
+			// eslint-disable-next-line no-undef
+			travelMode: google.maps.TravelMode.DRIVING,
+		})
+		setDirectionsResponse(results)
+		setDistance(results.routes[0].legs[0].distance.text)
+		setDuration(results.routes[0].legs[0].duration.text)
+
+		directionsDisplay.setMap(map)
+		directionsDisplay.setDirections(results)
+
+		isValidInput(true)
+	}
+
+	function clearRoute() {
+		setDirectionsResponse(null)
+		setDistance('')
+		setDuration('')
+		setOrigin('')
+		setDestination('')
+	}
+
+	function setLocationViaClick(e) {
+		if (expandSearch === 3) {
+			CoordinateToAddress([e.latLng.lat(), e.latLng.lng()], setOrigin)
+		} else if (expandSearch === 4) {
+			CoordinateToAddress([e.latLng.lat(), e.latLng.lng()], setDestination)
+		}
 	}
 
 	return (
-		<Page title='Booking'>
-			{/* Show map API by default but hide it if the search buttons are clicked */}
-			<Section>
-				<div
-					ref={mapContainer}
-					className={`map-container ${searchQueryVisible ? 'hidden' : null}`}
-				/>
-			</Section>
+		<div className='relative h-screen w-screen'>
+			{/* Google Maps screen */}
+			<div
+				className={`absolute left-0 top-0 h-full w-full ${
+					[0, 3, 4].includes(expandSearch) ? '' : 'hidden'
+				}`}
+			>
+				<GoogleMap
+					center={center}
+					zoom={15}
+					mapContainerStyle={{ width: '100%', height: '100%' }}
+					options={{
+						zoomControl: false,
+						streetViewControl: false,
+						mapTypeControl: false,
+						fullscreenControl: false,
+						minZoom: 3,
+						maxZoom: 18,
+					}}
+					onClick={(e) => setLocationViaClick(e)}
+					onLoad={(map) => setMap(map)}
+				>
+					{marker?.length !== 0 &&
+						marker?.map((location, index) => (
+							<Marker
+								key={index + '-' + location.lat + '-' + location.lng}
+								position={location}
+								icon={{
+									path: 'M8 12l-4.7023 2.4721.898-5.236L.3916 5.5279l5.2574-.764L8 0l2.3511 4.764 5.2574.7639-3.8043 3.7082.898 5.236z',
+									fillColor: 'yellow',
+									fillOpacity: 0.9,
+									scale: 1,
+									strokeColor: 'gold',
+									strokeWeight: 2,
+								}}
+							/>
+						))}
+				</GoogleMap>
+			</div>
 
-			{/* Search Bar input fields */}
-			<Section>
-				<div className='absolute flex w-11/12 flex-wrap lg:w-6/12'>
-					<SearchField
-						setLocation={setLocation}
-						setSearchQueryVisible={setSearchQueryVisible}
-						setToLocation={setFromLocation}
-						setShowRides={setShowRides}
-						searchQueryVisible={searchQueryVisible}
-						fromLocation={toLocation}
-						type='from'
-						map={map}
-						setToAddress={setFromAddress}
-						toAddress={fromAddress}
-						setSearchBoxSuggestions={setSearchBoxSuggestions}
+			{/* Search elements */}
+			{LocationSearch(
+				setMarker,
+				expandSearch,
+				setExpandSearch,
+				originRef,
+				setOrigin,
+				isValidInput,
+				destinationRef,
+				setDestination
+			)}
+
+			{[0, 3, 4].includes(expandSearch) ? (
+				validInput ? (
+					// Confirmation procedure
+					<RideConfirmation
+						distance={parseFloat(distance.match(/\d+/)[0])}
+						origin={originRef.current.value.split(',')}
+						destination={destinationRef.current.value.split(',')}
 					/>
-					<SearchField
-						setLocation={setLocation}
-						setSearchQueryVisible={setSearchQueryVisible}
-						setToLocation={setToLocation}
-						setShowRides={setShowRides}
-						searchQueryVisible={searchQueryVisible}
-						fromLocation={fromLocation}
-						type='to'
-						map={map}
-						setToAddress={setToAddress}
-						toAddress={toAddress}
-						setSearchBoxSuggestions={setSearchBoxSuggestions}
+				) : (
+					// Prompt to calculate route
+					<>
+						<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
+							<button
+								className='w-10/12 rounded bg-green-500 py-2 px-4 text-white'
+								type='submit'
+								onClick={calculateRoute}
+							>
+								Calculate Route
+							</button>
+						</div>
+
+						<Locate map={map} />
+					</>
+				)
+			) : (
+				<div className='pt-16'>
+					{/* Expanded search UI with saved locations */}
+					<ExpandSearch
+						mode={expandSearch}
+						setExpandSearch={setExpandSearch}
+						location={expandSearch === 1 ? origin : destination}
+						setLocation={expandSearch === 1 ? setOrigin : setDestination}
 					/>
 				</div>
-			</Section>
-
-			{/* Show search UI upon clicking the searchboxes*/}
-			<Section>
-				{searchQueryVisible ? (
-					// TODO: Clean by having destination array as a state to be returned
-					<SearchLocations
-						type={toLocation ? 'to' : 'from'}
-						setSearchQueryVisible={setSearchQueryVisible}
-						setToLocation={setToLocation}
-						setFromLocation={setFromLocation}
-						callback={setLocation}
-						searchBoxInput={toLocation ? toAddress : fromAddress}
-						searchBoxSuggestions={searchBoxSuggestions}
-						setToAddress={toLocation ? setToAddress : setFromAddress}
-					/>
-				) : null}
-			</Section>
-
-			{/* Show list of ride options upon selecting a location */}
-			<Section>
-				{showRides === true ? (
-					<RideOptions map={map} addr={address} distance={distance} />
-				) : null}
-			</Section>
-		</Page>
+			)}
+		</div>
 	)
 }
 
-const SearchField = (props: SearchFieldInterface) => (
-	<>
-		<div className={`${props.fromLocation ? 'hidden' : null} w-2/12 pt-1 pr-3`}>
-			{!props.searchQueryVisible ? (
-				<div className='flex h-8 flex-wrap rounded-full bg-white p-2'>
-					{props.type === 'from' ? (
-						<InsertSVG
-							color='#30D5C8'
-							text='From'
-							stroke='currentColor'
-							strokeLinecap='square'
-							d='M7.5.5v14m7-7.005H.5m13 0a6.006 6.006 0 01-6 6.005c-3.313 0-6-2.694-6-6.005a5.999 5.999 0 016-5.996 6 6 0 016 5.996z'
-						/>
-					) : (
-						<InsertSVG
-							color='#8B0000'
-							text='To'
-							fill='currentColor'
-							d='M12.5 6.5l.224.447a.5.5 0 00.033-.876L12.5 6.5zm-10-6l.257-.429A.5.5 0 002 .5h.5zm10.257 5.571l-10-6-.514.858 10 6 .514-.858zM2 .5v11h1V.5H2zm.724 11.447l10-5-.448-.894-10 5 .448.894zM3 15v-3.5H2V15h1z'
-						/>
-					)}
-				</div>
-			) : (
-				<button
-					className='red-button mt-1 text-sm'
-					onClick={() => {
-						props.setSearchQueryVisible(false)
-						props.setToLocation(false)
-						props.setToAddress(
-							props.type === 'from' ? 'Your Location' : 'Enter your destination'
-						)
-					}}
-				>
-					Cancel
-				</button>
-			)}
-		</div>
-		<div
-			className={`${props.fromLocation ? 'hidden' : null} w-10/12 mb-3`}
-			onFocus={() => {
-				props.setSearchQueryVisible(true),
-					props.setToLocation(true),
-					props.setShowRides(false)
-				props.toAddress === 'Your Location' || 'Enter your destination'
-					? props.setToAddress('')
-					: props.toAddress
-			}}
-		>
-			<SearchBox
-				accessToken={mapboxgl.accessToken}
-				options={{ language: 'en', country: 'SG' }}
-				value={props.toAddress}
-				map={props.map.current}
-				onRetrieve={(e) => {
-					props.setLocation(e.features[0].geometry.coordinates, props.type)
-					props.setSearchQueryVisible(false)
-					props.setToLocation(false)
-				}}
-				onChange={(e) => {
-					props.setToAddress(e)
-					props.setShowRides(false)
-				}}
-				onSuggest={(e) => props.setSearchBoxSuggestions(e?.suggestions)}
-				popoverOptions={{ offset: 110 }}
-			/>
-		</div>
-	</>
-)
-
-const InsertSVG = ({
-	color,
-	text,
-	d,
-	fill = '',
-	stroke = '',
-	strokeLinecap = undefined,
-}: any) => (
-	<>
-		<svg
-			viewBox='0 0 15 15'
-			fill='none'
-			xmlns='http://www.w3.org/2000/svg'
-			width='15'
-			height='15'
-			color={color}
-			className='w-1/3'
-		>
-			<path
-				d={d}
-				fill={fill}
-				stroke={stroke}
-				strokeLinecap={strokeLinecap}
-			></path>
-		</svg>
-		<p className='-ml-1 w-1/3 pl-2 text-center text-xs'>{text}</p>
-	</>
-)
-
 export default Booking
+
+function LocationSearch(
+	setMarker,
+	expandSearch: number,
+	setExpandSearch,
+	originRef,
+	setOrigin,
+	isValidInput,
+	destinationRef,
+	setDestination
+) {
+	return (
+		<div className='absolute z-20 flex w-screen flex-wrap bg-white p-2 shadow-md'>
+			<div
+				className='w-1/12'
+				onClick={() => {
+					setMarker(null)
+				}}
+			>
+				<BackButton
+					expandSearch={expandSearch}
+					setExpandSearch={setExpandSearch}
+				/>
+			</div>
+			<div className='w-10/12'>
+				{/* Origin Search */}
+				{InputCurrentLocation(
+					setExpandSearch,
+					originRef,
+					setOrigin,
+					isValidInput
+				)}
+
+				{/* Destination Search */}
+				{InputDestinationLocation(
+					setExpandSearch,
+					destinationRef,
+					setDestination,
+					isValidInput
+				)}
+			</div>
+			<div className='justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500'>
+				<FaPlusSquare onClick={() => {}} />
+			</div>
+		</div>
+	)
+}
+
+async function CoordinateToAddress(coordinates, setLocation) {
+	await fetch(
+		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	)
+		.then(function (response) {
+			return response.json()
+		})
+		.then(function (data) {
+			setLocation(data.results[0].formatted_address)
+		})
+}
+
+async function PlaceIDToAddress(id, setLocation) {
+	await fetch(
+		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	)
+		.then(function (response) {
+			console.log(response)
+			return response.json()
+		})
+		.then(function (data) {
+			// console.log(data.results[0].formatted_address)
+			console.log(data)
+		})
+}
+
+function InputDestinationLocation(
+	setExpandSearch,
+	destinationRef,
+	setDestination,
+	isValidInput
+) {
+	return (
+		<div className='destination'>
+			<Autocomplete
+				onPlaceChanged={() => setExpandSearch(0)}
+				options={{ componentRestrictions: { country: 'sg' } }}
+				fields={['address_components', 'geometry', 'formatted_address']}
+			>
+				<input
+					type='text'
+					className='rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+					placeholder='Destination'
+					ref={destinationRef}
+					// value={destination}
+					onChange={(e) => {
+						setDestination(e.target.value)
+						isValidInput(false)
+					}}
+					onClick={() => setExpandSearch(2)}
+				/>
+			</Autocomplete>
+			<FaFontAwesomeFlag className='absolute -mt-7 ml-2 text-xl text-green-500' />
+		</div>
+	)
+}
+
+function InputCurrentLocation(
+	setExpandSearch,
+	originRef,
+	setOrigin,
+	isValidInput
+) {
+	return (
+		<div>
+			<Autocomplete
+				className='origin'
+				onPlaceChanged={() => setExpandSearch(0)}
+				options={{ componentRestrictions: { country: 'sg' } }}
+				fields={['address_components', 'geometry', 'formatted_address']}
+			>
+				<input
+					type='text'
+					className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+					placeholder='Origin'
+					ref={originRef}
+					// value={origin}
+					onChange={(e) => {
+						setOrigin(e.target.value)
+						isValidInput(false)
+					}}
+					onClick={() => setExpandSearch(1)}
+				/>
+			</Autocomplete>
+			<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
+		</div>
+	)
+}
