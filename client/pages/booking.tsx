@@ -46,6 +46,8 @@ function Booking() {
 
 	const [marker, setMarker] = useState([])
 
+	const [hideUI, setHideUI] = useState(false)
+
 	useEffect(() => {
 		if (marker?.length == 0) {
 			const markerFacade = []
@@ -76,7 +78,7 @@ function Booking() {
 
 	// Set origin address after clicking a saved location
 	useEffect(() => {
-		if (origin !== '' || null) {
+		if (origin !== '' && origin !== null) {
 			if (typeof origin === 'object') {
 				CoordinateToAddress(origin, setOrigin)
 			} else {
@@ -132,6 +134,7 @@ function Booking() {
 		directionsDisplay.setDirections(results)
 
 		isValidInput(true)
+		setHideUI(true)
 	}
 
 	function clearRoute() {
@@ -192,15 +195,33 @@ function Booking() {
 			</div>
 
 			{/* Search elements */}
-			{LocationSearch(
-				setMarker,
-				expandSearch,
-				setExpandSearch,
-				originRef,
-				setOrigin,
-				isValidInput,
-				destinationRef,
-				setDestination
+			{!hideUI ? (
+				LocationSearch(
+					setMarker,
+					expandSearch,
+					setExpandSearch,
+					originRef,
+					setOrigin,
+					isValidInput,
+					destinationRef,
+					setDestination
+				)
+			) : (
+				<button
+					className='cancel-button absolute top-0 left-0 z-10 m-5'
+					onClick={() => {
+						setHideUI(false)
+						clearRoute()
+						isValidInput(false)
+						if (directionsDisplay != null) {
+							directionsDisplay.set('directions', null)
+							directionsDisplay.setMap(null)
+							directionsDisplay = null
+						}
+					}}
+				>
+					Cancel
+				</button>
 			)}
 
 			{[0, 3, 4].includes(expandSearch) ? (
@@ -208,8 +229,8 @@ function Booking() {
 					// Confirmation procedure
 					<RideConfirmation
 						distance={parseFloat(distance.match(/\d+/)[0])}
-						origin={originRef.current.value.split(',')}
-						destination={destinationRef.current.value.split(',')}
+						origin={originRef.current?.value.split(',')}
+						destination={destinationRef.current?.value.split(',')}
 					/>
 				) : (
 					// Prompt to calculate route
@@ -255,7 +276,7 @@ function LocationSearch(
 	setDestination
 ) {
 	return (
-		<div className='absolute z-20 flex w-screen flex-wrap bg-white p-2 shadow-md'>
+		<div className='absolute z-10 flex w-screen flex-wrap bg-white p-2 shadow-md'>
 			<div
 				className='w-1/12'
 				onClick={() => {

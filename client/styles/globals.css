@@ -55,6 +55,10 @@ p {
 	@apply rounded border border-red-100 py-2 px-3 text-xs text-red-600 hover:bg-red-700 hover:text-white !important;
 }
 
+.cancel-button {
+	@apply rounded border border-red-100 py-2 px-3 text-xs text-white bg-red-700 hover:bg-white hover:text-red-600 !important;
+}
+
 .blue-button-hollow {
 	@apply rounded border py-2 px-3 text-xs text-blue-700 hover:bg-blue-700 hover:text-white !important;
 }
