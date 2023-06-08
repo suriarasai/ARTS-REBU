@@ -97,3 +97,18 @@ p {
 	@apply bg-green-50 rounded-lg;
 	border: 1.5px solid #22c55e;
 }
+
+.home-box {
+	@apply rounded bg-white p-4 flex justify-end shadow-md;
+	flex-direction: column;
+	flex-wrap: wrap;
+	vertical-align: bottom;
+}
+
+.home-big-box {
+	@apply col-span-2 row-span-2 p-8 text-xl;
+}
+
+.home-icon {
+	@apply text-3xl text-green-500 mb-3;
+}
