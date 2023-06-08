@@ -117,7 +117,7 @@
 }
 
 .pac-container {
-	@apply shadow-none border-none mt-5 bg-zinc-100
+	@apply shadow-none border-none bg-zinc-100 z-0 absolute top-0 mt-28 !important;
 }
 
 .pac-item {

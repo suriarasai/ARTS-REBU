@@ -184,11 +184,7 @@ function App() {
 			</div>
 
 			{/* Search elements */}
-			<div
-				className={`absolute z-20 flex w-screen flex-wrap bg-white p-2 ${
-					expandSearch === 0 ? 'shadow-xl' : ''
-				}`}
-			>
+			<div className='absolute z-20 flex w-screen flex-wrap bg-white p-2 shadow-md'>
 				<div
 					className='w-1/12'
 					onClick={() => {
@@ -203,7 +199,6 @@ function App() {
 				<div className='w-10/12'>
 					{/* Origin Search */}
 					{InputCurrentLocation(
-						expandSearch,
 						setExpandSearch,
 						originRef,
 						setOrigin,
@@ -212,18 +207,13 @@ function App() {
 
 					{/* Destination Search */}
 					{InputDestinationLocation(
-						expandSearch,
 						setExpandSearch,
 						destinationRef,
 						setDestination,
 						isValidInput
 					)}
 				</div>
-				<div
-					className={`justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500 ${
-						expandSearch !== 0 ? 'hidden' : 0
-					}`}
-				>
+				<div className='justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500'>
 					<FaPlusSquare onClick={() => {}} />
 				</div>
 			</div>
@@ -289,14 +279,13 @@ async function CoordinateToAddress(coordinates, setLocation) {
 }
 
 function InputDestinationLocation(
-	expandSearch: number,
 	setExpandSearch,
 	destinationRef,
 	setDestination,
 	isValidInput
 ) {
 	return (
-		<div className={expandSearch === 1 ? 'hidden' : ''}>
+		<div>
 			<Autocomplete
 				onPlaceChanged={() => setExpandSearch(0)}
 				options={{ componentRestrictions: { country: 'sg' } }}
@@ -321,14 +310,13 @@ function InputDestinationLocation(
 }
 
 function InputCurrentLocation(
-	expandSearch: number,
 	setExpandSearch,
 	originRef,
 	setOrigin,
 	isValidInput
 ) {
 	return (
-		<div className={expandSearch === 2 ? 'hidden' : ''}>
+		<div>
 			<Autocomplete
 				onPlaceChanged={() => setExpandSearch(0)}
 				options={{ componentRestrictions: { country: 'sg' } }}
