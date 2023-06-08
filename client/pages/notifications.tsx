@@ -50,37 +50,31 @@ function App() {
 
 	const [marker, setMarker] = useState([])
 
-	function initiateMarkers() {
-		const markerFacade = []
-
-		user.favoriteLocations.map((location) =>
-			markerFacade.push({
-				lat: location.coordinates[0],
-				lng: location.coordinates[1],
-			})
-		)
-		setMarker(markerFacade)
-		console.log(markerFacade)
-		// user.savedLocations.work &&
-		// 	setMarker([
-		// 		marker,
-		// 		{
-		// 			lat: user.savedLocations.work[0],
-		// 			lng: user.savedLocations.work[1],
-		// 		},
-		// 	])
-		// user.savedLocations.home &&
-		// 	setMarker(marker + [
-		// 		{
-		// 			lat: user.savedLocations.home[0],
-		// 			lng: user.savedLocations.home[1],
-		// 		},
-		// 	])
-	}
-
 	useEffect(() => {
-		initiateMarkers()
-		console.log('test')
+		if (marker?.length == 0) {
+			const markerFacade = []
+
+			user.favoriteLocations.map((location) =>
+				markerFacade.push({
+					lat: location.coordinates[0],
+					lng: location.coordinates[1],
+				})
+			)
+			if (user.savedLocations.work) {
+				markerFacade.push({
+					lat: user.savedLocations.work[0],
+					lng: user.savedLocations.work[1],
+				})
+			}
+			if (user.savedLocations.home) {
+				markerFacade.push({
+					lat: user.savedLocations.home[0],
+					lng: user.savedLocations.home[1],
+				})
+			}
+			setMarker(markerFacade)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	// Set origin address after clicking a saved location
