@@ -11,6 +11,7 @@ export function Locate({ map }) {
 							lat: position.coords.latitude,
 							lng: position.coords.longitude,
 						});
+						map.setZoom(18)
 					},
 					() => null
 				);

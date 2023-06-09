@@ -27,9 +27,9 @@ const Appbar = ({ sectionTitle }: appBarProps) => {
 
 					{/* Conditional Rendering: Show site title for web, and section title for mobile */}
 					<a>
-						<h1 className='font-medium visible sm:hidden'>
+						<b className='font-medium visible sm:hidden'>
 							{sectionTitle ? sectionTitle : 'Rebu'}
-						</h1>
+						</b>
 						<h1 className='font-medium hidden sm:block'>
 							Rebu
 						</h1>

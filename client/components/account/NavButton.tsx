@@ -7,7 +7,7 @@ export const NavButton = ({ label, href, className }: navButtonProps) => {
 	return (
 		<div className='mt-2'>
 			<p
-				className={`mt-5 text-zinc-600 dark:text-zinc-400 ${className}`}
+				className={`font-medium mt-5 text-zinc-600 dark:text-zinc-400 ${className}`}
 				key={label}
 				onClick={() => router.push(href)}
 			>

@@ -249,7 +249,7 @@ function Booking() {
 					</>
 				)
 			) : (
-				<div className='pt-16'>
+				<div>
 					{/* Expanded search UI with saved locations */}
 					<ExpandSearch
 						mode={expandSearch}
@@ -276,7 +276,7 @@ function LocationSearch(
 	setDestination
 ) {
 	return (
-		<div className='absolute z-10 flex w-screen flex-wrap bg-white p-2 shadow-md'>
+		<div className='sticky top-0 z-10 flex w-screen flex-wrap bg-white p-2 shadow-md'>
 			<div
 				className='w-1/12'
 				onClick={() => {

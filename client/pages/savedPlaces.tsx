@@ -70,12 +70,11 @@ const SavedPlaces = () => {
 						className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
 						placeholder='Add a place'
 						ref={searchRef}
-						onChange={((e) => setValueObserver(e.target.value))}
+						onChange={(e) => setValueObserver(e.target.value)}
 					/>
 				</Autocomplete>
 				<FaSearchLocation className='absolute -mt-7 ml-2 text-xl text-green-500' />
-
-				{(valueObserver === '') ? (
+				{valueObserver === '' ? (
 					<>
 						<SavedLocation
 							user={user}
@@ -105,7 +104,9 @@ const SavedPlaces = () => {
 							))
 						)}
 					</>
-				) : ""}
+				) : (
+					''
+				)}
 			</Section>
 		</Page>
 	)
@@ -170,7 +171,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 					</div>
 				) : (
 					<div>
-						<p>{label}</p>
+						<b className='text-sm font-medium'>{label}</b>
 						<h5>{place ? place : 'Set Location'}</h5>
 					</div>
 				)}
@@ -210,7 +211,7 @@ const Location = ({ location, setUser, user }) => {
 	return (
 		<div className='ml-5 flex flex-wrap pt-3'>
 			<div className='w-5/6'>
-				<p>{location.name}</p>
+				<b className='text-sm font-medium'>{location.name}</b>
 				<h5>{location.address}</h5>
 			</div>
 			<div

@@ -42,11 +42,11 @@ const RewardPoints = () => {
 						Redeem Reward Points
 					</h2>
 					<div className='flex-cols flex pb-8 text-3xl'>
-						<div className='mr-3 w-1/2 rounded bg-cyan-700 p-4 text-zinc-100'>
+						<div className='mr-3 w-1/2 rounded bg-green-700 p-4 text-zinc-100'>
 							<label className='text-zinc-100'>Total Reward Points</label>
 							{rewardPoints}
 						</div>
-						<div className='w-1/2 rounded bg-cyan-700 p-4 text-zinc-100'>
+						<div className='w-1/2 rounded bg-green-700 p-4 text-zinc-100'>
 							<label className='text-zinc-100'>Points Worth</label>$
 							{rewardPoints ? rewardPoints / 100 : 0}
 						</div>
@@ -68,7 +68,7 @@ const RewardPoints = () => {
 						</div>
 						<div className='mt-1 w-1/4'>
 							<button
-								className='blue-button w-full uppercase -mt-1'
+								className='green-button w-full uppercase -mt-1'
 								onClick={(e) => handleSubmit(e)}
 							>
 								Redeem

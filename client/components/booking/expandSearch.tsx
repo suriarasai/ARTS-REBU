@@ -3,9 +3,7 @@
 
 import { SavedLocation, SearchLocationInterface } from '@/redux/types'
 import { useState, useContext, useEffect } from 'react'
-import api from '@/api/axiosConfig'
 import { UserContext } from '../context/UserContext'
-import { EditFavoriteLocation } from './editFavoriteLocation'
 import { useRouter } from 'next/router'
 import {
 	FaHouseUser,
@@ -48,7 +46,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 
 	// UI for the Home/Saved menus
 	const SavedLocations = (
-		<span className='mt-12 flex inline-grid w-full grid-cols-2'>
+		<span className='mt-3 flex inline-grid w-full grid-cols-2'>
 			<div>
 				<div
 					className='flex flex-wrap'
