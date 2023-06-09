@@ -119,19 +119,19 @@ export const RideConfirmation = (data) => {
 											DN
 										</div>
 										<div className='w-2/5'>
-											<b className=''>Sheldon Ross</b>
-											<p>Honda Civic 2000</p>
+											<p className='font-medium'>{'[ Taxi Driver Name ]'}</p>
+											<p>{'[ Car Model ]'}</p>
 										</div>
 										<div className='flex h-10 w-2/5 items-center justify-center rounded border border-green-700 text-xl text-green-700 '>
-											SG-E0L9Y1
+											{'[ Car Plate ]'}
 										</div>
 									</div>
 									<hr className='mb-2' />
 									<button className='w-1/2 p-1 text-red-700'>
-										<p>Cancel</p>
+										<p className='font-normal'>Cancel</p>
 									</button>
 									<button className='w-1/2 p-1 text-green-700'>
-										<p>Contact</p>
+										<p className='font-normal'>Contact</p>
 									</button>
 								</div>
 
@@ -141,8 +141,7 @@ export const RideConfirmation = (data) => {
 									<div className='ml-5 mt-2 flex w-full items-center'>
 										<FaFlag className='text-lg text-green-500' />
 										<div className='w-4/5 p-2 px-5'>
-											25 Heng Mui Keng Terrace, Institute of Systems Science,
-											Singapore 119615
+											{data.destination[0] + ', ' + data.destination[1]}
 										</div>
 										<div className='float-right -ml-3'>
 											<p>Change</p>
@@ -151,7 +150,14 @@ export const RideConfirmation = (data) => {
 									<hr className='my-2' />
 									<div className='ml-5 flex items-center'>
 										<FaClock className='text-lg text-green-500' />
-										<div className='p-2 px-5'>13:37 arrival</div>
+										<div className='p-2 px-5'>
+											{new Date(
+												options[clickedOption].dropoff
+											).toLocaleTimeString('en-US', {
+												hour: 'numeric',
+												minute: 'numeric',
+											}) + ' arrival'}
+										</div>
 									</div>
 								</div>
 
@@ -160,7 +166,7 @@ export const RideConfirmation = (data) => {
 									<div className='flex w-11/12 flex-row items-center'>
 										<FaCoins className='mx-5 text-lg text-green-500' />
 										<div>
-											$<b>100.00</b>
+											$<b className='font-normal'>{options[clickedOption].price}</b>
 											<p className='text-sm'>Cash</p>
 										</div>
 									</div>
