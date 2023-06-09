@@ -31,6 +31,10 @@ function Booking() {
 	const [distance, setDistance] = useState('')
 	const [duration, setDuration] = useState('')
 	const [validInput, isValidInput] = useState(false)
+	const [taxiLocation, setTaxiLocation] = useState([])
+	// const [originAutocomplete, setOriginAutocomplete] = useState(null)
+	// const [destinationAutocomplete, setDestinationAutocomplete] = useState(null)
+	const [taxiMarker, setTaxiMarker] = useState(null)
 
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
@@ -52,22 +56,22 @@ function Booking() {
 		if (marker?.length == 0) {
 			const markerFacade = []
 
-			user.favoriteLocations.map((location) =>
+			user.favoriteLocations?.map((location) =>
 				markerFacade.push({
 					lat: location.coordinates[0],
 					lng: location.coordinates[1],
 				})
 			)
-			if (user.savedLocations.work) {
+			if (user.savedLocations?.work) {
 				markerFacade.push({
-					lat: user.savedLocations.work[0],
-					lng: user.savedLocations.work[1],
+					lat: user.savedLocations?.work[0],
+					lng: user.savedLocations?.work[1],
 				})
 			}
-			if (user.savedLocations.home) {
+			if (user.savedLocations?.home) {
 				markerFacade.push({
-					lat: user.savedLocations.home[0],
-					lng: user.savedLocations.home[1],
+					lat: user.savedLocations?.home[0],
+					lng: user.savedLocations?.home[1],
 				})
 			}
 			setMarker(markerFacade)
@@ -79,7 +83,7 @@ function Booking() {
 	// Set origin address after clicking a saved location
 	useEffect(() => {
 		if (origin !== '' && origin !== null) {
-			if (typeof origin === 'object') {
+			if (typeof origin === 'object' && originRef.current) {
 				CoordinateToAddress(origin, setOrigin)
 			} else {
 				originRef.current.value = origin
@@ -99,6 +103,12 @@ function Booking() {
 			isValidInput(false)
 		}
 	}, [destination, destinationRef])
+
+	// useEffect(() => {
+	// 	console.log(taxiLocation)
+	// 	console.log('taxiLocation' + Date.now())
+	// 	console.log(marker)
+	// }, [taxiLocation, marker])
 
 	if (!isLoaded) {
 		return 'loading'
@@ -126,13 +136,29 @@ function Booking() {
 			// eslint-disable-next-line no-undef
 			travelMode: google.maps.TravelMode.DRIVING,
 		})
-		console.log(results)
 		setDirectionsResponse(results)
 		setDistance(results.routes[0].legs[0].distance.text)
 		setDuration(results.routes[0].legs[0].duration.text)
 
 		directionsDisplay.setMap(map)
 		directionsDisplay.setDirections(results)
+
+		// const line = results.routes[0].overview_path
+
+		// console.log(line)
+
+		// for (var i = 0; i < line.length; i++) {
+		// 	setTimeout(function (n) {
+		// 		// {line[i]} might work
+		// 		// taxiMarker.setPosition({lat: line[i].lat(), lng: line[i].lng()})
+		// 		console.log(n)
+		// 	}, 500 * i)
+		// }
+
+		// const currCoords = originAutocomplete?.getPlace().geometry?.location
+
+		// Input is in lngLat form instead of the default latLng
+		// loadTaxis([currCoords.lng(), currCoords.lat()], setTaxiLocation)
 
 		isValidInput(true)
 		setHideUI(true)
@@ -180,7 +206,7 @@ function Booking() {
 					{marker?.length !== 0 &&
 						marker?.map((location, index) => (
 							<Marker
-								key={index + '-' + location.lat + '-' + location.lng}
+								key={index}
 								position={location}
 								icon={{
 									path: 'M8 12l-4.7023 2.4721.898-5.236L.3916 5.5279l5.2574-.764L8 0l2.3511 4.764 5.2574.7639-3.8043 3.7082.898 5.236z',
@@ -192,6 +218,23 @@ function Booking() {
 								}}
 							/>
 						))}
+
+					{/* {taxiLocation?.length !== 0 && ( */}
+					{/* <Marker
+						key={'taxiLocation'}
+						// onLoad={setTaxiMarker}
+						// position={{ lat: taxiLocation[1], lng: taxiLocation[0] }}
+						position={{ lat: 1.2966058, lng: 103.772875 }}
+						icon={{
+							path: 'M.5 3.498L7.5.5l7 2.998m-14 0l7 2.998m-7-2.998V3.5m14-.002l-7 2.998m7-2.998V11.5l-7 3m7-11.002L7.5 6.5v8m0-8.004V14.5m0-8.004L.5 3.5m7 11l-7-3v-8',
+							fillColor: 'purple',
+							fillOpacity: 0.9,
+							scale: 1,
+							strokeColor: 'purple',
+							strokeWeight: 2,
+						}}
+					/> */}
+					{/* )} */}
 				</GoogleMap>
 			</div>
 
@@ -206,6 +249,8 @@ function Booking() {
 					isValidInput,
 					destinationRef,
 					setDestination
+					// setOriginAutocomplete,
+					// setDestinationAutocomplete
 				)
 			) : (
 				<button
@@ -275,6 +320,8 @@ function LocationSearch(
 	isValidInput,
 	destinationRef,
 	setDestination
+	// setOriginAutocomplete,
+	// setDestinationAutocomplete
 ) {
 	return (
 		<div className='sticky top-0 z-10 flex w-screen flex-wrap bg-white p-2 shadow-md'>
@@ -296,6 +343,7 @@ function LocationSearch(
 					originRef,
 					setOrigin,
 					isValidInput
+					// setOriginAutocomplete
 				)}
 
 				{/* Destination Search */}
@@ -304,6 +352,7 @@ function LocationSearch(
 					destinationRef,
 					setDestination,
 					isValidInput
+					// setDestinationAutocomplete
 				)}
 			</div>
 			<div className='justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500'>
@@ -330,13 +379,9 @@ async function PlaceIDToAddress(id, setLocation) {
 		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 	)
 		.then(function (response) {
-			console.log(response)
 			return response.json()
 		})
-		.then(function (data) {
-			// console.log(data.results[0].formatted_address)
-			console.log(data)
-		})
+		.then(function (data) {})
 }
 
 function InputDestinationLocation(
@@ -344,10 +389,12 @@ function InputDestinationLocation(
 	destinationRef,
 	setDestination,
 	isValidInput
+	// setDestinationAutocomplete
 ) {
 	return (
 		<div className='destination'>
 			<Autocomplete
+				// onLoad={(e) => setDestinationAutocomplete(e)}
 				onPlaceChanged={() => setExpandSearch(0)}
 				options={{ componentRestrictions: { country: 'sg' } }}
 				fields={['address_components', 'geometry', 'formatted_address']}
@@ -375,11 +422,13 @@ function InputCurrentLocation(
 	originRef,
 	setOrigin,
 	isValidInput
+	// setOriginAutocomplete
 ) {
 	return (
 		<div>
 			<Autocomplete
 				className='origin'
+				// onLoad={(e) => setOriginAutocomplete(e)}
 				onPlaceChanged={() => setExpandSearch(0)}
 				options={{ componentRestrictions: { country: 'sg' } }}
 				fields={['address_components', 'geometry', 'formatted_address']}
@@ -401,3 +450,33 @@ function InputCurrentLocation(
 		</div>
 	)
 }
+
+// Loads the nearest N taxis onto the map
+// export const loadTaxis = (coord, setTaxiLocation, N = 1) => {
+// 	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
+// 		.then(function (response) {
+// 			return response.json()
+// 		})
+// 		.then(function (data) {
+// 			const coordinates: [number, number] =
+// 				data.features[0].geometry.coordinates
+// 			const distances: [number, number, number][] = []
+
+// 			// Calculating the Euclidean distance
+// 			coordinates.forEach(([a, b]: any) =>
+// 				distances.push([
+// 					Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
+// 					a,
+// 					b,
+// 				])
+// 			)
+
+// 			// Sorting the distances
+// 			distances.sort()
+
+// 			// Saving the marker to the state variable
+// 			for (let i = 0; i < N; i++) {
+// 				setTaxiLocation(distances[i].slice(1, 3))
+// 			}
+// 		})
+// }
