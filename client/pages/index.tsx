@@ -1,11 +1,12 @@
 // First page, for signing in
 
-import React from 'react'
+import React, { useContext } from 'react'
 import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
-import { MobileNumber } from '@/components/MobileNumber'
-import { EmailForm } from '@/components/EmailForm'
+import { MobileNumber } from '@/components/account/MobileNumber'
+import { EmailForm } from '@/components/account/EmailForm'
+import { UserContext } from '@/components/context/UserContext'
 
 // Main component
 const SignIn = () => {
@@ -50,7 +51,7 @@ const TermsOfService = () => (
 	</div>
 )
 
-// The default component that renders the mobile number input box
+// Sign in via Phone number
 const SignInForm = ({
 	setNumber,
 	changeSignInForm,
@@ -58,21 +59,41 @@ const SignInForm = ({
 	setNewUser,
 }: any) => {
 	const {
-		register,
-		handleSubmit,
-		formState: { errors },
+		register: register,
+		handleSubmit: handleSubmit,
+		formState: { errors: errors },
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		setNumber(data.countryCode + ' ' + data.mobileNumber)
-		checkIfUserExists(data.mobileNumber)
+		checkIfUserExists(data.mobileNumber, data.countryCode)
 		changeSignInForm(false)
 	})
 
-	const checkIfUserExists = async (mobileNumber) => {
+	const { setUser } = useContext(UserContext)
+
+	const checkIfUserExists = async (
+		mobileNumber: string,
+		countryCode: number
+	) => {
 		const response = await api.post('/api/v1/customers/exists', {
-			mobileNumber: mobileNumber,
+			mobileNumber: countryCode + ' ' + mobileNumber,
 		})
-		setNewUser(response.data === null ? true : false)
+
+		if (response.data === '' ) {
+			const createUser = await api.post('/api/v1/customers', {
+				mobileNumber: countryCode + ' ' + mobileNumber,
+				countryCode: countryCode,
+			})
+			setUser(createUser.data)
+			setNewUser(true)
+		} else if (response.data.firstName == null) {
+			setUser(response.data)
+			setNewUser(true)
+		} else {
+			setUser(response.data)
+			setNewUser(false)
+			
+		}
 	}
 
 	return (
@@ -85,7 +106,7 @@ const SignInForm = ({
 					</p>
 				</div>
 
-				{MobileNumber(register, errors)}
+				<MobileNumber register={register} errors={errors} />
 
 				<div className='mb-8 mt-3 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
 					<p>{"Don't have access to your number?"}</p>
@@ -113,11 +134,35 @@ const SignInForm = ({
 	)
 }
 
-const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
+// Sign in via Email
+const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 	const router = useRouter()
 
-	const handleSubmit = (data: any) => {
-		changeEmailSignIn(false)
+	const {
+		register: register,
+		handleSubmit: handleSubmit,
+		formState: { errors: errors },
+	} = useForm()
+	const onSubmit = handleSubmit((data) => {
+		validateCredentials(data.email, data.password)
+	})
+
+	const { setUser } = useContext(UserContext)
+	const [signInError, setSignInError] = React.useState(false)
+
+	const validateCredentials = async (email: string, password: string) => {
+		const response = await api.post('/api/v1/customers/validateCredentials', {
+			email: email,
+			password: password,
+		})
+		if (response.data != '') {
+			setUser(response.data)
+			setSignInError(false)
+			router.push('/home')
+		} else {
+			setSignInError(true)
+		}
+		return response.data
 	}
 
 	// Navigates back to sign in screen
@@ -127,17 +172,16 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 		changeSignInForm(true)
 	}
 
-	const continueButton = (e) => {
-		e.preventDefault()
-		router.push(newUser ? '/registration' : '/booking')
-	}
-
 	return (
 		<>
 			{/* User form */}
 
-			<form className='flex w-full max-w-lg flex-col'>
-				<EmailForm />
+			<form className='flex w-full max-w-lg flex-col' onSubmit={onSubmit}>
+				<EmailForm
+					register={register}
+					errors={errors}
+					signInError={signInError}
+				/>
 
 				<TermsOfService />
 
@@ -145,7 +189,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 					<button className='grey-button mr-3' onClick={goBack}>
 						{'Go Back'}
 					</button>
-					<button className='blue-button mr-8' onClick={continueButton}>
+					<button className='blue-button mr-8' type='submit'>
 						{'Continue ᐳ'}
 					</button>
 				</div>
@@ -157,6 +201,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm, newUser }: any) => {
 // 2nd screen to validate the user's mobile number via OTP (one-time password)
 const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 	const router = useRouter()
+	const [loginSuccessful, setLoginSuccesssful] = React.useState<boolean>(false)
 
 	const handleSubmit = (data: any) => {
 		changeSignInForm(false)
@@ -172,10 +217,10 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 		event.preventDefault()
 	}
 
-	const continueButton = (e) => {
+	const continueButton = (e: React.MouseEvent<HTMLButtonElement>): void => {
 		e.preventDefault()
-		console.log(newUser);
-		router.push(newUser ? '/registration' : '/booking')
+		setLoginSuccesssful(true)
+		router.push(newUser ? '/registration' : '/home')
 	}
 
 	return (
@@ -191,10 +236,10 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 				<div className='-mx-3 mb-2 flex flex-wrap items-center'>
 					<div className='w-3/4 px-3 pb-6 md:mb-0'>
 						<label>Enter OTP</label>
-						<input type='text' placeholder='1234' />
+						<input type='text' placeholder='1234' className='py-2 px-4' />
 					</div>
 
-					<div className='-mt-3 w-1/4 px-3 md:mb-0'>
+					<div className='w-1/4 px-3 md:mb-0'>
 						<button className='blue-button' onClick={getOTP}>
 							Get OTP
 						</button>
@@ -204,11 +249,17 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 				<TermsOfService />
 
 				<div className='-mx-3 mb-2 flex self-end'>
-					<button className='grey-button mr-3' onClick={goBack}>
+					<button className='grey-button mr-3' onClick={goBack} disabled={loginSuccessful ? true : false}>
 						{'Go Back'}
 					</button>
-					<button className='blue-button mr-8' onClick={continueButton}>
-						{'Continue ᐳ'}
+					<button
+						className={`mr-8 ${
+							loginSuccessful ? 'green-button' : 'blue-button'
+						}`}
+						onClick={continueButton}
+						disabled={loginSuccessful ? true : false}
+					>
+						{loginSuccessful ? 'Signing in...' : 'Continue ᐳ'}
 					</button>
 				</div>
 			</form>

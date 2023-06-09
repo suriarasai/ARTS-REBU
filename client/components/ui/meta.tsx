@@ -1,3 +1,5 @@
+// Site information (usually contained in the HTML file of other mobile frameworks)
+
 import Head from 'next/head'
 
 const Meta = () => (

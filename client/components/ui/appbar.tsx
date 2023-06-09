@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 
 // Links to be rendered
 const links = [
-	{ label: 'Booking', href: '/booking' },
+	{ label: 'Home', href: '/home' },
 	{ label: 'Activity', href: '/activity' },
 	{ label: 'Notifications', href: '/notifications' },
 	{ label: 'Settings', href: '/settings' },
@@ -15,6 +15,9 @@ interface appBarProps {
 }
 
 const Appbar = ({ sectionTitle }: appBarProps) => {
+	/*
+		sectionTitle	: the title that appears in the navBar
+	*/
 	const router = useRouter()
 
 	return (
@@ -24,9 +27,9 @@ const Appbar = ({ sectionTitle }: appBarProps) => {
 
 					{/* Conditional Rendering: Show site title for web, and section title for mobile */}
 					<a>
-						<h1 className='font-medium visible sm:hidden'>
+						<b className='font-medium visible sm:hidden'>
 							{sectionTitle ? sectionTitle : 'Rebu'}
-						</h1>
+						</b>
 						<h1 className='font-medium hidden sm:block'>
 							Rebu
 						</h1>

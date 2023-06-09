@@ -1,3 +1,5 @@
+// Temporary API to connect to the MongoDB database
+
 import axios from 'axios';
 
 export default axios.create({

@@ -7,6 +7,9 @@ interface Props {
 }
 
 const Section = ({ children }: Props) => (
+	/*
+		children	: the data to render
+	*/
 	<section>{children}</section>
 )
 

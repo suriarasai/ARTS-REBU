@@ -1,20 +1,24 @@
 package com.rebu.data;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
+import java.time.LocalDate;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Document(collection = "customers")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Reward_History {
-    @Id
-    private ObjectId _id;
-    private String datetime;
-    private Integer points;   
+    private String date = LocalDate.now().toString();
+    private Integer points;
+    private Integer totalPoints;
+
+    public Reward_History() {}
+
+    public void setEntry(Integer points, Integer totalPoints) {
+        this.points = points;
+        this.totalPoints = totalPoints;
+    }
 }

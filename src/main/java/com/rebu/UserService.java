@@ -1,6 +1,8 @@
+// Processes the data received by APIs and/or queries the database
+
 package com.rebu;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,55 +14,51 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.rebu.data.Activity;
-import com.rebu.data.Reviews_About_Customer;
-import com.rebu.data.Reviews_From_Customer;
 import com.rebu.data.Reward_History;
-import com.rebu.data.Saved_Locations;
 import com.rebu.data.User;
 
 @Service
 public class UserService {
+
+    // Database object for accessing data
     @Autowired
     private UserRepository userRepository;
 
+    // Built-in method to reduce boilerplate code when operating on DB
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    // API: Returns all users and their associated data
     public List<User> allUsers() {
         return userRepository.findAll();
     }
 
+    // API: Returns a single user based on their id
     public Optional<User> singleUser(ObjectId _id) {
         return userRepository.findById(_id);
     }
 
+    // API: Creates a new user
     public User createUser(String countryCode, String mobileNumber) {
         User user = userRepository.insert(new User(Integer.parseInt(countryCode), mobileNumber));
         return user;
     }
 
-    public Optional<User> modifyUser(String _id, String countryCode, String mobileNumber, String firstName,
-            String last_name, String email, String password, String joinedDate, String rating, String rewardPoints,
-            String favoriteLocations) {
+    // API: Registers/Updates a user by adding information to existing users
+    public Optional<User> updateUser(String _id, String firstName, String last_name, String prefix,
+            String birthdate, String email, String password, String countryCode, String mobileNumber) {
         Update update = new Update();
         update.set("firstName", firstName);
         update.set("lastName", last_name);
-        update.set("countryCode", Integer.parseInt(countryCode));
+        update.set("prefix", prefix);
+        update.set("birthdate", birthdate);
         update.set("email", email);
         update.set("password", password);
-        update.set("mobileNumber", mobileNumber);
-        update.set("joined_date", joinedDate);
-        update.set("rating", Integer.parseInt(rating));
-        update.set("rewardPoints", Integer.parseInt(rewardPoints));
-        // update.set("activity", new Activity());
-        // update.set("saved_locations", new Saved_Locations());
-        // update.set("favorite_locations",
-        // Arrays.asList(favorite_locations.replaceAll("[\\[\\](){}]", "").split("\\,
-        // ")));
-        // update.set("reward_history", new Reward_History());
-        // update.set("reviews_about_customer", new Reviews_About_Customer);
-        // update.set("reviews_from_customer", new Reviews_From_Customer());
+
+        if (mobileNumber != null && countryCode != null) {
+            update.set("countryCode", countryCode);
+            update.set("mobileNumber", mobileNumber);
+        }
 
         ObjectId id = new ObjectId(_id);
 
@@ -72,12 +70,20 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public Optional<User> findByMobileNumber(String mobileNumber) {
+    // API: Finds a user by their mobile number
+    public User findByMobileNumber(String mobileNumber) {
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
 
-        return userRepository.findFirstByMobileNumber(mobileNumber);
+        if (user != null) {
+            user.addSignInTime(); // Adds a Sign-in timestamp
+            userRepository.save(user);
+        }
+
+        return user;
     }
 
-    public Optional<User> signInWithMobileNumber(String mobileNumber, String countryCode) {
+    // API: (Not used) Upserts (update/insert if non-existant) users by mobile #
+    public String signInWithMobileNumber(String mobileNumber, String countryCode) {
 
         Query query = new Query();
         query.addCriteria(Criteria.where("mobileNumber").is(mobileNumber));
@@ -86,6 +92,91 @@ public class UserService {
         update.set("countryCode", Integer.parseInt(countryCode));
         mongoTemplate.upsert(query, update, User.class);
 
-        return userRepository.findFirstByMobileNumber(mobileNumber);
+        User user = userRepository.findFirstByMobileNumber(mobileNumber);
+
+        if (user.getId() != "") {
+            user.addSignInTime(); // Adds a Sign-in timestamp
+            userRepository.save(user);
+        }
+
+        return user.getId();
     }
+
+    // API: Return user password/credential
+    public User signInWithEmail(String email, String password) {
+
+        User user = userRepository.findFirstByEmail(email);
+
+        if (user != null && user.getPassword().equals(password)) {
+            user.addSignInTime(); // Adds a Sign-in timestamp
+            userRepository.save(user);
+            return user;
+        } else {
+            return null;
+        }
+
+    }
+
+    // Appends the current datetime to the sign out arraylist
+    public String addSignOutTime(String _id) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        user.addSignOutTime();
+        userRepository.save(user);
+
+        return "Done";
+    }
+
+    // Returns all the sign out times
+    public List<String> getSignOutTimes(String _id) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        return user.getSignOutTimes();
+    }
+
+    // Returns all the sign in times
+    public List<String> getSignInTimes(String _id) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        return user.getSignInTimes();
+    }
+
+    // Updates reward points by the given number
+    public List<Reward_History> updateRewardPoints(String _id, String newCount) {
+        Integer points = Integer.parseInt(newCount);
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        user.updateRewardPoints(points);
+        userRepository.save(user);
+        return user.getRewardHistory();
+    }
+
+    // Sets Home location
+    public String setHome(String _id, ArrayList<Float> home, String homeName) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        user.setHome(home, homeName);
+        userRepository.save(user);
+        return "Done";
+    }
+
+    // Sets Work location
+    public String setWork(String _id, ArrayList<Float> work, String workName) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        user.setWork(work, workName);
+        userRepository.save(user);
+        return "Done";
+    }
+
+    // Sets a favorite location
+    public String addFavoriteLocation(String _id, String name, String address, ArrayList<Float> coordinates) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        user.addFavoriteLocation(name, address, coordinates);
+        userRepository.save(user);
+        return "Done";
+    }
+
+    // Sets a favorite location
+    public String removeFavoriteLocation(String _id, String name) {
+        User user = userRepository.findById(new ObjectId(_id)).orElseThrow();
+        user.removeFavoriteLocation(name);
+        userRepository.save(user);
+        return "Done";
+    }
+
 }
