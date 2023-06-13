@@ -13,60 +13,60 @@ import lombok.Data;
 @Data
 public class Booking {
     @Id
-    private Integer BookingID;
-    private Integer MessageSubmittedTime;
-    private Integer MessageReceivedTime;
-    private Integer CustomerID;
-    private String CustomerName;
-    private Integer PhoneNumber;
-    private Location PickUpLocation;
-    private String PickUpTime;
-    private Location DropLocation;
-    private String TaxiType;
-    private String FareType;
-    private String Fare;
+    private Integer bookingID;
+    private Integer messageSubmittedTime;
+    private Integer messageReceivedTime;
+    private Integer customerID;
+    private String customerName;
+    private Integer phoneNumber;
+    private Location pickUpLocation;
+    private String pickUpTime;
+    private Location dropLocation;
+    private String taxiType;
+    private String fareType;
+    private String fare;
 
     // New Fields
-    private String Status;
-    private Integer DriverID;
-    private Integer TaxiID;
-    private Float Distance;
-    private String PaymentMethod;
+    private String status;
+    private Integer driverID;
+    private Integer taxiID;
+    private Float distance;
+    private String paymentMethod;
 
     public Booking() {
     }
 
-    public void CreateBooking(Integer MessageSubmittedTime, Integer MessageReceivedTime, Integer CustomerID,
-            String CustomerName, Integer PhoneNumber, String PickUpTime, String TaxiType, String FareType, String Fare,
-            Float Distance, String PaymentMethod, Location PickUpPlace, Location DropOffPlace) {
-        this.Status = "Pending";
-        this.MessageSubmittedTime = MessageSubmittedTime;
-        this.MessageReceivedTime = MessageReceivedTime;
-        this.CustomerID = CustomerID;
-        this.CustomerName = CustomerName;
-        this.PhoneNumber = PhoneNumber;
-        this.PickUpTime = PickUpTime;
-        this.TaxiType = TaxiType;
-        this.FareType = FareType;
-        this.Fare = Fare;
-        this.Distance = Distance;
-        this.PaymentMethod = PaymentMethod;
-        this.PickUpLocation.SetLocation(PickUpPlace);
-        this.DropLocation.SetLocation(DropOffPlace);
+    public void CreateBooking(Integer messageSubmittedTime, Integer messageReceivedTime, Integer customerID,
+            String customerName, Integer phoneNumber, String pickUpTime, String taxiType, String fareType, String fare,
+            Float distance, String paymentMethod, Location pickUpPlace, Location dropOffPlace) {
+        this.status = "Pending";
+        this.messageSubmittedTime = messageSubmittedTime;
+        this.messageReceivedTime = messageReceivedTime;
+        this.customerID = customerID;
+        this.customerName = customerName;
+        this.phoneNumber = phoneNumber;
+        this.pickUpTime = pickUpTime;
+        this.taxiType = taxiType;
+        this.fareType = fareType;
+        this.fare = fare;
+        this.distance = distance;
+        this.paymentMethod = paymentMethod;
+        this.pickUpLocation.SetLocation(pickUpPlace);
+        this.dropLocation.SetLocation(dropOffPlace);
     }
 
-    public void MatchedBooking(Integer DriverID, Integer TaxiID) {
-        this.DriverID = DriverID;
-        this.TaxiID = TaxiID;
-        this.Status = "Matched";
+    public void MatchedBooking(Integer driverID, Integer taxiID) {
+        this.driverID = driverID;
+        this.taxiID = taxiID;
+        this.status = "Matched";
     }
 
     public void CompleteBooking() {
-        this.Status = "Completed";
+        this.status = "Completed";
     }
 
     public void CancelBooking() {
-        this.Status = "Cancelled";
+        this.status = "Cancelled";
     }
 
 }

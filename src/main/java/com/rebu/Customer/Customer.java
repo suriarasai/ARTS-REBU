@@ -19,64 +19,64 @@ import lombok.NoArgsConstructor;
 @Data
 public class Customer {
     @Id
-    private Integer CustomerID;
-    private String CustomerName;
-    private String MemberCategory;
-    private Integer Age;
-    private String Gender;
-    private Double AmountSpent;
-    private Location Address;
-    private String City;
-    private String CountryCode;
-    private String ContactTitle;
-    private Integer PhoneNumber;
+    private Integer customerID;
+    private String customerName;
+    private String memberCategory;
+    private Integer age;
+    private String gender;
+    private Double amountSpent;
+    private Location address;
+    private String city;
+    private String countryCode;
+    private String contactTitle;
+    private Integer phoneNumber;
 
     // New Fields
-    private String Email;
-    private String Password;
-    private Integer PhoneCountryCode;
+    private String email;
+    private String password;
+    private Integer phoneCountryCode;
 
     // Misc Fields
-    private Location Home = new Location();
-    private Location Work = new Location();
-    private List<Location> SavedLocations = new ArrayList<Location>();
+    private Location home = new Location();
+    private Location work = new Location();
+    private List<Location> savedLocations = new ArrayList<Location>();
 
-    public Customer(Integer PhoneCountryCode, Integer PhoneNumber) {
-        this.PhoneCountryCode = PhoneCountryCode;
-        this.PhoneNumber = PhoneNumber;
+    public Customer(Integer phoneCountryCode, Integer phoneNumber) {
+        this.phoneCountryCode = phoneCountryCode;
+        this.phoneNumber = phoneNumber;
     }
 
-    public void UpdateUser(String CustomerName, String MemberCategory, Integer Age, String Gender,
-            String ContactTitle, String CountryCode, String Email, String Password, Integer PhoneCountryCode,
-            Integer PhoneNumber) {
-        this.CustomerName = CustomerName;
-        this.MemberCategory = MemberCategory;
-        this.Age = Age;
-        this.Gender = Gender;
-        this.ContactTitle = ContactTitle;
-        this.CountryCode = CountryCode;
-        this.Email = Email;
-        this.Password = Password;
-        this.PhoneCountryCode = PhoneCountryCode;
-        this.PhoneNumber = PhoneNumber;
+    public void UpdateUser(String customerName, String memberCategory, Integer age, String gender,
+            String contactTitle, String countryCode, String email, String password, Integer phoneCountryCode,
+            Integer phoneNumber) {
+        this.customerName = customerName;
+        this.memberCategory = memberCategory;
+        this.age = age;
+        this.gender = gender;
+        this.contactTitle = contactTitle;
+        this.countryCode = countryCode;
+        this.email = email;
+        this.password = password;
+        this.phoneCountryCode = phoneCountryCode;
+        this.phoneNumber = phoneNumber;
     }
 
-    public void SetUserHome(Location HomeLocation) {
-        this.Home.SetLocation(HomeLocation);
+    public void SetUserHome(Location homeLocation) {
+        this.home.SetLocation(homeLocation);
     }
 
-    public void SetUserWork(Location WorkLocation) {
-        this.Work.SetLocation(WorkLocation);
+    public void SetUserWork(Location workLocation) {
+        this.work.SetLocation(workLocation);
     }
 
-    public void AddSavedLocation(Location SavedLocation) {
+    public void AddSavedLocation(Location savedLocation) {
         Location _place = new Location();
-        _place.SetLocation(SavedLocation);
-        this.SavedLocations.add(_place);
+        _place.SetLocation(savedLocation);
+        this.savedLocations.add(_place);
     }
 
     public void RemoveSavedLocation(String PlaceID) {
-        for (Iterator<Location> iter = this.SavedLocations.listIterator(); iter.hasNext();) {
+        for (Iterator<Location> iter = this.savedLocations.listIterator(); iter.hasNext();) {
             Location _place = iter.next();
             if (_place.getPlaceID().equals(PlaceID)) {
                 iter.remove();
@@ -85,7 +85,7 @@ public class Customer {
     }
 
     public void SetAmountSpent(Double amount) {
-        this.AmountSpent = amount;
+        this.amountSpent = amount;
     }
 
 }

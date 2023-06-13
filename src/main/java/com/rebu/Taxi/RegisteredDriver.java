@@ -9,22 +9,22 @@ import lombok.Data;
 @AllArgsConstructor
 public class RegisteredDriver {
     @Id
-    Integer DriverID;
-    String DriverName;
-    Integer DriverPhone;
+    Integer driverID;
+    String driverName;
+    Integer driverPhone;
 
     public RegisteredDriver() {
     }
 
-    public void SetDriver(Integer DriverID, String DriverName, Integer DriverPhone) {
-        this.DriverID = DriverID;
-        this.DriverName = DriverName;
-        this.DriverPhone = DriverPhone;
+    public void SetDriver(Integer driverID, String driverName, Integer driverPhone) {
+        this.driverID = driverID;
+        this.driverName = driverName;
+        this.driverPhone = driverPhone;
     }
 
     public void SetDriver(RegisteredDriver _driver) {
-        this.DriverID = _driver.DriverID;
-        this.DriverName = _driver.DriverName;
-        this.DriverPhone = _driver.DriverPhone;
+        this.driverID = _driver.driverID;
+        this.driverName = _driver.driverName;
+        this.driverPhone = _driver.driverPhone;
     }
 }

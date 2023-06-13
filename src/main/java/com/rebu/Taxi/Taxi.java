@@ -14,22 +14,22 @@ import lombok.Data;
 @Data
 public class Taxi {
     @Id
-    String TaxiNumber;
-    Integer Sno;
-    String TaxiType;
-    String TMDTID;
-    TaxiFeature TaxiFeature = new TaxiFeature();
+    String taxiNumber;
+    Integer sno;
+    String taxiType;
+    String tmdtid;
+    TaxiFeature taxiFeature = new TaxiFeature();
     List<RegisteredDriver> RegisteredDrivers = new ArrayList<RegisteredDriver>();
 
     public Taxi() {
     }
 
-    public void UpsertTaxi(String TaxiNumber, Integer Sno, String TaxiType, String TMDTID, TaxiFeature TaxiFeature) {
-        this.TaxiNumber = TaxiNumber;
-        this.Sno = Sno;
-        this.TaxiType = TaxiType;
-        this.TMDTID = TMDTID;
-        this.TaxiFeature.SetFeatures(TaxiFeature);
+    public void UpsertTaxi(String taxiNumber, Integer sno, String taxiType, String tmdtid, TaxiFeature taxiFeature) {
+        this.taxiNumber = taxiNumber;
+        this.sno = sno;
+        this.taxiType = taxiType;
+        this.tmdtid = tmdtid;
+        this.taxiFeature.SetFeatures(taxiFeature);
     }
 
     public void RegisterDriver(Integer DriverID, String DriverName, Integer DriverPhone) {
