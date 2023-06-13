@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { UserContext } from '@/components/context/UserContext';
-import { addSignOutTime } from '@/server';
 
 export const SignOutModal = () => {
 	const router = useRouter();
@@ -11,7 +10,6 @@ export const SignOutModal = () => {
 	const { user } = useContext(UserContext);
 
 	const handleSignOut = () => {
-		addSignOutTime(user.id);
 		setLogoutSuccessful(true);
 		router.push('/');
 	};

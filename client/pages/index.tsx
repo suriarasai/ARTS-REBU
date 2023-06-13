@@ -64,8 +64,10 @@ const SignInForm = ({
 		formState: { errors: errors },
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
-		setNumber(data.countryCode + ' ' + data.mobileNumber)
-		checkIfUserExists(data.mobileNumber, data.countryCode)
+		// @ts-ignore
+		setNumber(data.PhoneCountryCode + ' ' + data.PhoneNumber)
+		// @ts-ignore
+		checkIfUserExists(data.PhoneNumber, data.PhoneCountryCode)
 		changeSignInForm(false)
 	})
 
@@ -75,18 +77,18 @@ const SignInForm = ({
 		mobileNumber: string,
 		countryCode: number
 	) => {
-		const response = await api.post('/api/v1/customers/exists', {
+		const response = await api.post('/api/v1/Customer/exists', {
 			mobileNumber: countryCode + ' ' + mobileNumber,
 		})
 
 		if (response.data === '' ) {
-			const createUser = await api.post('/api/v1/customers', {
+			const createUser = await api.post('/api/v1/Customer', {
 				mobileNumber: countryCode + ' ' + mobileNumber,
 				countryCode: countryCode,
 			})
 			setUser(createUser.data)
 			setNewUser(true)
-		} else if (response.data.firstName == null) {
+		} else if (response.data.Name == null) {
 			setUser(response.data)
 			setNewUser(true)
 		} else {
@@ -144,7 +146,8 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 		formState: { errors: errors },
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
-		validateCredentials(data.email, data.password)
+		// @ts-ignore
+		validateCredentials(data.Email, data.Password)
 	})
 
 	const { setUser } = useContext(UserContext)

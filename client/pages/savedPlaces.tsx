@@ -33,16 +33,20 @@ const SavedPlaces = () => {
 	const searchRef = useRef(null)
 
 	const addPlace = async () => {
-		const [name, address, coordinates] = getAddress(autoComplete.getPlace())
+		const [PlaceName, Address, Lat, Lng, Postcode] = getAddress(
+			autoComplete.getPlace()
+		)
 		const data = {
-			coordinates: coordinates as Array<number>,
-			name: name as string,
-			address: 'Singapore ' + address,
+			Lat: Lat,
+			Lng: Lng,
+			Postcode: Postcode,
+			Address: Address,
+			PlaceName: PlaceName,
 		}
-		await AddPlaceAPI({ id: user.id, ...data })
+		await AddPlaceAPI({ id: user.CustomerID, ...data })
 		setUser({
 			...user,
-			favoriteLocations: [...user.favoriteLocations, data],
+			SavedLocations: [...user.SavedLocations, data],
 		})
 	}
 
@@ -67,7 +71,7 @@ const SavedPlaces = () => {
 				>
 					<input
 						type='text'
-						className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
+						className='rounded-sm border-none bg-zinc-50 px-3 py-2 pl-10 leading-tight shadow-none focus:bg-white'
 						placeholder='Add a place'
 						ref={searchRef}
 						onChange={(e) => setValueObserver(e.target.value)}
@@ -80,21 +84,21 @@ const SavedPlaces = () => {
 							user={user}
 							setUser={setUser}
 							label={'Home'}
-							place={user.savedLocations.homeName}
+							place={user.Home.PlaceName}
 						/>
 
 						<SavedLocation
 							user={user}
 							setUser={setUser}
 							label={'Work'}
-							place={user.savedLocations.workName}
+							place={user.Work.PlaceName}
 						/>
 
 						<label className='pt-5'>Saved Places</label>
-						{user.favoriteLocations.length == 0 ? (
+						{user.SavedLocations.length == 0 ? (
 							<div className='pt-5'>{'No saved places'}</div>
 						) : (
-							user.favoriteLocations.map((location, index) => (
+							user.SavedLocations.map((location, index) => (
 								<Location
 									location={location}
 									setUser={setUser}
@@ -159,7 +163,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 						>
 							<input
 								type='text'
-								className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
+								className='rounded-sm border-none bg-zinc-50 px-3 py-2 pl-10 leading-tight shadow-none focus:bg-white'
 								placeholder='Enter a new address'
 								ref={searchRef}
 							/>
@@ -226,38 +230,41 @@ const Location = ({ location, setUser, user }) => {
 
 export default SavedPlaces
 
+// TODO: PlaceName
 function getAddress(place) {
-	let address1 = ''
-	let postcode = ''
-	let coordinates = [
-		place.geometry.location.lat(),
-		place.geometry.location.lng(),
-	]
+	let PlaceName = ''
+	let Postcode = ''
 
 	for (const component of place.address_components as google.maps.GeocoderAddressComponent[]) {
 		const componentType = component.types[0]
 
 		switch (componentType) {
 			case 'street_number': {
-				address1 = `${component.long_name} ${address1}`
+				PlaceName = `${component.long_name} ${PlaceName}`
 				break
 			}
 
 			case 'route': {
-				address1 += component.short_name
+				PlaceName += component.short_name
 				break
 			}
 
 			case 'postal_code': {
-				postcode = component.long_name
+				Postcode = component.long_name
 				break
 			}
 		}
 	}
 
-	if (address1 === '') {
-		address1 = place.formatted_address
+	if (PlaceName === '') {
+		PlaceName = place.formatted_address
 	}
 
-	return [address1, postcode, coordinates]
+	return [
+		PlaceName,
+		PlaceName,
+		place.geometry.location.lat(),
+		place.geometry.location.lng(),
+		Postcode,
+	]
 }

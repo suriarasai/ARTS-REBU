@@ -11,10 +11,10 @@ const RewardPoints = () => {
 	const rewardsForm = useRef<any>(null)
 
 	const [rewardPoints, updateRewardPoints] = useState<number>(
-		user.rewardPoints ? user.rewardPoints : 0
+		// user.rewardPoints ? user.rewardPoints : 0
 	)
 	const [rewardHistory, updateRewardHistory] = useState<rewardPoints[]>(
-		user.rewardHistory!
+		// user.rewardHistory!
 	)
 	const [invalidInput, updateInvalidInput] = useState<boolean>(false) // Validation checks on redemption input box
 
@@ -24,10 +24,10 @@ const RewardPoints = () => {
 
 		// Ensures the user has the number of points they want
 		if (rewardPoints - points >= 0 && points > 0) {
-			const rewardData = await RewardPointsAPI(user.id!, rewardPoints - points)
+			// const rewardData = await RewardPointsAPI(user.id!, rewardPoints - points)
 			
-			setUser({ ...user, rewardHistory: rewardData, rewardPoints: rewardPoints - points })
-			updateRewardHistory(rewardData)
+			// setUser({ ...user, rewardHistory: rewardData, rewardPoints: rewardPoints - points })
+			// updateRewardHistory(rewardData)
 			updateRewardPoints(rewardPoints - points)
 		} else {
 			updateInvalidInput(true)

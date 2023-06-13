@@ -1,7 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { useRouter } from 'next/router'
-import { UserContext } from '@/components/context/UserContext'
-import { UserContextType } from '@/redux/types'
+import React, { useEffect, useState } from 'react'
 import { showOptionInterface } from '@/redux/types'
 import {
 	FaAngleDown,
@@ -17,9 +14,6 @@ import {
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
-	const { user, setUser } = useContext<UserContextType>(UserContext)
-	const router = useRouter()
-
 	const [options, setOptions] = useState<Array<any>>([])
 	const [clickedOption, setClickedOption] = useState<number | null>(null)
 	const [collapsed, setCollapsed] = useState<boolean>(false)

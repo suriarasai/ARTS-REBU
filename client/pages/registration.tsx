@@ -39,7 +39,7 @@ const Registration = () => {
 		updateFormData(data)
 	}
 	const onSubmitProfile = async (data: User) => {
-		setUser(await RegisterUser({ ...formData, ...data }, user.id))
+		setUser(await RegisterUser({ ...formData, ...data }, user.CustomerID))
 		setRegistrationSuccessful(true)
 		router.push('/home')
 	}

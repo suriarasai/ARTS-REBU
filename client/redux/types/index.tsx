@@ -8,28 +8,34 @@ export type UserContextType = {
 
 // User data schema
 export type User = {
-	id?: string
-	firstName?: string
-	lastName?: string
-	birthdate?: string
-	prefix?: string
-	countryCode?: number
-	email?: string
-	password?: string
-	mobileNumber?: string
-	joinedDate?: string
-	rating?: number
-	activity?: any
-	savedLocations?: SavedLocation
-	favoriteLocations?: Array<FavoriteLocation>
-	rewardPoints?: number
-	rewardHistory?: Array<any>
-	reviewsAboutCustomer?: Array<any>
-	reviewsFromCustomer?: Array<any>
+	CustomerID?: number,
+	CustomerName?: string,
+	MemberCategory?: string,
+	Age?: number,
+	Gender?: string,
+	AmountSpent?: number,
+	Address?: Location,
+	City?: string,
+	CountryCode?: string,
+	ContactTitle?: string,
+	PhoneNumber?: number,
+	Email?: string,
+	Password?: string,
+	PhoneCountryCode?: number,
+	Home?: Location,
+	Work?: Location,
+	SavedLocations?: Array<Location>
 
-	temp?: Array<any>
-	tripInfo?: any
-	addr?: String[]
+	temp?: any
+}
+
+export interface Location {
+	PlaceID?: string,
+    lat?: number,
+    lng?: number,
+    Postcode?: number,
+    Address?: string,
+    PlaceName?: string
 }
 
 export interface SavedLocation {
