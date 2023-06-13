@@ -4,7 +4,7 @@ import {
 	Marker,
 	Autocomplete,
 } from '@react-google-maps/api'
-import { useEffect, useRef, useState, useContext } from 'react'
+import { useEffect, useRef, useState, useContext, useCallback } from 'react'
 import { UserContext } from '@/components/context/UserContext'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
@@ -17,7 +17,7 @@ import { BackButton } from '@/components/booking/backButton'
 const center = { lat: 1.2952078, lng: 103.773675 }
 var directionsDisplay
 var taxiMarker
-export var nearbyTaxiMarkers = []
+var nearbyTaxiMarkers = []
 
 const libraries = ['places']
 
@@ -62,6 +62,11 @@ function Booking() {
 	const [marker, setMarker] = useState([])
 
 	const [hideUI, setHideUI] = useState(false)
+
+	const loadMap = useCallback(function callback(map) {
+		setMap(map)
+		loadTaxis(map, [103.773675, 1.2966058], 5)
+	}, [])
 
 	// On map load: Load markers for saved locations
 	useEffect(() => {
@@ -154,27 +159,27 @@ function Booking() {
 		directionsDisplay.setMap(map) // Binding polyline to the map
 		directionsDisplay.setDirections(results) // Setting the coords
 
-		// const line = results.routes[0].overview_path // Polyline coords
+		const line = results.routes[0].overview_path // Polyline coords
 
-		// const expandedArray = expandArray(line, 100)
+		const expandedArray = expandArray(line, 100)
 
-		// taxiMarker = new google.maps.Marker({
-		// 	map: map,
-		// 	position: { lat: 1.2966058, lng: 103.772875 },
-		// 	icon: {
-		// 		path: 'M6 1a1 1 0 0 0-1 1v1h-.181A2.5 2.5 0 0 0 2.52 4.515l-.792 1.848a.807.807 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 9.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413c0-.165-.016-.329-.049-.49l-.335-1.68a1.807 1.807 0 0 0-.964-1.261.807.807 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 3H11V2a1 1 0 0 0-1-1H6ZM4.309 4h7.382a.5.5 0 0 1 .447.276l.956 1.913a.51.51 0 0 1-.497.731c-.91-.073-3.35-.17-4.597-.17-1.247 0-3.688.097-4.597.17a.51.51 0 0 1-.497-.731l.956-1.913A.5.5 0 0 1 4.309 4ZM4 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-9 0a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z',
-		// 		fillColor: 'MediumTurquoise',
-		// 		fillOpacity: 0.9,
-		// 		scale: 2,
-		// 		strokeColor: 'MidnightBlue',
-		// 		strokeWeight: 0.5,
-		// 	},
-		// })
+		taxiMarker = new google.maps.Marker({
+			map: map,
+			position: { lat: 1.2966058, lng: 103.772875 },
+			icon: {
+				path: 'M6 1a1 1 0 0 0-1 1v1h-.181A2.5 2.5 0 0 0 2.52 4.515l-.792 1.848a.807.807 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 9.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413c0-.165-.016-.329-.049-.49l-.335-1.68a1.807 1.807 0 0 0-.964-1.261.807.807 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 3H11V2a1 1 0 0 0-1-1H6ZM4.309 4h7.382a.5.5 0 0 1 .447.276l.956 1.913a.51.51 0 0 1-.497.731c-.91-.073-3.35-.17-4.597-.17-1.247 0-3.688.097-4.597.17a.51.51 0 0 1-.497-.731l.956-1.913A.5.5 0 0 1 4.309 4ZM4 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-9 0a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z',
+				fillColor: 'MediumTurquoise',
+				fillOpacity: 0.9,
+				scale: 2,
+				strokeColor: 'MidnightBlue',
+				strokeWeight: 0.5,
+			},
+		})
 
 		// Locates closest taxi from all available taxis
 		// loadTaxis(map, [currCoords.lng(), currCoords.lat()])
 
-		// moveToStep(taxiMarker, expandedArray, 0, 30)
+		moveToStep(taxiMarker, expandedArray, 0, 30)
 
 		// UI Updates
 		isValidInput(true)
@@ -217,11 +222,9 @@ function Booking() {
 						minZoom: 3,
 					}}
 					onClick={(e) => setLocationViaClick(e)}
-					onLoad={setMap}
+					onLoad={loadMap}
 				>
-					{/* {marker?.length !== 0 &&
-					
-					// loadTaxis(map, [103.773675, 1.2966058], 5)
+					{marker?.length !== 0 &&
 
 						marker?.map((location, index) => (
 							<Marker
@@ -236,7 +239,7 @@ function Booking() {
 									strokeWeight: 2,
 								}}
 							/>
-						))} */}
+						))}
 				</GoogleMap>
 			</div>
 
@@ -256,7 +259,7 @@ function Booking() {
 				)
 			) : (
 				<button
-					className='cancel-button absolute top-0 left-0 z-10 m-5'
+					className='cancel-button absolute left-0 top-0 z-10 m-5'
 					onClick={() => {
 						setHideUI(false)
 						clearRoute()
@@ -285,7 +288,7 @@ function Booking() {
 					<>
 						<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
 							<button
-								className='w-10/12 rounded bg-green-500 py-2 px-4 text-white'
+								className='w-10/12 rounded bg-green-500 px-4 py-2 text-white'
 								type='submit'
 								onClick={calculateRoute}
 							>
@@ -444,7 +447,7 @@ function InputDestinationLocation(
 			>
 				<input
 					type='text'
-					className='rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+					className='rounded-sm border-none bg-zinc-100 px-3 py-2 pl-10 leading-tight shadow-none'
 					placeholder='Destination'
 					ref={destinationRef}
 					// value={destination}
@@ -477,7 +480,7 @@ function InputCurrentLocation(
 			>
 				<input
 					type='text'
-					className='mb-2 rounded-sm border-none bg-zinc-100 py-2 px-3 pl-10 leading-tight shadow-none'
+					className='mb-2 rounded-sm border-none bg-zinc-100 px-3 py-2 pl-10 leading-tight shadow-none'
 					placeholder='Origin'
 					ref={originRef}
 					// value={origin}
