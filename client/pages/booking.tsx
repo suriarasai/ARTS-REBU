@@ -1,5 +1,3 @@
-import { FaCrosshairs, FaFontAwesomeFlag, FaPlusSquare } from 'react-icons/fa'
-
 import {
 	useJsApiLoader,
 	GoogleMap,
@@ -8,15 +6,32 @@ import {
 } from '@react-google-maps/api'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { UserContext } from '@/components/context/UserContext'
-import { BackButton } from '@/components/booking/backButton'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
 import { RideConfirmation } from '@/components/booking/RideConfirmation'
+import { moveToStep } from '@/components/booking/moveToStep'
+import { expandArray } from '@/components/booking/expandArray'
+import { FaCrosshairs, FaFontAwesomeFlag, FaPlusSquare } from 'react-icons/fa'
+import { BackButton } from '@/components/booking/backButton'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 var directionsDisplay
+var taxiMarker
+export var nearbyTaxiMarkers = []
 
 const libraries = ['places']
+
+var noPoi = [
+	{
+		featureType: 'poi',
+		elementType: 'labels',
+		stylers: [
+			{
+				visibility: 'off',
+			},
+		],
+	},
+]
 
 function Booking() {
 	const { user, setUser } = useContext(UserContext)
@@ -31,10 +46,6 @@ function Booking() {
 	const [distance, setDistance] = useState('')
 	const [duration, setDuration] = useState('')
 	const [validInput, isValidInput] = useState(false)
-	const [taxiLocation, setTaxiLocation] = useState([])
-	// const [originAutocomplete, setOriginAutocomplete] = useState(null)
-	// const [destinationAutocomplete, setDestinationAutocomplete] = useState(null)
-	const [taxiMarker, setTaxiMarker] = useState(null)
 
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
@@ -52,6 +63,7 @@ function Booking() {
 
 	const [hideUI, setHideUI] = useState(false)
 
+	// On map load: Load markers for saved locations
 	useEffect(() => {
 		if (marker?.length == 0) {
 			const markerFacade = []
@@ -76,14 +88,13 @@ function Booking() {
 			}
 			setMarker(markerFacade)
 		}
-
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	// Set origin address after clicking a saved location
 	useEffect(() => {
 		if (origin !== '' && origin !== null) {
-			if (typeof origin === 'object' && originRef.current) {
+			if (typeof origin === 'object') {
 				CoordinateToAddress(origin, setOrigin)
 			} else {
 				originRef.current.value = origin
@@ -104,32 +115,33 @@ function Booking() {
 		}
 	}, [destination, destinationRef])
 
-	// useEffect(() => {
-	// 	console.log(taxiLocation)
-	// 	console.log('taxiLocation' + Date.now())
-	// 	console.log(marker)
-	// }, [taxiLocation, marker])
-
+	// Render a message until the map is finished loading
 	if (!isLoaded) {
 		return 'loading'
 	}
 
+	// Retrieve and render the route to the destination
 	async function calculateRoute() {
 		if (origin === '' || destination === '') {
 			isValidInput(false)
+			// HideTaxis()
+			// map.setOptions({ styles: noPoi })
 			return
 		}
 		// eslint-disable-next-line no-undef
 		const directionsService = new google.maps.DirectionsService()
 
+		// Removing directions polyline if a polyline already exists
 		if (directionsDisplay != null) {
 			directionsDisplay.set('directions', null)
 			directionsDisplay.setMap(null)
 			directionsDisplay = null
 		}
 
+		// Initializing a new directions polyline
 		directionsDisplay = new google.maps.DirectionsRenderer()
 
+		// Setting the coordinates of the directions polyline
 		const results = await directionsService.route({
 			origin: origin,
 			destination: destination,
@@ -139,27 +151,32 @@ function Booking() {
 		setDirectionsResponse(results)
 		setDistance(results.routes[0].legs[0].distance.text)
 		setDuration(results.routes[0].legs[0].duration.text)
+		directionsDisplay.setMap(map) // Binding polyline to the map
+		directionsDisplay.setDirections(results) // Setting the coords
 
-		directionsDisplay.setMap(map)
-		directionsDisplay.setDirections(results)
+		// const line = results.routes[0].overview_path // Polyline coords
 
-		// const line = results.routes[0].overview_path
+		// const expandedArray = expandArray(line, 100)
 
-		// console.log(line)
+		// taxiMarker = new google.maps.Marker({
+		// 	map: map,
+		// 	position: { lat: 1.2966058, lng: 103.772875 },
+		// 	icon: {
+		// 		path: 'M6 1a1 1 0 0 0-1 1v1h-.181A2.5 2.5 0 0 0 2.52 4.515l-.792 1.848a.807.807 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 9.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413c0-.165-.016-.329-.049-.49l-.335-1.68a1.807 1.807 0 0 0-.964-1.261.807.807 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 3H11V2a1 1 0 0 0-1-1H6ZM4.309 4h7.382a.5.5 0 0 1 .447.276l.956 1.913a.51.51 0 0 1-.497.731c-.91-.073-3.35-.17-4.597-.17-1.247 0-3.688.097-4.597.17a.51.51 0 0 1-.497-.731l.956-1.913A.5.5 0 0 1 4.309 4ZM4 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-9 0a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z',
+		// 		fillColor: 'MediumTurquoise',
+		// 		fillOpacity: 0.9,
+		// 		scale: 2,
+		// 		strokeColor: 'MidnightBlue',
+		// 		strokeWeight: 0.5,
+		// 	},
+		// })
 
-		// for (var i = 0; i < line.length; i++) {
-		// 	setTimeout(function (n) {
-		// 		// {line[i]} might work
-		// 		// taxiMarker.setPosition({lat: line[i].lat(), lng: line[i].lng()})
-		// 		console.log(n)
-		// 	}, 500 * i)
-		// }
+		// Locates closest taxi from all available taxis
+		// loadTaxis(map, [currCoords.lng(), currCoords.lat()])
 
-		// const currCoords = originAutocomplete?.getPlace().geometry?.location
+		// moveToStep(taxiMarker, expandedArray, 0, 30)
 
-		// Input is in lngLat form instead of the default latLng
-		// loadTaxis([currCoords.lng(), currCoords.lat()], setTaxiLocation)
-
+		// UI Updates
 		isValidInput(true)
 		setHideUI(true)
 	}
@@ -198,12 +215,14 @@ function Booking() {
 						mapTypeControl: false,
 						fullscreenControl: false,
 						minZoom: 3,
-						maxZoom: 18,
 					}}
 					onClick={(e) => setLocationViaClick(e)}
-					onLoad={(map) => setMap(map)}
+					onLoad={setMap}
 				>
-					{marker?.length !== 0 &&
+					{/* {marker?.length !== 0 &&
+					
+					// loadTaxis(map, [103.773675, 1.2966058], 5)
+
 						marker?.map((location, index) => (
 							<Marker
 								key={index}
@@ -217,24 +236,7 @@ function Booking() {
 									strokeWeight: 2,
 								}}
 							/>
-						))}
-
-					{/* {taxiLocation?.length !== 0 && ( */}
-					{/* <Marker
-						key={'taxiLocation'}
-						// onLoad={setTaxiMarker}
-						// position={{ lat: taxiLocation[1], lng: taxiLocation[0] }}
-						position={{ lat: 1.2966058, lng: 103.772875 }}
-						icon={{
-							path: 'M.5 3.498L7.5.5l7 2.998m-14 0l7 2.998m-7-2.998V3.5m14-.002l-7 2.998m7-2.998V11.5l-7 3m7-11.002L7.5 6.5v8m0-8.004V14.5m0-8.004L.5 3.5m7 11l-7-3v-8',
-							fillColor: 'purple',
-							fillOpacity: 0.9,
-							scale: 1,
-							strokeColor: 'purple',
-							strokeWeight: 2,
-						}}
-					/> */}
-					{/* )} */}
+						))} */}
 				</GoogleMap>
 			</div>
 
@@ -311,6 +313,68 @@ function Booking() {
 
 export default Booking
 
+async function PlaceIDToAddress(id, setLocation) {
+	await fetch(
+		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	)
+		.then(function (response) {
+			return response.json()
+		})
+		.then(function (data) {})
+}
+
+// Loads the nearest N taxis onto the map
+const loadTaxis = (map, coord, N = 1) => {
+	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
+		.then(function (response) {
+			return response.json()
+		})
+		.then(function (data) {
+			const coordinates: [number, number] =
+				data.features[0].geometry.coordinates
+			const distances: [number, number, number][] = []
+
+			// Calculating the Euclidean distance
+			coordinates.forEach(([a, b]: any) =>
+				distances.push([
+					Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
+					a,
+					b,
+				])
+			)
+
+			// Sorting the distances
+			distances.sort()
+
+			var coords
+			var newTaxi
+
+			// Saving the marker to the state variable
+			for (let i = 0; i < N; i++) {
+				coords = distances[i].slice(1, 3)
+				newTaxi = new google.maps.Marker({
+					map: map,
+					position: { lat: coords[1], lng: coords[0] },
+					icon: {
+						path: 'M6 1a1 1 0 0 0-1 1v1h-.181A2.5 2.5 0 0 0 2.52 4.515l-.792 1.848a.807.807 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 9.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413c0-.165-.016-.329-.049-.49l-.335-1.68a1.807 1.807 0 0 0-.964-1.261.807.807 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 3H11V2a1 1 0 0 0-1-1H6ZM4.309 4h7.382a.5.5 0 0 1 .447.276l.956 1.913a.51.51 0 0 1-.497.731c-.91-.073-3.35-.17-4.597-.17-1.247 0-3.688.097-4.597.17a.51.51 0 0 1-.497-.731l.956-1.913A.5.5 0 0 1 4.309 4ZM4 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-9 0a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z',
+						fillColor: 'Purple',
+						fillOpacity: 0.9,
+						scale: 1,
+						strokeColor: 'Purple',
+						strokeWeight: 0.5,
+					},
+				})
+				nearbyTaxiMarkers.push(newTaxi)
+			}
+		})
+}
+
+const HideTaxis = () => {
+	for (var i = 0; i < nearbyTaxiMarkers.length; i++) {
+		nearbyTaxiMarkers[i].setMap(null)
+	}
+}
+
 function LocationSearch(
 	setMarker,
 	expandSearch: number,
@@ -329,6 +393,7 @@ function LocationSearch(
 				className='w-1/12'
 				onClick={() => {
 					setMarker(null)
+					HideTaxis()
 				}}
 			>
 				<BackButton
@@ -360,28 +425,6 @@ function LocationSearch(
 			</div>
 		</div>
 	)
-}
-
-async function CoordinateToAddress(coordinates, setLocation) {
-	await fetch(
-		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-	)
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {
-			setLocation(data.results[0].formatted_address)
-		})
-}
-
-async function PlaceIDToAddress(id, setLocation) {
-	await fetch(
-		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-	)
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {})
 }
 
 function InputDestinationLocation(
@@ -427,7 +470,6 @@ function InputCurrentLocation(
 	return (
 		<div>
 			<Autocomplete
-				className='origin'
 				// onLoad={(e) => setOriginAutocomplete(e)}
 				onPlaceChanged={() => setExpandSearch(0)}
 				options={{ componentRestrictions: { country: 'sg' } }}
@@ -451,32 +493,14 @@ function InputCurrentLocation(
 	)
 }
 
-// Loads the nearest N taxis onto the map
-// export const loadTaxis = (coord, setTaxiLocation, N = 1) => {
-// 	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
-// 		.then(function (response) {
-// 			return response.json()
-// 		})
-// 		.then(function (data) {
-// 			const coordinates: [number, number] =
-// 				data.features[0].geometry.coordinates
-// 			const distances: [number, number, number][] = []
-
-// 			// Calculating the Euclidean distance
-// 			coordinates.forEach(([a, b]: any) =>
-// 				distances.push([
-// 					Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
-// 					a,
-// 					b,
-// 				])
-// 			)
-
-// 			// Sorting the distances
-// 			distances.sort()
-
-// 			// Saving the marker to the state variable
-// 			for (let i = 0; i < N; i++) {
-// 				setTaxiLocation(distances[i].slice(1, 3))
-// 			}
-// 		})
-// }
+async function CoordinateToAddress(coordinates, setLocation) {
+	await fetch(
+		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	)
+		.then(function (response) {
+			return response.json()
+		})
+		.then(function (data) {
+			setLocation(data.results[0].formatted_address)
+		})
+}

@@ -46,7 +46,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 
 	// UI for the Home/Saved menus
 	const SavedLocations = (
-		<span className='mt-3 flex inline-grid w-full grid-cols-2'>
+		<div className='mt-3 flex inline-grid w-full grid-cols-2'>
 			<div>
 				<div
 					className='flex flex-wrap'
@@ -81,7 +81,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 					</h5>
 				</div>
 			</div>
-		</span>
+		</div>
 	)
 
 	return (
@@ -105,20 +105,22 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 						<FaStar className='mr-6 text-xl text-green-500' />
 						<b className='mb-4 text-sm'>Saved Locations</b>
 
-						{user.favoriteLocations && user.favoriteLocations.length > 0
-							? user.favoriteLocations.map((item, index) => (
-									<div
-										className='ml-11 mb-3 w-full'
-										key={index}
-										onClick={() => {
-											navigateToLocation(item.coordinates, item.name)
-										}}
-									>
-										<p>{item.name}</p>
-										<h5>{item.address}</h5>
-									</div>
-							  ))
-							: 'No saved locations'}
+						{user.favoriteLocations && user.favoriteLocations.length > 0 ? (
+							user.favoriteLocations.map((item, index) => (
+								<div
+									className='ml-11 mb-3 w-full'
+									key={index}
+									onClick={() => {
+										navigateToLocation(item.coordinates, item.name)
+									}}
+								>
+									<p>{item.name}</p>
+									<h5>{item.address}</h5>
+								</div>
+							))
+						) : (
+							<p className='ml-11 w-full'>{'No saved locations'}</p>
+						)}
 					</div>
 				</div>
 			) : (
