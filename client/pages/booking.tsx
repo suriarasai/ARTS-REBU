@@ -11,8 +11,13 @@ import ExpandSearch from '@/components/booking/expandSearch'
 import { RideConfirmation } from '@/components/booking/RideConfirmation'
 import { moveToStep } from '@/components/booking/moveToStep'
 import { expandArray } from '@/components/booking/expandArray'
-import { FaCrosshairs, FaFontAwesomeFlag, FaPlusSquare } from 'react-icons/fa'
+import {
+	FaCrosshairs,
+	FaFontAwesomeFlag,
+	FaPlusSquare,
+} from 'react-icons/fa'
 import { BackButton } from '@/components/booking/backButton'
+import { togglePOI } from '@/components/booking/togglePOI'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 var directionsDisplay
@@ -21,17 +26,19 @@ var nearbyTaxiMarkers = []
 
 const libraries = ['places']
 
-var noPoi = [
-	{
-		featureType: 'poi',
-		elementType: 'labels',
-		stylers: [
-			{
-				visibility: 'off',
-			},
-		],
-	},
-]
+export function noPoi(visible) {
+	return [
+		{
+			featureType: 'poi',
+			elementType: 'labels',
+			stylers: [
+				{
+					visibility: visible ? 'on' : 'off',
+				},
+			],
+		},
+	]
+}
 
 function Booking() {
 	const { user, setUser } = useContext(UserContext)
@@ -46,6 +53,7 @@ function Booking() {
 	const [distance, setDistance] = useState('')
 	const [duration, setDuration] = useState('')
 	const [validInput, isValidInput] = useState(false)
+	const [poi, setPoi] = useState(true)
 
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
@@ -129,7 +137,7 @@ function Booking() {
 	async function calculateRoute() {
 		if (origin === '' || destination === '') {
 			isValidInput(false)
-			// HideTaxis()
+			HideTaxis()
 			// map.setOptions({ styles: noPoi })
 			return
 		}
@@ -225,7 +233,6 @@ function Booking() {
 					onLoad={loadMap}
 				>
 					{marker?.length !== 0 &&
-
 						marker?.map((location, index) => (
 							<Marker
 								key={index}
@@ -297,6 +304,7 @@ function Booking() {
 						</div>
 
 						<Locate map={map} />
+						{togglePOI(map, poi, setPoi)}
 					</>
 				)
 			) : (
