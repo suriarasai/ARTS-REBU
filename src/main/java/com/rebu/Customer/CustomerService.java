@@ -55,14 +55,14 @@ public class CustomerService {
             String ContactTitle, String CountryCode, String Email, String Password, String PhoneCountryCode,
             String PhoneNumber, String CustomerID) {
         Update update = new Update();
-        update.set("CustomerName", CustomerName);
-        update.set("MemberCategory", MemberCategory);
-        update.set("Age", Integer.parseInt(Age));
-        update.set("Gender", Gender);
-        update.set("ContactTitle", ContactTitle);
-        update.set("CountryCode", Integer.parseInt(CountryCode));
-        update.set("Email", Email);
-        update.set("Password", Password);
+        update.set("customerName", CustomerName);
+        update.set("memberCategory", MemberCategory);
+        update.set("age", Integer.parseInt(Age));
+        update.set("gender", Gender);
+        update.set("contactTitle", ContactTitle);
+        update.set("countryCode", CountryCode);
+        update.set("email", Email);
+        update.set("password", Password);
 
         if (PhoneNumber != null && PhoneCountryCode != null) {
             update.set("PhoneCountryCode", Integer.parseInt(PhoneCountryCode));

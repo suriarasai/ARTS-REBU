@@ -16,7 +16,7 @@ const SignIn = () => {
 	const [newUser, setNewUser] = React.useState<boolean>(true)
 
 	return (
-		<main className='mx-auto max-w-screen-md pt-20 pb-16 px-safe sm:pb-0'>
+		<main className='mx-auto max-w-screen-md pb-16 pt-20 px-safe sm:pb-0'>
 			<div className='p-6'>
 				<h2 className='text-xl font-semibold'>Welcome to Rebu</h2>
 				{signInForm ? (
@@ -65,7 +65,7 @@ const SignInForm = ({
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		// @ts-ignore
-		setNumber(data.phoneNumber)
+		setNumber('+' + data.countryCode + ' ' + data.phoneNumber)
 		// @ts-ignore
 		checkIfUserExists(data.phoneNumber, data.phoneCountryCode)
 		changeSignInForm(false)
@@ -79,10 +79,10 @@ const SignInForm = ({
 	) => {
 		const response = await api.post('/api/v1/Customer/exists', {
 			phoneCountryCode: phoneCountryCode,
-			phoneNumber: phoneNumber
+			phoneNumber: phoneNumber,
 		})
 
-		if (response.data === '' ) {
+		if (response.data === '') {
 			const createUser = await api.post('/api/v1/Customer', {
 				phoneNumber: phoneNumber,
 				phoneCountryCode: phoneCountryCode,
@@ -95,7 +95,6 @@ const SignInForm = ({
 		} else {
 			setUser(response.data)
 			setNewUser(false)
-			
 		}
 	}
 
@@ -121,7 +120,7 @@ const SignInForm = ({
 							}}
 						>
 							Continue with email
-						</u>{' '}
+						</u>
 						instead
 					</p>
 				</div>
@@ -240,7 +239,7 @@ const OTPForm = ({ phoneNumber, changeSignInForm, newUser }: any) => {
 				<div className='-mx-3 mb-2 flex flex-wrap items-center'>
 					<div className='w-3/4 px-3 pb-6 md:mb-0'>
 						<label>Enter OTP</label>
-						<input type='text' placeholder='1234' className='py-2 px-4' />
+						<input type='text' placeholder='1234' className='px-4 py-2' />
 					</div>
 
 					<div className='w-1/4 px-3 md:mb-0'>
@@ -253,7 +252,11 @@ const OTPForm = ({ phoneNumber, changeSignInForm, newUser }: any) => {
 				<TermsOfService />
 
 				<div className='-mx-3 mb-2 flex self-end'>
-					<button className='grey-button mr-3' onClick={goBack} disabled={loginSuccessful ? true : false}>
+					<button
+						className='grey-button mr-3'
+						onClick={goBack}
+						disabled={loginSuccessful ? true : false}
+					>
 						{'Go Back'}
 					</button>
 					<button
