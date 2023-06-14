@@ -32,17 +32,25 @@ const SavedPlaces = () => {
 	const searchRef = useRef(null)
 
 	const addPlace = async () => {
-		const [PlaceName, Address, Lat, Lng, Postcode] = getAddress(
+		const [placeName, address, lat, lng, postcode, place_id] = getAddress(
 			autoComplete.getPlace()
 		)
 		const data = {
-			lat: Lat,
-			lng: Lng,
-			postcode: Postcode,
-			address: Address,
-			placeName: PlaceName,
+			lat: lat,
+			lng: lng,
+			postcode: postcode,
+			address: address,
+			placeName: placeName,
+			placeID: place_id
 		}
-		await AddPlaceAPI({ id: user.customerID, ...data })
+		await AddPlaceAPI(user.customerID, {
+			lat: lat,
+			lng: lng,
+			postcode: postcode,
+			address: address,
+			placeName: placeName,
+			placeID: place_id
+		})
 		setUser({
 			...user,
 			savedLocations: [...user.savedLocations, data],
@@ -65,7 +73,7 @@ const SavedPlaces = () => {
 						setValueObserver('')
 					}}
 					onLoad={(e) => setAutoComplete(e)}
-					fields={['address_components', 'geometry', 'formatted_address']}
+					fields={['address_components', 'geometry', 'formatted_address', 'place_id']}
 					options={{ componentRestrictions: { country: 'sg' } }}
 				>
 					<input
@@ -228,12 +236,14 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 }
 
 const Location = ({ location, setUser, user }) => {
-	const removeEntry = () => {
-		RemovePlaceAPI(user.customerID, location.placeName)
+	function removeEntry() {
+		RemovePlaceAPI(user.customerID, location.placeID)
 		setUser({
 			...user,
-			favoriteLocations: [
-				...user.savedLocations.filter((item) => item.placeName !== location.placeName),
+			savedLocations: [
+				...user.savedLocations.filter(
+					(item) => item.placeID !== location.placeID
+				),
 			],
 		})
 	}
@@ -241,8 +251,8 @@ const Location = ({ location, setUser, user }) => {
 	return (
 		<div className='ml-5 flex flex-wrap pt-3'>
 			<div className='w-5/6'>
-				<b className='text-sm font-medium'>{location.name}</b>
-				<h5>{location.address}</h5>
+				<b className='text-sm font-medium'>{location.placeName}</b>
+				<h5>{location.address}, Singapore {location.postcode}</h5>
 			</div>
 			<div
 				className='flex w-1/6 items-center justify-center'

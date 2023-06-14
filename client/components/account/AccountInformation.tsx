@@ -69,8 +69,8 @@ const AccountInformation = ({
 						<option value={null} disabled>
 							Select
 						</option>
-						{ageArray.map((age) => (
-							<option>{age}</option>
+						{ageArray.map((age, index) => (
+							<option key={index}>{age}</option>
 						))}
 					</select>
 				</div>

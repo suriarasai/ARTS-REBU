@@ -110,19 +110,19 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // // Adds a favorite location
-    // @PostMapping("/addSavedLocation")
-    // public ResponseEntity<String> addSavedLocation(@RequestBody Location SavedLocation) {
-    //     return new ResponseEntity<String>(
-    //             query.AddFavoriteLocation(SavedLocation),
-    //             HttpStatus.OK);
-    // }
+    // Adds a favorite location
+    @PostMapping("/addSavedLocation")
+    public ResponseEntity<String> addSavedLocation(@RequestBody LocationInterface payload) {
+        return new ResponseEntity<String>(
+                query.addSavedLocation(payload.getLocation(), payload.getCustomerID()),
+                HttpStatus.OK);
+    }
 
-    // // Removes a favorite location
-    // @PostMapping("/removeFavoriteLocation")
-    // public ResponseEntity<String> removeFavoriteLocation(@RequestBody Location payload) {
-    //     return new ResponseEntity<String>(
-    //             query.removeFavoriteLocation(payload.getId(), payload.getName()),
-    //             HttpStatus.OK);
-    // }
+    // Removes a favorite location
+    @PostMapping("/removeSavedLocation")
+    public ResponseEntity<String> removeFavoriteLocation(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
+                query.removeSavedLocation(payload.get("placeID"), payload.get("customerID")),
+                HttpStatus.OK);
+    }
 }

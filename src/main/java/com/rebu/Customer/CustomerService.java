@@ -138,20 +138,20 @@ public class CustomerService {
         return null;
     }
 
-    // // Sets a favorite location
-    // public void AddSavedLocation(Location SavedLocation) {
-    // Customer customer =
-    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    // customer.AddSavedLocation(SavedLocation);
-    // CustomerRepository.save(customer);
-    // }
+    // Sets a favorite location
+    public String addSavedLocation(Location savedLocation, Integer customerID) {
+        Customer customer = CustomerRepository.findByCustomerID(customerID);
+        customer.AddSavedLocation(savedLocation);
+        CustomerRepository.save(customer);
+        return null;
+    }
 
-    // // Sets a favorite location
-    // public void removeFavoriteLocation(String CustomerID, String name) {
-    // Customer customer =
-    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    // customer.RemoveSavedLocation(name);
-    // CustomerRepository.save(customer);
-    // }
+    // Removes a favorite location
+    public String removeSavedLocation(String placeID, String customerID) {
+        Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(customerID));
+        customer.RemoveSavedLocation(placeID);
+        CustomerRepository.save(customer);
+        return null;
+    }
 
 }

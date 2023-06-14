@@ -30,23 +30,25 @@ export const RegisterUser = async (data: User | any, customerID) => {
 		gender: data.gender,
 		email: data.email,
 		password: data.password,
-		memberCategory: 'NA'
+		memberCategory: 'NA',
 	})
 	return response.data
 }
 
 // Saved Places: Removes a saved location
-export const RemovePlaceAPI = async (customerID, name) => {
-	await api.post('/api/v1/Customer/removeFavoriteLocation', {
+export const RemovePlaceAPI = async (customerID, placeID) => {
+	console.log('testatapi')
+	await api.post('/api/v1/Customer/removeSavedLocation', {
 		customerID: customerID,
-		name: name,
+		placeID: placeID,
 	})
 }
 
 // Saved Places: Adds a saved location
-export const AddPlaceAPI = async (data) => {
-	await api.post('/api/v1/Customer/addFavoriteLocation', {
-		...data,
+export const AddPlaceAPI = async (customerID, location) => {
+	await api.post('/api/v1/Customer/addSavedLocation', {
+		customerID: customerID,
+		location: location,
 	})
 }
 
@@ -54,7 +56,7 @@ export const AddPlaceAPI = async (data) => {
 export const SetHome = async (customerID, location) => {
 	await api.post('/api/v1/Customer/setHome', {
 		customerID: customerID,
-		location: location
+		location: location,
 	})
 }
 
@@ -62,6 +64,6 @@ export const SetHome = async (customerID, location) => {
 export const SetWork = async (customerID, location) => {
 	await api.post('/api/v1/Customer/setWork', {
 		customerID: customerID,
-		location: location
+		location: location,
 	})
 }

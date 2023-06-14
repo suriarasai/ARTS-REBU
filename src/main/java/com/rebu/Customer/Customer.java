@@ -77,10 +77,10 @@ public class Customer {
         this.savedLocations.add(_place);
     }
 
-    public void RemoveSavedLocation(String PlaceID) {
+    public void RemoveSavedLocation(String placeID) {
         for (Iterator<Location> iter = this.savedLocations.listIterator(); iter.hasNext();) {
             Location _place = iter.next();
-            if (_place.getPlaceID().equals(PlaceID)) {
+            if (_place.getPlaceID().equals(placeID)) {
                 iter.remove();
             }
         }
