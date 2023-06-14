@@ -81,22 +81,22 @@ function Booking() {
 		if (marker?.length == 0) {
 			const markerFacade = []
 
-			user.SavedLocations?.map((location) =>
+			user.savedLocations?.map((location) =>
 				markerFacade.push({
 					lat: location.lat,
 					lng: location.lng,
 				})
 			)
-			if (user.Work) {
+			if (user.work) {
 				markerFacade.push({
-					lat: user.Work.lat,
-					lng: user.Work.lng,
+					lat: user.work.lat,
+					lng: user.work.lng,
 				})
 			}
-			if (user.Home) {
+			if (user.home) {
 				markerFacade.push({
-					lat: user.Home.lat,
-					lng: user.Home.lng,
+					lat: user.home.lat,
+					lng: user.home.lng,
 				})
 			}
 			setMarker(markerFacade)

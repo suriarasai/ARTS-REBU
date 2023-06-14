@@ -23,11 +23,13 @@ export const MobileNumber = ({
 				<label>Area</label>
 				<div className='relative'>
 					<select
-						{...register('countryCode')}
+						{...register('phoneCountryCode')}
 						defaultValue={
-							populateData['countryCode'] ? populateData['countryCode'] : ''
+							populateData['phoneCountryCode']
+								? populateData['phoneCountryCode']
+								: ''
 						}
-						className='py-2 px-4'
+						className='px-4 py-2'
 					>
 						<option value='' disabled>
 							+
@@ -54,12 +56,10 @@ export const MobileNumber = ({
 				<label>Mobile Number</label>
 				<input
 					type='text'
-					className='py-2 px-4'
+					className='px-4 py-2'
 					placeholder='12345678'
-					defaultValue={populateData['mobileNumber']?.substring(
-						populateData['mobileNumber']?.indexOf(' ') + 1
-					)}
-					{...register('mobileNumber', {
+					defaultValue={populateData['phoneNumber']}
+					{...register('phoneNumber', {
 						required: true,
 						minLength: 8,
 						maxLength: 8,

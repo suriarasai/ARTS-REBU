@@ -2,10 +2,8 @@
 
 package com.rebu.Customer;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -38,8 +36,17 @@ public class CustomerService {
 
     // API: Creates a new customer
     public Customer createCustomer(String PhoneCountryCode, String PhoneNumber) {
+
+        Customer user = CustomerRepository.findFirstByOrderByCustomerIDDesc();
+        Integer userID = user == null ? 1 : user.getCustomerID() + 1;
+
         Customer customer = CustomerRepository
                 .insert(new Customer(Integer.parseInt(PhoneCountryCode), Integer.parseInt(PhoneNumber)));
+
+        customer.setCustomerID(userID);
+
+        CustomerRepository.save(customer);
+
         return customer;
     }
 
@@ -71,8 +78,9 @@ public class CustomerService {
     }
 
     // API: Finds a customer by their mobile number
-    public Customer findByMobileNumber(String mobileNumber) {
-        Customer customer = CustomerRepository.findFirstByPhoneNumber(mobileNumber);
+    public Customer findByPhoneNumber(String phoneNumber, String phoneCountryCode) {
+        Customer customer = CustomerRepository.findByPhoneNumberAndPhoneCountryCode(Integer.parseInt(phoneNumber),
+                Integer.parseInt(phoneCountryCode));
 
         if (customer != null) {
             CustomerRepository.save(customer);
@@ -82,16 +90,17 @@ public class CustomerService {
     }
 
     // API: (Not used) Upserts (update/insert if non-existant) customers by mobile #
-    public Integer signInWithMobileNumber(String mobileNumber, String countryCode) {
+    public Integer signInWithPhoneNumber(String phoneNumber, String phoneCountryCode) {
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("mobileNumber").is(mobileNumber));
+        query.addCriteria(Criteria.where("phoneNumber").is(Integer.parseInt(phoneNumber)));
         Update update = new Update();
-        update.set("mobileNumber", mobileNumber);
-        update.set("countryCode", Integer.parseInt(countryCode));
+        update.set("phoneNumber", Integer.parseInt(phoneNumber));
+        update.set("phoneCountryCode", Integer.parseInt(phoneCountryCode));
         mongoTemplate.upsert(query, update, Customer.class);
 
-        Customer customer = CustomerRepository.findFirstByPhoneNumber(mobileNumber);
+        Customer customer = CustomerRepository.findByPhoneNumberAndPhoneCountryCode(Integer.parseInt(phoneNumber),
+                Integer.parseInt(phoneCountryCode));
 
         if (customer.getCustomerID() != null) {
             CustomerRepository.save(customer);
@@ -114,31 +123,37 @@ public class CustomerService {
     }
 
     // // Sets Home location
-    // public void setHome(String CustomerID, ArrayList<Float> home, String homeName) {
-    //     Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    //     customer.SetUserHome(home, homeName);
-    //     CustomerRepository.save(customer);
+    // public void setHome(String CustomerID, ArrayList<Float> home, String
+    // homeName) {
+    // Customer customer =
+    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
+    // customer.SetUserHome(home, homeName);
+    // CustomerRepository.save(customer);
     // }
 
     // // Sets Work location
-    // public void setWork(String CustomerID, ArrayList<Float> work, String workName) {
-    //     Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    //     customer.SetUserWork(work, workName);
-    //     CustomerRepository.save(customer);
+    // public void setWork(String CustomerID, ArrayList<Float> work, String
+    // workName) {
+    // Customer customer =
+    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
+    // customer.SetUserWork(work, workName);
+    // CustomerRepository.save(customer);
     // }
 
     // // Sets a favorite location
     // public void AddSavedLocation(Location SavedLocation) {
-    //     Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    //     customer.AddSavedLocation(SavedLocation);
-    //     CustomerRepository.save(customer);
+    // Customer customer =
+    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
+    // customer.AddSavedLocation(SavedLocation);
+    // CustomerRepository.save(customer);
     // }
 
     // // Sets a favorite location
     // public void removeFavoriteLocation(String CustomerID, String name) {
-    //     Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    //     customer.RemoveSavedLocation(name);
-    //     CustomerRepository.save(customer);
+    // Customer customer =
+    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
+    // customer.RemoveSavedLocation(name);
+    // CustomerRepository.save(customer);
     // }
 
 }

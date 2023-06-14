@@ -2,9 +2,12 @@
 
 package com.rebu;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@Document(collection = "Customer")
 @Data
 @AllArgsConstructor
 public class Location {

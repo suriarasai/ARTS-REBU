@@ -34,7 +34,7 @@ const SignIn = () => {
 					/>
 				) : (
 					<OTPForm
-						mobileNumber={number}
+						phoneNumber={number}
 						changeSignInForm={changeSignInForm}
 						newUser={newUser}
 					/>
@@ -65,26 +65,27 @@ const SignInForm = ({
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		// @ts-ignore
-		setNumber(data.PhoneCountryCode + ' ' + data.PhoneNumber)
+		setNumber(data.phoneNumber)
 		// @ts-ignore
-		checkIfUserExists(data.PhoneNumber, data.PhoneCountryCode)
+		checkIfUserExists(data.phoneNumber, data.phoneCountryCode)
 		changeSignInForm(false)
 	})
 
 	const { setUser } = useContext(UserContext)
 
 	const checkIfUserExists = async (
-		mobileNumber: string,
-		countryCode: number
+		phoneNumber: string,
+		phoneCountryCode: number
 	) => {
 		const response = await api.post('/api/v1/Customer/exists', {
-			mobileNumber: countryCode + ' ' + mobileNumber,
+			phoneCountryCode: phoneCountryCode,
+			phoneNumber: phoneNumber
 		})
 
 		if (response.data === '' ) {
 			const createUser = await api.post('/api/v1/Customer', {
-				mobileNumber: countryCode + ' ' + mobileNumber,
-				countryCode: countryCode,
+				phoneNumber: phoneNumber,
+				phoneCountryCode: phoneCountryCode,
 			})
 			setUser(createUser.data)
 			setNewUser(true)
@@ -202,7 +203,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 }
 
 // 2nd screen to validate the user's mobile number via OTP (one-time password)
-const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
+const OTPForm = ({ phoneNumber, changeSignInForm, newUser }: any) => {
 	const router = useRouter()
 	const [loginSuccessful, setLoginSuccesssful] = React.useState<boolean>(false)
 
@@ -232,7 +233,7 @@ const OTPForm = ({ mobileNumber, changeSignInForm, newUser }: any) => {
 			<form className='flex w-full max-w-lg flex-col' onSubmit={handleSubmit}>
 				<div className='mt-5'>
 					<p className='mb-4 pb-6 text-zinc-600 dark:text-zinc-400'>
-						Enter the OTP we sent to <b>{mobileNumber}</b>
+						Enter the OTP we sent to <b>{phoneNumber}</b>
 					</p>
 				</div>
 

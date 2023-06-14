@@ -41,18 +41,18 @@ public class CustomerController {
 
     // POST: Checks whether a user exists by their mobile number
     @PostMapping("/exists")
-    public ResponseEntity<Customer> getByMobileNumber(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<Customer> getByPhoneNumber(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Customer>(
-                query.findByMobileNumber(payload.get("mobileNumber")),
+                query.findByPhoneNumber(payload.get("phoneNumber"), payload.get("phoneCountryCode")),
                 HttpStatus.OK);
     }
 
     // POST: (Not used) Upserts (update/insert if non-existant) users based on
     // mobile number
     @PostMapping("/signIn")
-    public ResponseEntity<Integer> signInWithMobileNumber(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<Integer> signInWithPhoneNumber(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Integer>(
-                query.signInWithMobileNumber(payload.get("PhoneCountryCode"), payload.get("PhoneNumber")),
+                query.signInWithPhoneNumber(payload.get("phoneCountryCode"), payload.get("phoneNumber")),
                 HttpStatus.OK);
     }
 
@@ -60,7 +60,7 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<Customer> createUser(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Customer>(
-                query.createCustomer(payload.get("PhoneCountryCode"), payload.get("PhoneNumber")), HttpStatus.CREATED);
+                query.createCustomer(payload.get("phoneCountryCode"), payload.get("phoneNumber")), HttpStatus.CREATED);
     }
 
     // POST: Registers a new user by adding information to existing users
@@ -69,17 +69,17 @@ public class CustomerController {
 
         return new ResponseEntity<Customer>(
                 query.updateCustomer(
-                        payload.get("CustomerName"),
-                        payload.get("MemberCategory"),
-                        payload.get("Age"),
-                        payload.get("Gender"),
-                        payload.get("ContactTitle"),
-                        payload.get("CountryCode"),
-                        payload.get("Email"),
-                        payload.get("Password"),
-                        payload.get("PhoneCountryCode"),
-                        payload.get("PhoneNumber"),
-                        payload.get("CustomerID")),
+                        payload.get("customerName"),
+                        payload.get("memberCategory"),
+                        payload.get("age"),
+                        payload.get("gender"),
+                        payload.get("contactTitle"),
+                        payload.get("countryCode"),
+                        payload.get("email"),
+                        payload.get("password"),
+                        payload.get("phoneCountryCode"),
+                        payload.get("phoneNumber"),
+                        payload.get("customerID")),
                 HttpStatus.OK);
     }
 

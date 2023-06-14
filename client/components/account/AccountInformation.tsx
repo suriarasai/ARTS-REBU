@@ -1,8 +1,9 @@
 // For viewing and modifying account information
 
-import React from 'react'
+import React, { useContext } from 'react'
 import { MobileNumber } from '@/components/account/MobileNumber'
 import { ProfileInterface } from '@/redux/types'
+import { UserContext } from '@/components/context/UserContext'
 
 // Main component
 const AccountInformation = ({
@@ -18,8 +19,62 @@ const AccountInformation = ({
 		populateData	: populating form data for when the user wants to update their information
 	*/
 
+	const { user } = useContext(UserContext)
+
+	const ageArray = Array.from({ length: 82 }).map((_, i) => i + 18)
+
 	return (
 		<div className='flex w-full flex-col'>
+			<div className='-mx-3 mb-6 flex flex-wrap'>
+				<div className='w-1/3 px-3'>
+					<label>Country</label>
+					<select
+						{...register('countryCode')}
+						defaultValue={
+							populateData['countryCode']
+								? populateData['countryCode']
+								: phoneCountryCodes[user.phoneCountryCode]
+						}
+						className='px-4 py-2'
+					>
+						<option value='SGP'>Singapore</option>
+						<option value='MYS'>Malaysia</option>
+						<option value='IDN'>Indonesia</option>
+						<option value='HKG'>Hong Kong</option>
+						<option value='PHL'>Philippines</option>
+					</select>
+				</div>
+				<div className='w-1/3 px-3'>
+					<label>Gender</label>
+					<select
+						{...register('gender')}
+						defaultValue={populateData['gender']}
+						className='px-4 py-2'
+					>
+						<option value={null} disabled>
+							Select
+						</option>
+						<option value='M'>Male</option>
+						<option value='F'>Female</option>
+						<option value='NA'>Other</option>
+					</select>
+				</div>
+				<div className='w-1/3 px-3'>
+					<label>Age</label>
+					<select
+						{...register('age')}
+						defaultValue={populateData['age']}
+						className='px-4 py-2'
+					>
+						<option value={null} disabled>
+							Select
+						</option>
+						{ageArray.map((age) => (
+							<option>{age}</option>
+						))}
+					</select>
+				</div>
+			</div>
 			<div className='-mx-3 mb-6 flex flex-wrap'>
 				{/* Input fields */}
 				<div className='mb-6 w-1/4 md:mb-0 md:w-1/5'>
@@ -27,11 +82,11 @@ const AccountInformation = ({
 						<label>Prefix</label>
 						<div className='relative'>
 							<select
-								{...register('prefix')}
+								{...register('contactTitle')}
 								defaultValue={populateData['prefix']}
-								className='py-2 px-4'
+								className='px-4 py-2'
 							>
-								<option value=''>Prefix</option>
+								<option value=''>Select</option>
 								<option value='Mr.'>Mr.</option>
 								<option value='Ms.'>Ms.</option>
 								<option value='Mrs.'>Mrs.</option>
@@ -59,7 +114,7 @@ const AccountInformation = ({
 								minLength: 1,
 							})}
 							defaultValue={populateData['firstName']}
-							className='py-2 px-4'
+							className='px-4 py-2'
 						/>
 						{errors.firstName && (
 							<p className='text-error px-3'>Please enter your first name</p>
@@ -76,7 +131,7 @@ const AccountInformation = ({
 								minLength: 1,
 							})}
 							defaultValue={populateData['lastName']}
-							className='py-2 px-4'
+							className='px-4 py-2'
 						/>
 						{errors.lastName && (
 							<p className='text-error px-3'>Please enter your last name</p>
@@ -100,7 +155,7 @@ const AccountInformation = ({
 								})}
 								placeholder='youremail@site.domain'
 								defaultValue={populateData['email']}
-								className='py-2 px-4'
+								className='px-4 py-2'
 							/>
 							{errors.email && (
 								<p className='text-error px-3'>Please enter a valid email</p>
@@ -118,10 +173,12 @@ const AccountInformation = ({
 							type='password'
 							placeholder='********'
 							defaultValue={populateData['password']}
-							className='py-2 px-4'
+							className='px-4 py-2'
 						/>
 						{errors.password && (
-							<p className='text-error px-3'>Please enter a password with 5-20 digits</p>
+							<p className='text-error px-3'>
+								Please enter a password with 5-20 digits
+							</p>
 						)}
 					</div>
 
@@ -133,23 +190,16 @@ const AccountInformation = ({
 					/>
 				</>
 			)}
-
-			<div className='-mx-3 mb-6 flex flex-wrap'>
-				<div className='w-full px-3'>
-					<label>Date of Birth</label>
-					<input
-						{...register('birthdate', { required: true })}
-						type='date'
-						defaultValue={populateData['birthdate']}
-						className='py-2 px-4'
-					/>
-					{errors.birthdate && (
-						<p className='text-error px-3'>Please enter your date of birth</p>
-					)}
-				</div>
-			</div>
 		</div>
 	)
 }
 
 export default AccountInformation
+
+const phoneCountryCodes = {
+	SGP: 65,
+	MYS: 60,
+	IDN: 62,
+	HKG: 852,
+	PHL: 63,
+}

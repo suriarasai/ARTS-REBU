@@ -8,34 +8,34 @@ export type UserContextType = {
 
 // User data schema
 export type User = {
-	CustomerID?: number,
-	CustomerName?: string,
-	MemberCategory?: string,
-	Age?: number,
-	Gender?: string,
-	AmountSpent?: number,
-	Address?: Location,
-	City?: string,
-	CountryCode?: string,
-	ContactTitle?: string,
-	PhoneNumber?: number,
-	Email?: string,
-	Password?: string,
-	PhoneCountryCode?: number,
-	Home?: Location,
-	Work?: Location,
-	SavedLocations?: Array<Location>
+	customerID?: number,
+	customerName?: string,
+	memberCategory?: string,
+	age?: number,
+	gender?: string,
+	amountSpent?: number,
+	address?: Location,
+	city?: string,
+	countryCode?: string,
+	contactTitle?: string,
+	phoneNumber?: number,
+	email?: string,
+	password?: string,
+	phoneCountryCode?: number,
+	home?: Location,
+	work?: Location,
+	savedLocations?: Array<Location>
 
 	temp?: any
 }
 
 export interface Location {
-	PlaceID?: string,
+	placeID?: string,
     lat?: number,
     lng?: number,
-    Postcode?: number,
-    Address?: string,
-    PlaceName?: string
+    postcode?: number,
+    address?: string,
+    placeName?: string
 }
 
 export interface SavedLocation {
