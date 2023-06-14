@@ -2,10 +2,10 @@ import api from '@/api/axiosConfig'
 import { User } from './redux/types'
 
 // Account Settings: Updates user information
-export const UpdateUser = async (data: User, customerID) => {
+export const UpdateUser = async (data: User | any, customerID) => {
 	const response = await api.post('/api/v1/Customer/updateUser', {
 		customerID: customerID,
-		customerName: data.customerName,
+		customerName: data.firstName + ' ' + data.lastName,
 		contactTitle: data.contactTitle,
 		memberCategory: data.memberCategory,
 		age: data.age,

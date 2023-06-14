@@ -113,9 +113,9 @@ const AccountInformation = ({
 								required: true,
 								minLength: 1,
 							})}
-							defaultValue={populateData['name']?.substring(
+							defaultValue={populateData['customerName']?.substring(
 								0,
-								populateData['name']?.lastIndexOf(' ')
+								populateData['customerName']?.lastIndexOf(' ')
 							)}
 							className='px-4 py-2'
 						/>
@@ -133,8 +133,8 @@ const AccountInformation = ({
 								required: true,
 								minLength: 1,
 							})}
-							defaultValue={populateData['name']?.substring(
-								populateData['name']?.lastIndexOf(' ') + 1
+							defaultValue={populateData['customerName']?.substring(
+								populateData['customerName']?.lastIndexOf(' ') + 1
 							)}
 							className='px-4 py-2'
 						/>

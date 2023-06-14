@@ -21,7 +21,7 @@ const AccountSettings = () => {
 	} = useForm()
 
 	async function onSubmit(data: User) {
-		setUser(await UpdateUser(data, user.CustomerID))
+		setUser(await UpdateUser(data, user.customerID))
 		setChangesSaved(true)
 	}
 
