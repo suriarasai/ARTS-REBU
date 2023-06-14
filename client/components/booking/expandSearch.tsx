@@ -14,13 +14,10 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	const { user } = useContext(UserContext)
 	const router = useRouter()
 
-	const [label, setLabel] = useState<string>('')
-
 	// Handler for clicking either 'Home' or 'Work'
 	const handleSavedLocation = (label: string) => {
-		setLabel(label)
 		// If the user set a home/work location...
-		if (user[label]) {
+		if (user[label] !== null) {
 			// ...navigate to the saved location
 			navigateToLocation(user[label].lat, user[label].lng)
 		} else {
@@ -39,7 +36,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 			<div>
 				<div
 					className='flex flex-wrap'
-					onClick={() => handleSavedLocation('Home')}
+					onClick={() => handleSavedLocation('home')}
 				>
 					<div className='mt-2'>
 						<FaHouseUser className='mr-5 text-2xl text-green-500' />
@@ -54,7 +51,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 			</div>
 			<div
 				className='-ml-3 flex flex-wrap'
-				onClick={() => handleSavedLocation('Work')}
+				onClick={() => handleSavedLocation('work')}
 			>
 				<div className='mt-2'>
 					<FaSuitcase className='mr-5 text-2xl text-green-500' />
