@@ -4,7 +4,7 @@ import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
 import { UserContext } from '@/components/context/UserContext'
 import { rewardPoints } from '@/redux/types'
-import { RewardPointsAPI } from '@/server'
+// import { RewardPointsAPI } from '@/server'
 
 const RewardPoints = () => {
 	const { user, setUser } = useContext(UserContext)

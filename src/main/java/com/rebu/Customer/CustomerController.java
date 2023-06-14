@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rebu.Location;
+import com.rebu.LocationInterface;
 
 @RestController
 @RequestMapping("/api/v1/Customer") // Access DB through this URL
@@ -93,21 +94,21 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // // Sets the home location to a coordinate pair [lat, lng]
-    // @PostMapping("/setHome")
-    // public ResponseEntity<String> setHome(@RequestBody Location payload) {
-    //     return new ResponseEntity<String>(
-    //             query.setHome(payload.getId(), payload.getHome(), payload.getHomeName()),
-    //             HttpStatus.OK);
-    // }
+    // Sets the home location to a coordinate pair [lat, lng]
+    @PostMapping("/setHome")
+    public ResponseEntity<String> setHome(@RequestBody LocationInterface payload) {
+        return new ResponseEntity<String>(
+                query.setHome(payload.getCustomerID(), payload.getLocation()),
+                HttpStatus.OK);
+    }
 
-    // // Sets the work location to a coordinate pair [lat, lng]
-    // @PostMapping("/setWork")
-    // public ResponseEntity<String> setWork(@RequestBody Location payload) {
-    //     return new ResponseEntity<String>(
-    //             query.setWork(payload.getId(), payload.getWork(), payload.getWorkName()),
-    //             HttpStatus.OK);
-    // }
+    // Sets the work location to a coordinate pair [lat, lng]
+    @PostMapping("/setWork")
+    public ResponseEntity<String> setWork(@RequestBody LocationInterface payload) {
+        return new ResponseEntity<String>(
+                query.setWork(payload.getCustomerID(), payload.getLocation()),
+                HttpStatus.OK);
+    }
 
     // // Adds a favorite location
     // @PostMapping("/addSavedLocation")

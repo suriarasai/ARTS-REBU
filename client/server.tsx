@@ -51,19 +51,17 @@ export const AddPlaceAPI = async (data) => {
 }
 
 // Saved Places: Sets the home location
-export const SetHome = async (coordinates, name, customerID) => {
+export const SetHome = async (customerID, location) => {
 	await api.post('/api/v1/Customer/setHome', {
-		home: coordinates,
-		homeName: name,
 		customerID: customerID,
+		location: location
 	})
 }
 
 // Saved Places: Sets the work location
-export const SetWork = async (coordinates, name, customerID) => {
+export const SetWork = async (customerID, location) => {
 	await api.post('/api/v1/Customer/setWork', {
-		work: coordinates,
-		workName: name,
 		customerID: customerID,
+		location: location
 	})
 }

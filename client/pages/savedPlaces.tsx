@@ -36,16 +36,16 @@ const SavedPlaces = () => {
 			autoComplete.getPlace()
 		)
 		const data = {
-			Lat: Lat,
-			Lng: Lng,
-			Postcode: Postcode,
-			Address: Address,
-			PlaceName: PlaceName,
+			lat: Lat,
+			lng: Lng,
+			postcode: Postcode,
+			address: Address,
+			placeName: PlaceName,
 		}
-		await AddPlaceAPI({ id: user.CustomerID, ...data })
+		await AddPlaceAPI({ id: user.customerID, ...data })
 		setUser({
 			...user,
-			SavedLocations: [...user.SavedLocations, data],
+			savedLocations: [...user.savedLocations, data],
 		})
 	}
 
@@ -83,21 +83,21 @@ const SavedPlaces = () => {
 							user={user}
 							setUser={setUser}
 							label={'Home'}
-							place={user.Home.PlaceName}
+							place={user.home.placeName}
 						/>
 
 						<SavedLocation
 							user={user}
 							setUser={setUser}
 							label={'Work'}
-							place={user.Work.PlaceName}
+							place={user.work.placeName}
 						/>
 
 						<label className='pt-5'>Saved Places</label>
-						{user.SavedLocations.length == 0 ? (
+						{user.savedLocations.length === 0 ? (
 							<div className='pt-5'>{'No saved places'}</div>
 						) : (
-							user.SavedLocations.map((location, index) => (
+							user.savedLocations.map((location, index) => (
 								<Location
 									location={location}
 									setUser={setUser}
@@ -123,25 +123,47 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 	const searchRef = useRef(null)
 
 	const editEntry = async () => {
-		const [name, address, coordinates] = getAddress(autoComplete.getPlace())
+		const [placeName, address, lat, lng, postcode, place_id] = getAddress(
+			autoComplete.getPlace()
+		)
 		if (label === 'Home') {
-			await SetHome(coordinates, name, user.id)
+			await SetHome(user.customerID, {
+				placeID: place_id,
+				lat: lat,
+				lng: lng,
+				postcode: postcode,
+				address: address,
+				placeName: placeName,
+			})
 			setUser({
 				...user,
-				savedLocations: {
-					...user.savedLocations,
-					home: coordinates,
-					homeName: name,
+				home: {
+					placeID: place_id,
+					lat: lat,
+					lng: lng,
+					postcode: postcode,
+					address: address,
+					placeName: placeName,
 				},
 			})
 		} else {
-			await SetWork(coordinates, name, user.id)
+			await SetWork(user.customerID, {
+				placeID: place_id,
+				lat: lat,
+				lng: lng,
+				postcode: postcode,
+				address: address,
+				placeName: placeName,
+			})
 			setUser({
 				...user,
-				savedLocations: {
-					...user.savedLocations,
-					work: coordinates,
-					workName: name,
+				work: {
+					placeID: place_id,
+					lat: lat,
+					lng: lng,
+					postcode: postcode,
+					address: address,
+					placeName: placeName,
 				},
 			})
 		}
@@ -157,7 +179,12 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 						<Autocomplete
 							onPlaceChanged={() => editEntry()}
 							onLoad={(e) => setAutoComplete(e)}
-							fields={['address_components', 'geometry', 'formatted_address']}
+							fields={[
+								'address_components',
+								'geometry',
+								'formatted_address',
+								'place_id',
+							]}
 							options={{ componentRestrictions: { country: 'sg' } }}
 						>
 							<input
@@ -202,11 +229,11 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 
 const Location = ({ location, setUser, user }) => {
 	const removeEntry = () => {
-		RemovePlaceAPI(user.id, location.name)
+		RemovePlaceAPI(user.customerID, location.placeName)
 		setUser({
 			...user,
 			favoriteLocations: [
-				...user.favoriteLocations.filter((item) => item.name !== location.name),
+				...user.savedLocations.filter((item) => item.placeName !== location.placeName),
 			],
 		})
 	}
@@ -265,5 +292,6 @@ function getAddress(place) {
 		place.geometry.location.lat(),
 		place.geometry.location.lng(),
 		Postcode,
+		place.place_id,
 	]
 }

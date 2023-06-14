@@ -47,7 +47,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 					<div className='pr-5'>
 						<b className='text-sm'>Home</b>
 						<h5>
-							{user.Home.PlaceName ? user.Home.PlaceName : 'Set Location'}
+							{user.home?.placeName ? user.home?.placeName : 'Set Location'}
 						</h5>
 					</div>
 				</div>
@@ -62,8 +62,8 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 				<div>
 					<b className='text-sm'>Work</b>
 					<h5>
-						{user.Work.PlaceName
-							? user.Work.PlaceName
+						{user.work?.placeName
+							? user.work?.placeName
 							: 'Set Location'}
 					</h5>
 				</div>
@@ -92,8 +92,8 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 						<FaStar className='mr-6 text-xl text-green-500' />
 						<b className='mb-4 text-sm'>Saved Locations</b>
 
-						{user.SavedLocations && user.SavedLocations.length > 0 ? (
-							user.SavedLocations.map((item, index) => (
+						{user.savedLocations && user.savedLocations?.length > 0 ? (
+							user.savedLocations?.map((item, index) => (
 								<div
 									className='mb-3 ml-11 w-full'
 									key={index}
@@ -101,8 +101,8 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 										navigateToLocation(item.lat, item.lng)
 									}}
 								>
-									<p>{item.PlaceName}</p>
-									<h5>{item.Address}</h5>
+									<p>{item.placeName}</p>
+									<h5>{item.address}</h5>
 								</div>
 							))
 						) : (

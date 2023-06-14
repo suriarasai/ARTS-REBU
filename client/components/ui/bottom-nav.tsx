@@ -20,7 +20,7 @@ const BottomNav = () => {
 									: 'text-zinc-400 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
 							} ${
 								label === ''
-									? 'mb-6 h-16 w-80 rounded-full ml-3 mr-3 bg-green-500  text-green-200'
+									? 'mb-6 w-80 h-18 rounded-full ml-3 mr-3 bg-green-500  text-green-200'
 									: ''
 							}`}
 							key={label}

@@ -122,23 +122,21 @@ public class CustomerService {
         }
     }
 
-    // // Sets Home location
-    // public void setHome(String CustomerID, ArrayList<Float> home, String
-    // homeName) {
-    // Customer customer =
-    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    // customer.SetUserHome(home, homeName);
-    // CustomerRepository.save(customer);
-    // }
+    // Sets Home location
+    public String setHome(Integer CustomerID, Location location) {
+        Customer customer = CustomerRepository.findByCustomerID(CustomerID);
+        customer.SetUserHome(location);
+        CustomerRepository.save(customer);
+        return null;
+    }
 
-    // // Sets Work location
-    // public void setWork(String CustomerID, ArrayList<Float> work, String
-    // workName) {
-    // Customer customer =
-    // CustomerRepository.findByCustomerID(Integer.parseInt(CustomerID));
-    // customer.SetUserWork(work, workName);
-    // CustomerRepository.save(customer);
-    // }
+    // Sets Work location
+    public String setWork(Integer CustomerID, Location location) {
+        Customer customer = CustomerRepository.findByCustomerID(CustomerID);
+        customer.SetUserWork(location);
+        CustomerRepository.save(customer);
+        return null;
+    }
 
     // // Sets a favorite location
     // public void AddSavedLocation(Location SavedLocation) {

@@ -147,14 +147,14 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		// @ts-ignore
-		validateCredentials(data.Email, data.Password)
+		validateCredentials(data.email, data.password)
 	})
 
 	const { setUser } = useContext(UserContext)
 	const [signInError, setSignInError] = React.useState(false)
 
 	const validateCredentials = async (email: string, password: string) => {
-		const response = await api.post('/api/v1/customers/validateCredentials', {
+		const response = await api.post('/api/v1/Customer/validateCredentials', {
 			email: email,
 			password: password,
 		})
