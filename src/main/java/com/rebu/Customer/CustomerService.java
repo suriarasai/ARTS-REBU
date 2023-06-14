@@ -65,12 +65,12 @@ public class CustomerService {
         update.set("password", Password);
 
         if (PhoneNumber != null && PhoneCountryCode != null) {
-            update.set("PhoneCountryCode", Integer.parseInt(PhoneCountryCode));
-            update.set("PhoneNumber", Integer.parseInt(PhoneNumber));
+            update.set("phoneCountryCode", Integer.parseInt(PhoneCountryCode));
+            update.set("phoneNumber", Integer.parseInt(PhoneNumber));
         }
 
         mongoTemplate.update(Customer.class)
-                .matching(Criteria.where("CustomerID").is(Integer.parseInt(CustomerID)))
+                .matching(Criteria.where("customerID").is(Integer.parseInt(CustomerID)))
                 .apply(update)
                 .first();
 
@@ -79,7 +79,7 @@ public class CustomerService {
 
     // API: Finds a customer by their mobile number
     public Customer findByPhoneNumber(String phoneNumber, String phoneCountryCode) {
-        Customer customer = CustomerRepository.findByPhoneNumberAndPhoneCountryCode(Integer.parseInt(phoneNumber),
+        Customer customer = CustomerRepository.findFirstByPhoneNumberAndPhoneCountryCode(Integer.parseInt(phoneNumber),
                 Integer.parseInt(phoneCountryCode));
 
         if (customer != null) {
@@ -99,7 +99,7 @@ public class CustomerService {
         update.set("phoneCountryCode", Integer.parseInt(phoneCountryCode));
         mongoTemplate.upsert(query, update, Customer.class);
 
-        Customer customer = CustomerRepository.findByPhoneNumberAndPhoneCountryCode(Integer.parseInt(phoneNumber),
+        Customer customer = CustomerRepository.findFirstByPhoneNumberAndPhoneCountryCode(Integer.parseInt(phoneNumber),
                 Integer.parseInt(phoneCountryCode));
 
         if (customer.getCustomerID() != null) {

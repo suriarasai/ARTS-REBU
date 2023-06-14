@@ -65,7 +65,7 @@ const SignInForm = ({
 	} = useForm()
 	const onSubmit = handleSubmit((data) => {
 		// @ts-ignore
-		setNumber('+' + data.countryCode + ' ' + data.phoneNumber)
+		setNumber('+' + data.phoneCountryCode + ' ' + data.phoneNumber)
 		// @ts-ignore
 		checkIfUserExists(data.phoneNumber, data.phoneCountryCode)
 		changeSignInForm(false)
@@ -89,7 +89,7 @@ const SignInForm = ({
 			})
 			setUser(createUser.data)
 			setNewUser(true)
-		} else if (response.data.Name == null) {
+		} else if (response.data.name === null) {
 			setUser(response.data)
 			setNewUser(true)
 		} else {
@@ -120,7 +120,7 @@ const SignInForm = ({
 							}}
 						>
 							Continue with email
-						</u>
+						</u>{' '}
 						instead
 					</p>
 				</div>

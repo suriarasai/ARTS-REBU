@@ -83,7 +83,7 @@ const AccountInformation = ({
 						<div className='relative'>
 							<select
 								{...register('contactTitle')}
-								defaultValue={populateData['prefix']}
+								defaultValue={populateData['contactTitle']}
 								className='px-4 py-2'
 							>
 								<option value=''>Select</option>
@@ -113,7 +113,10 @@ const AccountInformation = ({
 								required: true,
 								minLength: 1,
 							})}
-							defaultValue={populateData['firstName']}
+							defaultValue={populateData['name']?.substring(
+								0,
+								populateData['name']?.lastIndexOf(' ')
+							)}
 							className='px-4 py-2'
 						/>
 						{errors.firstName && (
@@ -130,7 +133,9 @@ const AccountInformation = ({
 								required: true,
 								minLength: 1,
 							})}
-							defaultValue={populateData['lastName']}
+							defaultValue={populateData['name']?.substring(
+								populateData['name']?.lastIndexOf(' ') + 1
+							)}
 							className='px-4 py-2'
 						/>
 						{errors.lastName && (

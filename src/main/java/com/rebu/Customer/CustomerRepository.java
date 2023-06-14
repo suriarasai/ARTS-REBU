@@ -9,6 +9,6 @@ public interface CustomerRepository extends MongoRepository<Customer, Integer> {
     public Customer findFirstByPhoneNumber(Integer phoneNumber);
     public Customer findFirstByEmail(String email);
     public Customer findByCustomerID(Integer customerID);
-    public Customer findByPhoneNumberAndPhoneCountryCode(Integer phoneNumber, Integer phoneCountryCode);
+    public Customer findFirstByPhoneNumberAndPhoneCountryCode(Integer phoneNumber, Integer phoneCountryCode);
     public Customer findFirstByOrderByCustomerIDDesc();
 }
