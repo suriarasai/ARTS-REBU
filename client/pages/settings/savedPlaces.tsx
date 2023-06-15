@@ -1,6 +1,6 @@
 // TODO: Button to route to Booking and set a route to that place
 
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import { UserContext } from '@/context/UserContext'
@@ -13,6 +13,7 @@ import {
 	FaSearchLocation,
 	FaSuitcase,
 } from 'react-icons/fa'
+import { Input, Message, Title } from '@/redux/types/constants'
 
 const libraries = ['places']
 
@@ -62,10 +63,8 @@ const SavedPlaces = () => {
 	}
 
 	return (
-		<Page title='Saved Locations'>
+		<Page title={Title.LOCATIONS}>
 			<Section>
-				{/* <button className='grey-button' onClick={() => router.push('/settings')}>Go Back</button> */}
-
 				<Autocomplete
 					onPlaceChanged={() => {
 						addPlace()
@@ -79,7 +78,7 @@ const SavedPlaces = () => {
 					<input
 						type='text'
 						className='rounded-sm border-none bg-zinc-50 px-3 py-2 pl-10 leading-tight shadow-none focus:bg-white'
-						placeholder='Add a place'
+						placeholder={Input.PLACE}
 						ref={searchRef}
 						onChange={(e) => setValueObserver(e.target.value)}
 					/>
@@ -101,9 +100,9 @@ const SavedPlaces = () => {
 							place={user.work.placeName}
 						/>
 
-						<label className='pt-5'>Saved Places</label>
+						<label className='pt-5'>{Message.SAVED_LOCATIONS}</label>
 						{user.savedLocations.length === 0 ? (
-							<div className='pt-5'>{'No saved places'}</div>
+							<div className='pt-5'>{Message.NO_SAVED_LOCATIONS}</div>
 						) : (
 							user.savedLocations.map((location, index) => (
 								<Location
@@ -198,7 +197,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 							<input
 								type='text'
 								className='rounded-sm border-none bg-zinc-50 px-3 py-2 pl-10 leading-tight shadow-none focus:bg-white'
-								placeholder='Enter a new address'
+								placeholder={Input.ADDRESS}
 								ref={searchRef}
 							/>
 						</Autocomplete>
@@ -210,7 +209,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 				) : (
 					<div>
 						<b className='text-sm font-medium'>{label}</b>
-						<h5>{place ? place : 'Set Location'}</h5>
+						<h5>{place ? place : Message.SET_LOCATION}</h5>
 					</div>
 				)}
 			</div>

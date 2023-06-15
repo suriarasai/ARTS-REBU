@@ -112,3 +112,11 @@ p {
 .home-icon {
 	@apply text-3xl text-green-500 mb-3;
 }
+
+.dark-overlay {
+	@apply absolute left-0 top-0 flex h-full w-full justify-center backdrop-brightness-50;
+}
+
+.modal-container {
+	@apply absolute top-1/3 flex w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-50 p-7 shadow-xl;
+}

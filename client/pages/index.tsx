@@ -8,6 +8,7 @@ import { MobileNumber } from '@/components/account/MobileNumber'
 import { EmailForm } from '@/components/account/EmailForm'
 import { UserContext } from '@/context/UserContext'
 import { LoadingScreen } from '../components/ui/LoadingScreen'
+import { Button, HREF, Message } from '@/redux/types/constants'
 
 // Main component
 const SignIn = () => {
@@ -23,7 +24,7 @@ const SignIn = () => {
 		const loggedInUser = localStorage.getItem('user')
 		if (loggedInUser !== null) {
 			setUser(JSON.parse(loggedInUser))
-			Router.push('/home')
+			Router.push(HREF.HOME)
 		} else {
 			setLoading(false)
 		}
@@ -35,7 +36,7 @@ const SignIn = () => {
 				LoadingScreen
 			) : (
 				<div className='p-6'>
-					<h2 className='text-xl font-semibold'>Welcome to Rebu</h2>
+					<h2 className='text-xl font-semibold'>{Message.WELCOME}</h2>
 					{signInForm ? (
 						<SignInForm
 							setNumber={setNumber}
@@ -65,7 +66,7 @@ const SignIn = () => {
 // Text component
 const TermsOfService = () => (
 	<div className='mb-8 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
-		By continuing, you are agreeing to the <u>terms and conditions</u>
+		{Message.TOS1} <u>{Message.TOS2}</u>
 	</div>
 )
 
@@ -130,7 +131,7 @@ const SignInForm = ({
 				<MobileNumber register={register} errors={errors} />
 
 				<div className='mb-8 mt-3 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
-					<p>{"Don't have access to your number?"}</p>
+					<p>{Message.NO_NUMBER}</p>
 					<p>
 						<u
 							onClick={() => {
@@ -138,9 +139,8 @@ const SignInForm = ({
 								changeSignInForm(false)
 							}}
 						>
-							Continue with email
-						</u>{' '}
-						instead
+							{Message.CONTINUE_WITH_EMAIL}
+						</u>
 					</p>
 				</div>
 
@@ -148,7 +148,7 @@ const SignInForm = ({
 
 				{/* Submit button */}
 				<button type='submit' className='blue-button self-end'>
-					{'Continue ᐳ'}
+					{Button.CONTINUE}
 				</button>
 			</form>
 		</>
@@ -181,8 +181,7 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 			setUser(response.data)
 			localStorage.setItem('user', JSON.stringify(response.data))
 			setSignInError(false)
-			router.push('/home')
-			console.log('signed in')
+			router.push(HREF.HOME)
 		} else {
 			setSignInError(true)
 		}
@@ -244,7 +243,7 @@ const OTPForm = ({ phoneNumber, changeSignInForm, newUser }: any) => {
 	const continueButton = (e: React.MouseEvent<HTMLButtonElement>): void => {
 		e.preventDefault()
 		setLoginSuccesssful(true)
-		router.push(newUser ? '/registration' : '/home')
+		router.push(newUser ? HREF.REGISTRATION : HREF.HOME)
 	}
 
 	return (
@@ -287,7 +286,7 @@ const OTPForm = ({ phoneNumber, changeSignInForm, newUser }: any) => {
 						onClick={continueButton}
 						disabled={loginSuccessful ? true : false}
 					>
-						{loginSuccessful ? 'Signing in...' : 'Continue ᐳ'}
+						{loginSuccessful ? Button.SIGNING_IN : Button.SIGN_IN}
 					</button>
 				</div>
 			</form>

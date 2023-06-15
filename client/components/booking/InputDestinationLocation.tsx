@@ -1,5 +1,6 @@
-import { Autocomplete } from '@react-google-maps/api';
-import { FaFontAwesomeFlag } from 'react-icons/fa';
+import { Input } from '@/redux/types/constants'
+import { Autocomplete } from '@react-google-maps/api'
+import { FaFontAwesomeFlag } from 'react-icons/fa'
 
 export function InputDestinationLocation(
 	setExpandSearch,
@@ -19,16 +20,17 @@ export function InputDestinationLocation(
 				<input
 					type='text'
 					className='rounded-sm border-none bg-zinc-100 px-3 py-2 pl-10 leading-tight shadow-none'
-					placeholder='Destination'
+					placeholder={Input.DESTINATION}
 					ref={destinationRef}
 					// value={destination}
 					onChange={(e) => {
-						setDestination(e.target.value);
-						isValidInput(false);
+						setDestination(e.target.value)
+						isValidInput(false)
 					}}
-					onClick={() => setExpandSearch(2)} />
+					onClick={() => setExpandSearch(2)}
+				/>
 			</Autocomplete>
 			<FaFontAwesomeFlag className='absolute -mt-7 ml-2 text-xl text-green-500' />
 		</div>
-	);
+	)
 }

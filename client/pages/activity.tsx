@@ -2,11 +2,12 @@
 
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
+import { Title } from '@/redux/types/constants'
 
 const Activity = () => {
 
 	return (
-		<Page title='Activity'>
+		<Page title={Title.ACTIVITY}>
 			<Section>
 				Some text goes here
 			</Section>

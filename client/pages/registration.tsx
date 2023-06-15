@@ -13,6 +13,7 @@ import AccountInformation from '@/components/account/AccountInformation'
 import { UserContext } from '@/context/UserContext'
 import { User } from '@/redux/types'
 import { RegisterUser } from '@/server'
+import { HREF, Message } from '@/redux/types/constants'
 
 const Registration = () => {
 	const router = useRouter()
@@ -41,19 +42,15 @@ const Registration = () => {
 	const onSubmitProfile = async (data: User) => {
 		setUser(await RegisterUser({ ...formData, ...data }, user.customerID))
 		setRegistrationSuccessful(true)
-		router.push('/home')
+		router.push(HREF.HOME)
 	}
 
 	return (
 		<div className='mx-auto max-w-screen-md overflow-hidden pt-9'>
 			<div className='flex flex-col p-6'>
-				<h2 className='pb-3 text-xl font-semibold'>Welcome to Rebu</h2>
+				<h2 className='pb-3 text-xl font-semibold'>{Message.WELCOME}</h2>
 				<label className='pb-6'>Step {!nextStep ? 1 : 2} of 2</label>
-				<p className='mb-8'>
-					{
-						"We're glad to have you here! We just need you to fill out a bit more information to complete your profile"
-					}
-				</p>
+				<p className='mb-8'>{Message.INSTRUCTIONS}</p>
 
 				{nextStep ? (
 					<form
@@ -84,7 +81,7 @@ const Registration = () => {
 								type='submit'
 								disabled={registrationSuccessful ? true : false}
 							>
-								{registrationSuccessful ? 'Creating account...' : 'Finish'}
+								{registrationSuccessful ? Message.CREATING_ACCOUNT : Message.FINISH}
 							</button>
 						</div>
 					</form>

@@ -1,7 +1,7 @@
 // TODO: Separate menu for saved locations
 
-import { useState, useContext } from 'react'
-import { UserContext } from '../../context/UserContext'
+import { useContext } from 'react'
+import { UserContext } from '@/context/UserContext'
 import { useRouter } from 'next/router'
 import {
 	FaHouseUser,
@@ -9,6 +9,7 @@ import {
 	FaStar,
 	FaSuitcase,
 } from 'react-icons/fa'
+import { Button, Message } from '@/redux/types/constants'
 
 const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	const { user } = useContext(UserContext)
@@ -33,7 +34,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	// UI for the Home/Saved menus
 	const SavedLocations = (
 		<div className='mt-3 flex inline-grid w-full grid-cols-2'>
-			<div>
+			<>
 				<div
 					className='flex flex-wrap'
 					onClick={() => handleSavedLocation('home')}
@@ -44,11 +45,13 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 					<div className='pr-5'>
 						<b className='text-sm'>Home</b>
 						<h5>
-							{user.home?.placeName ? user.home?.placeName : 'Set Location'}
+							{user.home?.placeName
+								? user.home?.placeName
+								: Message.SET_LOCATION}
 						</h5>
 					</div>
 				</div>
-			</div>
+			</>
 			<div
 				className='-ml-3 flex flex-wrap'
 				onClick={() => handleSavedLocation('work')}
@@ -59,9 +62,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 				<div>
 					<b className='text-sm'>Work</b>
 					<h5>
-						{user.work?.placeName
-							? user.work?.placeName
-							: 'Set Location'}
+						{user.work?.placeName ? user.work?.placeName : Button.SET_LOCATION}
 					</h5>
 				</div>
 			</div>
@@ -69,9 +70,9 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	)
 
 	return (
-		<div>
+		<>
 			{location === '' ? (
-				<div>
+				<>
 					<div className='bg-white px-5 pb-2'>
 						{/* Saved locations: Home and Work */}
 						{SavedLocations}
@@ -82,12 +83,12 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 						onClick={() => setExpandSearch(mode === 1 ? 3 : 4)}
 					>
 						<FaSearchLocation className='mr-6 text-xl text-green-500' />
-						<b className='text-sm'>Set Location on Map</b>
+						<b className='text-sm'>{Message.SET_LOCATION_ON_MAP}</b>
 					</div>
 
 					<div className='mt-2 flex flex-wrap bg-white p-5'>
 						<FaStar className='mr-6 text-xl text-green-500' />
-						<b className='mb-4 text-sm'>Saved Locations</b>
+						<b className='mb-4 text-sm'>{Message.SAVED_LOCATIONS}</b>
 
 						{user.savedLocations && user.savedLocations?.length > 0 ? (
 							user.savedLocations?.map((item, index) => (
@@ -103,14 +104,14 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 								</div>
 							))
 						) : (
-							<p className='ml-11 w-full'>{'No saved locations'}</p>
+							<p className='ml-11 w-full'>{Message.NO_SAVED_LOCATIONS}</p>
 						)}
 					</div>
-				</div>
+				</>
 			) : (
 				''
 			)}
-		</div>
+		</>
 	)
 }
 

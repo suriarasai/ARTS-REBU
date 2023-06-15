@@ -1,5 +1,6 @@
-import { Autocomplete } from '@react-google-maps/api';
-import { FaCrosshairs } from 'react-icons/fa';
+import { Input } from '@/redux/types/constants'
+import { Autocomplete } from '@react-google-maps/api'
+import { FaCrosshairs } from 'react-icons/fa'
 
 export function InputCurrentLocation(
 	setExpandSearch,
@@ -19,16 +20,17 @@ export function InputCurrentLocation(
 				<input
 					type='text'
 					className='mb-2 rounded-sm border-none bg-zinc-100 px-3 py-2 pl-10 leading-tight shadow-none'
-					placeholder='Origin'
+					placeholder={Input.ORIGIN}
 					ref={originRef}
 					// value={origin}
 					onChange={(e) => {
-						setOrigin(e.target.value);
-						isValidInput(false);
+						setOrigin(e.target.value)
+						isValidInput(false)
 					}}
-					onClick={() => setExpandSearch(1)} />
+					onClick={() => setExpandSearch(1)}
+				/>
 			</Autocomplete>
 			<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
 		</div>
-	);
+	)
 }

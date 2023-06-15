@@ -1,6 +1,6 @@
 // For viewing and modifying account information
 
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import AccountInformation from '@/components/account/AccountInformation'
@@ -9,6 +9,7 @@ import { UserContext } from '@/context/UserContext'
 import { useRouter } from 'next/router'
 import { User } from '@/redux/types'
 import { UpdateUser } from '@/server'
+import { Button, HREF, Title } from '@/redux/types/constants'
 
 const AccountSettings = () => {
 	const router = useRouter()
@@ -27,7 +28,7 @@ const AccountSettings = () => {
 
 	return (
 		// TODO: Populate form on load, add another variable
-		<Page title='Settings'>
+		<Page title={Title.SETTINGS}>
 			<Section>
 				<h2 className='mt-3 mb-8 text-center text-xl font-bold'>Profile</h2>
 				<form onSubmit={handleSubmit(onSubmit)}>
@@ -43,7 +44,7 @@ const AccountSettings = () => {
 							className='grey-button mr-3'
 							onClick={(e) => {
 								e.preventDefault()
-								router.push('/settings')
+								router.push(HREF.SETTINGS)
 							}}
 						>
 							{'Go Back'}
@@ -55,7 +56,7 @@ const AccountSettings = () => {
 							}`}
 							onClick={() => setChangesSaved(false)}
 						>
-							{changesSaved ? 'Changes Saved!' : 'Save Changes'}
+							{changesSaved ? Button.CHANGES_SAVED : Button.SAVE_CHANGES}
 						</button>
 					</div>
 				</form>

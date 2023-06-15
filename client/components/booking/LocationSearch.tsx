@@ -2,7 +2,7 @@ import { FaPlusSquare } from 'react-icons/fa';
 import { BackButton } from '@/components/booking/backButton';
 import { InputCurrentLocation } from './InputCurrentLocation';
 import { InputDestinationLocation } from './InputDestinationLocation';
-import { HideTaxis } from '@/utils/HideTaxis';
+import { HideTaxis } from '@/utils/hideTaxis';
 
 export function LocationSearch(
 	setMarker,
