@@ -1,4 +1,4 @@
-// Data class for defining a schema to use in APIs involving location data (ex. saved/favorite locations)
+// Location object for all data involving location data
 
 package com.rebu;
 
@@ -11,6 +11,14 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Location {
+    /*
+     * @param placeID   : unique ID returned by the Google Maps API
+     * @param lat       : latitude
+     * @param lng       : longitude
+     * @param postcode  : postcode
+     * @param address   : address
+     * @param placeName : (optional) name of the building / institution 
+     */
     private String placeID;
     private Float lat;
     private Float lng;

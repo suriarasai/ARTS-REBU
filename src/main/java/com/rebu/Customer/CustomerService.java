@@ -37,6 +37,7 @@ public class CustomerService {
     // API: Creates a new customer
     public Customer createCustomer(String PhoneCountryCode, String PhoneNumber) {
 
+        // Manually incrementing the Customer ID by finding the ID of the last user
         Customer user = CustomerRepository.findFirstByOrderByCustomerIDDesc();
         Integer userID = user == null ? 1 : user.getCustomerID() + 1;
 
@@ -51,6 +52,7 @@ public class CustomerService {
     }
 
     // API: Registers/Updates a customer by adding information to existing customers
+    // Used during both registration and when editing acount information
     public Customer updateCustomer(String CustomerName, String MemberCategory, String Age, String Gender,
             String ContactTitle, String CountryCode, String Email, String Password, String PhoneCountryCode,
             String PhoneNumber, String CustomerID) {
@@ -64,6 +66,7 @@ public class CustomerService {
         update.set("email", Email);
         update.set("password", Password);
 
+        // Do not change these fields (during the registration process)
         if (PhoneNumber != null && PhoneCountryCode != null) {
             update.set("phoneCountryCode", Integer.parseInt(PhoneCountryCode));
             update.set("phoneNumber", Integer.parseInt(PhoneNumber));
@@ -89,7 +92,7 @@ public class CustomerService {
         return customer;
     }
 
-    // API: (Not used) Upserts (update/insert if non-existant) customers by mobile #
+    // API: (unused) Upserts (update/insert if non-existant) customers by mobile #
     public Integer signInWithPhoneNumber(String phoneNumber, String phoneCountryCode) {
 
         Query query = new Query();
@@ -109,7 +112,7 @@ public class CustomerService {
         return customer.getCustomerID();
     }
 
-    // API: Return customer password/credential
+    // API: Return customer details if their email and password are correct
     public Customer signInWithEmail(String email, String password) {
 
         Customer customer = CustomerRepository.findFirstByEmail(email);
@@ -122,7 +125,7 @@ public class CustomerService {
         }
     }
 
-    // Sets Home location
+    // API: Sets Home location
     public String setHome(Integer CustomerID, Location location) {
         Customer customer = CustomerRepository.findByCustomerID(CustomerID);
         customer.SetUserHome(location);
@@ -130,7 +133,7 @@ public class CustomerService {
         return null;
     }
 
-    // Sets Work location
+    // API: Sets Work location
     public String setWork(Integer CustomerID, Location location) {
         Customer customer = CustomerRepository.findByCustomerID(CustomerID);
         customer.SetUserWork(location);
@@ -138,7 +141,7 @@ public class CustomerService {
         return null;
     }
 
-    // Sets a favorite location
+    // API: Sets a favorite location
     public String addSavedLocation(Location savedLocation, Integer customerID) {
         Customer customer = CustomerRepository.findByCustomerID(customerID);
         customer.AddSavedLocation(savedLocation);
@@ -146,7 +149,7 @@ public class CustomerService {
         return null;
     }
 
-    // Removes a favorite location
+    // API: Removes a favorite location
     public String removeSavedLocation(String placeID, String customerID) {
         Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(customerID));
         customer.RemoveSavedLocation(placeID);

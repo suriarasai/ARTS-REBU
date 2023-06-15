@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rebu.Location;
 import com.rebu.LocationInterface;
 
 @RestController
@@ -28,19 +27,20 @@ public class CustomerController {
     @Autowired
     private CustomerService query;
 
-    // GET: Returns all users and their associated data
+    // (unused) GET: Returns all users and their associated data
     @GetMapping
     public ResponseEntity<List<Customer>> getAllUsers() {
         return new ResponseEntity<List<Customer>>(query.allCustomers(), HttpStatus.OK);
     }
 
-    // GET: Returns a single user based on their id
+    // (unused) GET: Returns a single user based on their customer id
     @GetMapping("/{_id}")
     public ResponseEntity<Customer> getSingleUser(@PathVariable Integer _id) {
         return new ResponseEntity<Customer>(query.singleCustomer(_id), HttpStatus.OK);
     }
 
     // POST: Checks whether a user exists by their mobile number
+    // Used during initial sign in to see if a mobile number already exists - if not, then create the user
     @PostMapping("/exists")
     public ResponseEntity<Customer> getByPhoneNumber(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Customer>(
@@ -48,8 +48,7 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // POST: (Not used) Upserts (update/insert if non-existant) users based on
-    // mobile number
+    // (unused) POST: Upserts users based on mobile number
     @PostMapping("/signIn")
     public ResponseEntity<Integer> signInWithPhoneNumber(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Integer>(
@@ -58,6 +57,7 @@ public class CustomerController {
     }
 
     // POST: Creates a new user
+    // Used during sign in process if the user doesn't already exist
     @PostMapping
     public ResponseEntity<Customer> createUser(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Customer>(
@@ -65,6 +65,7 @@ public class CustomerController {
     }
 
     // POST: Registers a new user by adding information to existing users
+    // Used during the regisration process to append data to the customer profile
     @PostMapping("/updateUser")
     public ResponseEntity<Customer> updateUser(@RequestBody Map<String, String> payload) {
 
@@ -84,8 +85,8 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // POST: Checks a user's password matches by querying their email for the
-    // associated password
+    // POST: Checks a user's password matches by querying their email for the associated password
+    // Used during sign-in via email and password
     @PostMapping("/validateCredentials")
     public ResponseEntity<Customer> validateCredentials(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Customer>(
@@ -94,7 +95,8 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // Sets the home location to a coordinate pair [lat, lng]
+    // POST: Sets the home location
+    // Used when setting home location in the saved location screen
     @PostMapping("/setHome")
     public ResponseEntity<String> setHome(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
@@ -102,7 +104,8 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // Sets the work location to a coordinate pair [lat, lng]
+    // POST: Sets the work location
+    // Used when setting work location in the saved location screen
     @PostMapping("/setWork")
     public ResponseEntity<String> setWork(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
@@ -110,7 +113,8 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // Adds a favorite location
+    // POST: Adds a favorite location
+    // Used when setting a favorite location in the saved location screen
     @PostMapping("/addSavedLocation")
     public ResponseEntity<String> addSavedLocation(@RequestBody LocationInterface payload) {
         return new ResponseEntity<String>(
@@ -118,7 +122,8 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // Removes a favorite location
+    // POST: Removes a favorite location
+    // Used when removing a saved location the saved location screen
     @PostMapping("/removeSavedLocation")
     public ResponseEntity<String> removeFavoriteLocation(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<String>(

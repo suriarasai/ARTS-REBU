@@ -1,4 +1,5 @@
-// Data class for defining a schema to use in APIs involving location data (ex. saved/favorite locations)
+// Essentially a custom object to parse incoming API payloads
+// this is so we can assign types (ex. int) to incoming data as opposed to assuming it's a string
 
 package com.rebu;
 
@@ -11,14 +12,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LocationInterface {
+    /*
+     * @customerID  : unique ID associated with a customer
+     * @location    : location details
+     */
     private Integer customerID;
     private Location location;
-    // private String placeID;
-    // private Float lat;
-    // private Float lng;
-    // private Integer postcode;
-    // private String address;
-    // private String placeName;
 
     public LocationInterface() {
     }

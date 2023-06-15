@@ -1,5 +1,7 @@
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import Page from '@/components/ui/page'
 import { useRouter } from 'next/router'
+import { Suspense } from 'react'
 import {
 	FaBookmark,
 	FaClock,
@@ -11,36 +13,42 @@ import {
 
 export default function Home() {
 	return (
-		<Page title='Rebu'>
-			<div className='w-full'>
-				<div className='grid aspect-square h-full grid-cols-3 gap-4'>
-					<HomeIcon
-						icon={<FaTaxi />}
-						href='/booking'
-						label='Book a Ride'
-						isMain={true}
-					/>
-					<HomeIcon
-						icon={<FaCoins />}
-						href='/rewardPoints'
-						label='Your Reward Points'
-					/>
-					<HomeIcon icon={<FaComment />} href='/home' label='Messages' />
-					<HomeIcon
-						icon={<FaBookmark />}
-						href='/savedPlaces'
-						label='Saved Locations'
-					/>
-					<HomeIcon
-						icon={<FaClock />}
-						href='/activity'
-						label='Trip History'
-						isMain={true}
-					/>
-					<HomeIcon icon={<FaMarker />} href='/settings' label='Your Ratings' />
+		<Suspense fallback={LoadingScreen}>
+			<Page title='Rebu'>
+				<div className='w-full'>
+					<div className='grid aspect-square h-full grid-cols-3 gap-4'>
+						<HomeIcon
+							icon={<FaTaxi />}
+							href='/booking'
+							label='Book a Ride'
+							isMain={true}
+						/>
+						<HomeIcon
+							icon={<FaCoins />}
+							href='/rewardPoints'
+							label='Your Reward Points'
+						/>
+						<HomeIcon icon={<FaComment />} href='/home' label='Messages' />
+						<HomeIcon
+							icon={<FaBookmark />}
+							href='/savedPlaces'
+							label='Saved Locations'
+						/>
+						<HomeIcon
+							icon={<FaClock />}
+							href='/activity'
+							label='Trip History'
+							isMain={true}
+						/>
+						<HomeIcon
+							icon={<FaMarker />}
+							href='/settings'
+							label='Your Ratings'
+						/>
+					</div>
 				</div>
-			</div>
-		</Page>
+			</Page>
+		</Suspense>
 	)
 }
 

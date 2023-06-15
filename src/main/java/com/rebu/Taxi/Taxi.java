@@ -1,3 +1,5 @@
+// Taxi object to store physical and logistic information associated with a certain vehicle
+
 package com.rebu.Taxi;
 
 import java.util.ArrayList;
@@ -13,17 +15,26 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class Taxi {
+    /*
+     * @param taxiNumber        : main ID parameter for querrying
+     * @param sno               : serial number
+     * @param taxiType          : type of vehicle (car/van/etc.)
+     * @param tmdtid            : vehicle identification number for corporate use
+     * @param taxiFeature       : physical features (make, color, seats, etc.)
+     * @param RegisterdDrivers  : logistic features (driver information)
+     */
     @Id
-    String taxiNumber;
-    Integer sno;
-    String taxiType;
-    String tmdtid;
-    TaxiFeature taxiFeature = new TaxiFeature();
-    List<RegisteredDriver> RegisteredDrivers = new ArrayList<RegisteredDriver>();
+    String taxiNumber; 
+    Integer sno; 
+    String taxiType; 
+    String tmdtid; 
+    TaxiFeature taxiFeature = new TaxiFeature(); 
+    List<RegisteredDriver> RegisteredDrivers = new ArrayList<RegisteredDriver>(); 
 
     public Taxi() {
     }
 
+    // Add or update a taxi
     public void UpsertTaxi(String taxiNumber, Integer sno, String taxiType, String tmdtid, TaxiFeature taxiFeature) {
         this.taxiNumber = taxiNumber;
         this.sno = sno;
@@ -32,6 +43,7 @@ public class Taxi {
         this.taxiFeature.SetFeatures(taxiFeature);
     }
 
+    // Associate a new driver to the vehicle 
     public void RegisterDriver(Integer DriverID, String DriverName, Integer DriverPhone) {
         RegisteredDriver _driver = new RegisteredDriver();
         _driver.SetDriver(DriverID, DriverName, DriverPhone);
