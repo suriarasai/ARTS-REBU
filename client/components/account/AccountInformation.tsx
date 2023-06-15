@@ -3,7 +3,7 @@
 import React, { useContext } from 'react'
 import { MobileNumber } from '@/components/account/MobileNumber'
 import { ProfileInterface } from '@/redux/types'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 
 // Main component
 const AccountInformation = ({

@@ -2,7 +2,7 @@
 
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from 'next-themes'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 import Meta from '@/components/ui/meta'
 import '@/styles/globals.css'
 import '@/styles/maps.css'

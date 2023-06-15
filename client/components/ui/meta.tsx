@@ -12,9 +12,9 @@ const Meta = () => (
 			name='apple-mobile-web-app-status-bar-style'
 			content='black-translucent'
 		/>
-		<meta name='apple-mobile-web-app-title' content='Rice Bowl' />
-		<meta name='application-name' content='Rice Bowl' />
-		<meta name='description' content='Bring your own ingredients' />
+		<meta name='apple-mobile-web-app-title' content='Rebu' />
+		<meta name='application-name' content='Rebu' />
+		<meta name='description' content='SEA-based Taxi Hailing App' />
 		<meta
 			name='theme-color'
 			content='#f4f4f5'

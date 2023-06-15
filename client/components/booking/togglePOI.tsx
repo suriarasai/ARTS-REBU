@@ -1,5 +1,5 @@
 import { FaMapMarkedAlt } from 'react-icons/fa';
-import { noPoi } from '../../pages/booking';
+import { noPoi } from '@/utils/noPoi';
 
 export function togglePOI(map: any, poi: boolean, setPoi) {
 	return <div

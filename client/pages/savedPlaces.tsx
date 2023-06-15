@@ -3,7 +3,7 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 import { AddPlaceAPI, RemovePlaceAPI, SetHome, SetWork } from '@/server'
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
 import {

@@ -2,7 +2,7 @@ import { useContext, useState, useRef } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import api from '@/api/axiosConfig'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 import { rewardPoints } from '@/redux/types'
 // import { RewardPointsAPI } from '@/server'
 

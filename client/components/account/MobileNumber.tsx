@@ -1,4 +1,6 @@
 // Form elements for adding/editing a country code and mobile number
+// NOTE: Since phoneNumber is an integer, leading zeros are prohibited
+// but this is alright because phoneNumbers can't start with a 0 
 
 import { ProfileInterface } from '@/redux/types'
 import React from 'react'

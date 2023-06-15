@@ -1,16 +1,18 @@
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
-import { UserContext } from '@/components/context/UserContext';
+import { UserContext } from '@/context/UserContext';
 
 export const SignOutModal = () => {
 	const router = useRouter();
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [logoutSuccessful, setLogoutSuccessful] = useState<boolean>(false);
 
-	const { user } = useContext(UserContext);
+	const { user, setUser } = useContext(UserContext);
 
 	const handleSignOut = () => {
 		setLogoutSuccessful(true);
+		setUser({})
+		localStorage.clear()
 		router.push('/');
 	};
 

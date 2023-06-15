@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { EmailForm } from '@/components/account/EmailForm'
 import AccountInformation from '@/components/account/AccountInformation'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 import { User } from '@/redux/types'
 import { RegisterUser } from '@/server'
 

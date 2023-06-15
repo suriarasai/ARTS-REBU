@@ -2,43 +2,26 @@ import {
 	useJsApiLoader,
 	GoogleMap,
 	Marker,
-	Autocomplete,
 } from '@react-google-maps/api'
 import { useEffect, useRef, useState, useContext, useCallback } from 'react'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
 import { RideConfirmation } from '@/components/booking/RideConfirmation'
-import { moveToStep } from '@/components/booking/moveToStep'
-import { expandArray } from '@/components/booking/expandArray'
-import {
-	FaCrosshairs,
-	FaFontAwesomeFlag,
-	FaPlusSquare,
-} from 'react-icons/fa'
-import { BackButton } from '@/components/booking/backButton'
+import { moveToStep } from '@/utils/moveToStep'
+import { expandArray } from '@/utils/expandArray'
 import { togglePOI } from '@/components/booking/togglePOI'
+import { CoordinateToAddress } from '../utils/CoordinateToAddress'
+import { LocationSearch } from '../components/booking/LocationSearch'
+import { HideTaxis } from '../utils/HideTaxis'
+import { noPoi } from '../utils/noPoi'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 var directionsDisplay
 var taxiMarker
-var nearbyTaxiMarkers = []
+export var nearbyTaxiMarkers = []
 
 const libraries = ['places']
-
-export function noPoi(visible) {
-	return [
-		{
-			featureType: 'poi',
-			elementType: 'labels',
-			stylers: [
-				{
-					visibility: visible ? 'on' : 'off',
-				},
-			],
-		},
-	]
-}
 
 function Booking() {
 	const { user, setUser } = useContext(UserContext)
@@ -382,138 +365,4 @@ const loadTaxis = (map, coord, N = 1) => {
 		})
 }
 
-const HideTaxis = () => {
-	for (var i = 0; i < nearbyTaxiMarkers.length; i++) {
-		nearbyTaxiMarkers[i].setMap(null)
-	}
-}
 
-function LocationSearch(
-	setMarker,
-	expandSearch: number,
-	setExpandSearch,
-	originRef,
-	setOrigin,
-	isValidInput,
-	destinationRef,
-	setDestination
-	// setOriginAutocomplete,
-	// setDestinationAutocomplete
-) {
-	return (
-		<div className='sticky top-0 z-10 flex w-screen flex-wrap bg-white p-2 shadow-md'>
-			<div
-				className='w-1/12'
-				onClick={() => {
-					setMarker(null)
-					HideTaxis()
-				}}
-			>
-				<BackButton
-					expandSearch={expandSearch}
-					setExpandSearch={setExpandSearch}
-				/>
-			</div>
-			<div className='w-10/12'>
-				{/* Origin Search */}
-				{InputCurrentLocation(
-					setExpandSearch,
-					originRef,
-					setOrigin,
-					isValidInput
-					// setOriginAutocomplete
-				)}
-
-				{/* Destination Search */}
-				{InputDestinationLocation(
-					setExpandSearch,
-					destinationRef,
-					setDestination,
-					isValidInput
-					// setDestinationAutocomplete
-				)}
-			</div>
-			<div className='justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500'>
-				<FaPlusSquare onClick={() => {}} />
-			</div>
-		</div>
-	)
-}
-
-function InputDestinationLocation(
-	setExpandSearch,
-	destinationRef,
-	setDestination,
-	isValidInput
-	// setDestinationAutocomplete
-) {
-	return (
-		<div className='destination'>
-			<Autocomplete
-				// onLoad={(e) => setDestinationAutocomplete(e)}
-				onPlaceChanged={() => setExpandSearch(0)}
-				options={{ componentRestrictions: { country: 'sg' } }}
-				fields={['address_components', 'geometry', 'formatted_address']}
-			>
-				<input
-					type='text'
-					className='rounded-sm border-none bg-zinc-100 px-3 py-2 pl-10 leading-tight shadow-none'
-					placeholder='Destination'
-					ref={destinationRef}
-					// value={destination}
-					onChange={(e) => {
-						setDestination(e.target.value)
-						isValidInput(false)
-					}}
-					onClick={() => setExpandSearch(2)}
-				/>
-			</Autocomplete>
-			<FaFontAwesomeFlag className='absolute -mt-7 ml-2 text-xl text-green-500' />
-		</div>
-	)
-}
-
-function InputCurrentLocation(
-	setExpandSearch,
-	originRef,
-	setOrigin,
-	isValidInput
-	// setOriginAutocomplete
-) {
-	return (
-		<div>
-			<Autocomplete
-				// onLoad={(e) => setOriginAutocomplete(e)}
-				onPlaceChanged={() => setExpandSearch(0)}
-				options={{ componentRestrictions: { country: 'sg' } }}
-				fields={['address_components', 'geometry', 'formatted_address']}
-			>
-				<input
-					type='text'
-					className='mb-2 rounded-sm border-none bg-zinc-100 px-3 py-2 pl-10 leading-tight shadow-none'
-					placeholder='Origin'
-					ref={originRef}
-					// value={origin}
-					onChange={(e) => {
-						setOrigin(e.target.value)
-						isValidInput(false)
-					}}
-					onClick={() => setExpandSearch(1)}
-				/>
-			</Autocomplete>
-			<FaCrosshairs className='absolute -mt-9 ml-2 text-xl text-green-500' />
-		</div>
-	)
-}
-
-async function CoordinateToAddress(coordinates, setLocation) {
-	await fetch(
-		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-	)
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {
-			setLocation(data.results[0].formatted_address)
-		})
-}

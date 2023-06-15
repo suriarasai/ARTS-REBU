@@ -7,7 +7,7 @@ export const UpdateUser = async (data: User | any, customerID) => {
 		customerID: customerID,
 		customerName: data.firstName + ' ' + data.lastName,
 		contactTitle: data.contactTitle,
-		memberCategory: data.memberCategory,
+		memberCategory: "NA",
 		age: data.age,
 		gender: data.gender,
 		countryCode: data.countryCode,
@@ -30,7 +30,7 @@ export const RegisterUser = async (data: User | any, customerID) => {
 		gender: data.gender,
 		email: data.email,
 		password: data.password,
-		memberCategory: 'NA',
+		memberCategory: "NA",
 	})
 	return response.data
 }

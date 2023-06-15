@@ -1,12 +1,12 @@
 // First page, for signing in
 
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import { MobileNumber } from '@/components/account/MobileNumber'
 import { EmailForm } from '@/components/account/EmailForm'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 
 // Main component
 const SignIn = () => {
@@ -14,6 +14,16 @@ const SignIn = () => {
 	const [signInForm, changeSignInForm] = React.useState<boolean>(true)
 	const [emailSignIn, changeEmailSignIn] = React.useState<boolean>(false)
 	const [newUser, setNewUser] = React.useState<boolean>(true)
+	const { setUser } = useContext(UserContext)
+
+	useEffect(() => {
+		// TODO: [object, object]
+		const loggedInUser = localStorage.getItem('user')
+		if (loggedInUser !== null) {
+			setUser(JSON.parse(loggedInUser))
+			Router.push('/home')
+		}
+	}, [])
 
 	return (
 		<main className='mx-auto max-w-screen-md pb-16 pt-20 px-safe sm:pb-0'>
@@ -96,6 +106,7 @@ const SignInForm = ({
 			setUser(response.data)
 			setNewUser(false)
 		}
+		localStorage.setItem('user', JSON.stringify(response.data))
 	}
 
 	return (
@@ -160,8 +171,10 @@ const EmailSignIn = ({ changeEmailSignIn, changeSignInForm }: any) => {
 		})
 		if (response.data != '') {
 			setUser(response.data)
+			localStorage.setItem('user', JSON.stringify(response.data))
 			setSignInError(false)
 			router.push('/home')
+			console.log('signed in')
 		} else {
 			setSignInError(true)
 		}
