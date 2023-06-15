@@ -7,6 +7,7 @@ import Router, { useRouter } from 'next/router'
 import { MobileNumber } from '@/components/account/MobileNumber'
 import { EmailForm } from '@/components/account/EmailForm'
 import { UserContext } from '@/context/UserContext'
+import { LoadingScreen } from '../components/ui/LoadingScreen'
 
 // Main component
 const SignIn = () => {
@@ -14,6 +15,7 @@ const SignIn = () => {
 	const [signInForm, changeSignInForm] = React.useState<boolean>(true)
 	const [emailSignIn, changeEmailSignIn] = React.useState<boolean>(false)
 	const [newUser, setNewUser] = React.useState<boolean>(true)
+	const [loading, setLoading] = React.useState(true)
 	const { setUser } = useContext(UserContext)
 
 	useEffect(() => {
@@ -22,34 +24,40 @@ const SignIn = () => {
 		if (loggedInUser !== null) {
 			setUser(JSON.parse(loggedInUser))
 			Router.push('/home')
+		} else {
+			setLoading(false)
 		}
 	}, [])
 
 	return (
 		<main className='mx-auto max-w-screen-md pb-16 pt-20 px-safe sm:pb-0'>
-			<div className='p-6'>
-				<h2 className='text-xl font-semibold'>Welcome to Rebu</h2>
-				{signInForm ? (
-					<SignInForm
-						setNumber={setNumber}
-						changeSignInForm={changeSignInForm}
-						changeEmailSignIn={changeEmailSignIn}
-						setNewUser={setNewUser}
-					/>
-				) : emailSignIn ? (
-					<EmailSignIn
-						changeEmailSignIn={changeEmailSignIn}
-						changeSignInForm={changeSignInForm}
-						newUser={newUser}
-					/>
-				) : (
-					<OTPForm
-						phoneNumber={number}
-						changeSignInForm={changeSignInForm}
-						newUser={newUser}
-					/>
-				)}
-			</div>
+			{loading ? (
+				LoadingScreen
+			) : (
+				<div className='p-6'>
+					<h2 className='text-xl font-semibold'>Welcome to Rebu</h2>
+					{signInForm ? (
+						<SignInForm
+							setNumber={setNumber}
+							changeSignInForm={changeSignInForm}
+							changeEmailSignIn={changeEmailSignIn}
+							setNewUser={setNewUser}
+						/>
+					) : emailSignIn ? (
+						<EmailSignIn
+							changeEmailSignIn={changeEmailSignIn}
+							changeSignInForm={changeSignInForm}
+							newUser={newUser}
+						/>
+					) : (
+						<OTPForm
+							phoneNumber={number}
+							changeSignInForm={changeSignInForm}
+							newUser={newUser}
+						/>
+					)}
+				</div>
+			)}
 		</main>
 	)
 }
