@@ -66,7 +66,7 @@ export enum Button {
 // Page and Section Titles
 export enum Title {
 	NOTIFICATIONS = 'Notifications',
-    ACTIVITY = 'Activity',
+    ACTIVITY = 'Trips',
     LOCATIONS = 'Saved Locations',
     REWARDS = 'Reward Points',
     SETTINGS = 'Settings',

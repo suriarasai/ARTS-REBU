@@ -12,6 +12,7 @@ import { LocationSearch } from '../components/booking/LocationSearch'
 import { HideTaxis } from '../utils/hideTaxis'
 import { noPoi } from '../utils/noPoi'
 import { icon } from '@/redux/types/constants'
+import { loadTaxis } from '@/server'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
@@ -29,9 +30,9 @@ function Booking() {
 	})
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
-	const [directionsResponse, setDirectionsResponse] = useState(null)
+	const [, setDirectionsResponse] = useState(null)
 	const [distance, setDistance] = useState('')
-	const [duration, setDuration] = useState('')
+	const [, setDuration] = useState('')
 	const [validInput, isValidInput] = useState(false)
 	const [poi, setPoi] = useState(true)
 
@@ -264,16 +265,17 @@ function Booking() {
 				</button>
 			)}
 
+			{/* If the user is not searching... */}
 			{[0, 3, 4].includes(expandSearch) ? (
+				// If the input is valid, then begin the booking confirmation procedure
 				validInput ? (
-					// Confirmation procedure
 					<RideConfirmation
 						distance={parseFloat(distance.match(/\d+/)[0])}
 						origin={originRef.current?.value.split(',')}
 						destination={destinationRef.current?.value.split(',')}
 					/>
 				) : (
-					// Prompt to calculate route
+					// If the input is invalid, then continue to show them the 'Calculate Route' button
 					<>
 						<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
 							<button
@@ -290,8 +292,8 @@ function Booking() {
 					</>
 				)
 			) : (
+				// If the user is searching, then show them the expanded search UI
 				<>
-					{/* Expanded search UI with saved locations */}
 					<ExpandSearch
 						mode={expandSearch}
 						setExpandSearch={setExpandSearch}
@@ -305,61 +307,5 @@ function Booking() {
 }
 
 export default Booking
-
-async function PlaceIDToAddress(id, setLocation) {
-	await fetch(
-		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-	)
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {})
-}
-
-// Loads the nearest N taxis onto the map
-const loadTaxis = (map, coord, N = 1) => {
-	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {
-			const coordinates: [number, number] =
-				data.features[0].geometry.coordinates
-			const distances: [number, number, number][] = []
-
-			// Calculating the Euclidean distance
-			coordinates.forEach(([a, b]: any) =>
-				distances.push([
-					Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
-					a,
-					b,
-				])
-			)
-
-			// Sorting the distances
-			distances.sort()
-
-			let coords
-			let newTaxi
-
-			// Saving the marker to the state letiable
-			for (let i = 0; i < N; i++) {
-				coords = distances[i].slice(1, 3)
-				newTaxi = new google.maps.Marker({
-					map: map,
-					position: { lat: coords[1], lng: coords[0] },
-					icon: {
-						path: icon.taxi,
-						fillColor: 'Purple',
-						fillOpacity: 0.9,
-						scale: 1,
-						strokeColor: 'Purple',
-						strokeWeight: 0.5,
-					},
-				})
-				nearbyTaxiMarkers.push(newTaxi)
-			}
-		})
-}
 
 

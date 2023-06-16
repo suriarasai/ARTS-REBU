@@ -1,5 +1,7 @@
 import api from '@/api/axiosConfig'
 import { User } from './redux/types'
+import { nearbyTaxiMarkers } from './pages/booking'
+import { icon } from './redux/types/constants'
 
 // Account Settings: Updates user information
 export const UpdateUser = async (data: User | any, customerID) => {
@@ -77,4 +79,59 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 		.then(function (data) {
 			setLocation(data.results[0].formatted_address);
 		});
+}// Loads the nearest N taxis onto the map
+
+export const loadTaxis = (map, coord, N = 1) => {
+	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
+		.then(function (response) {
+			return response.json();
+		})
+		.then(function (data) {
+			const coordinates: [number, number] = data.features[0].geometry.coordinates;
+			const distances: [number, number, number][] = [];
+
+			// Calculating the Euclidean distance
+			coordinates.forEach(([a, b]: any) => distances.push([
+				Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
+				a,
+				b,
+			])
+			);
+
+			// Sorting the distances
+			distances.sort();
+
+			let coords;
+			let newTaxi;
+
+			// Saving the marker to the state letiable
+			for (let i = 0; i < N; i++) {
+				coords = distances[i].slice(1, 3);
+				newTaxi = new google.maps.Marker({
+					map: map,
+					position: { lat: coords[1], lng: coords[0] },
+					icon: {
+						path: icon.taxi,
+						fillColor: 'Purple',
+						fillOpacity: 0.9,
+						scale: 1,
+						strokeColor: 'Purple',
+						strokeWeight: 0.5,
+					},
+				});
+				nearbyTaxiMarkers.push(newTaxi);
+			}
+		});
+};
+// API: Extracts data from Google Maps place_id 
+
+async function PlaceIDToAddress(id, setLocation) {
+	await fetch(
+		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	)
+		.then(function (response) {
+			return response.json()
+		})
+		.then(function (data) { })
 }
+
