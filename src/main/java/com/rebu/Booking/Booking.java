@@ -2,6 +2,7 @@
 
 package com.rebu.Booking;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,31 +10,52 @@ import com.rebu.Location;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "Booking")
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class Booking {
     /*
-     * @param bookingID             : unique ID associated with a booking
-     * @param messageSubmittedTime  : when the booking request was submitted (in miliseconds)
-     * @param messageReceivedTime   : when the booking request was received (in miliseconds)
-     * @param customerID            : unique ID associated with a customer
-     * @param customerName          : customer name
-     * @param phoneNumber           : customer phone number
-     * @param pickUpLocation        : pickup location
-     * @param pickUpTime            : taxi ETA
-     * @param dropLocation          : dropoff location
-     * @param taxiType              : requested vehicle type (ex. car/van)
-     * @param fareType              : [metered, fixed]
-     * @param fare                  : price (in dollars)
-     * @param status                : [requested, dispatched, cancelled, completed]
-     * @param driverID              : unique ID associated with a driver
-     * @param taxiID                : unique ID associated with a taxi
-     * @param distance              : distance travelled (in kilometers)
-     * @param paymentMethod         : how the customer paid the fare
+     * @param bookingID : unique ID associated with a booking
+     * 
+     * @param messageSubmittedTime : when the booking request was submitted (in
+     * miliseconds)
+     * 
+     * @param messageReceivedTime : when the booking request was received (in
+     * miliseconds)
+     * 
+     * @param customerID : unique ID associated with a customer
+     * 
+     * @param customerName : customer name
+     * 
+     * @param phoneNumber : customer phone number
+     * 
+     * @param pickUpLocation : pickup location
+     * 
+     * @param pickUpTime : taxi ETA
+     * 
+     * @param dropLocation : dropoff location
+     * 
+     * @param taxiType : requested vehicle type (ex. car/van)
+     * 
+     * @param fareType : [metered, fixed]
+     * 
+     * @param fare : price (in dollars)
+     * 
+     * @param status : [requested, dispatched, cancelled, completed]
+     * 
+     * @param driverID : unique ID associated with a driver
+     * 
+     * @param taxiID : unique ID associated with a taxi
+     * 
+     * @param distance : distance travelled (in kilometers)
+     * 
+     * @param paymentMethod : how the customer paid the fare
      */
     @Id
+    private ObjectId _id;
     private Integer bookingID;
     private Integer messageSubmittedTime;
     private Integer messageReceivedTime;
@@ -54,27 +76,32 @@ public class Booking {
     private Float distance;
     private String paymentMethod;
 
-    public Booking() {
+    // Initial setter for when customers post a request
+    public Booking(Integer bookingID) {
+        this.bookingID = bookingID;
     }
 
-    // Initial setter for when customers post a request
-    public void CreateBooking(Integer messageSubmittedTime, Integer messageReceivedTime, Integer customerID,
-            String customerName, Integer phoneNumber, String pickUpTime, String taxiType, String fareType, String fare,
-            Float distance, String paymentMethod, Location pickUpPlace, Location dropOffPlace) {
+    // Integer messageSubmittedTime, Integer messageReceivedTime, Integer
+    // customerID,
+    // String customerName, Integer phoneNumber, String pickUpTime, String taxiType,
+    // String fareType, String fare,
+    // Float distance, String paymentMethod, Location pickUpLocation, Location
+    // dropLocation
+    public void setBooking(Booking data) {
         this.status = "requested";
-        this.messageSubmittedTime = messageSubmittedTime;
-        this.messageReceivedTime = messageReceivedTime;
-        this.customerID = customerID;
-        this.customerName = customerName;
-        this.phoneNumber = phoneNumber;
-        this.pickUpTime = pickUpTime;
-        this.taxiType = taxiType;
-        this.fareType = fareType;
-        this.fare = fare;
-        this.distance = distance;
-        this.paymentMethod = paymentMethod;
-        this.pickUpLocation.SetLocation(pickUpPlace);
-        this.dropLocation.SetLocation(dropOffPlace);
+        this.messageSubmittedTime = data.messageSubmittedTime;
+        this.messageReceivedTime = data.messageReceivedTime;
+        this.customerID = data.customerID;
+        this.customerName = data.customerName;
+        this.phoneNumber = data.phoneNumber;
+        this.pickUpTime = data.pickUpTime;
+        this.taxiType = data.taxiType;
+        this.fareType = data.fareType;
+        this.fare = data.fare;
+        this.distance = data.distance;
+        this.paymentMethod = data.paymentMethod;
+        this.pickUpLocation = data.pickUpLocation;
+        this.dropLocation = data.dropLocation;
     }
 
     // Matching a driver to the booking request

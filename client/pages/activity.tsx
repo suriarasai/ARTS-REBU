@@ -1,22 +1,21 @@
 // Displays user activity (ex. booked rides, reviews)
 // TODO: Expand for details
-// TODO: Review button
+// TODO: Review button?
 // TODO: Date filter
-// TODO: Loading animation
 
 import Page from '@/components/ui/page'
-import Section from '@/components/ui/section'
 import { UserContext } from '@/context/UserContext'
 import { Title } from '@/redux/types/constants'
-import { useContext, useEffect, useState } from 'react'
+import { Suspense, useContext, useEffect, useState } from 'react'
 import {
 	FaAngleDown,
 	FaCalendarDay,
 	FaCheckCircle,
+	FaClock,
 	FaMinusCircle,
 	FaPlayCircle,
-	FaQuestionCircle,
 } from 'react-icons/fa'
+import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
 
 const DateFilter = (
 	<button className='date-filter-button'>
@@ -59,11 +58,11 @@ const Activity = () => {
 
 	return (
 		<Page title={Title.ACTIVITY}>
-			<Section>
-				{DateFilter}
+			{DateFilter}
 
-				<TabController activeTab={activeTab} setActiveTab={setActiveTab} />
+			<TabController activeTab={activeTab} setActiveTab={setActiveTab} />
 
+			<Suspense fallback={<PulseLoadingVisual />}>
 				{tripList.map(
 					(trip, index) =>
 						// Filter by upcoming trips (requested or dispatch status)
@@ -89,8 +88,7 @@ const Activity = () => {
 							</div>
 						)
 				)}
-				{/* {activeTab === 'Upcoming' ? null : null} */}
-			</Section>
+			</Suspense>
 		</Page>
 	)
 }
@@ -120,7 +118,7 @@ const TabController = ({ activeTab, setActiveTab }) => (
 const StatusIcon = ({ status }) => (
 	<div className='center w-2/12'>
 		{status === 'requested' && (
-			<FaQuestionCircle className='trip-icon text-zinc-500' />
+			<FaClock className='trip-icon text-zinc-500' />
 		)}
 		{status === 'dispatched' && (
 			<FaPlayCircle className='trip-icon text-yellow-500' />
@@ -173,3 +171,5 @@ const convertToMonth = (date) => {
 	]
 	return months[month - 1] + ' ' + date[0]
 }
+
+

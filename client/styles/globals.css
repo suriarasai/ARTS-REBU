@@ -138,7 +138,7 @@ p {
 }
 
 .trip-container {
-	@apply mt-3 flex w-full justify-stretch rounded-lg bg-white p-3
+	@apply mt-3 flex w-full justify-stretch rounded-lg bg-white p-3 shadow-sm
 }
 
 .date-filter-button {
