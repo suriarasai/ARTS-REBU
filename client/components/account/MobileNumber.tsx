@@ -10,7 +10,7 @@ import api from '@/api/axiosConfig'
 import { FaAngleRight } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 
-export const MobileNumber = ({ populateData = {} }: any) => {
+export const MobileNumber = ({ newUser = true, populateData = {} }: any) => {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks
@@ -71,7 +71,7 @@ export const MobileNumber = ({ populateData = {} }: any) => {
 	}
 
 	return (
-		<form className='-mx-3 mb-2 mt-12 flex flex-wrap' onSubmit={onSubmit}>
+		<form className='-mx-3 mb-2 flex flex-wrap' onSubmit={onSubmit}>
 			{/* Input fields */}
 			{triggerOTP ? (
 				<OTP setTriggerOTP={setTriggerOTP} />
@@ -86,24 +86,27 @@ export const MobileNumber = ({ populateData = {} }: any) => {
 						populateData={populateData}
 						register={register}
 						errors={errors}
+						newUser={newUser}
 					/>
 				</>
 			)}
 
-			{/* Submit button */}
-			<button
-				type='submit'
-				className='rect-button rounded-r-lg shadow-md'
-				onClick={handleRouting}
-			>
-				<FaAngleRight />
-			</button>
+			{newUser && (
+				// Submit Button
+				<button
+					type='submit'
+					className='rect-button rounded-r-lg shadow-md'
+					onClick={handleRouting}
+				>
+					<FaAngleRight />
+				</button>
+			)}
 		</form>
 	)
 }
 
-const PhoneNumber = ({ populateData, register, errors }) => (
-	<div className='w-3/5 pb-3 md:mb-0'>
+const PhoneNumber = ({ populateData, register, errors, newUser }) => (
+	<div className={`pb-3 md:mb-0 ${newUser ? 'w-3/5' : 'w-4/5'}`}>
 		<input
 			className='white-input'
 			placeholder='Enter your mobile number'

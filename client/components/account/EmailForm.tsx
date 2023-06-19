@@ -26,6 +26,7 @@ export function EmailForm({
 		</>
 	)
 }
+
 function PasswordInput(register, errors, signInError: boolean) {
 	return (
 		<div className='relative w-full pb-4 md:mb-0'>

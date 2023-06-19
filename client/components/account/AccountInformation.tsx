@@ -6,6 +6,7 @@ import { ProfileInterface } from '@/redux/types'
 import { UserContext } from '@/context/UserContext'
 import { icon } from '@/redux/types/constants'
 import { FaUser } from 'react-icons/fa'
+import { EmailForm } from './EmailForm'
 
 // Main component
 const AccountInformation = ({
@@ -58,10 +59,7 @@ const AccountInformation = ({
 							required: true,
 							minLength: 1,
 						})}
-						defaultValue={populateData['customerName']?.substring(
-							0,
-							populateData['customerName']?.lastIndexOf(' ')
-						)}
+						defaultValue={populateData['customerName']}
 						className='pl-10 white-input rounded-md py-2 shadow-sm'
 					/>
 					<FaUser className='absolute top-0 mt-3 ml-3 text-green-500' />
@@ -119,45 +117,7 @@ const AccountInformation = ({
 
 			{newUser ? null : (
 				<>
-					<div className='-mx-3 mb-6 flex flex-wrap'>
-						<div className='w-full px-3'>
-							<label>Email</label>
-							<input
-								{...register(newUser ? 'nullEmail' : 'email', {
-									required: true,
-									maxLength: 30,
-									minLength: 5,
-									pattern:
-										/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/i,
-								})}
-								placeholder='youremail@site.domain'
-								defaultValue={populateData['email']}
-								className='px-4 py-2'
-							/>
-							{errors.email && (
-								<p className='text-error mt-1'>Please enter a valid email</p>
-							)}
-						</div>
-					</div>
-					<div className='w-full pb-6 md:mb-0'>
-						<label>Password</label>
-						<input
-							{...register(newUser ? 'nullPassword' : 'password', {
-								required: true,
-								maxLength: 20,
-								minLength: 5,
-							})}
-							type='password'
-							placeholder='********'
-							defaultValue={populateData['password']}
-							className='px-4 py-2'
-						/>
-						{errors.password && (
-							<p className='text-error mt-1'>
-								Please enter a password with 5-20 digits
-							</p>
-						)}
-					</div>
+					<EmailForm register={register} errors={errors}/>
 
 					<MobileNumber
 						register={register}
