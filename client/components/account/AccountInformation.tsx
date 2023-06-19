@@ -5,6 +5,7 @@ import { MobileNumber } from '@/components/account/MobileNumber'
 import { ProfileInterface } from '@/redux/types'
 import { UserContext } from '@/context/UserContext'
 import { icon } from '@/redux/types/constants'
+import { FaUser } from 'react-icons/fa'
 
 // Main component
 const AccountInformation = ({
@@ -27,8 +28,50 @@ const AccountInformation = ({
 	return (
 		<div className='flex w-full flex-col'>
 			<div className='-mx-3 mb-6 flex flex-wrap'>
-				<div className='relative w-1/3 px-3'>
-					<label>Country</label>
+				{/* Input fields */}
+				<div className='w-1/4 pr-3'>
+					<div className='relative'>
+						<select
+							{...register('contactTitle', {
+								required: true,
+								minLength: 1,
+							})}
+							defaultValue={populateData['contactTitle']}
+							className='white-input rounded-md px-4 py-2 shadow-sm'
+						>
+							<option value=''>Prefix</option>
+							<option value='Mr.'>Mr.</option>
+							<option value='Ms.'>Ms.</option>
+							<option value='Mrs.'>Mrs.</option>
+							<option value='Other'>Other</option>
+						</select>
+						<DropDownArrow mt={0} px={2} />
+						{errors.contactTitle && (
+							<p className='text-error mt-1'>Select a value</p>
+						)}
+					</div>
+				</div>
+				<div className='w-3/4 relative'>
+					<input
+						placeholder='Name'
+						{...register('customerName', {
+							required: true,
+							minLength: 1,
+						})}
+						defaultValue={populateData['customerName']?.substring(
+							0,
+							populateData['customerName']?.lastIndexOf(' ')
+						)}
+						className='pl-10 white-input rounded-md py-2 shadow-sm'
+					/>
+					<FaUser className='absolute top-0 mt-3 ml-3 text-green-500' />
+					{errors.customerName && (
+						<p className='text-error mt-1'>Please enter your name</p>
+					)}
+				</div>
+			</div>
+			<div className='-mx-3 mb-6 flex flex-wrap'>
+				<div className='relative w-1/2 pr-3'>
 					<select
 						{...register('countryCode', {
 							required: true,
@@ -39,120 +82,38 @@ const AccountInformation = ({
 								? populateData['countryCode']
 								: phoneCountryCodes[user.phoneCountryCode]
 						}
-						className='px-4 py-2'
+						className='py-2 white-input rounded-md shadow-sm'
 					>
-						<option value=''>Select</option>
+						<option value=''>Country</option>
 						<option value='SGP'>Singapore</option>
 						<option value='MYS'>Malaysia</option>
 						<option value='IDN'>Indonesia</option>
 						<option value='HKG'>Hong Kong</option>
 						<option value='PHL'>Philippines</option>
 					</select>
-					<DropDownArrow mt={6} px={5} />
+					<DropDownArrow mt={1} px={6} />
 					{errors.countryCode && (
 						<p className='text-error mt-1'>Select a value</p>
 					)}
 				</div>
-				<div className='relative w-1/3 px-3'>
-					<label>Gender</label>
-					<select
-						{...register('gender', {
-							required: true,
-							minLength: 1,
-						})}
-						defaultValue={populateData['gender']}
-						className='px-4 py-2'
-					>
-						<option value={''}>Select</option>
-						<option value='M'>Male</option>
-						<option value='F'>Female</option>
-						<option value='NA'>Other</option>
-					</select>
-					<DropDownArrow mt={6} px={5} />
-					{errors.gender && <p className='text-error mt-1'>Select a value</p>}
-				</div>
-				<div className='relative w-1/3 px-3'>
-					<label>Age</label>
+				<div className='relative w-1/2'>
 					<select
 						{...register('age', {
 							required: true,
-							minLength: 1,
+							minLength: 2,
 						})}
 						defaultValue={populateData['age']}
-						className='px-4 py-2'
+						className='px-4 py-2 white-input rounded-md shadow-sm'
 					>
-						<option value={''}>Select</option>
+						<option value=''>Age</option>
 						{ageArray.map((age, index) => (
 							<option key={index}>{age}</option>
 						))}
 					</select>
-					<DropDownArrow mt={6} px={5} />
-					{errors.contactTitle && <p className='text-error mt-1'>Select a value</p>}
-				</div>
-			</div>
-			<div className='-mx-3 mb-6 flex flex-wrap'>
-				{/* Input fields */}
-				<div className='mb-6 w-1/4 md:mb-0 md:w-1/5'>
-					<div className='w-full px-3'>
-						<label>Prefix</label>
-						<div className='relative'>
-							<select
-								{...register('contactTitle', {
-									required: true,
-									minLength: 1,
-								})}
-								defaultValue={populateData['contactTitle']}
-								className='px-4 py-2'
-							>
-								<option value=''>Select</option>
-								<option value='Mr.'>Mr.</option>
-								<option value='Ms.'>Ms.</option>
-								<option value='Mrs.'>Mrs.</option>
-								<option value='Other.'>Other</option>
-							</select>
-							<DropDownArrow mt={0} px={2} />
-							{errors.contactTitle && <p className='text-error mt-1'>Select a value</p>}
-						</div>
-					</div>
-				</div>
-				<div className='mb-6 w-3/4 md:mb-0 md:w-2/5'>
-					<div className='w-full px-3'>
-						<label>First Name</label>
-						<input
-							placeholder='First Name'
-							{...register('firstName', {
-								required: true,
-								minLength: 1,
-							})}
-							defaultValue={populateData['customerName']?.substring(
-								0,
-								populateData['customerName']?.lastIndexOf(' ')
-							)}
-							className='px-4 py-2'
-						/>
-						{errors.firstName && (
-							<p className='text-error mt-1'>Please enter your first name</p>
-						)}
-					</div>
-				</div>
-				<div className='w-full md:w-2/5'>
-					<div className='w-full px-3'>
-						<label>Last Name</label>
-						<input
-							placeholder='Last Name'
-							{...register('lastName', {
-								required: true,
-								minLength: 1,
-							})}
-							defaultValue={populateData['customerName']?.substring(
-								populateData['customerName']?.lastIndexOf(' ') + 1
-							)}
-							className='px-4 py-2'
-						/>
-						{errors.lastName && (
-							<p className='text-error mt-1'>Please enter your last name</p>
-						)}
-					</div>
+					<DropDownArrow mt={1} px={6} />
+					{errors.age && (
+						<p className='text-error mt-1'>Select a value</p>
+					)}
 				</div>
 			</div>
 
@@ -213,11 +174,11 @@ const AccountInformation = ({
 export default AccountInformation
 
 const phoneCountryCodes = {
-	65: "SGP",
-	60: "MYS",
-	62: "IDN",
-	852: "HKG",
-	63: "PHL"
+	65: 'SGP',
+	60: 'MYS',
+	62: 'IDN',
+	852: 'HKG',
+	63: 'PHL',
 }
 
 const DropDownArrow = ({ mt, px }) => (

@@ -7,7 +7,7 @@ import { icon } from './redux/types/constants'
 export const UpdateUser = async (data: User | any, customerID) => {
 	const response = await api.post('/api/v1/Customer/updateUser', {
 		customerID: customerID,
-		customerName: data.firstName + ' ' + data.lastName,
+		customerName: data.customerName,
 		contactTitle: data.contactTitle,
 		memberCategory: 'NA',
 		age: data.age,
@@ -24,12 +24,18 @@ export const UpdateUser = async (data: User | any, customerID) => {
 
 // Registration: Registering a new user by updating their information
 export const RegisterUser = async (data: User | any, customerID) => {
+	const prefixByGender = {
+		'Mr.': 'M',
+		'Ms.': 'F',
+		'Mrs.': 'F',
+		Other: 'NA',
+	}
 	const response = await api.post('/api/v1/Customer/updateUser', {
 		customerID: customerID,
 		contactTitle: data.contactTitle,
-		customerName: data.firstName + ' ' + data.lastName,
+		customerName: data.customerName,
 		age: data.age,
-		gender: data.gender,
+		gender: prefixByGender[data.contactTitle],
 		email: data.email,
 		password: data.password,
 		memberCategory: 'NA',

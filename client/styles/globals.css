@@ -150,5 +150,5 @@ p {
 }
 
 .rect-button {
-	@apply flex h-10 w-2/12 items-center justify-center !bg-green-500 text-white;
+	@apply flex h-10 w-2/12 items-center justify-center !bg-green-500 text-white hover:!bg-green-700;
 }

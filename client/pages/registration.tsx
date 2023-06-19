@@ -14,105 +14,62 @@ import { UserContext } from '@/context/UserContext'
 import { User } from '@/redux/types'
 import { RegisterUser } from '@/server'
 import { HREF, Message } from '@/redux/types/constants'
+import { MainScreenVisual } from '@/components/ui/MainScreenVisual'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
 const Registration = () => {
 	const router = useRouter()
-	const [nextStep, showNextStep] = React.useState<boolean>(false)
 	const { user, setUser } = useContext(UserContext)
 	const [formData, updateFormData] = React.useState<Object>({})
 	const [registrationSuccessful, setRegistrationSuccessful] =
 		React.useState<boolean>(false)
 
 	const {
-		register: registerEmail,
-		handleSubmit: handleSubmitEmail,
-		formState: { errors: errorsEmail }
+		register: register,
+		handleSubmit: handleSubmit,
+		formState: { errors: errors },
 	}: any = useForm()
-
-	const {
-		register: registerProfile,
-		handleSubmit: handleSubmitProfile,
-		formState: { errors: errorsProfile },
-		clearErrors: clearErrors
-	}: any = useForm()
-
-	// First screen w/email and password inputs
-	const onSubmitEmail = (data: User) => {
-		showNextStep(true)
-		updateFormData(data)
-	}
 
 	// Second screen w/profile inputs
-	const onSubmitProfile = async (data: User) => {
-		setUser(await RegisterUser({ ...formData, ...data }, user.customerID))
+	const onSubmit = async (data: User) => {
+		setUser(await RegisterUser({ ...data }, user.customerID))
 		setRegistrationSuccessful(true)
 		router.push(HREF.HOME)
 	}
 
 	return (
-		<div className='mx-auto max-w-screen-md overflow-hidden pt-9'>
-			<div className='flex flex-col p-6'>
-				<h2 className='pb-3 text-xl font-semibold'>{Message.WELCOME}</h2>
-				<label className='pb-6'>Step {!nextStep ? 1 : 2} of 2</label>
-				<p className='mb-8'>{Message.INSTRUCTIONS}</p>
-
-				{nextStep ? (
-					<form
-						className='flex flex-col'
-						onSubmit={handleSubmitProfile(onSubmitProfile)}
+		<main className='flex h-screen max-w-screen-md flex-col justify-center bg-zinc-50 p-16'>
+			<h2 className='h-4/12 pb-1 text-xl font-medium text-green-500'>
+				Registration
+			</h2>
+			<h2 className='pb-5 font-light'>Please enter details to register</h2>
+			<form className='flex flex-col' onSubmit={handleSubmit(onSubmit)}>
+				<EmailForm existingUser={false} register={register} errors={errors} />
+				<AccountInformation
+					newUser={true}
+					register={register}
+					errors={errors}
+				/>
+				<p>
+					Already have an account?{' '}
+					<span
+						className='font-medium text-green-500'
+						onClick={() => router.push('/')}
 					>
-						<AccountInformation
-							newUser={true}
-							register={registerProfile}
-							errors={errorsProfile}
-						/>
-						<div className='mt-8 flex self-end'>
-							{nextStep ? (
-								<button
-									className='grey-button mr-3'
-									onClick={(e) => {
-										e.preventDefault()
-										showNextStep(false)
-										clearErrors()
-									}}
-								>
-									Go Back
-								</button>
-							) : null}
-							<button
-								className={`${
-									registrationSuccessful ? 'green-button' : 'blue-button'
-								} self-end`}
-								type='submit'
-								disabled={registrationSuccessful ? true : false}
-							>
-								{registrationSuccessful ? Message.CREATING_ACCOUNT : Message.FINISH}
-							</button>
-						</div>
-					</form>
-				) : (
-					<form
-						className='flex flex-col'
-						onSubmit={handleSubmitEmail(onSubmitEmail)}
+						Go Back
+					</span>
+				</p>
+				<div className='mt-8 flex self-end'>
+					<button
+						className='rect-button w-28 self-end rounded-md shadow-md'
+						type='submit'
+						disabled={registrationSuccessful ? true : false}
 					>
-						<EmailForm
-							existingUser={false}
-							register={registerEmail}
-							errors={errorsEmail}
-						/>
-						<div className='mt-8 flex self-end'>
-							<button
-								className='blue-button self-end'
-								type='submit'
-								disabled={registrationSuccessful ? true : false}
-							>
-								Continue ᐳ
-							</button>
-						</div>
-					</form>
-				)}
-			</div>
-		</div>
+						<FaArrowRight />
+					</button>
+				</div>
+			</form>
+		</main>
 	)
 }
 

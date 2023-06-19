@@ -3,11 +3,11 @@
 
 import { useRouter } from 'next/router'
 import { EmailInterface } from '@/redux/types'
+import { FaEnvelope, FaKey } from 'react-icons/fa'
 
 export function EmailForm({
 	register,
 	errors,
-	existingUser = true,
 	signInError = false,
 }: EmailInterface) {
 	/*
@@ -16,63 +16,62 @@ export function EmailForm({
 		existingUser 	: whether the user is registering or editing their information
 		signInError		: error during sign in if the email/password are incorrect
 	*/
-	const router = useRouter() // For navigation
-
 	return (
 		<>
 			{/* Email and Password input */}
 			<div className='-mx-3 mb-2'>
-				<div className='w-full pb-6 md:mb-0'>
-					<input
-						{...register('email', {
-							required: true,
-							maxLength: 30,
-							minLength: 5,
-							pattern:
-								/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/i,
-						})}
-						name='email'
-						type='text'
-						placeholder='Enter your email'
-						className='white-input rounded-md shadow-sm'
-					/>
-					{errors.email && (
-						<p className='text-error'>Please enter a valid email</p>
-					)}
-				</div>
-				<div className='w-full pb-6 md:mb-0'>
-					<input
-						{...register('password', {
-							required: true,
-							maxLength: 20,
-							minLength: 5,
-						})}
-						type='password'
-						placeholder='Enter your password'
-						className='white-input rounded-md shadow-sm'
-					/>
-					{errors.password && (
-						<p className='text-error'>
-							Please enter a password with 5-20 digits
-						</p>
-					)}
-					{signInError && (
-						<p className='text-error'>Incorrect email or password</p>
-					)}
-				</div>
+				{EmailInput(register, errors)}
+				{PasswordInput(register, errors, signInError)}
 			</div>
-
-			{/* Navigation */}
-			{/* <div className='mb-4'>
-				{existingUser ? (
-					<p className='text-green-500 mr-auto ml-auto'>Forgot Password?</p>
-				) : (
-					<p>
-						Already have an account?{' '}
-						<u onClick={() => router.push('/')}>Go back</u>
-					</p>
-				)}
-			</div> */}
 		</>
+	)
+}
+function PasswordInput(register, errors, signInError: boolean) {
+	return (
+		<div className='relative w-full pb-4 md:mb-0'>
+			<input
+				{...register('password', {
+					required: true,
+					maxLength: 20,
+					minLength: 5,
+				})}
+				type='password'
+				placeholder='Enter your password'
+				className='white-input rounded-md pl-10 shadow-sm'
+			/>
+			<FaKey className='absolute top-0 ml-3 mt-3 text-green-500' />
+			{errors.password && (
+				<p className='text-error mt-1'>
+					Please enter a password with 5-20 digits
+				</p>
+			)}
+			{signInError && (
+				<p className='text-error mt-1'>Incorrect email or password</p>
+			)}
+		</div>
+	)
+}
+
+function EmailInput(register, errors) {
+	return (
+		<div className='relative w-full pb-6 md:mb-0'>
+			<input
+				{...register('email', {
+					required: true,
+					maxLength: 30,
+					minLength: 5,
+					pattern:
+						/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/i,
+				})}
+				name='email'
+				type='text'
+				placeholder='Enter your email'
+				className='white-input rounded-md pl-10 shadow-sm'
+			/>
+			<FaEnvelope className='absolute top-0 ml-3 mt-3 text-green-500' />
+			{errors.email && (
+				<p className='text-error mt-1'>Please enter a valid email</p>
+			)}
+		</div>
 	)
 }
