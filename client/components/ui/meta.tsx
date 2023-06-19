@@ -17,7 +17,7 @@ const Meta = () => (
 		<meta name='description' content='SEA-based Taxi Hailing App' />
 		<meta
 			name='theme-color'
-			content='#f4f4f5'
+			content='#fafafa'
 			media='(prefers-color-scheme: light)'
 		/>
 		<meta

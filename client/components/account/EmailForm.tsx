@@ -8,7 +8,7 @@ export function EmailForm({
 	register,
 	errors,
 	existingUser = true,
-	signInError = false
+	signInError = false,
 }: EmailInterface) {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
@@ -20,16 +20,9 @@ export function EmailForm({
 
 	return (
 		<>
-			{existingUser ? (
-				<p className='mb-4 pb-3 text-zinc-600 dark:text-zinc-400'>
-					Sign in using your email
-				</p>
-			) : null}
-
 			{/* Email and Password input */}
 			<div className='-mx-3 mb-2'>
-				<div className='w-full px-3 pb-6 md:mb-0'>
-					<label>Email</label>
+				<div className='w-full pb-6 md:mb-0'>
 					<input
 						{...register('email', {
 							required: true,
@@ -40,15 +33,14 @@ export function EmailForm({
 						})}
 						name='email'
 						type='text'
-						placeholder='user@website.domain'
-						className='py-2 px-4'
+						placeholder='Enter your email'
+						className='white-input rounded-md shadow-sm'
 					/>
 					{errors.email && (
 						<p className='text-error'>Please enter a valid email</p>
 					)}
 				</div>
-				<div className='w-full px-3 pb-6 md:mb-0'>
-					<label>Password</label>
+				<div className='w-full pb-6 md:mb-0'>
 					<input
 						{...register('password', {
 							required: true,
@@ -56,8 +48,8 @@ export function EmailForm({
 							minLength: 5,
 						})}
 						type='password'
-						placeholder='********'
-						className='py-2 px-4'
+						placeholder='Enter your password'
+						className='white-input rounded-md shadow-sm'
 					/>
 					{errors.password && (
 						<p className='text-error'>
@@ -71,18 +63,16 @@ export function EmailForm({
 			</div>
 
 			{/* Navigation */}
-			<div className='mb-4 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
+			{/* <div className='mb-4'>
 				{existingUser ? (
-					<p>
-						<u>Forgot your password?</u>
-					</p>
+					<p className='text-green-500 mr-auto ml-auto'>Forgot Password?</p>
 				) : (
 					<p>
 						Already have an account?{' '}
 						<u onClick={() => router.push('/')}>Go back</u>
 					</p>
 				)}
-			</div>
+			</div> */}
 		</>
 	)
 }

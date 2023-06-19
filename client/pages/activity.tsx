@@ -46,7 +46,7 @@ const Activity = () => {
 			<TabController activeTab={activeTab} setActiveTab={setActiveTab} />
 
 			<Suspense fallback={<PulseLoadingVisual />}>
-				{tripList.length !== 0 &&
+				{tripList.length !== 0 ?
 					tripList.map(
 						(trip, index) =>
 							// Filter by upcoming trips (requested or dispatch status)
@@ -71,7 +71,7 @@ const Activity = () => {
 									/>
 								</div>
 							)
-					)}
+					) : <p className='mt-3 ml-3'>No trips found</p>}
 			</Suspense>
 		</Page>
 	)

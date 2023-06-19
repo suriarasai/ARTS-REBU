@@ -1,6 +1,6 @@
 // First page, for signing in
 
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import Router from 'next/router'
@@ -11,18 +11,19 @@ import { Button, HREF, Message } from '@/redux/types/constants'
 import { OTPForm } from '../components/account/OTPForm'
 import { EmailSignIn } from '../components/account/EmailSignIn'
 import { TermsOfService } from '../components/account/TermsOfService'
+import { FaEnvelopeOpen, FaGooglePlus, FaGooglePlusG } from 'react-icons/fa'
+import RebuLogo from '@/public/images/rebu-logo.png'
+import Image from 'next/image'
 
 // Main component
 const SignIn = () => {
 	const [number, setNumber] = React.useState<string>()
-	const [signInForm, changeSignInForm] = React.useState<boolean>(true)
-	const [emailSignIn, changeEmailSignIn] = React.useState<boolean>(false)
 	const [newUser, setNewUser] = React.useState<boolean>(true)
 	const [loading, setLoading] = React.useState(true)
+	const [form, setForm] = useState('main')
 	const { setUser } = useContext(UserContext)
 
 	useEffect(() => {
-		// TODO: [object, object]
 		const loggedInUser = localStorage.getItem('user')
 		if (loggedInUser !== null) {
 			setUser(JSON.parse(loggedInUser))
@@ -33,45 +34,57 @@ const SignIn = () => {
 	}, [])
 
 	return (
-		<main className='mx-auto max-w-screen-md pb-16 pt-20 px-safe sm:pb-0'>
+		<main className='flex h-screen max-w-screen-md justify-center bg-zinc-50 pb-16 pt-20 sm:pb-0'>
 			{loading ? (
 				LoadingScreen
 			) : (
 				<div className='p-6'>
-					<h2 className='text-xl font-semibold'>{Message.WELCOME}</h2>
-					{signInForm ? (
-						<SignInForm
-							setNumber={setNumber}
-							changeSignInForm={changeSignInForm}
-							changeEmailSignIn={changeEmailSignIn}
-							setNewUser={setNewUser}
+					<div className='h-6/12'>
+						<Image
+							className='ml-auto mr-auto'
+							src={RebuLogo}
+							width={300}
+							height={300}
+							alt='Logo'
 						/>
-					) : emailSignIn ? (
-						<EmailSignIn
-							changeEmailSignIn={changeEmailSignIn}
-							changeSignInForm={changeSignInForm}
-							newUser={newUser}
-						/>
-					) : (
-						<OTPForm
-							phoneNumber={number}
-							changeSignInForm={changeSignInForm}
-							newUser={newUser}
-						/>
-					)}
+						<hr className='ml-auto mr-auto mt-12 h-0.5 w-16 bg-zinc-500' />
+					</div>
+					<div>
+						{form === 'main' ? (
+							<MobileNumber />
+						) : form === 'email' ? (
+							<EmailSignIn setForm={setForm} />
+						) : (
+							'Error'
+						)}
+					</div>
+
+					{form !== 'email' && <AlternateSignIn setForm={setForm} />}
 				</div>
 			)}
 		</main>
 	)
 }
 
+const AlternateSignIn = ({ setForm }) => (
+	<div className='mb-8 mt-16 flex text-zinc-400'>
+		<h3 className='font-base mr-5 flex items-center'>Or connect using</h3>
+		<button
+			className='mr-3 flex items-center bg-green-200 px-5 py-2 font-medium text-zinc-600 shadow-md'
+			onClick={() => setForm('email')}
+		>
+			<FaEnvelopeOpen className='mr-3' />
+			Email
+		</button>
+		<button className='flex items-center bg-green-200 px-5 py-2 font-medium text-zinc-600 shadow-md'>
+			<FaGooglePlusG className='mr-3' />
+			Google
+		</button>
+	</div>
+)
+
 // Sign in via Phone number
-const SignInForm = ({
-	setNumber,
-	changeSignInForm,
-	changeEmailSignIn,
-	setNewUser,
-}: any) => {
+const SignInForm = ({ setNumber, setNewUser, setForm }: any) => {
 	const {
 		register: register,
 		handleSubmit: handleSubmit,
@@ -82,7 +95,6 @@ const SignInForm = ({
 		setNumber('+' + data.phoneCountryCode + ' ' + data.phoneNumber)
 		// @ts-ignore
 		checkIfUserExists(data.phoneNumber, data.phoneCountryCode)
-		changeSignInForm(false)
 	})
 
 	const { setUser } = useContext(UserContext)
@@ -104,11 +116,11 @@ const SignInForm = ({
 			})
 			setUser(createUser.data)
 			setNewUser(true)
-		// If the user exists but they haven't completed registration...
+			// If the user exists but they haven't completed registration...
 		} else if (response.data.customerName === null) {
 			setUser(response.data)
 			setNewUser(true)
-		// If the user exists
+			// If the user exists
 		} else {
 			setUser(response.data)
 			setNewUser(false)
@@ -119,36 +131,9 @@ const SignInForm = ({
 	return (
 		<>
 			{/* User form */}
-			<form className='flex w-full max-w-lg flex-col' onSubmit={onSubmit}>
-				<div className='mt-5'>
-					<p className='mb-4 pb-6 text-zinc-600 dark:text-zinc-400'>
-						Enter your mobile number
-					</p>
-				</div>
+			<MobileNumber register={register} errors={errors} />
 
-				<MobileNumber register={register} errors={errors} />
-
-				<div className='mb-8 mt-3 bg-neutral-100 text-zinc-400 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left'>
-					<p>{Message.NO_NUMBER}</p>
-					<p>
-						<u
-							onClick={() => {
-								changeEmailSignIn(true)
-								changeSignInForm(false)
-							}}
-						>
-							{Message.CONTINUE_WITH_EMAIL}
-						</u>
-					</p>
-				</div>
-
-				<TermsOfService />
-
-				{/* Submit button */}
-				<button type='submit' className='blue-button self-end'>
-					{Button.CONTINUE}
-				</button>
-			</form>
+			{/* <TermsOfService /> */}
 		</>
 	)
 }

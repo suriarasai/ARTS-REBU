@@ -36,8 +36,6 @@ export enum Message {
 	FINISH = 'Finish',
 	TOS1 = 'By continuing, you are agreeing to the ',
 	TOS2 = 'terms and conditions',
-	NO_NUMBER = "Don't have access to your number?",
-	CONTINUE_WITH_EMAIL = 'Continue with email instead',
     SET_LOCATION = 'Set Location',
     SET_LOCATION_ON_MAP = 'Set Location on Map',
     SAVED_LOCATIONS = 'Saved Locations',

@@ -213,11 +213,11 @@ const AccountInformation = ({
 export default AccountInformation
 
 const phoneCountryCodes = {
-	SGP: 65,
-	MYS: 60,
-	IDN: 62,
-	HKG: 852,
-	PHL: 63,
+	65: "SGP",
+	60: "MYS",
+	62: "IDN",
+	852: "HKG",
+	63: "PHL"
 }
 
 const DropDownArrow = ({ mt, px }) => (

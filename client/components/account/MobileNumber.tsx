@@ -1,16 +1,16 @@
 // Form elements for adding/editing a country code and mobile number
 // NOTE: Since phoneNumber is an integer, leading zeros are prohibited
-// but this is alright because phoneNumbers can't start with a 0 
+// but this is alright because phoneNumbers can't start with a 0
 
-import { ProfileInterface } from '@/redux/types'
-import React from 'react'
+import { UserContext } from '@/context/UserContext'
+import { HREF, icon } from '@/redux/types/constants'
+import { useContext, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import api from '@/api/axiosConfig'
+import { FaAngleRight } from 'react-icons/fa'
+import { useRouter } from 'next/router'
 
-export const MobileNumber = ({
-	register,
-	errors,
-	newUser = true,
-	populateData = {},
-}: ProfileInterface) => {
+export const MobileNumber = ({ populateData = {} }: any) => {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks
@@ -18,60 +18,167 @@ export const MobileNumber = ({
 		populateData	: populating form data for when the user wants to update their information
 	*/
 
-	return (
-		<div className='-mx-3 mb-2 flex flex-wrap'>
-			{/* Input fields */}
-			<div className='mb-3 w-1/4 px-3 md:mb-0'>
-				<label>Area</label>
-				<div className='relative'>
-					<select
-						{...register('phoneCountryCode')}
-						defaultValue={
-							populateData['phoneCountryCode']
-								? populateData['phoneCountryCode']
-								: ''
-						}
-						className='px-4 py-2'
-					>
-						<option value='' disabled>
-							+
-						</option>
-						<option value={60}>+60</option>
-						<option value={61}>+61</option>
-						<option value={62}>+62</option>
-						<option value={65}>+65</option>
-						<option value={852}>+852</option>
-					</select>
-					<div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
-						<svg
-							className='h-4 w-4 fill-current'
-							xmlns='http://www.w3.org/2000/svg'
-							viewBox='0 0 20 20'
-						>
-							<path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
-						</svg>
-					</div>
-				</div>
-			</div>
+	const router = useRouter()
 
-			<div className='w-3/4 px-3 pb-3 md:mb-0'>
-				<label>Mobile Number</label>
-				<input
-					type='text'
-					className='px-4 py-2'
-					placeholder='12345678'
-					defaultValue={populateData['phoneNumber']}
-					{...register('phoneNumber', {
-						required: true,
-						minLength: 8,
-						maxLength: 8,
-						pattern: /^-?[0-9]\d*\.?\d*$/i,
-					})}
-				/>
-				{errors.mobileNumber && (
-					<p className='text-error'>Please enter a 8-digit mobile number</p>
-				)}
-			</div>
-		</div>
+	const [triggerOTP, setTriggerOTP] = useState(false)
+
+	const {
+		register: register,
+		handleSubmit: handleSubmit,
+		formState: { errors: errors },
+	} = useForm()
+
+	const onSubmit = handleSubmit((data) => {
+		// @ts-ignore
+		checkIfUserExists(data.phoneNumber, data.phoneCountryCode)
+		setTriggerOTP(true)
+	})
+
+	const handleRouting = () => {
+		if (triggerOTP && user.customerName) {
+			router.push(HREF.HOME)
+		} else if (triggerOTP) {
+			router.push(HREF.REGISTRATION)
+		}
+	}
+
+	const { user, setUser } = useContext(UserContext)
+
+	async function checkIfUserExists(
+		phoneNumber: string,
+		phoneCountryCode: number
+	) {
+		const response = await api.post('/api/v1/Customer/exists', {
+			phoneCountryCode: phoneCountryCode,
+			phoneNumber: phoneNumber,
+		})
+
+		// If the user does not exist...
+		if (response.data === '') {
+			const createUser = await api.post('/api/v1/Customer', {
+				phoneNumber: phoneNumber,
+				phoneCountryCode: phoneCountryCode,
+			})
+			setUser(createUser.data)
+			// If the user exists but they haven't completed registration...
+		} else if (response.data.customerName === null) {
+			setUser(response.data)
+			// If the user exists
+		} else {
+			setUser(response.data)
+			localStorage.setItem('user', JSON.stringify(response.data))
+		}
+	}
+
+	return (
+		<form className='-mx-3 mb-2 mt-12 flex flex-wrap' onSubmit={onSubmit}>
+			{/* Input fields */}
+			{triggerOTP ? (
+				<OTP setTriggerOTP={setTriggerOTP} />
+			) : (
+				<>
+					<PhoneCountryCode
+						populateData={populateData}
+						register={register}
+						errors={errors}
+					/>
+					<PhoneNumber
+						populateData={populateData}
+						register={register}
+						errors={errors}
+					/>
+				</>
+			)}
+
+			{/* Submit button */}
+			<button
+				type='submit'
+				className='rect-button rounded-r-lg shadow-md'
+				onClick={handleRouting}
+			>
+				<FaAngleRight />
+			</button>
+		</form>
 	)
 }
+
+const PhoneNumber = ({ populateData, register, errors }) => (
+	<div className='w-3/5 pb-3 md:mb-0'>
+		<input
+			className='white-input'
+			placeholder='Enter your mobile number'
+			defaultValue={populateData['phoneNumber']}
+			{...register('phoneNumber', {
+				required: true,
+				minLength: 8,
+				maxLength: 8,
+				pattern: /^-?[0-9]\d*\.?\d*$/i,
+			})}
+		/>
+		{errors.phoneNumber && (
+			<p className='text-error mt-1 px-3'>
+				Please enter a 8-digit mobile number
+			</p>
+		)}
+	</div>
+)
+
+const PhoneCountryCode = ({ register, populateData, errors }) => (
+	<div className='mb-3 w-1/5'>
+		<div className='relative'>
+			<select
+				{...register('phoneCountryCode', {
+					required: true,
+					minLength: 2,
+				})}
+				defaultValue={
+					populateData['phoneCountryCode']
+						? populateData['phoneCountryCode']
+						: ''
+				}
+				className='white-input rounded-l-lg'
+			>
+				<option value='' disabled>
+					+
+				</option>
+				<option value={60}>+60</option>
+				<option value={61}>+61</option>
+				<option value={62}>+62</option>
+				<option value={65}>+65</option>
+				<option value={852}>+852</option>
+			</select>
+			<div className='pointer-events-none absolute right-0 top-0 mt-3.5 flex items-center px-2 text-gray-700'>
+				<svg
+					className='h-4 w-4 fill-current'
+					xmlns='http://www.w3.org/2000/svg'
+					viewBox='0 0 20 20'
+				>
+					<path d={icon.dropdown} />
+				</svg>
+			</div>
+			{errors.phoneCountryCode && (
+				<p className='text-error mt-1 px-3'>Select a value</p>
+			)}
+		</div>
+	</div>
+)
+
+const OTP = ({ setTriggerOTP }) => (
+	<>
+		<div className='w-1/5 pb-3'>
+			<button
+				className='rect-button w-full rounded-l-lg !bg-zinc-200 text-zinc-500'
+				onClick={() => setTriggerOTP(false)}
+			>
+				Cancel
+			</button>
+		</div>
+		<div className='w-3/5 pb-3'>
+			<input
+				defaultValue=''
+				className='white-input'
+				placeholder='Enter the 6-digit OTP'
+			/>
+		</div>
+	</>
+)
