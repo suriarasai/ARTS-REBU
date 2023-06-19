@@ -33,7 +33,7 @@ const SignIn = () => {
 			) : (
 				<div className='p-6'>
 					<MainScreenVisual />
-					<div>
+					<div className='mt-12'>
 						{form === 'main' ? (
 							<MobileNumber />
 						) : form === 'email' ? (

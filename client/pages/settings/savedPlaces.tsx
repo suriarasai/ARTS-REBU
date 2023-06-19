@@ -64,7 +64,7 @@ const SavedPlaces = () => {
 
 	return (
 		<Page title={Title.LOCATIONS}>
-			<Section>
+			<div className='relative'>
 				<Autocomplete
 					onPlaceChanged={() => {
 						addPlace()
@@ -117,7 +117,7 @@ const SavedPlaces = () => {
 				) : (
 					''
 				)}
-			</Section>
+			</div>
 		</Page>
 	)
 }
@@ -182,10 +182,11 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 		<div className='flex flex-wrap pl-5 pt-3'>
 			<div className='w-5/6'>
 				{editLocation ? (
-					<div>
+					<div className='relative'>
 						<Autocomplete
 							onPlaceChanged={() => editEntry()}
 							onLoad={(e) => setAutoComplete(e)}
+							className='relative'
 							fields={[
 								'address_components',
 								'geometry',

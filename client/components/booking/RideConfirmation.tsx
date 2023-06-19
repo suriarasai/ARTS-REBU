@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { showOptionInterface } from '@/redux/types'
 import {
 	FaAngleDown,
+	FaAngleUp,
 	FaCar,
 	FaCarAlt,
 	FaClock,
@@ -54,7 +55,7 @@ export const RideConfirmation = (data) => {
 				{AccordionHeader(clickedOption, setCollapsed, collapsed, screen)}
 
 				{collapsed ? null : (
-					<div className='accordion-content pl-4 pr-4 pb-4'>
+					<div className='accordion-content pb-4 pl-4 pr-4'>
 						{!clickedOption ? (
 							<div>
 								{/* Show available taxis */}
@@ -160,7 +161,10 @@ export const RideConfirmation = (data) => {
 									<div className='flex w-11/12 flex-row items-center'>
 										<FaCoins className='mx-5 text-lg text-green-500' />
 										<div>
-											$<b className='font-normal'>{options[clickedOption].price}</b>
+											$
+											<b className='font-normal'>
+												{options[clickedOption].price}
+											</b>
 											<p className='text-sm'>Cash</p>
 										</div>
 									</div>
@@ -219,7 +223,7 @@ const ShowOption = ({ option, setClickedOption }: showOptionInterface) => (
 
 function RouteConfirmation(data: any) {
 	return (
-		<div className='mb-2 pl-2 pb-2'>
+		<div className='mb-2 pb-2 pl-2'>
 			<tr className='flex items-center'>
 				<th className='p-1 text-right'>
 					<FaCrosshairs className='text-xl text-green-500' />
@@ -270,7 +274,7 @@ function AccordionHeader(
 				{clickedOption ? '' : 'View All'}
 			</label>
 			<div className='flex w-1/12' onClick={() => setCollapsed(!collapsed)}>
-				<FaExpandAlt />
+				{collapsed ? <FaAngleUp /> : <FaAngleDown />}
 			</div>
 		</div>
 	)

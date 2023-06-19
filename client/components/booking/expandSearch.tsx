@@ -9,7 +9,7 @@ import {
 	FaStar,
 	FaSuitcase,
 } from 'react-icons/fa'
-import { Button, Message } from '@/redux/types/constants'
+import { Button, HREF, Message } from '@/redux/types/constants'
 
 const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	const { user } = useContext(UserContext)
@@ -18,11 +18,11 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	// Handler for clicking either 'Home' or 'Work'
 	const handleSavedLocation = (label: string) => {
 		// If the user set a home/work location...
-		if (user[label] !== null) {
+		if (user[label].lat) {
 			// ...navigate to the saved location
 			navigateToLocation(user[label].lat, user[label].lng)
 		} else {
-			router.push('/savedPlaces')
+			router.push(HREF.LOCATIONS)
 		}
 	}
 

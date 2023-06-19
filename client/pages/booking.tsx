@@ -13,6 +13,7 @@ import { HideTaxis } from '../utils/hideTaxis'
 import { noPoi } from '../utils/noPoi'
 import { icon } from '@/redux/types/constants'
 import { loadTaxis } from '@/server'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
@@ -85,9 +86,26 @@ function Booking() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
+	// On map load: Set origin location to be current location
+	useEffect(() => {
+		if (map) {
+			navigator.geolocation.getCurrentPosition((position) => {
+				map.panTo({
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+				})
+				map.setZoom(18)
+				CoordinateToAddress(
+					[position.coords.latitude, position.coords.longitude],
+					setOrigin
+				)
+			})
+		}
+	}, [])
+
 	// Set origin address after clicking a saved location
 	useEffect(() => {
-		if (origin !== '' && origin !== null) {
+		if (origin !== '' && originRef !== null) {
 			if (typeof origin === 'object') {
 				CoordinateToAddress(origin, setOrigin)
 			} else {
@@ -111,7 +129,7 @@ function Booking() {
 
 	// Render a message until the map is finished loading
 	if (!isLoaded) {
-		return 'loading'
+		return LoadingScreen
 	}
 
 	// Retrieve and render the route to the destination
@@ -307,5 +325,3 @@ function Booking() {
 }
 
 export default Booking
-
-

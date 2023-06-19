@@ -92,6 +92,7 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 			return response.json()
 		})
 		.then(function (data) {
+			console.log(data)
 			setLocation(data.results[0].formatted_address)
 		})
 } // Loads the nearest N taxis onto the map
