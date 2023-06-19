@@ -26,19 +26,23 @@ const Registration = () => {
 	const {
 		register: registerEmail,
 		handleSubmit: handleSubmitEmail,
-		formState: { errors: errorsEmail },
+		formState: { errors: errorsEmail }
 	}: any = useForm()
 
 	const {
 		register: registerProfile,
 		handleSubmit: handleSubmitProfile,
 		formState: { errors: errorsProfile },
+		clearErrors: clearErrors
 	}: any = useForm()
 
+	// First screen w/email and password inputs
 	const onSubmitEmail = (data: User) => {
 		showNextStep(true)
 		updateFormData(data)
 	}
+
+	// Second screen w/profile inputs
 	const onSubmitProfile = async (data: User) => {
 		setUser(await RegisterUser({ ...formData, ...data }, user.customerID))
 		setRegistrationSuccessful(true)
@@ -69,6 +73,7 @@ const Registration = () => {
 									onClick={(e) => {
 										e.preventDefault()
 										showNextStep(false)
+										clearErrors()
 									}}
 								>
 									Go Back

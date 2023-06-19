@@ -4,6 +4,7 @@ import React, { useContext } from 'react'
 import { MobileNumber } from '@/components/account/MobileNumber'
 import { ProfileInterface } from '@/redux/types'
 import { UserContext } from '@/context/UserContext'
+import { icon } from '@/redux/types/constants'
 
 // Main component
 const AccountInformation = ({
@@ -26,10 +27,13 @@ const AccountInformation = ({
 	return (
 		<div className='flex w-full flex-col'>
 			<div className='-mx-3 mb-6 flex flex-wrap'>
-				<div className='w-1/3 px-3'>
+				<div className='relative w-1/3 px-3'>
 					<label>Country</label>
 					<select
-						{...register('countryCode')}
+						{...register('countryCode', {
+							required: true,
+							minLength: 1,
+						})}
 						defaultValue={
 							populateData['countryCode']
 								? populateData['countryCode']
@@ -37,42 +41,53 @@ const AccountInformation = ({
 						}
 						className='px-4 py-2'
 					>
+						<option value=''>Select</option>
 						<option value='SGP'>Singapore</option>
 						<option value='MYS'>Malaysia</option>
 						<option value='IDN'>Indonesia</option>
 						<option value='HKG'>Hong Kong</option>
 						<option value='PHL'>Philippines</option>
 					</select>
+					<DropDownArrow mt={6} px={5} />
+					{errors.countryCode && (
+						<p className='text-error mt-1'>Select a value</p>
+					)}
 				</div>
-				<div className='w-1/3 px-3'>
+				<div className='relative w-1/3 px-3'>
 					<label>Gender</label>
 					<select
-						{...register('gender')}
+						{...register('gender', {
+							required: true,
+							minLength: 1,
+						})}
 						defaultValue={populateData['gender']}
 						className='px-4 py-2'
 					>
-						<option value={null} disabled>
-							Select
-						</option>
+						<option value={''}>Select</option>
 						<option value='M'>Male</option>
 						<option value='F'>Female</option>
 						<option value='NA'>Other</option>
 					</select>
+					<DropDownArrow mt={6} px={5} />
+					{errors.gender && <p className='text-error mt-1'>Select a value</p>}
 				</div>
-				<div className='w-1/3 px-3'>
+				<div className='relative w-1/3 px-3'>
 					<label>Age</label>
 					<select
-						{...register('age')}
+						{...register('age', {
+							required: true,
+							minLength: 1,
+						})}
 						defaultValue={populateData['age']}
 						className='px-4 py-2'
 					>
-						<option value={null} disabled>
-							Select
-						</option>
+						<option value={''}>Select</option>
 						{ageArray.map((age, index) => (
 							<option key={index}>{age}</option>
 						))}
 					</select>
+					<DropDownArrow mt={6} px={5} />
+					{errors.contactTitle && <p className='text-error mt-1'>Select a value</p>}
 				</div>
 			</div>
 			<div className='-mx-3 mb-6 flex flex-wrap'>
@@ -82,7 +97,10 @@ const AccountInformation = ({
 						<label>Prefix</label>
 						<div className='relative'>
 							<select
-								{...register('contactTitle')}
+								{...register('contactTitle', {
+									required: true,
+									minLength: 1,
+								})}
 								defaultValue={populateData['contactTitle']}
 								className='px-4 py-2'
 							>
@@ -92,15 +110,8 @@ const AccountInformation = ({
 								<option value='Mrs.'>Mrs.</option>
 								<option value='Other.'>Other</option>
 							</select>
-							<div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
-								<svg
-									className='h-4 w-4 fill-current'
-									xmlns='http://www.w3.org/2000/svg'
-									viewBox='0 0 20 20'
-								>
-									<path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
-								</svg>
-							</div>
+							<DropDownArrow mt={0} px={2} />
+							{errors.contactTitle && <p className='text-error mt-1'>Select a value</p>}
 						</div>
 					</div>
 				</div>
@@ -120,7 +131,7 @@ const AccountInformation = ({
 							className='px-4 py-2'
 						/>
 						{errors.firstName && (
-							<p className='text-error px-3'>Please enter your first name</p>
+							<p className='text-error mt-1'>Please enter your first name</p>
 						)}
 					</div>
 				</div>
@@ -139,7 +150,7 @@ const AccountInformation = ({
 							className='px-4 py-2'
 						/>
 						{errors.lastName && (
-							<p className='text-error px-3'>Please enter your last name</p>
+							<p className='text-error mt-1'>Please enter your last name</p>
 						)}
 					</div>
 				</div>
@@ -163,7 +174,7 @@ const AccountInformation = ({
 								className='px-4 py-2'
 							/>
 							{errors.email && (
-								<p className='text-error px-3'>Please enter a valid email</p>
+								<p className='text-error mt-1'>Please enter a valid email</p>
 							)}
 						</div>
 					</div>
@@ -181,7 +192,7 @@ const AccountInformation = ({
 							className='px-4 py-2'
 						/>
 						{errors.password && (
-							<p className='text-error px-3'>
+							<p className='text-error mt-1'>
 								Please enter a password with 5-20 digits
 							</p>
 						)}
@@ -208,3 +219,17 @@ const phoneCountryCodes = {
 	HKG: 852,
 	PHL: 63,
 }
+
+const DropDownArrow = ({ mt, px }) => (
+	<div
+		className={`pointer-events-none absolute inset-y-0 right-0 mt-${mt} flex items-center px-${px} text-gray-700`}
+	>
+		<svg
+			className='h-4 w-4 fill-current'
+			xmlns='http://www.w3.org/2000/svg'
+			viewBox='0 0 20 20'
+		>
+			<path d={icon.dropdown} />
+		</svg>
+	</div>
+)

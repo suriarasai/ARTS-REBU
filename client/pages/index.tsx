@@ -96,6 +96,7 @@ const SignInForm = ({
 			phoneNumber: phoneNumber,
 		})
 
+		// If the user does not exist...
 		if (response.data === '') {
 			const createUser = await api.post('/api/v1/Customer', {
 				phoneNumber: phoneNumber,
@@ -103,14 +104,16 @@ const SignInForm = ({
 			})
 			setUser(createUser.data)
 			setNewUser(true)
-		} else if (response.data.name === null) {
+		// If the user exists but they haven't completed registration...
+		} else if (response.data.customerName === null) {
 			setUser(response.data)
 			setNewUser(true)
+		// If the user exists
 		} else {
 			setUser(response.data)
 			setNewUser(false)
+			localStorage.setItem('user', JSON.stringify(response.data))
 		}
-		localStorage.setItem('user', JSON.stringify(response.data))
 	}
 
 	return (
