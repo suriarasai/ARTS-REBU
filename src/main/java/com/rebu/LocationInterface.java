@@ -5,6 +5,8 @@ package com.rebu;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.rebu.Customer.Location;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

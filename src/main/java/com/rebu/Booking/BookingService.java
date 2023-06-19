@@ -5,6 +5,7 @@ package com.rebu.Booking;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,10 @@ public class BookingService {
     // Database object for accessing data
     @Autowired
     private BookingRepository BookingRepository;
+
+    // Built-in method to reduce boilerplate code when operating on DB
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     // (unused) API: Returns all bookings and their associated data
     public List<Booking> getAllBookings() {
@@ -25,17 +30,17 @@ public class BookingService {
     }
 
     // (unused) API: Returns all bookings associated with a taxiID
-    public Booking getByTaxiID(Integer _id) {
+    public List<Booking> getByTaxiID(Integer _id) {
         return BookingRepository.findByTaxiID(_id);
     }
 
     // (unused) API: Returns all bookings associated with a driverID
-    public Booking getByDriverID(Integer _id) {
+    public List<Booking> getByDriverID(Integer _id) {
         return BookingRepository.findByDriverID(_id);
     }
 
     // API: Returns all bookings associated with a customerID
-    public Booking getByCustomerID(Integer _id) {
+    public List<Booking> getByCustomerID(Integer _id) {
         return BookingRepository.findByCustomerID(_id);
     }
 

@@ -16,6 +16,7 @@ import {
 	FaPlayCircle,
 } from 'react-icons/fa'
 import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
+import { getBookingsByCustomerID } from '@/server'
 
 const DateFilter = (
 	<button className='date-filter-button'>
@@ -31,29 +32,11 @@ const Activity = () => {
 	// On-click styling for the tabbers
 	const [activeTab, setActiveTab] = useState<string>('Upcoming')
 
-	const [tripList, setTripList] = useState<Array<Object>>([
-		{
-			pickUpTime: '16-06-2023 13:20',
-			pickUpLocation: {
-				address: '25 Heng Keng Mui',
-				placeName: 'NUS ISS',
-				postcode: 112311,
-			},
-			dropLocation: {
-				address: '40 Clementi 1',
-				placeName: 'NUS High Boarding School',
-				postcode: 122311,
-			},
-			fare: 10.13,
-			status: 'cancelled',
-			bookingID: 1,
-			distance: 2.5,
-		},
-	])
+	const [tripList, setTripList] = useState<Array<Object>>([])
 
 	useEffect(() => {
-		// TODO: API to get list of bookings associated with a user ID
-		// ...then setActiveTab([])
+		// Retrieve all bookings associated with a user
+		getBookingsByCustomerID(user.customerID, setTripList);
 	}, [])
 
 	return (
@@ -63,31 +46,32 @@ const Activity = () => {
 			<TabController activeTab={activeTab} setActiveTab={setActiveTab} />
 
 			<Suspense fallback={<PulseLoadingVisual />}>
-				{tripList.map(
-					(trip, index) =>
-						// Filter by upcoming trips (requested or dispatch status)
-						((activeTab === 'Upcoming' &&
-							['requested', 'dispatched'].includes(trip['status'])) ||
-							// or... Filter by previous trips (cancelled or completed status)
-							(activeTab === 'Previous' &&
-								['completed', 'cancelled'].includes(trip['status']))) && (
-							<div key={index} className='trip-container'>
-								<StatusIcon status={trip['status']} />
-								<LocationInfo
-									address1={trip['dropLocation']['address']}
-									name1={trip['dropLocation']['placeName']}
-									address2={trip['pickUpLocation']['address']}
-									name2={trip['pickUpLocation']['placeName']}
-								/>
-								<TripStatistics
-									fare={trip['fare']}
-									distance={trip['distance']}
-									id={trip['bookingID']}
-									date={trip['pickUpTime']}
-								/>
-							</div>
-						)
-				)}
+				{tripList.length !== 0 &&
+					tripList.map(
+						(trip, index) =>
+							// Filter by upcoming trips (requested or dispatch status)
+							((activeTab === 'Upcoming' &&
+								['requested', 'dispatched'].includes(trip['status'])) ||
+								// or... Filter by previous trips (cancelled or completed status)
+								(activeTab === 'Previous' &&
+									['completed', 'cancelled'].includes(trip['status']))) && (
+								<div key={index} className='trip-container'>
+									<StatusIcon status={trip['status']} />
+									<LocationInfo
+										address1={trip['dropLocation']['address']}
+										name1={trip['dropLocation']['placeName']}
+										address2={trip['pickUpLocation']['address']}
+										name2={trip['pickUpLocation']['placeName']}
+									/>
+									<TripStatistics
+										fare={trip['fare']}
+										distance={trip['distance']}
+										id={trip['bookingID']}
+										date={trip['pickUpTime']}
+									/>
+								</div>
+							)
+					)}
 			</Suspense>
 		</Page>
 	)
@@ -117,9 +101,7 @@ const TabController = ({ activeTab, setActiveTab }) => (
 )
 const StatusIcon = ({ status }) => (
 	<div className='center w-2/12'>
-		{status === 'requested' && (
-			<FaClock className='trip-icon text-zinc-500' />
-		)}
+		{status === 'requested' && <FaClock className='trip-icon text-zinc-500' />}
 		{status === 'dispatched' && (
 			<FaPlayCircle className='trip-icon text-yellow-500' />
 		)}
@@ -171,5 +153,3 @@ const convertToMonth = (date) => {
 	]
 	return months[month - 1] + ' ' + date[0]
 }
-
-

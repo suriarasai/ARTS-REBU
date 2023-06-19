@@ -39,20 +39,20 @@ public class BookingController {
 
     // (unused) GET: Returns all bookings associated with a taxi driver
     @GetMapping("/driver/{_id}")
-    public ResponseEntity<Booking> getByDriverID(@PathVariable Integer _id) {
-        return new ResponseEntity<Booking>(query.getByDriverID(_id), HttpStatus.OK);
+    public ResponseEntity<List<Booking>> getByDriverID(@PathVariable Integer _id) {
+        return new ResponseEntity<List<Booking>>(query.getByDriverID(_id), HttpStatus.OK);
     }
 
     // (unused) GET: Returns all bookings associated with a taxi driver
     @GetMapping("/taxi/{_id}")
-    public ResponseEntity<Booking> getByTaxiID(@PathVariable Integer _id) {
-        return new ResponseEntity<Booking>(query.getByTaxiID(_id), HttpStatus.OK);
+    public ResponseEntity<List<Booking>> getByTaxiID(@PathVariable Integer _id) {
+        return new ResponseEntity<List<Booking>>(query.getByTaxiID(_id), HttpStatus.OK);
     }
 
     // GET: Returns all bookings associated with a user
     @GetMapping("/customer/{_id}")
-    public ResponseEntity<Booking> getByCustomerID(@PathVariable Integer _id) {
-        return new ResponseEntity<Booking>(query.getByCustomerID(_id), HttpStatus.OK);
+    public ResponseEntity<List<Booking>> getByCustomerID(@PathVariable Integer _id) {
+        return new ResponseEntity<List<Booking>>(query.getByCustomerID(_id), HttpStatus.OK);
     }
 
     // POST: Create a new booking (ie. requesting a taxi)
@@ -81,9 +81,9 @@ public class BookingController {
 
     // Completed
     @PostMapping("/completeBooking")
-    public ResponseEntity<Booking> completeBooking(@RequestBody Booking payload) {
-        return new ResponseEntity<Booking>(
-                query.createBooking(payload),
+    public ResponseEntity<String> completeBooking(@RequestBody Booking payload) {
+        return new ResponseEntity<String>(
+                query.completeBooking(payload),
                 HttpStatus.OK);
     }
 

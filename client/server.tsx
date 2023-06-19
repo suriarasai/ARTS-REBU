@@ -9,7 +9,7 @@ export const UpdateUser = async (data: User | any, customerID) => {
 		customerID: customerID,
 		customerName: data.firstName + ' ' + data.lastName,
 		contactTitle: data.contactTitle,
-		memberCategory: "NA",
+		memberCategory: 'NA',
 		age: data.age,
 		gender: data.gender,
 		countryCode: data.countryCode,
@@ -32,7 +32,7 @@ export const RegisterUser = async (data: User | any, customerID) => {
 		gender: data.gender,
 		email: data.email,
 		password: data.password,
-		memberCategory: "NA",
+		memberCategory: 'NA',
 	})
 	return response.data
 }
@@ -69,44 +69,55 @@ export const SetWork = async (customerID, location) => {
 		location: location,
 	})
 }
+
+// Retrieves all bookings associated with a customerID
+export const getBookingsByCustomerID = async (customerID, setTripList) => {
+	console.log(customerID)
+	const response = await api.get('/api/v1/Booking/customer/' + customerID)
+	console.log(response.data)
+	setTripList(response.data)
+}
+
 export async function CoordinateToAddress(coordinates, setLocation) {
 	await fetch(
 		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 	)
 		.then(function (response) {
-			return response.json();
+			return response.json()
 		})
 		.then(function (data) {
-			setLocation(data.results[0].formatted_address);
-		});
-}// Loads the nearest N taxis onto the map
+			setLocation(data.results[0].formatted_address)
+		})
+} // Loads the nearest N taxis onto the map
 
 export const loadTaxis = (map, coord, N = 1) => {
 	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
 		.then(function (response) {
-			return response.json();
+			return response.json()
 		})
 		.then(function (data) {
-			const coordinates: [number, number] = data.features[0].geometry.coordinates;
-			const distances: [number, number, number][] = [];
+			const coordinates: [number, number] =
+				data.features[0].geometry.coordinates
+			const distances: [number, number, number][] = []
 
 			// Calculating the Euclidean distance
-			coordinates.forEach(([a, b]: any) => distances.push([
-				Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
-				a,
-				b,
-			])
-			);
+			coordinates.forEach(([a, b]: any) =>
+				distances.push([
+					Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
+					a,
+					b,
+				])
+			)
 
 			// Sorting the distances
-			distances.sort();
+			distances.sort()
 
-			let coords;
-			let newTaxi;
+			let coords
+			let newTaxi
 
 			// Saving the marker to the state letiable
 			for (let i = 0; i < N; i++) {
-				coords = distances[i].slice(1, 3);
+				coords = distances[i].slice(1, 3)
 				newTaxi = new google.maps.Marker({
 					map: map,
 					position: { lat: coords[1], lng: coords[0] },
@@ -118,13 +129,13 @@ export const loadTaxis = (map, coord, N = 1) => {
 						strokeColor: 'Purple',
 						strokeWeight: 0.5,
 					},
-				});
-				nearbyTaxiMarkers.push(newTaxi);
+				})
+				nearbyTaxiMarkers.push(newTaxi)
 			}
-		});
-};
-// API: Extracts data from Google Maps place_id 
+		})
+}
 
+// (unused) API: Extracts data from Google Maps place_id
 async function PlaceIDToAddress(id, setLocation) {
 	await fetch(
 		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
@@ -132,6 +143,5 @@ async function PlaceIDToAddress(id, setLocation) {
 		.then(function (response) {
 			return response.json()
 		})
-		.then(function (data) { })
+		.then(function (data) {})
 }
-

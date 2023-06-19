@@ -1,13 +1,13 @@
 // Location object for all data involving location data
 
-package com.rebu;
+package com.rebu.Booking;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Document(collection = "Customer")
+@Document(collection = "Booking")
 @Data
 @AllArgsConstructor
 public class Location {

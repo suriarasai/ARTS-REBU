@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.rebu.Location;
-
 @Service
 public class CustomerService {
 
