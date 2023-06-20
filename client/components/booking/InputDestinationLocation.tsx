@@ -1,16 +1,25 @@
+import { getAddress } from '@/utils/getAddress'
 import { Autocomplete } from '@react-google-maps/api'
+import { useState } from 'react'
 import { FaCircle } from 'react-icons/fa'
 
-export function InputDestinationLocation(
+export const InputDestinationLocation = ({
 	setExpandSearch,
 	destinationRef,
 	setDestination,
-	isValidInput
-) {
+	isValidInput,
+}) => {
+	const [destinationAutocomplete, setDestinationAutocomplete] = useState(null)
+
 	return (
 		<div className='destination'>
 			<Autocomplete
-				onPlaceChanged={() => setExpandSearch(0)}
+				onLoad={(e) => setDestinationAutocomplete(e)}
+				onPlaceChanged={() => {
+					setExpandSearch(0)
+					isValidInput(true)
+					setDestination(getAddress(destinationAutocomplete.getPlace()))
+				}}
 				options={{ componentRestrictions: { country: 'sg' } }}
 				fields={['address_components', 'geometry', 'formatted_address']}
 			>
@@ -20,7 +29,6 @@ export function InputDestinationLocation(
 					placeholder='Where to?'
 					ref={destinationRef}
 					onChange={(e) => {
-						setDestination(e.target.value)
 						isValidInput(false)
 					}}
 					onClick={() => setExpandSearch(2)}

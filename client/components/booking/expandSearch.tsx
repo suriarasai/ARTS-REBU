@@ -20,15 +20,15 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 		// If the user set a home/work location...
 		if (user[label].lat) {
 			// ...navigate to the saved location
-			navigateToLocation(user[label].lat, user[label].lng)
+			navigateToLocation(user[label])
 		} else {
 			router.push(HREF.LOCATIONS)
 		}
 	}
 
-	function navigateToLocation(lat, lng) {
+	function navigateToLocation(data) {
 		setExpandSearch(0)
-		setLocation([lat, lng])
+		setLocation(data)
 	}
 
 	// UI for the Home/Saved menus
@@ -71,9 +71,9 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 
 	return (
 		<>
-			{location === '' ? (
+			{!location.lat ? (
 				<>
-					<div className='bg-white px-5 pb-2'>
+					<div className='mt-2 bg-white px-5 pb-2'>
 						{/* Saved locations: Home and Work */}
 						{SavedLocations}
 					</div>
@@ -96,7 +96,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 									className='mb-3 ml-11 w-full'
 									key={index}
 									onClick={() => {
-										navigateToLocation(item.lat, item.lng)
+										navigateToLocation(item.lat)
 									}}
 								>
 									<p>{item.placeName}</p>

@@ -14,6 +14,7 @@ import {
 	FaSuitcase,
 } from 'react-icons/fa'
 import { Input, Message, Title } from '@/redux/types/constants'
+import { getAddress } from '@/utils/getAddress'
 
 const libraries = ['places']
 
@@ -33,7 +34,7 @@ const SavedPlaces = () => {
 	const searchRef = useRef(null)
 
 	const addPlace = async () => {
-		const [placeName, address, lat, lng, postcode, place_id] = getAddress(
+		const {placeName, address, lat, lng, postcode, place_id} = getAddress(
 			autoComplete.getPlace()
 		)
 		const data = {
@@ -54,6 +55,7 @@ const SavedPlaces = () => {
 		})
 		setUser({
 			...user,
+			// @ts-ignore
 			savedLocations: [...user.savedLocations, data],
 		})
 	}
@@ -130,7 +132,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 	const searchRef = useRef(null)
 
 	const editEntry = async () => {
-		const [placeName, address, lat, lng, postcode, place_id] = getAddress(
+		const {placeName, address, lat, lng, postcode, place_id} = getAddress(
 			autoComplete.getPlace()
 		)
 		if (label === 'Home') {
@@ -266,42 +268,3 @@ const Location = ({ location, setUser, user }) => {
 
 export default SavedPlaces
 
-// TODO: PlaceName
-function getAddress(place) {
-	let PlaceName = ''
-	let Postcode = ''
-
-	for (const component of place.address_components as google.maps.GeocoderAddressComponent[]) {
-		const componentType = component.types[0]
-
-		switch (componentType) {
-			case 'street_number': {
-				PlaceName = `${component.long_name} ${PlaceName}`
-				break
-			}
-
-			case 'route': {
-				PlaceName += component.short_name
-				break
-			}
-
-			case 'postal_code': {
-				Postcode = component.long_name
-				break
-			}
-		}
-	}
-
-	if (PlaceName === '') {
-		PlaceName = place.formatted_address
-	}
-
-	return [
-		PlaceName,
-		PlaceName,
-		place.geometry.location.lat(),
-		place.geometry.location.lng(),
-		Postcode,
-		place.place_id,
-	]
-}

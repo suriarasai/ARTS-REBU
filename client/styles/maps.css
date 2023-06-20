@@ -17,7 +17,7 @@
 }
 
 .pac-container {
-	@apply absolute top-0 mt-24 z-0 border-none bg-zinc-100 shadow-none !important;
+	@apply absolute top-0 mt-32 z-0 border-none bg-zinc-100 shadow-none !important;
 }
 
 .pac-item {

@@ -2,7 +2,7 @@
 
 import { HREF, Title, icon } from '@/redux/types/constants'
 import { useRouter } from 'next/router'
-import { FaCalendar, FaComments, FaSearch, FaUser } from 'react-icons/fa'
+import { FaCalendar, FaComments, FaSearch, FaTaxi, FaUser } from 'react-icons/fa'
 
 const BottomNav = () => {
 	const router = useRouter() // For navigation
@@ -59,7 +59,7 @@ const links = [
 	navIcon({
 		label: 'Book',
 		href: HREF.BOOKING,
-		image: <FaSearch className='h-5 w-5'/>
+		image: <FaTaxi className='h-5 w-5'/>
 	}),
 	navIcon({
 		label: 'Trips',

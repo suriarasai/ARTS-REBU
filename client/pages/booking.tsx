@@ -41,9 +41,24 @@ function Booking() {
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
 	const [expandSearch, setExpandSearch] = useState(0)
+	const [userLocation, setUserLocation] = useState<any>([])
 
-	const [origin, setOrigin] = useState('') // Address of the origin location
-	const [destination, setDestination] = useState('') // Address of the destination location
+	const [origin, setOrigin] = useState({
+		placeID: null,
+		lat: null,
+		lng: null,
+		postcode: null,
+		address: null,
+		placeName: null,
+	}) // Coordinates of the origin location
+	const [destination, setDestination] = useState({
+		placeID: null,
+		lat: null,
+		lng: null,
+		postcode: null,
+		address: null,
+		placeName: null,
+	}) // Coordinates of the origin location
 
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const originRef = useRef(null) // Tracks input value of origin box
@@ -61,15 +76,15 @@ function Booking() {
 
 		// Center to current location
 		navigator.geolocation.getCurrentPosition((position) => {
+			setUserLocation({
+				lat: position.coords.latitude,
+				lng: position.coords.longitude,
+			})
 			map.panTo({
 				lat: position.coords.latitude,
 				lng: position.coords.longitude,
 			})
 			map.setZoom(18)
-			CoordinateToAddress(
-				[position.coords.latitude, position.coords.longitude],
-				setOrigin
-			)
 		})
 
 		// Load markers for saved locations
@@ -100,28 +115,18 @@ function Booking() {
 
 	// Set origin address after clicking a saved location
 	useEffect(() => {
-		if (originRef.current !== null) {
-			if (typeof origin === 'object') {
-				CoordinateToAddress(origin, setOrigin)
-			} else {
-				console.log(origin)
-				originRef.current.value = origin
-			}
-			isValidInput(false)
+		if (origin.lat) {
+			originRef.current.value = origin.placeName
 		}
-	}, [origin, originRef])
+	}, [origin])
 
 	// Set destination address after clicking a saved location
 	useEffect(() => {
-		if (destinationRef.current !== null) {
-			if (typeof destination === 'object') {
-				CoordinateToAddress(destination, setDestination)
-			} else {
-				destinationRef.current.value = destination
-			}
-			isValidInput(false)
+		if (destination.lat) {
+			isValidInput(true)
+			destinationRef.current.value = destination.placeName
 		}
-	}, [destination, destinationRef])
+	}, [destination])
 
 	// Render a message until the map is finished loading
 	if (!isLoaded) {
@@ -130,10 +135,11 @@ function Booking() {
 
 	// Retrieve and render the route to the destination
 	async function calculateRoute() {
-		if (origin === '' || destination === '') {
+		if (!destination.lat) {
 			isValidInput(false)
 			return
 		}
+
 		// eslint-disable-next-line no-undef
 		const directionsService = new google.maps.DirectionsService()
 
@@ -152,7 +158,7 @@ function Booking() {
 
 		// Setting the coordinates of the directions polyline
 		const results = await directionsService.route({
-			origin: origin,
+			origin: origin.lat ? origin : userLocation,
 			destination: destination,
 			// eslint-disable-next-line no-undef
 			travelMode: google.maps.TravelMode.DRIVING,
@@ -194,8 +200,22 @@ function Booking() {
 		setDirectionsResponse(null)
 		setDistance('')
 		setDuration('')
-		// setOrigin('') // TODO: Don't reset current
-		setDestination('')
+		setOrigin({
+			placeID: null,
+			lat: null,
+			lng: null,
+			postcode: null,
+			address: null,
+			placeName: null,
+		}) // Coordinates of the origin location
+		setDestination({
+			placeID: null,
+			lat: null,
+			lng: null,
+			postcode: null,
+			address: null,
+			placeName: null,
+		}) // Coordinates of the origin location
 	}
 
 	function setLocationViaClick(e) {
@@ -257,7 +277,8 @@ function Booking() {
 					isValidInput,
 					destinationRef,
 					setDestination,
-					calculateRoute
+					calculateRoute,
+					validInput
 				)
 			) : (
 				<button
@@ -281,17 +302,18 @@ function Booking() {
 			{/* If the user is not searching... */}
 			{[0, 3, 4].includes(expandSearch) ? (
 				// If the input is valid, then begin the booking confirmation procedure
-				validInput ? (
+				distance !== '' ? (
 					<RideConfirmation
 						distance={parseFloat(distance.match(/\d+/)[0])}
 						origin={originRef.current?.value.split(',')}
 						destination={destinationRef.current?.value.split(',')}
 					/>
 				) : (
-					// If the input is invalid, then continue to show them the 'Calculate Route' button
+					// If the input is invalid, then continue to show them the map controls
 					<>
 						<Locate map={map} />
 						{togglePOI(map, poi, setPoi)}
+						<BottomNav />
 					</>
 				)
 			) : (
@@ -305,7 +327,6 @@ function Booking() {
 					/>
 				</>
 			)}
-			<BottomNav />
 		</div>
 	)
 }

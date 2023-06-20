@@ -85,6 +85,7 @@ export const getBookingsByCustomerID = async (customerID, setTripList) => {
 }
 
 export async function CoordinateToAddress(coordinates, setLocation) {
+	console.log(coordinates)
 	await fetch(
 		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 	)

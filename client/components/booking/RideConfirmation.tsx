@@ -21,7 +21,6 @@ export const RideConfirmation = (data) => {
 	const [screen, setScreen] = useState<string>('')
 
 	useEffect(() => {
-		console.log(data.distance, typeof data.distance)
 		setOptions([
 			{
 				id: 1,
