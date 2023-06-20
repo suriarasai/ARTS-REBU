@@ -1,8 +1,8 @@
-import { FaPlusSquare } from 'react-icons/fa';
-import { BackButton } from '@/components/booking/backButton';
-import { InputCurrentLocation } from './InputCurrentLocation';
-import { InputDestinationLocation } from './InputDestinationLocation';
-import { HideTaxis } from '@/utils/hideTaxis';
+import { FaPlusCircle, FaPlusSquare } from 'react-icons/fa'
+import { BackButton } from '@/components/booking/backButton'
+import { InputCurrentLocation } from './InputCurrentLocation'
+import { InputDestinationLocation } from './InputDestinationLocation'
+import { HideTaxis } from '@/utils/hideTaxis'
 
 export function LocationSearch(
 	setMarker,
@@ -12,13 +12,14 @@ export function LocationSearch(
 	setOrigin,
 	isValidInput,
 	destinationRef,
-	setDestination
+	setDestination,
+	calculateRoute
 	// setOriginAutocomplete,
 	// setDestinationAutocomplete
 ) {
 	return (
-		<div className='sticky top-0 z-10 flex w-screen flex-wrap bg-white p-2 shadow-md'>
-			<div
+		<div className='location-search-header'>
+			{/* <div
 				className='w-1/12'
 				onClick={() => {
 					setMarker(null);
@@ -28,29 +29,42 @@ export function LocationSearch(
 				<BackButton
 					expandSearch={expandSearch}
 					setExpandSearch={setExpandSearch} />
-			</div>
-			<div className='w-10/12'>
-				{/* Origin Search */}
-				{InputCurrentLocation(
-					setExpandSearch,
-					originRef,
-					setOrigin,
-					isValidInput
-					// setOriginAutocomplete
-				)}
+			</div> */}
+			<div className='relative w-full px-6 pt-2'>
+				<div className='pr-12'>
+					{/* Origin Search */}
+					{InputCurrentLocation(
+						setExpandSearch,
+						originRef,
+						setOrigin,
+						isValidInput
+					)}
 
-				{/* Destination Search */}
-				{InputDestinationLocation(
-					setExpandSearch,
-					destinationRef,
-					setDestination,
-					isValidInput
-					// setDestinationAutocomplete
-				)}
+					<hr className='mb-1 ml-auto mr-auto mt-1 bg-zinc-300' />
+
+					{/* Destination Search */}
+					{InputDestinationLocation(
+						setExpandSearch,
+						destinationRef,
+						setDestination,
+						isValidInput
+					)}
+				</div>
+				<div className='absolute bottom-0 right-0 text-3xl mr-6 mb-2 text-green-600'>
+					<FaPlusCircle onClick={() => {}} />
+				</div>
 			</div>
-			<div className='justify-bottom flex w-1/12 items-end p-3 pb-2 text-2xl text-green-500'>
-				<FaPlusSquare onClick={() => { }} />
+			<div className='w-full px-6 py-3'>
+				<div className='flex w-full justify-center'>
+					<button
+						className='directions-button'
+						type='submit'
+						onClick={calculateRoute}
+					>
+						<p className='font-normal'>Calculate Routes</p>
+					</button>
+				</div>
 			</div>
 		</div>
-	);
+	)
 }

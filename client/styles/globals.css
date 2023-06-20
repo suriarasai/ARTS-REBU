@@ -80,7 +80,7 @@ p {
 }
 
 .bottom-nav {
-	@apply fixed bottom-0 w-full h-20 pb-safe rounded-3xl bg-white;
+	@apply fixed bottom-0 w-full h-20 pb-safe rounded-t-3xl bg-white;
 	box-shadow: 0 -7px 7px -7px rgb(0 0 0 / 0.1);
 }
 
@@ -151,4 +151,13 @@ p {
 
 .rect-button {
 	@apply flex h-10 w-2/12 items-center justify-center !bg-green-500 text-white hover:!bg-green-700;
+}
+
+.directions-button {
+	@apply h-11 w-full rounded-lg border border-green-600 !bg-white px-4 py-2 text-green-600;
+	border-width: 1.5px;
+}
+
+.location-search-header {
+	@apply sticky top-0 z-10 flex w-screen rounded-b-3xl flex-wrap bg-white p-2 shadow-md;
 }

@@ -14,6 +14,7 @@ import { noPoi } from '../utils/noPoi'
 import { icon } from '@/redux/types/constants'
 import { loadTaxis } from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
+import BottomNav from '@/components/ui/bottom-nav'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
@@ -255,9 +256,8 @@ function Booking() {
 					setOrigin,
 					isValidInput,
 					destinationRef,
-					setDestination
-					// setOriginAutocomplete,
-					// setDestinationAutocomplete
+					setDestination,
+					calculateRoute
 				)
 			) : (
 				<button
@@ -290,16 +290,6 @@ function Booking() {
 				) : (
 					// If the input is invalid, then continue to show them the 'Calculate Route' button
 					<>
-						<div className='absolute bottom-0 z-50 flex w-full justify-center py-5'>
-							<button
-								className='w-10/12 rounded bg-green-500 px-4 py-2 text-white'
-								type='submit'
-								onClick={calculateRoute}
-							>
-								Calculate Route
-							</button>
-						</div>
-
 						<Locate map={map} />
 						{togglePOI(map, poi, setPoi)}
 					</>
@@ -315,6 +305,7 @@ function Booking() {
 					/>
 				</>
 			)}
+			<BottomNav />
 		</div>
 	)
 }
