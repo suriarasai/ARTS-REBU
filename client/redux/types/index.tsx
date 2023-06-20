@@ -130,6 +130,7 @@ export interface rewardPoints {
 export interface navButtonProps {
 	label: string
 	href: string
+	icon: any
 	className?: string
 }
 

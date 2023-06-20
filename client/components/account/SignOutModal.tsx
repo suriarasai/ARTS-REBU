@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { UserContext } from '@/context/UserContext';
+import { FaSignOutAlt } from 'react-icons/fa';
 
 export const SignOutModal = () => {
 	const router = useRouter();
@@ -18,8 +19,8 @@ export const SignOutModal = () => {
 
 	return (
 		<div>
-			<div className='mt-12' onClick={() => setShowModal(true)}>
-				<p className='font-medium text-red-600'>Logout</p>
+			<div className='mt-12 float-right' onClick={() => setShowModal(true)}>
+				<p className='font-medium text-red-700 flex items-center'>Logout <FaSignOutAlt className='ml-3 text-2xl' /></p>
 			</div>
 
 			{showModal ? (

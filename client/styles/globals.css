@@ -80,7 +80,7 @@ p {
 }
 
 .bottom-nav {
-	@apply fixed bottom-0 w-full h-20 pb-safe rounded-t-3xl bg-white;
+	@apply fixed bottom-0 h-20 w-full rounded-t-3xl bg-white pb-safe;
 	box-shadow: 0 -7px 7px -7px rgb(0 0 0 / 0.1);
 }
 
@@ -114,11 +114,11 @@ p {
 }
 
 .dark-overlay {
-	@apply absolute left-0 top-0 flex h-full w-full justify-center backdrop-brightness-50;
+	@apply absolute left-0 top-0 !z-20 flex h-full w-full justify-center backdrop-brightness-50;
 }
 
 .modal-container {
-	@apply absolute top-1/3 flex w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-50 p-7 shadow-xl;
+	@apply absolute top-1/3 !z-50 flex w-1/2 flex-col items-center justify-center rounded-lg bg-zinc-50 p-7 shadow-xl;
 }
 
 .active-tab {
@@ -159,5 +159,5 @@ p {
 }
 
 .location-search-header {
-	@apply sticky top-0 z-10 flex w-screen rounded-b-3xl flex-wrap bg-white p-2 shadow-md;
+	@apply sticky top-0 z-10 flex w-screen flex-wrap rounded-b-3xl bg-white p-2 shadow-md;
 }

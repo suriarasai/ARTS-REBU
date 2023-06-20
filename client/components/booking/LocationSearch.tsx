@@ -6,7 +6,6 @@ import { HideTaxis } from '@/utils/hideTaxis'
 import { useState } from 'react'
 
 export function LocationSearch(
-	setMarker,
 	expandSearch: number,
 	setExpandSearch,
 	originRef,

@@ -270,7 +270,6 @@ function Booking() {
 			{/* Search elements */}
 			{!hideUI ? (
 				LocationSearch(
-					setMarker,
 					expandSearch,
 					setExpandSearch,
 					originRef,
