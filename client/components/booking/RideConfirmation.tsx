@@ -205,8 +205,10 @@ const ShowOption = ({ option, setClickedOption }: showOptionInterface) => (
 		<div className='float-right mr-8'>
 			<b className='text-lg'>${option.price}</b>
 			<p className='text-sm'>
-				{option.arrival}
-				{' min.'}
+				<span className='float-right'>
+					{option.arrival}
+					{' min.'}
+				</span>
 			</p>
 		</div>
 	</div>

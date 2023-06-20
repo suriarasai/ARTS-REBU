@@ -2,6 +2,7 @@ import api from '@/api/axiosConfig'
 import { User } from './redux/types'
 import { nearbyTaxiMarkers } from './pages/booking'
 import { icon } from './redux/types/constants'
+import { getAddress } from './utils/getAddress'
 
 // Account Settings: Updates user information
 export const UpdateUser = async (data: User | any, customerID) => {
@@ -93,9 +94,8 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 			return response.json()
 		})
 		.then(function (data) {
-			console.log(data)
 			try {
-				setLocation(data.results[0].formatted_address)
+				setLocation(getAddress(data.results[0], true))
 			} catch (e) {
 				console.log(e)
 				// Some state function to run a popup error...

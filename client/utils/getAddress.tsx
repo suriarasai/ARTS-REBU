@@ -1,39 +1,43 @@
 // TODO: PlaceName
-export function getAddress(place) {
-	let PlaceName = '';
-	let Postcode = '';
+export function getAddress(place, clickEvent = false) {
+	let PlaceName = ''
+	let Postcode = ''
 
 	for (const component of place.address_components as google.maps.GeocoderAddressComponent[]) {
-		const componentType = component.types[0];
+		const componentType = component.types[0]
 
 		switch (componentType) {
 			case 'street_number': {
-				PlaceName = `${component.long_name} ${PlaceName}`;
-				break;
+				PlaceName = `${component.long_name} ${PlaceName}`
+				break
 			}
 
 			case 'route': {
-				PlaceName += component.short_name;
-				break;
+				PlaceName += component.short_name
+				break
 			}
 
 			case 'postal_code': {
-				Postcode = component.long_name;
-				break;
+				Postcode = component.long_name
+				break
 			}
 		}
 	}
 
 	if (PlaceName === '') {
-		PlaceName = place.formatted_address;
+		PlaceName = place.formatted_address
 	}
 
 	return {
 		address: PlaceName,
 		placeName: PlaceName,
-		lat: place.geometry.location.lat(),
-		lng: place.geometry.location.lng(),
+		lat: clickEvent
+			? place.geometry.location.lat
+			: place.geometry.location.lat(),
+		lng: clickEvent
+			? place.geometry.location.lng
+			: place.geometry.location.lng(),
 		postcode: Postcode,
 		place_id: place.place_id,
-	};
+	}
 }

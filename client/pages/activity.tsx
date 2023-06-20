@@ -31,7 +31,6 @@ const Activity = () => {
 
 	// On-click styling for the tabbers
 	const [activeTab, setActiveTab] = useState<string>('Upcoming')
-
 	const [tripList, setTripList] = useState<Array<Object>>([])
 
 	useEffect(() => {
