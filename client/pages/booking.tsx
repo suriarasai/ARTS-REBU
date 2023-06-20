@@ -10,7 +10,7 @@ import { togglePOI } from '@/components/booking/togglePoiButton'
 import { CoordinateToAddress } from '@/server'
 import { LocationSearch } from '../components/booking/LocationSearch'
 import { HideTaxis } from '../utils/hideTaxis'
-import { noPoi } from '../utils/noPoi'
+import mapStyles from '@/utils/noPoi'
 import { icon } from '@/redux/types/constants'
 import { loadTaxis } from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
@@ -71,6 +71,7 @@ function Booking() {
 
 	// On map load
 	const loadMap = useCallback(function callback(map) {
+		mapStyles(map, poi)
 		setMap(map)
 		loadTaxis(map, [103.773675, 1.2966058], 5)
 
@@ -144,7 +145,7 @@ function Booking() {
 		const directionsService = new google.maps.DirectionsService()
 
 		HideTaxis()
-		map.setOptions({ styles: noPoi(false) })
+		mapStyles(map, poi)
 
 		// Removing directions polyline if a polyline already exists
 		if (directionsDisplay != null) {
@@ -243,7 +244,7 @@ function Booking() {
 						streetViewControl: false,
 						mapTypeControl: false,
 						fullscreenControl: false,
-						minZoom: 3,
+						minZoom: 3
 					}}
 					onClick={(e) => setLocationViaClick(e)}
 					onLoad={loadMap}
@@ -287,7 +288,7 @@ function Booking() {
 						setHideUI(false)
 						clearRoute()
 						isValidInput(false)
-						map.setOptions({ styles: noPoi(poi) })
+						mapStyles(map, poi)
 						if (directionsDisplay != null) {
 							directionsDisplay.set('directions', null)
 							directionsDisplay.setMap(null)

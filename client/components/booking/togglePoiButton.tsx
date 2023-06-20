@@ -1,12 +1,12 @@
 import { FaMapMarkedAlt } from 'react-icons/fa'
-import { noPoi } from '@/utils/noPoi'
+import mapStyles from '@/utils/noPoi'
 
 export function togglePOI(map: any, poi: boolean, setPoi) {
 	return (
 		<div
-			className='absolute bottom-0 right-0 m-8 mb-48 flex h-12 w-12 items-center justify-center rounded-full bg-green-600 shadow-lg'
+			className='absolute bottom-0 right-0 z-50 m-8 mb-48 flex h-12 w-12 items-center justify-center rounded-full bg-green-600 shadow-lg'
 			onClick={() => {
-				map.setOptions({ styles: noPoi(!poi) })
+				mapStyles(map, !poi)
 				setPoi(!poi)
 			}}
 		>
