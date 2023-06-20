@@ -80,7 +80,7 @@ p {
 }
 
 .bottom-nav {
-	@apply fixed bottom-0 w-full bg-zinc-100 pb-safe;
+	@apply fixed bottom-0 w-full h-20 pb-safe rounded-3xl bg-white;
 	box-shadow: 0 -7px 7px -7px rgb(0 0 0 / 0.1);
 }
 

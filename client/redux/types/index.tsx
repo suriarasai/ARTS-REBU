@@ -59,7 +59,7 @@ export interface optionsInterface {
 
 export interface option {
 	id: number
-	dropoff: string
+	arrival: string
 	type: string
 	people: number
 	price: number

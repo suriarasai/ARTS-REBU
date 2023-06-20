@@ -2,6 +2,7 @@
 
 import { HREF, Title, icon } from '@/redux/types/constants'
 import { useRouter } from 'next/router'
+import { FaCalendar, FaComments, FaSearch, FaUser } from 'react-icons/fa'
 
 const BottomNav = () => {
 	const router = useRouter() // For navigation
@@ -9,32 +10,20 @@ const BottomNav = () => {
 	return (
 		<div className='sm:hidden'>
 			<nav className='bottom-nav'>
-				<div className='mx-auto flex h-16 max-w-md items-center justify-around px-6'>
+				<div className='mx-auto mt-3 flex h-16 max-w-md items-center justify-center px-6'>
 					{/* Iterating through the list of NavBar links to render them */}
 					{links.map(({ href, label, icon }) => (
 						<a
-							className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
-								router.pathname === href && label !== ''
-									? 'text-green-400 dark:text-green-400'
-									: label === ''
-									? 'hover:text-green-300'
-									: 'text-zinc-400 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
-							} ${
-								label === ''
-									? 'h-18 mb-6 ml-3 mr-3 w-80 rounded-full bg-green-500  text-green-200'
-									: ''
+							className={`flex w-full flex-col items-center justify-center space-y-1 ${
+								router.pathname === href
+									? 'text-green-600 hover:text-green-700'
+									: 'text-zinc-500 hover:text-zinc-900'
 							}`}
 							key={label}
 							onClick={() => router.push(href)}
 						>
 							{icon}
-							<span
-								className={`text-xs text-zinc-600 dark:text-zinc-400 ${
-									label === 'Home' ? 'text-green-100' : ''
-								}`}
-							>
-								{label}
-							</span>
+							<span className='text-sm font-medium'>{label}</span>
 						</a>
 					))}
 				</div>
@@ -48,66 +37,43 @@ export default BottomNav
 interface navIconProps {
 	label: string
 	href: string
-	image: string
-	fill?: string
-	stroke?: string
+	image: any
 }
 
 // Reusable function for creating NavBar buttons
-const navIcon = ({ label, href, image, fill, stroke }: navIconProps) => {
+const navIcon = ({ label, href, image }: navIconProps) => {
 	/* 
 		label	: the text on the navbar
 		href	: where to redirect to
 		image	: the icon to display in the navbar
-		stroke	: custom styling option
 	*/
 	return {
 		label: label,
 		href: href,
-		icon: (
-			<svg
-				viewBox='0 0 15 15'
-				fill='none'
-				xmlns='http://www.w3.org/2000/svg'
-				width={label === '' ? 20 : 15}
-				height={label === '' ? 20 : 15}
-			>
-				<path d={image} fill={fill} stroke={stroke}></path>
-			</svg>
-		),
+		icon: image,
 	}
 }
 
 // Populating the BottomNavBar with data
 const links = [
 	navIcon({
-		label: Title.BOOKING,
+		label: 'Book',
 		href: HREF.BOOKING,
-		fill: 'currentColor',
-		image: icon.car,
+		image: <FaSearch className='h-5 w-5'/>
 	}),
 	navIcon({
-		label: Title.ACTIVITY,
+		label: 'Trips',
 		href: HREF.HISTORY,
-		fill: 'currentColor',
-		image: icon.clock,
+		image: <FaCalendar className='h-5 w-5'/>
 	}),
 	navIcon({
-		label: '',
-		href: HREF.HOME,
-		fill: 'currentColor',
-		image: icon.house,
-	}),
-	navIcon({
-		label: Title.NOTIFICATIONS,
+		label: 'Chats',
 		href: HREF.NOTIFICATIONS,
-		stroke: 'currentColor',
-		image: icon.bell,
+		image: <FaComments className='h-5 w-5'/>,
 	}),
 	navIcon({
-		label: Title.SETTINGS,
+		label: 'Account',
 		href: HREF.SETTINGS,
-		stroke: 'currentColor',
-		image: icon.gear,
+		image: <FaUser className='h-5 w-5'/>,
 	}),
 ]

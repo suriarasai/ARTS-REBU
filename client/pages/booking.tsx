@@ -53,13 +53,25 @@ function Booking() {
 
 	const [hideUI, setHideUI] = useState(false)
 
+	// On map load
 	const loadMap = useCallback(function callback(map) {
 		setMap(map)
 		loadTaxis(map, [103.773675, 1.2966058], 5)
-	}, [])
 
-	// On map load: Load markers for saved locations
-	useEffect(() => {
+		// Center to current location
+		navigator.geolocation.getCurrentPosition((position) => {
+			map.panTo({
+				lat: position.coords.latitude,
+				lng: position.coords.longitude,
+			})
+			map.setZoom(18)
+			CoordinateToAddress(
+				[position.coords.latitude, position.coords.longitude],
+				setOrigin
+			)
+		})
+
+		// Load markers for saved locations
 		if (marker?.length == 0) {
 			const markerFacade = []
 
@@ -83,32 +95,15 @@ function Booking() {
 			}
 			setMarker(markerFacade)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
-
-	// On map load: Set origin location to be current location
-	useEffect(() => {
-		if (map) {
-			navigator.geolocation.getCurrentPosition((position) => {
-				map.panTo({
-					lat: position.coords.latitude,
-					lng: position.coords.longitude,
-				})
-				map.setZoom(18)
-				CoordinateToAddress(
-					[position.coords.latitude, position.coords.longitude],
-					setOrigin
-				)
-			})
-		}
 	}, [])
 
 	// Set origin address after clicking a saved location
 	useEffect(() => {
-		if (origin !== '' && originRef !== null) {
+		if (originRef.current !== null) {
 			if (typeof origin === 'object') {
 				CoordinateToAddress(origin, setOrigin)
 			} else {
+				console.log(origin)
 				originRef.current.value = origin
 			}
 			isValidInput(false)
@@ -117,7 +112,7 @@ function Booking() {
 
 	// Set destination address after clicking a saved location
 	useEffect(() => {
-		if (destination !== '' || null) {
+		if (destinationRef.current !== null) {
 			if (typeof destination === 'object') {
 				CoordinateToAddress(destination, setDestination)
 			} else {
@@ -198,7 +193,7 @@ function Booking() {
 		setDirectionsResponse(null)
 		setDistance('')
 		setDuration('')
-		setOrigin('')
+		// setOrigin('') // TODO: Don't reset current
 		setDestination('')
 	}
 

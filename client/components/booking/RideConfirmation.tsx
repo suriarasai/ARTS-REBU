@@ -28,7 +28,7 @@ export const RideConfirmation = (data) => {
 				type: 'Rebu Regular',
 				people: 4,
 				price: 3.9 + data.distance * 0.5,
-				dropoff: new Date().getTime() + 1000 * 60 * data.distance * 10,
+				arrival: data.distance * 10,
 				icon: <FaCarAlt />,
 				desc: 'Find the closest car',
 			},
@@ -37,7 +37,7 @@ export const RideConfirmation = (data) => {
 				type: 'RebuPlus',
 				people: 2,
 				price: 4.1 + data.distance + 0.75,
-				dropoff: new Date().getTime() + 1000 * 60 * data.distance * 8,
+				arrival: data.distance * 8,
 				icon: <FaCar />,
 				desc: 'Better cars',
 			},
@@ -146,12 +146,7 @@ export const RideConfirmation = (data) => {
 									<div className='ml-5 flex items-center'>
 										<FaClock className='text-lg text-green-500' />
 										<div className='p-2 px-5'>
-											{new Date(
-												options[clickedOption].dropoff
-											).toLocaleTimeString('en-US', {
-												hour: 'numeric',
-												minute: 'numeric',
-											}) + ' arrival'}
+											{options[clickedOption].arrival + ' min.'}
 										</div>
 									</div>
 								</div>
@@ -211,11 +206,8 @@ const ShowOption = ({ option, setClickedOption }: showOptionInterface) => (
 		<div className='float-right mr-8'>
 			<b className='text-lg'>${option.price}</b>
 			<p className='text-sm'>
-				{new Date(option.dropoff).toLocaleTimeString('en-US', {
-					hour: 'numeric',
-					minute: 'numeric',
-				})}
-				{' ETA'}
+				{option.arrival}
+				{' min.'}
 			</p>
 		</div>
 	</div>

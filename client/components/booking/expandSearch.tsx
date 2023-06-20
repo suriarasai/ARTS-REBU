@@ -90,7 +90,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 						<FaStar className='mr-6 text-xl text-green-500' />
 						<b className='mb-4 text-sm'>{Message.SAVED_LOCATIONS}</b>
 
-						{user.savedLocations && user.savedLocations?.length > 0 ? (
+						{user.savedLocations && user.savedLocations.length > 0 ? (
 							user.savedLocations?.map((item, index) => (
 								<div
 									className='mb-3 ml-11 w-full'
