@@ -75,29 +75,10 @@ function Booking() {
 
 	const [hideUI, setHideUI] = useState(false)
 
-	// Adding markers to the map after the user object has loaded
-	useEffect(() => {
-		if (user.home) {
-			const infoWindow = new google.maps.InfoWindow()
-
-			marks.home = mark(map, user.home, icon.houseMarker, '#06b6d4', '#155e75')
-			marks.work = mark(map, user.work, icon.workMarker, '#06b6d4', '#155e75')
-			listener(marks.home, infoWindow)
-			listener(marks.work, infoWindow)
-
-			user.savedLocations.map((location, index) => {
-				marks.saved.push(mark(map, location, icon.saved, 'Yellow', 'Gold'))
-				listener(marks.saved[index], infoWindow)
-			})
-		}
-	}, [user])
-
 	// On map load
 	const loadMap = useCallback(function callback(map) {
 		mapStyles(map, poi)
 		setMap(map)
-		// TODO: Dynamic location and re-rendering on origin change
-		loadTaxis(map, [103.773675, 1.2966058], 5)
 
 		// Center to current location
 		navigator.geolocation.getCurrentPosition((position) => {
@@ -124,12 +105,17 @@ function Booking() {
 					strokeWeight: 0.2,
 				},
 			})
+
 			map.setZoom(18)
 		})
 
+		// Adding markers to the map after the user object has loaded
 		const loggedInUser = localStorage.getItem('user')
-		if (loggedInUser !== null) {
+		if (loggedInUser && !user.customerName) {
 			setUser(JSON.parse(loggedInUser))
+			setMarkers(map, JSON.parse(loggedInUser))
+		} else if (user.customerName) {
+			setMarkers(map, user)
 		}
 	}, [])
 
@@ -163,7 +149,6 @@ function Booking() {
 		// eslint-disable-next-line no-undef
 		const directionsService = new google.maps.DirectionsService()
 
-		setMarkerVisibility(nearbyTaxiMarkers)
 		mapStyles(map, poi)
 
 		// Removing directions polyline if a polyline already exists
@@ -191,6 +176,8 @@ function Booking() {
 
 		const line = results.routes[0].overview_path // Polyline coords
 
+		loadTaxis(map, [origin.lng, origin.lat], 5)
+
 		// const expandedArray = expandArray(line, 100)
 
 		// taxiMarker = new google.maps.Marker({
@@ -205,9 +192,6 @@ function Booking() {
 		// 		strokeWeight: 0.5,
 		// 	},
 		// })
-
-		// Locates closest taxi from all available taxis
-		// loadTaxis(map, [currCoords.lng(), currCoords.lat()])
 
 		// moveToStep(taxiMarker, expandedArray, 0, 30)
 
@@ -245,7 +229,7 @@ function Booking() {
 			directionsDisplay = null
 		}
 		setRideConfirmed(false)
-		setMarkerVisibility(nearbyTaxiMarkers, map)
+		setMarkerVisibility(nearbyTaxiMarkers)
 	}
 
 	function setLocationViaClick(e) {
@@ -359,5 +343,20 @@ function listener(marker, info) {
 		info.close()
 		info.setContent(marker.getTitle())
 		info.open(marker.getMap(), marker)
+	})
+}
+
+
+function setMarkers(map, user) {
+	const infoWindow = new google.maps.InfoWindow()
+
+	marks.home = mark(map, user.home, icon.houseMarker, '#06b6d4', '#155e75')
+	marks.work = mark(map, user.work, icon.workMarker, '#06b6d4', '#155e75')
+	listener(marks.home, infoWindow)
+	listener(marks.work, infoWindow)
+
+	user.savedLocations.map((location, index) => {
+		marks.saved.push(mark(map, location, icon.saved, 'Yellow', 'Gold'))
+		listener(marks.saved[index], infoWindow)
 	})
 }
