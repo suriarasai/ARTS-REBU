@@ -66,7 +66,7 @@ const Activity = () => {
 										fare={trip['fare']}
 										distance={trip['distance']}
 										id={trip['bookingID']}
-										date={trip['pickUpTime']}
+										date={trip['messageSubmittedTime']}
 									/>
 								</div>
 							)
@@ -127,19 +127,21 @@ const LocationInfo = ({ address1, name1, address2, name2 }) => (
 )
 
 // Numeric details of the ride
-const TripStatistics = ({ fare, distance, id, date }) => (
+const TripStatistics = ({ fare, distance, id, date }) => {
+	const dt = new Date(parseInt(date, 10));
+	return (
 	// TODO: Time instead of distance
 	// TODO: Booking ID
 	<div className='order-2 w-3/12 text-right'>
 		<h1>${fare}</h1>
 		<h5>
-			{convertToMonth(date.split('-').slice(0, 2))} | {distance} km
+			{dt.toLocaleDateString()} | {distance} km
 		</h5>
 		{/* <h5>
 			ID: {id} <br />
 		</h5> */}
 	</div>
-)
+)}
 
 const convertToMonth = (date) => {
 	const month = date[1]

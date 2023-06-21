@@ -2,6 +2,11 @@
 
 package com.rebu.Booking;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -55,8 +60,8 @@ public class Booking {
     @Id
     private ObjectId _id;
     private Integer bookingID;
-    private Integer messageSubmittedTime;
-    private Integer messageReceivedTime;
+    private Long messageSubmittedTime;
+    private Long messageReceivedTime;
     private Integer customerID;
     private String customerName;
     private Integer phoneNumber;
@@ -88,9 +93,10 @@ public class Booking {
     public void setBooking(Booking data) {
         this.status = "requested";
         this.messageSubmittedTime = data.messageSubmittedTime;
-        this.messageReceivedTime = data.messageReceivedTime;
+        this.messageReceivedTime = Instant.now().toEpochMilli();
         this.customerID = data.customerID;
         this.customerName = data.customerName;
+        this.distance = data.distance;
         this.phoneNumber = data.phoneNumber;
         this.pickUpTime = data.pickUpTime;
         this.taxiType = data.taxiType;

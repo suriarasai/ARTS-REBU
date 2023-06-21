@@ -11,6 +11,7 @@ import {
 	FaFlag,
 	FaFontAwesomeFlag,
 } from 'react-icons/fa'
+import { createBooking } from '@/server'
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
@@ -20,22 +21,39 @@ export const RideConfirmation = (data) => {
 	const [screen, setScreen] = useState<string>('')
 
 	useEffect(() => {
+		// distance in meters
+		// duration in seconds
+		// TODO: Get routes for each path and render all but highlight clicked
+		// TODO: taxiDistance needs to be pre-calculated
 		setOptions([
 			{
 				id: 1,
-				type: 'Rebu Regular',
-				people: 4,
-				price: 3.9 + data.distance * 0.5,
-				arrival: data.distance * 10,
+				taxiType: 'Rebu Regular',
+				taxiPassengerCapacity: 4,
+				fare: (3.9 + data.distance / 500).toFixed(2),
+				dropTime: (
+					(data.duration + data.taxiDuration ? data.taxiDuration / 60 : 5) / 60
+				).toFixed(1),
+				pickUpTime: (data.taxiDuration / 60
+					? data.taxiDuration / 60
+					: 5
+				).toFixed(1),
 				icon: <FaCarAlt />,
 				desc: 'Find the closest car',
 			},
 			{
 				id: 2,
-				type: 'RebuPlus',
-				people: 2,
-				price: 4.1 + data.distance + 0.75,
-				arrival: data.distance * 8,
+				taxiType: 'RebuPlus',
+				taxiPassengerCapacity: 2,
+				fare: (4.1 + data.distance / 400).toFixed(2),
+				dropTime: (
+					((data.duration + data.taxiDuration ? data.taxiDuration : 5) / 60) *
+					1.2
+				).toFixed(1),
+				pickUpTime: (
+					((data.taxiDuration ? data.taxiDuration : 3600) * 1.2) /
+					60
+				).toFixed(1),
 				icon: <FaCar />,
 				desc: 'Better cars',
 			},
@@ -52,6 +70,12 @@ export const RideConfirmation = (data) => {
 		e.preventDefault()
 		setScreen('waiting')
 		data.setRideConfirmed(true)
+		createBooking(
+			data.user,
+			options[clickedOption - 1],
+			data.origin,
+			data.destination
+		)
 	}
 
 	return (
@@ -157,7 +181,7 @@ export const RideConfirmation = (data) => {
 									<div className='ml-5 flex items-center'>
 										<FaClock className='text-lg text-green-500' />
 										<div className='p-2 px-5'>
-											{options[clickedOption-1].arrival + ' min.'}
+											{options[clickedOption - 1].dropTime + ' min.'}
 										</div>
 									</div>
 								</div>
@@ -169,7 +193,7 @@ export const RideConfirmation = (data) => {
 										<div>
 											$
 											<b className='font-normal'>
-												{options[clickedOption].price}
+												{options[clickedOption].fare}
 											</b>
 											<p className='text-sm'>Cash</p>
 										</div>
@@ -212,17 +236,17 @@ const ShowOption = ({
 			{option.icon}
 		</div>
 		<div className='float-left'>
-			<b>{option.type}</b>
+			<b>{option.taxiType}</b>
 			<p className='text-sm'>
 				{/* @ts-ignore */}
-				1-{option.people} seats ({option.desc})
+				1-{option.taxiPassengerCapacity} seats ({option.desc})
 			</p>
 		</div>
 		<div className='float-right mr-8'>
-			<b className='text-lg'>${option.price}</b>
+			<b className='text-lg'>${option.fare}</b>
 			<p className='text-sm'>
 				<span className='float-right'>
-					{option.arrival}
+					{option.pickUpTime}
 					{' min.'}
 				</span>
 			</p>

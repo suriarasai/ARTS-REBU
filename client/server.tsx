@@ -46,7 +46,6 @@ export const RegisterUser = async (data: User | any, customerID) => {
 
 // Saved Places: Removes a saved location
 export const RemovePlaceAPI = async (customerID, placeID) => {
-	console.log('testatapi')
 	await api.post('/api/v1/Customer/removeSavedLocation', {
 		customerID: customerID,
 		placeID: placeID,
@@ -79,14 +78,58 @@ export const SetWork = async (customerID, location) => {
 
 // Retrieves all bookings associated with a customerID
 export const getBookingsByCustomerID = async (customerID, setTripList) => {
-	console.log(customerID)
 	const response = await api.get('/api/v1/Booking/customer/' + customerID)
-	console.log(response.data)
 	setTripList(response.data)
 }
 
+// Creates a new booking with the 'requested' status
+export const createBooking = async (
+	user: User,
+	option,
+	origin,
+	destination
+) => {
+	const response = await api.post('/api/v1/Booking/createBooking', {
+		customerID: user.customerID,
+		messageSubmittedTime: +new Date(),
+		customerName: user.customerName,
+		phoneNumber: user.phoneNumber,
+		pickUpTime: option.pickUpTime, // TODO: Time
+		taxiType: option.taxiType,
+		fareType: 'metered',
+		fare: option.fare,
+		distance: option.distance,
+		paymentMethod: 'cash',
+		pickUpLocation: origin,
+		dropLocation: destination,
+	})
+	return response
+}
+
+export const matchedBooking = async (customerID, driverID, taxiID) => {
+	const response = await api.post('/api/v1/Booking/matchedBooking', {
+		customerID: customerID,
+		driverID: driverID,
+		taxiID: taxiID,
+	})
+	return response
+}
+
+export const cancelBooking = async (customerID) => {
+	const response = await api.post('/api/v1/Booking/cancelBooking', {
+		customerID: customerID,
+	})
+	return response
+}
+
+export const completeBooking = async (customerID) => {
+	const response = await api.post('/api/v1/Booking/completeBooking', {
+		customerID: customerID,
+	})
+	return response
+}
+
 export async function CoordinateToAddress(coordinates, setLocation) {
-	console.log(coordinates)
 	await fetch(
 		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 	)
@@ -96,9 +139,7 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 		.then(function (data) {
 			try {
 				setLocation(getAddress(data.results[0], true))
-				console.log(getAddress(data.results[0], true))
 			} catch (e) {
-				console.log(e)
 				// Some state function to run a popup error...
 			}
 		})

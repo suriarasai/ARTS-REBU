@@ -60,9 +60,12 @@ export interface optionsInterface {
 export interface option {
 	id: number
 	arrival: string
-	type: string
-	people: number
-	price: number
+	taxiType: string
+	dropTime: number
+	pickUpTime: number
+	icon: any
+	taxiPassengerCapacity: number
+	fare: number
 }
 
 export interface showOptionInterface {

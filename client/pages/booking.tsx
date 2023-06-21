@@ -40,8 +40,9 @@ function Booking() {
 	})
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
-	const [distance, setDistance] = useState('')
-	const [duration, setDuration] = useState('')
+	const [distance, setDistance] = useState<number>(null)
+	const [duration, setDuration] = useState<number>(null)
+	const [taxiDuration, setTaxiDuration] = useState<number>(null)
 	const [validInput, isValidInput] = useState(false)
 	const [poi, setPoi] = useState(true)
 	const [taxis, setTaxis] = useState([])
@@ -167,6 +168,8 @@ function Booking() {
 			})
 			taxiRouteDisplay.setMap(map)
 			taxiRouteDisplay.setDirections(taxiPolyline)
+
+			setTaxiDuration(taxiPolyline.routes[0].legs[0].duration.value)
 		}
 	}
 
@@ -211,9 +214,8 @@ function Booking() {
 			travelMode: google.maps.TravelMode.DRIVING,
 		})
 
-		setDistance(routePolyline.routes[0].legs[0].distance.text)
-		setDuration(routePolyline.routes[0].legs[0].duration.text)
-		console.log(duration)
+		setDistance(routePolyline.routes[0].legs[0].distance.value)
+		setDuration(routePolyline.routes[0].legs[0].duration.value)
 		directionsDisplay.setMap(map) // Binding polyline to the map
 		directionsDisplay.setDirections(routePolyline) // Setting the coords
 
@@ -242,8 +244,8 @@ function Booking() {
 	}
 
 	function clearRoute() {
-		setDistance('')
-		setDuration('')
+		setDistance(null)
+		setDuration(null)
 		setOrigin({
 			placeID: null,
 			lat: null,
@@ -332,9 +334,12 @@ function Booking() {
 			{/* If the user is not searching... */}
 			{[0, 3, 4].includes(expandSearch) ? (
 				// If the input is valid, then begin the booking confirmation procedure
-				distance !== '' ? (
+				distance ? (
 					<RideConfirmation
-						distance={parseFloat(distance.match(/\d+/)[0])}
+						user={user}
+						distance={distance}
+						duration={duration}
+						taxiDuration={taxiDuration}
 						origin={origin.lat ? origin : userLocation}
 						destination={destination}
 						setRideConfirmed={setRideConfirmed}
