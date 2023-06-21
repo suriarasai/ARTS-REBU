@@ -68,6 +68,7 @@ export interface option {
 export interface showOptionInterface {
 	option: option
 	setClickedOption: React.Dispatch<React.SetStateAction<number | null>>
+	disabled?: boolean
 }
 
 export interface SearchFieldInterface {

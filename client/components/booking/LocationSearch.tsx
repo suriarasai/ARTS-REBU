@@ -2,8 +2,6 @@ import { FaPlusCircle, FaPlusSquare } from 'react-icons/fa'
 import { BackButton } from '@/components/booking/backButton'
 import { InputCurrentLocation } from './InputCurrentLocation'
 import { InputDestinationLocation } from './InputDestinationLocation'
-import { HideTaxis } from '@/utils/hideTaxis'
-import { useState } from 'react'
 
 export function LocationSearch(
 	expandSearch: number,

@@ -20,10 +20,9 @@ const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
 
 let marks = {
-	taxi: null,
 	home: null,
 	work: null,
-	saved: null,
+	saved: [],
 	user: null,
 }
 
@@ -74,18 +73,7 @@ function Booking() {
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const destinationRef = useRef(null) // Tracks input value of destination box
 
-	const [marker, setMarker] = useState([])
-
 	const [hideUI, setHideUI] = useState(false)
-
-	// TODO: Remove; for dev purposes to preserve state on refresh
-	// useEffect(() => {
-	// 	const loggedInUser = localStorage.getItem('user')
-	// 	if (loggedInUser !== null) {
-	// 		setUser(JSON.parse(loggedInUser))
-	// 		userLoaded(user)
-	// 	}
-	// }, [])
 
 	// Adding markers to the map after the user object has loaded
 	useEffect(() => {
@@ -97,9 +85,9 @@ function Booking() {
 			listener(marks.home, infoWindow)
 			listener(marks.work, infoWindow)
 
-			user.savedLocations.map((location) => {
-				marks.saved = mark(map, location, icon.saved, 'Yellow', 'Gold')
-				listener(marks.saved, infoWindow)
+			user.savedLocations.map((location, index) => {
+				marks.saved.push(mark(map, location, icon.saved, 'Yellow', 'Gold'))
+				listener(marks.saved[index], infoWindow)
 			})
 		}
 	}, [user])

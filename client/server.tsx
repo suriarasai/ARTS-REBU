@@ -128,7 +128,7 @@ export const loadTaxis = (map, coord, N = 1) => {
 			let coords
 			let newTaxi
 
-			// Saving the marker to the state letiable
+			// Saving the marker to the state variable
 			for (let i = 0; i < N; i++) {
 				coords = distances[i].slice(1, 3)
 				newTaxi = new google.maps.Marker({

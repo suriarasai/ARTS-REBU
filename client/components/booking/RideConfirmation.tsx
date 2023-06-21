@@ -73,6 +73,7 @@ export const RideConfirmation = (data) => {
 									option={options[clickedOption - 1]}
 									key={options[clickedOption - 1].id}
 									setClickedOption={setClickedOption}
+									disabled={true}
 								/>
 
 								{/* Origin and Destination Confirmation */}
@@ -186,13 +187,13 @@ export const RideConfirmation = (data) => {
 }
 
 // helper component to show rides
-const ShowOption = ({ option, setClickedOption }: showOptionInterface) => (
+const ShowOption = ({ option, setClickedOption, disabled=false }: showOptionInterface) => (
 	/*
 		option				: the ride option
 		setClickedOption	: tracks which ride option was clicked 
 	*/
 	<div
-		className='ride-option'
+		className={`ride-option ${disabled ? 'pointer-events-none' : ''}`}
 		key={option.id}
 		onClick={() => setClickedOption(option.id)}
 	>
@@ -238,7 +239,7 @@ function RouteConfirmation(data: any) {
 				</th>
 				<th className='text-left'>
 					<p className='p-2 text-sm'>
-						<b>{data.destination.placeName}</b>, Singapore {data.postcode}
+						<b>{data.destination.placeName}</b>, Singapore {data.destination.postcode}
 					</p>
 				</th>
 			</tr>
