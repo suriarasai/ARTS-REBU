@@ -9,7 +9,7 @@ import { expandArray } from '@/utils/expandArray'
 import { togglePOI } from '@/components/booking/togglePoiButton'
 import { CoordinateToAddress } from '@/server'
 import { LocationSearch } from '../components/booking/LocationSearch'
-import { HideTaxis } from '../utils/hideTaxis'
+import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import mapStyles from '@/utils/noPoi'
 import { icon } from '@/redux/types/constants'
 import { loadTaxis } from '@/server'
@@ -163,7 +163,7 @@ function Booking() {
 		// eslint-disable-next-line no-undef
 		const directionsService = new google.maps.DirectionsService()
 
-		HideTaxis()
+		setMarkerVisibility(nearbyTaxiMarkers)
 		mapStyles(map, poi)
 
 		// Removing directions polyline if a polyline already exists
@@ -245,6 +245,7 @@ function Booking() {
 			directionsDisplay = null
 		}
 		setRideConfirmed(false)
+		setMarkerVisibility(nearbyTaxiMarkers, map)
 	}
 
 	function setLocationViaClick(e) {
