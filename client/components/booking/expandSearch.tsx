@@ -96,11 +96,11 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 									className='mb-3 ml-11 w-full'
 									key={index}
 									onClick={() => {
-										navigateToLocation(item.lat)
+										navigateToLocation(item)
 									}}
 								>
-									<p>{item.placeName}</p>
-									<h5>{item.address}</h5>
+									<p className='font-normal'>{item.placeName}</p>
+									<h5>Singapore {item.postcode}</h5>
 								</div>
 							))
 						) : (

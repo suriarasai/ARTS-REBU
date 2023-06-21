@@ -135,11 +135,11 @@ export const loadTaxis = (map, coord, N = 1) => {
 					map: map,
 					position: { lat: coords[1], lng: coords[0] },
 					icon: {
-						path: icon.taxi,
-						fillColor: 'Purple',
-						fillOpacity: 0.9,
-						scale: 1,
-						strokeColor: 'Purple',
+						path: icon.taxiMarker,
+						fillColor: '#d9f99d',
+						fillOpacity: 1,
+						scale: 0.03,
+						strokeColor: '#65a30d',
 						strokeWeight: 0.5,
 					},
 				})

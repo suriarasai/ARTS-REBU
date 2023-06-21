@@ -17,7 +17,7 @@
 }
 
 .pac-container {
-	@apply border-none bg-zinc-100 shadow-none !important;
+	@apply border-none bg-white mt-1 shadow-md rounded-b-lg !important;
 }
 
 .pac-item {

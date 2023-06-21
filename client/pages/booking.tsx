@@ -19,6 +19,11 @@ import BottomNav from '@/components/ui/bottom-nav'
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
 let taxiMarker
+let homeMarker
+let workMarker
+let savedMarker
+let userMarker
+
 export let nearbyTaxiMarkers = []
 
 const libraries = ['places']
@@ -41,7 +46,7 @@ function Booking() {
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
 	const [expandSearch, setExpandSearch] = useState(0)
-	const [userLocation, setUserLocation] = useState<any>([])
+	const [userLocation, setUserLocation] = useState<any>({})
 
 	const [origin, setOrigin] = useState({
 		placeID: null,
@@ -69,10 +74,37 @@ function Booking() {
 
 	const [hideUI, setHideUI] = useState(false)
 
+	// TODO: Remove; for dev purposes to preserve state on refresh
+	// useEffect(() => {
+	// 	const loggedInUser = localStorage.getItem('user')
+	// 	if (loggedInUser !== null) {
+	// 		setUser(JSON.parse(loggedInUser))
+	// 		userLoaded(user)
+	// 	}
+	// }, [])
+
+	// Adding markers to the map after the user object has loaded
+	useEffect(() => {
+		if (user.home) {
+			const infoWindow = new google.maps.InfoWindow()
+
+			homeMarker = mark(map, user.home, icon.houseMarker, '#06b6d4', '#155e75')
+			workMarker = mark(map, user.work, icon.workMarker, '#06b6d4', '#155e75')
+			listener(homeMarker, infoWindow)
+			listener(workMarker, infoWindow)
+
+			user.savedLocations.map((location) => {
+				savedMarker = mark(map, location, icon.saved, 'Yellow', 'Gold')
+				listener(savedMarker, infoWindow)
+			})
+		}
+	}, [user])
+
 	// On map load
 	const loadMap = useCallback(function callback(map) {
 		mapStyles(map, poi)
 		setMap(map)
+		// TODO: Dynamic location and re-rendering on origin change
 		loadTaxis(map, [103.773675, 1.2966058], 5)
 
 		// Center to current location
@@ -85,32 +117,27 @@ function Booking() {
 				lat: position.coords.latitude,
 				lng: position.coords.longitude,
 			})
+			userMarker = new google.maps.Marker({
+				position: {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+				},
+				map: map,
+				icon: {
+					path: icon.crosshairs,
+					fillColor: '#67e8f9',
+					fillOpacity: 1,
+					scale: 0.05,
+					strokeColor: '#67e8f9',
+					strokeWeight: 0.2,
+				},
+			})
 			map.setZoom(18)
 		})
 
-		// Load markers for saved locations
-		if (marker?.length == 0) {
-			const markerFacade = []
-
-			user.savedLocations?.map((location) =>
-				markerFacade.push({
-					lat: location.lat,
-					lng: location.lng,
-				})
-			)
-			if (user.work) {
-				markerFacade.push({
-					lat: user.work.lat,
-					lng: user.work.lng,
-				})
-			}
-			if (user.home) {
-				markerFacade.push({
-					lat: user.home.lat,
-					lng: user.home.lng,
-				})
-			}
-			setMarker(markerFacade)
+		const loggedInUser = localStorage.getItem('user')
+		if (loggedInUser !== null) {
+			setUser(JSON.parse(loggedInUser))
 		}
 	}, [])
 
@@ -244,27 +271,11 @@ function Booking() {
 						streetViewControl: false,
 						mapTypeControl: false,
 						fullscreenControl: false,
-						minZoom: 3
+						minZoom: 3,
 					}}
 					onClick={(e) => setLocationViaClick(e)}
 					onLoad={loadMap}
-				>
-					{marker?.length !== 0 &&
-						marker?.map((location, index) => (
-							<Marker
-								key={index}
-								position={location}
-								icon={{
-									path: icon.savedLocation,
-									fillColor: 'yellow',
-									fillOpacity: 0.9,
-									scale: 1,
-									strokeColor: 'gold',
-									strokeWeight: 2,
-								}}
-							/>
-						))}
-				</GoogleMap>
+				></GoogleMap>
 			</div>
 
 			{/* Search elements */}
@@ -332,3 +343,27 @@ function Booking() {
 }
 
 export default Booking
+
+function mark(map, place, image, fill, stroke) {
+	return new google.maps.Marker({
+		position: { lat: place.lat, lng: place.lng },
+		map: map,
+		title: place.placeName + ', ' + 'Singapore ' + place.postcode,
+		icon: {
+			path: image,
+			fillColor: fill,
+			fillOpacity: 1,
+			scale: 0.03,
+			strokeColor: stroke,
+			strokeWeight: 0.5,
+		},
+	})
+}
+
+function listener(marker, info) {
+	marker.addListener('click', () => {
+		info.close()
+		info.setContent(marker.getTitle())
+		info.open(marker.getMap(), marker)
+	})
+}

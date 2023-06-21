@@ -30,6 +30,11 @@ export const InputDestinationLocation = ({
 					ref={destinationRef}
 					onChange={(e) => {
 						isValidInput(false)
+						if (e.target.value === '') {
+							setExpandSearch(1)
+						} else {
+							setExpandSearch(0)
+						}
 					}}
 					onClick={() => setExpandSearch(2)}
 				/>

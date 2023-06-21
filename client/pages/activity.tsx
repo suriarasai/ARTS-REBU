@@ -35,7 +35,7 @@ const Activity = () => {
 
 	useEffect(() => {
 		// Retrieve all bookings associated with a user
-		getBookingsByCustomerID(user.customerID, setTripList);
+		getBookingsByCustomerID(user.customerID, setTripList)
 	}, [])
 
 	return (
@@ -45,7 +45,7 @@ const Activity = () => {
 			<TabController activeTab={activeTab} setActiveTab={setActiveTab} />
 
 			<Suspense fallback={<PulseLoadingVisual />}>
-				{tripList.length !== 0 ?
+				{tripList.length !== 0 ? (
 					tripList.map(
 						(trip, index) =>
 							// Filter by upcoming trips (requested or dispatch status)
@@ -70,7 +70,10 @@ const Activity = () => {
 									/>
 								</div>
 							)
-					) : <p className='mt-3 ml-3'>No trips found</p>}
+					)
+				) : (
+					<p className='ml-3 mt-3'>No trips found</p>
+				)}
 			</Suspense>
 		</Page>
 	)
@@ -98,6 +101,8 @@ const TabController = ({ activeTab, setActiveTab }) => (
 		</li>
 	</ul>
 )
+
+// Icon for pending, dispatched, cancelled, and completed rides
 const StatusIcon = ({ status }) => (
 	<div className='center w-2/12'>
 		{status === 'requested' && <FaClock className='trip-icon text-zinc-500' />}
@@ -113,6 +118,7 @@ const StatusIcon = ({ status }) => (
 	</div>
 )
 
+// Location details of the ride
 const LocationInfo = ({ address1, name1, address2, name2 }) => (
 	<div className='ml-3 w-9/12 flex-col items-center'>
 		<h2 className='mb-1'>{name1 || address1}</h2>
@@ -120,6 +126,7 @@ const LocationInfo = ({ address1, name1, address2, name2 }) => (
 	</div>
 )
 
+// Numeric details of the ride
 const TripStatistics = ({ fare, distance, id, date }) => (
 	// TODO: Time instead of distance
 	// TODO: Booking ID

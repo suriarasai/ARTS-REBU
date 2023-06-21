@@ -27,8 +27,12 @@ export const InputCurrentLocation = ({
 					placeholder='Current Location'
 					ref={originRef}
 					onChange={(e) => {
-						setOrigin(e.target.value)
 						isValidInput(false)
+						if (e.target.value === '') {
+							setExpandSearch(1)
+						} else {
+							setExpandSearch(0)
+						}
 					}}
 					onClick={() => setExpandSearch(1)}
 				/>
