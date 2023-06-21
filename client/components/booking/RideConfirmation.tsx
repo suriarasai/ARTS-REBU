@@ -42,6 +42,12 @@ export const RideConfirmation = (data) => {
 		])
 	}, [data])
 
+	useEffect(() => {
+		if (clickedOption) {
+			data.drawTaxiRoute(clickedOption)
+		}
+	}, [clickedOption])
+
 	function handleConfirmation(e) {
 		e.preventDefault()
 		setScreen('waiting')
@@ -151,7 +157,7 @@ export const RideConfirmation = (data) => {
 									<div className='ml-5 flex items-center'>
 										<FaClock className='text-lg text-green-500' />
 										<div className='p-2 px-5'>
-											{options[clickedOption].arrival + ' min.'}
+											{options[clickedOption-1].arrival + ' min.'}
 										</div>
 									</div>
 								</div>
@@ -187,7 +193,11 @@ export const RideConfirmation = (data) => {
 }
 
 // helper component to show rides
-const ShowOption = ({ option, setClickedOption, disabled=false }: showOptionInterface) => (
+const ShowOption = ({
+	option,
+	setClickedOption,
+	disabled = false,
+}: showOptionInterface) => (
 	/*
 		option				: the ride option
 		setClickedOption	: tracks which ride option was clicked 
@@ -222,28 +232,31 @@ const ShowOption = ({ option, setClickedOption, disabled=false }: showOptionInte
 
 function RouteConfirmation(data: any) {
 	return (
-		<div className='mb-2 pb-2 pl-2'>
-			<tr className='flex items-center'>
-				<th className='p-1 text-right'>
-					<FaCrosshairs className='text-xl text-green-500' />
-				</th>
-				<th className='text-left'>
-					<p className='p-2 text-sm'>
-						<b>{data.origin.placeName}</b>, Singapore {data.origin.postcode}
-					</p>
-				</th>
-			</tr>
-			<tr className='flex items-center'>
-				<th className='p-1 text-right'>
-					<FaFontAwesomeFlag className='text-xl text-green-500' />
-				</th>
-				<th className='text-left'>
-					<p className='p-2 text-sm'>
-						<b>{data.destination.placeName}</b>, Singapore {data.destination.postcode}
-					</p>
-				</th>
-			</tr>
-		</div>
+		<table className='mb-5'>
+			<tbody className='mb-3 pb-2 pl-2'>
+				<tr className='flex items-center'>
+					<th className='p-1 text-right'>
+						<FaCrosshairs className='text-xl text-green-500' />
+					</th>
+					<th className='text-left'>
+						<p className='p-2 text-sm'>
+							<b>{data.origin.placeName}</b>, Singapore {data.origin.postcode}
+						</p>
+					</th>
+				</tr>
+				<tr className='flex items-center'>
+					<th className='p-1 text-right'>
+						<FaFontAwesomeFlag className='text-xl text-green-500' />
+					</th>
+					<th className='text-left'>
+						<p className='p-2 text-sm'>
+							<b>{data.destination.placeName}</b>, Singapore{' '}
+							{data.destination.postcode}
+						</p>
+					</th>
+				</tr>
+			</tbody>
+		</table>
 	)
 }
 

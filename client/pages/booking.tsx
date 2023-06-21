@@ -18,6 +18,7 @@ import BottomNav from '@/components/ui/bottom-nav'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
+let taxiRouteDisplay
 
 let marks = {
 	home: null,
@@ -39,16 +40,23 @@ function Booking() {
 	})
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
-	const [, setDirectionsResponse] = useState(null)
 	const [distance, setDistance] = useState('')
-	const [, setDuration] = useState('')
+	const [duration, setDuration] = useState('')
 	const [validInput, isValidInput] = useState(false)
 	const [poi, setPoi] = useState(true)
+	const [taxis, setTaxis] = useState([])
 
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
 	const [expandSearch, setExpandSearch] = useState(0)
-	const [userLocation, setUserLocation] = useState<any>({})
+	const [userLocation, setUserLocation] = useState<any>({
+		placeID: null,
+		lat: null,
+		lng: null,
+		postcode: null,
+		address: null,
+		placeName: null,
+	})
 	const [rideConfirmed, setRideConfirmed] = useState(false)
 
 	const [origin, setOrigin] = useState({
@@ -82,10 +90,10 @@ function Booking() {
 
 		// Center to current location
 		navigator.geolocation.getCurrentPosition((position) => {
-			setUserLocation({
-				lat: position.coords.latitude,
-				lng: position.coords.longitude,
-			})
+			CoordinateToAddress(
+				[position.coords.latitude, position.coords.longitude],
+				setUserLocation
+			)
 			map.panTo({
 				lat: position.coords.latitude,
 				lng: position.coords.longitude,
@@ -134,6 +142,34 @@ function Booking() {
 		}
 	}, [destination])
 
+	// useEffect(() => {
+	// 	drawTaxiRoute()
+	// }, [taxis])
+
+	async function drawTaxiRoute(N = 0) {
+		if (taxiRouteDisplay != null) {
+			taxiRouteDisplay.set('directions', null)
+			taxiRouteDisplay.setMap(null)
+			taxiRouteDisplay = null
+		}
+
+		taxiRouteDisplay = new google.maps.DirectionsRenderer({
+			polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
+			suppressMarkers: true,
+		})
+
+		if (taxis.length > 0) {
+			const directionsService = new google.maps.DirectionsService()
+			const taxiPolyline = await directionsService.route({
+				origin: taxis[N].getPosition(),
+				destination: origin.lat ? origin : userLocation,
+				travelMode: google.maps.TravelMode.DRIVING,
+			})
+			taxiRouteDisplay.setMap(map)
+			taxiRouteDisplay.setDirections(taxiPolyline)
+		}
+	}
+
 	// Render a message until the map is finished loading
 	if (!isLoaded) {
 		return LoadingScreen
@@ -144,6 +180,12 @@ function Booking() {
 		if (!destination.lat) {
 			isValidInput(false)
 			return
+		}
+
+		if (origin.lat) {
+			loadTaxis(map, [origin.lng, origin.lat], 5, setTaxis)
+		} else {
+			loadTaxis(map, [userLocation.lng, userLocation.lat], 5, setTaxis)
 		}
 
 		// eslint-disable-next-line no-undef
@@ -162,23 +204,22 @@ function Booking() {
 		directionsDisplay = new google.maps.DirectionsRenderer()
 
 		// Setting the coordinates of the directions polyline
-		const results = await directionsService.route({
+		const routePolyline = await directionsService.route({
 			origin: origin.lat ? origin : userLocation,
 			destination: destination,
 			// eslint-disable-next-line no-undef
 			travelMode: google.maps.TravelMode.DRIVING,
 		})
-		setDirectionsResponse(results)
-		setDistance(results.routes[0].legs[0].distance.text)
-		setDuration(results.routes[0].legs[0].duration.text)
+
+		setDistance(routePolyline.routes[0].legs[0].distance.text)
+		setDuration(routePolyline.routes[0].legs[0].duration.text)
+		console.log(duration)
 		directionsDisplay.setMap(map) // Binding polyline to the map
-		directionsDisplay.setDirections(results) // Setting the coords
+		directionsDisplay.setDirections(routePolyline) // Setting the coords
 
-		const line = results.routes[0].overview_path // Polyline coords
+		const route = routePolyline.routes[0].overview_path // Polyline coords
 
-		loadTaxis(map, [origin.lng, origin.lat], 5)
-
-		// const expandedArray = expandArray(line, 100)
+		// const expandedArray = expandArray(route, 100)
 
 		// taxiMarker = new google.maps.Marker({
 		// 	map: map,
@@ -201,7 +242,6 @@ function Booking() {
 	}
 
 	function clearRoute() {
-		setDirectionsResponse(null)
 		setDistance('')
 		setDuration('')
 		setOrigin({
@@ -227,9 +267,12 @@ function Booking() {
 			directionsDisplay.set('directions', null)
 			directionsDisplay.setMap(null)
 			directionsDisplay = null
+			taxiRouteDisplay.set('directions', null)
+			taxiRouteDisplay.setMap(null)
+			taxiRouteDisplay = null
 		}
 		setRideConfirmed(false)
-		setMarkerVisibility(nearbyTaxiMarkers)
+		setMarkerVisibility(taxis)
 	}
 
 	function setLocationViaClick(e) {
@@ -292,10 +335,11 @@ function Booking() {
 				distance !== '' ? (
 					<RideConfirmation
 						distance={parseFloat(distance.match(/\d+/)[0])}
-						origin={origin}
+						origin={origin.lat ? origin : userLocation}
 						destination={destination}
 						setRideConfirmed={setRideConfirmed}
 						onCancel={clearRoute}
+						drawTaxiRoute={drawTaxiRoute}
 					/>
 				) : (
 					// If the input is invalid, then continue to show them the map controls
@@ -345,7 +389,6 @@ function listener(marker, info) {
 		info.open(marker.getMap(), marker)
 	})
 }
-
 
 function setMarkers(map, user) {
 	const infoWindow = new google.maps.InfoWindow()

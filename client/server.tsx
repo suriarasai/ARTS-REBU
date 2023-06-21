@@ -96,6 +96,7 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 		.then(function (data) {
 			try {
 				setLocation(getAddress(data.results[0], true))
+				console.log(getAddress(data.results[0], true))
 			} catch (e) {
 				console.log(e)
 				// Some state function to run a popup error...
@@ -103,7 +104,7 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 		})
 } // Loads the nearest N taxis onto the map
 
-export const loadTaxis = (map, coord, N = 1) => {
+export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
 		.then(function (response) {
 			return response.json()
@@ -145,6 +146,7 @@ export const loadTaxis = (map, coord, N = 1) => {
 				})
 				nearbyTaxiMarkers.push(newTaxi)
 			}
+			setTaxis(nearbyTaxiMarkers)
 		})
 }
 
