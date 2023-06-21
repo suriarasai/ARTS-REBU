@@ -18,11 +18,14 @@ import BottomNav from '@/components/ui/bottom-nav'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
-let taxiMarker
-let homeMarker
-let workMarker
-let savedMarker
-let userMarker
+
+let marks = {
+	taxi: null,
+	home: null,
+	work: null,
+	saved: null,
+	user: null,
+}
 
 export let nearbyTaxiMarkers = []
 
@@ -47,6 +50,7 @@ function Booking() {
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
 	const [expandSearch, setExpandSearch] = useState(0)
 	const [userLocation, setUserLocation] = useState<any>({})
+	const [rideConfirmed, setRideConfirmed] = useState(false)
 
 	const [origin, setOrigin] = useState({
 		placeID: null,
@@ -88,14 +92,14 @@ function Booking() {
 		if (user.home) {
 			const infoWindow = new google.maps.InfoWindow()
 
-			homeMarker = mark(map, user.home, icon.houseMarker, '#06b6d4', '#155e75')
-			workMarker = mark(map, user.work, icon.workMarker, '#06b6d4', '#155e75')
-			listener(homeMarker, infoWindow)
-			listener(workMarker, infoWindow)
+			marks.home = mark(map, user.home, icon.houseMarker, '#06b6d4', '#155e75')
+			marks.work = mark(map, user.work, icon.workMarker, '#06b6d4', '#155e75')
+			listener(marks.home, infoWindow)
+			listener(marks.work, infoWindow)
 
 			user.savedLocations.map((location) => {
-				savedMarker = mark(map, location, icon.saved, 'Yellow', 'Gold')
-				listener(savedMarker, infoWindow)
+				marks.saved = mark(map, location, icon.saved, 'Yellow', 'Gold')
+				listener(marks.saved, infoWindow)
 			})
 		}
 	}, [user])
@@ -117,7 +121,7 @@ function Booking() {
 				lat: position.coords.latitude,
 				lng: position.coords.longitude,
 			})
-			userMarker = new google.maps.Marker({
+			marks.user = new google.maps.Marker({
 				position: {
 					lat: position.coords.latitude,
 					lng: position.coords.longitude,
@@ -244,6 +248,15 @@ function Booking() {
 			address: null,
 			placeName: null,
 		}) // Coordinates of the origin location
+		setHideUI(false)
+		isValidInput(false)
+		mapStyles(map, poi)
+		if (directionsDisplay != null) {
+			directionsDisplay.set('directions', null)
+			directionsDisplay.setMap(null)
+			directionsDisplay = null
+		}
+		setRideConfirmed(false)
 	}
 
 	function setLocationViaClick(e) {
@@ -279,36 +292,26 @@ function Booking() {
 			</div>
 
 			{/* Search elements */}
-			{!hideUI ? (
-				LocationSearch(
-					expandSearch,
-					setExpandSearch,
-					originRef,
-					setOrigin,
-					isValidInput,
-					destinationRef,
-					setDestination,
-					calculateRoute,
-					validInput
-				)
-			) : (
-				<button
-					className='cancel-button absolute left-0 top-0 z-10 m-5'
-					onClick={() => {
-						setHideUI(false)
-						clearRoute()
-						isValidInput(false)
-						mapStyles(map, poi)
-						if (directionsDisplay != null) {
-							directionsDisplay.set('directions', null)
-							directionsDisplay.setMap(null)
-							directionsDisplay = null
-						}
-					}}
-				>
-					Cancel
-				</button>
-			)}
+			{!hideUI
+				? LocationSearch(
+						expandSearch,
+						setExpandSearch,
+						originRef,
+						setOrigin,
+						isValidInput,
+						destinationRef,
+						setDestination,
+						calculateRoute,
+						validInput
+				  )
+				: !rideConfirmed && (
+						<button
+							className='cancel-button absolute left-0 top-0 z-10 m-5'
+							onClick={() => clearRoute()}
+						>
+							Cancel
+						</button>
+				  )}
 
 			{/* If the user is not searching... */}
 			{[0, 3, 4].includes(expandSearch) ? (
@@ -316,8 +319,10 @@ function Booking() {
 				distance !== '' ? (
 					<RideConfirmation
 						distance={parseFloat(distance.match(/\d+/)[0])}
-						origin={originRef.current?.value.split(',')}
-						destination={destinationRef.current?.value.split(',')}
+						origin={origin}
+						destination={destination}
+						setRideConfirmed={setRideConfirmed}
+						onCancel={clearRoute}
 					/>
 				) : (
 					// If the input is invalid, then continue to show them the map controls

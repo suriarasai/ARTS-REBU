@@ -8,7 +8,6 @@ import {
 	FaClock,
 	FaCoins,
 	FaCrosshairs,
-	FaExpandAlt,
 	FaFlag,
 	FaFontAwesomeFlag,
 } from 'react-icons/fa'
@@ -46,6 +45,7 @@ export const RideConfirmation = (data) => {
 	function handleConfirmation(e) {
 		e.preventDefault()
 		setScreen('waiting')
+		data.setRideConfirmed(true)
 	}
 
 	return (
@@ -121,7 +121,10 @@ export const RideConfirmation = (data) => {
 										</div>
 									</div>
 									<hr className='mb-2' />
-									<button className='w-1/2 p-1 text-red-700'>
+									<button
+										className='w-1/2 p-1 text-red-700'
+										onClick={data.onCancel}
+									>
 										<p className='font-normal'>Cancel</p>
 									</button>
 									<button className='w-1/2 p-1 text-green-700'>
@@ -135,7 +138,9 @@ export const RideConfirmation = (data) => {
 									<div className='ml-5 mt-2 flex w-full items-center'>
 										<FaFlag className='text-lg text-green-500' />
 										<div className='w-4/5 p-2 px-5'>
-											{data.destination[0] + ', ' + data.destination[1]}
+											{data.destination.placeName +
+												', Singapore ' +
+												data.destination.postcode}
 										</div>
 										<div className='float-right -ml-3'>
 											<p>Change</p>
@@ -223,8 +228,7 @@ function RouteConfirmation(data: any) {
 				</th>
 				<th className='text-left'>
 					<p className='p-2 text-sm'>
-						<b>{data.origin[0]}</b>
-						{data.origin[1]}
+						<b>{data.origin.placeName}</b>, Singapore {data.origin.postcode}
 					</p>
 				</th>
 			</tr>
@@ -234,8 +238,7 @@ function RouteConfirmation(data: any) {
 				</th>
 				<th className='text-left'>
 					<p className='p-2 text-sm'>
-						<b>{data.destination[0]}</b>
-						{data.destination[1]}
+						<b>{data.destination.placeName}</b>, Singapore {data.postcode}
 					</p>
 				</th>
 			</tr>
