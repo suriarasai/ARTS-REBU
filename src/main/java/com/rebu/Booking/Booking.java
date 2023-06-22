@@ -93,7 +93,7 @@ public class Booking {
     public void setBooking(Booking data) {
         this.status = "requested";
         this.messageSubmittedTime = data.messageSubmittedTime;
-        this.messageReceivedTime = Instant.now().toEpochMilli();
+        this.messageReceivedTime = Instant.now().toEpochMilli(); // TODO: Remove? Is this done after Kafka?
         this.customerID = data.customerID;
         this.customerName = data.customerName;
         this.distance = data.distance;
