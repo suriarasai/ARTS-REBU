@@ -1,6 +1,5 @@
 import api from '@/api/axiosConfig'
 import { User } from './redux/types'
-import { nearbyTaxiMarkers } from './pages/booking'
 import { icon } from './redux/types/constants'
 import { getAddress } from './utils/getAddress'
 
@@ -172,6 +171,7 @@ export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 
 			let coords
 			let newTaxi
+			let nearbyTaxiMarkers = []
 
 			// Saving the marker to the state variable
 			for (let i = 0; i < N; i++) {

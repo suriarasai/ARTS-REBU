@@ -11,7 +11,16 @@ import {
 	FaFlag,
 	FaFontAwesomeFlag,
 } from 'react-icons/fa'
-import { cancelBooking, completeBooking, createBooking, matchedBooking } from '@/server'
+import {
+	cancelBooking,
+	completeBooking,
+	createBooking,
+	matchedBooking,
+} from '@/server'
+import { moveToStep } from '@/utils/moveTaxiMarker'
+import { expandArray } from '@/utils/expandArray'
+
+let taxiRouteDisplay
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
@@ -20,6 +29,7 @@ export const RideConfirmation = (data) => {
 	const [collapsed, setCollapsed] = useState<boolean>(false)
 	const [screen, setScreen] = useState<string>('')
 	const [bookingID, setBookingID] = useState<number>(null)
+	const [rideConfirmed, setRideConfirmed] = useState(false)
 
 	useEffect(() => {
 		// distance in meters
@@ -63,14 +73,14 @@ export const RideConfirmation = (data) => {
 
 	useEffect(() => {
 		if (clickedOption) {
-			data.drawTaxiRoute(clickedOption)
+			drawTaxiRoute(clickedOption-1, data.taxis, data.origin, data.map)
 		}
 	}, [clickedOption])
 
 	function handleConfirmation(e) {
 		e.preventDefault()
 		setScreen('waiting')
-		data.setRideConfirmed(true)
+		setRideConfirmed(true)
 
 		createBooking(
 			data.user,
@@ -84,10 +94,15 @@ export const RideConfirmation = (data) => {
 	function handleMatched() {
 		matchedBooking(bookingID, 1, 1) // API for matching
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
+		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path
+		moveToStep(data.taxis[clickedOption-1], expandArray(taxiRoute, 10), 0, 3)
+		// Settings: subdivisions=100, time(ms) between divisions=30
 	}
 
-	function handleCancelled() {
-		cancelBooking(bookingID) // API for trip cancellation
+	function handleCancelled(matchedStatus) {
+		matchedStatus && cancelBooking(bookingID) // API for trip cancellation
+		erasePolyline()
+
 		data.onCancel()
 	}
 
@@ -95,8 +110,21 @@ export const RideConfirmation = (data) => {
 		completeBooking(bookingID) // API for trip completion
 	}
 
+	function handleChooseAnotherOption() {
+		erasePolyline()
+		setClickedOption(null)
+	}
+
 	return (
 		<div>
+			{!rideConfirmed && (
+				<button
+					className='cancel-button absolute left-0 top-0 z-10 m-5'
+					onClick={() => handleCancelled(false)}
+				>
+					Cancel
+				</button>
+			)}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
 				{AccordionHeader(clickedOption, setCollapsed, collapsed, screen)}
 
@@ -130,7 +158,7 @@ export const RideConfirmation = (data) => {
 								<div className='flex items-center justify-center gap-5'>
 									<button
 										className='grey-button w-1/4'
-										onClick={() => setClickedOption(null)}
+										onClick={handleChooseAnotherOption}
 									>
 										Go Back
 									</button>
@@ -165,7 +193,7 @@ export const RideConfirmation = (data) => {
 								/>
 
 								{/* Payment Information */}
-								<PaymentInformation fare={options[clickedOption].fare} />
+								<PaymentInformation fare={options[clickedOption - 1].fare} />
 							</div>
 						) : (
 							<div>Error: Option not found</div>
@@ -179,8 +207,33 @@ export const RideConfirmation = (data) => {
 		</div>
 	)
 }
+async function drawTaxiRoute(N = 0, taxis, destination, map) {
+	if (taxiRouteDisplay != null) {
+		taxiRouteDisplay.set('directions', null)
+		taxiRouteDisplay.setMap(null)
+		taxiRouteDisplay = null
+	}
 
-const DriverInformation = ({onCancel}) => {
+	taxiRouteDisplay = new google.maps.DirectionsRenderer({
+		polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
+		suppressMarkers: true,
+	})
+
+	if (taxis.length > 0) {
+		const directionsService = new google.maps.DirectionsService()
+		const taxiPolyline = await directionsService.route({
+			origin: taxis[N].getPosition(),
+			destination: destination,
+			travelMode: google.maps.TravelMode.DRIVING,
+		})
+		taxiRouteDisplay.setMap(map)
+		taxiRouteDisplay.setDirections(taxiPolyline)
+
+		// setTaxiDuration(taxiPolyline.routes[0].legs[0].duration.value)
+	}
+}
+
+const DriverInformation = ({ onCancel }) => {
 	// "Sno":3,"TaxiNumber":"SHX6464","TaxiType":"Standard","TaxiFeature":{"TaxiMakeModel":"Toyota Prius","TaxiPassengerCapacity":4,"TaxiColor":"Blue"},"TMDTID":"TMA12020","RegisteredDrivers":[{"DriverName":"Fazil","DriverPhone":85152186},{"DriverName":"Chen Lee","DriverPhone":92465573},{"DriverName":"Muthu","DriverPhone":96839679}]}
 	return (
 		<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
@@ -197,7 +250,7 @@ const DriverInformation = ({onCancel}) => {
 				</div>
 			</div>
 			<hr className='mb-2' />
-			<button className='w-1/2 p-1 text-red-700' onClick={onCancel}>
+			<button className='w-1/2 p-1 text-red-700' onClick={() => onCancel(true)}>
 				<p className='font-normal'>Cancel</p>
 			</button>
 			<button className='w-1/2 p-1 text-green-700'>
@@ -343,4 +396,12 @@ function AccordionHeader(
 			</div>
 		</div>
 	)
+}
+
+function erasePolyline() {
+	if (taxiRouteDisplay != null) {
+		taxiRouteDisplay.set('directions', null)
+		taxiRouteDisplay.setMap(null)
+		taxiRouteDisplay = null
+	}
 }

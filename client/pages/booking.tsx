@@ -18,7 +18,6 @@ import BottomNav from '@/components/ui/bottom-nav'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
-let taxiRouteDisplay
 
 let marks = {
 	home: null,
@@ -26,8 +25,6 @@ let marks = {
 	saved: [],
 	user: null,
 }
-
-export let nearbyTaxiMarkers = []
 
 const libraries = ['places']
 
@@ -42,7 +39,6 @@ function Booking() {
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
 	const [distance, setDistance] = useState<number>(null)
 	const [duration, setDuration] = useState<number>(null)
-	const [taxiDuration, setTaxiDuration] = useState<number>(null)
 	const [validInput, isValidInput] = useState(false)
 	const [poi, setPoi] = useState(true)
 	const [taxis, setTaxis] = useState([])
@@ -58,7 +54,6 @@ function Booking() {
 		address: null,
 		placeName: null,
 	})
-	const [rideConfirmed, setRideConfirmed] = useState(false)
 
 	const [origin, setOrigin] = useState({
 		placeID: null,
@@ -147,32 +142,6 @@ function Booking() {
 	// 	drawTaxiRoute()
 	// }, [taxis])
 
-	async function drawTaxiRoute(N = 0) {
-		if (taxiRouteDisplay != null) {
-			taxiRouteDisplay.set('directions', null)
-			taxiRouteDisplay.setMap(null)
-			taxiRouteDisplay = null
-		}
-
-		taxiRouteDisplay = new google.maps.DirectionsRenderer({
-			polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
-			suppressMarkers: true,
-		})
-
-		if (taxis.length > 0) {
-			const directionsService = new google.maps.DirectionsService()
-			const taxiPolyline = await directionsService.route({
-				origin: taxis[N].getPosition(),
-				destination: origin.lat ? origin : userLocation,
-				travelMode: google.maps.TravelMode.DRIVING,
-			})
-			taxiRouteDisplay.setMap(map)
-			taxiRouteDisplay.setDirections(taxiPolyline)
-
-			setTaxiDuration(taxiPolyline.routes[0].legs[0].duration.value)
-		}
-	}
-
 	// Render a message until the map is finished loading
 	if (!isLoaded) {
 		return LoadingScreen
@@ -219,25 +188,6 @@ function Booking() {
 		directionsDisplay.setMap(map) // Binding polyline to the map
 		directionsDisplay.setDirections(routePolyline) // Setting the coords
 
-		const route = routePolyline.routes[0].overview_path // Polyline coords
-
-		// const expandedArray = expandArray(route, 100)
-
-		// taxiMarker = new google.maps.Marker({
-		// 	map: map,
-		// 	position: { lat: 1.2966058, lng: 103.772875 },
-		// 	icon: {
-		// 		path: 'M6 1a1 1 0 0 0-1 1v1h-.181A2.5 2.5 0 0 0 2.52 4.515l-.792 1.848a.807.807 0 0 1-.38.404c-.5.25-.855.715-.965 1.262L.05 9.708a2.5 2.5 0 0 0-.049.49v.413c0 .814.39 1.543 1 1.997V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.338c1.292.048 2.745.088 4 .088s2.708-.04 4-.088V14.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1.892c.61-.454 1-1.183 1-1.997v-.413c0-.165-.016-.329-.049-.49l-.335-1.68a1.807 1.807 0 0 0-.964-1.261.807.807 0 0 1-.381-.404l-.792-1.848A2.5 2.5 0 0 0 11.181 3H11V2a1 1 0 0 0-1-1H6ZM4.309 4h7.382a.5.5 0 0 1 .447.276l.956 1.913a.51.51 0 0 1-.497.731c-.91-.073-3.35-.17-4.597-.17-1.247 0-3.688.097-4.597.17a.51.51 0 0 1-.497-.731l.956-1.913A.5.5 0 0 1 4.309 4ZM4 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-9 0a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z',
-		// 		fillColor: 'MediumTurquoise',
-		// 		fillOpacity: 0.9,
-		// 		scale: 2,
-		// 		strokeColor: 'MidnightBlue',
-		// 		strokeWeight: 0.5,
-		// 	},
-		// })
-
-		// moveToStep(taxiMarker, expandedArray, 0, 30)
-
 		// UI Updates
 		isValidInput(true)
 		setHideUI(true)
@@ -269,11 +219,7 @@ function Booking() {
 			directionsDisplay.set('directions', null)
 			directionsDisplay.setMap(null)
 			directionsDisplay = null
-			taxiRouteDisplay.set('directions', null)
-			taxiRouteDisplay.setMap(null)
-			taxiRouteDisplay = null
 		}
-		setRideConfirmed(false)
 		setMarkerVisibility(taxis)
 	}
 
@@ -310,41 +256,32 @@ function Booking() {
 			</div>
 
 			{/* Search elements */}
-			{!hideUI
-				? LocationSearch(
-						expandSearch,
-						setExpandSearch,
-						originRef,
-						setOrigin,
-						isValidInput,
-						destinationRef,
-						setDestination,
-						calculateRoute,
-						validInput
-				  )
-				: !rideConfirmed && (
-						<button
-							className='cancel-button absolute left-0 top-0 z-10 m-5'
-							onClick={() => clearRoute()}
-						>
-							Cancel
-						</button>
-				  )}
+			{!hideUI &&
+				LocationSearch(
+					expandSearch,
+					setExpandSearch,
+					originRef,
+					setOrigin,
+					isValidInput,
+					destinationRef,
+					setDestination,
+					calculateRoute,
+					validInput
+				)}
 
 			{/* If the user is not searching... */}
 			{[0, 3, 4].includes(expandSearch) ? (
 				// If the input is valid, then begin the booking confirmation procedure
 				distance ? (
 					<RideConfirmation
+						map={map}
+						taxis={taxis}
 						user={user}
 						distance={distance}
 						duration={duration}
-						taxiDuration={taxiDuration}
 						origin={origin.lat ? origin : userLocation}
 						destination={destination}
-						setRideConfirmed={setRideConfirmed}
 						onCancel={clearRoute}
-						drawTaxiRoute={drawTaxiRoute}
 					/>
 				) : (
 					// If the input is invalid, then continue to show them the map controls
