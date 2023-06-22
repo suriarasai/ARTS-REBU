@@ -22,23 +22,6 @@ import { expandArray } from '@/utils/expandArray'
 
 let taxiRouteDisplay
 
-const taxiOptions = [
-	{
-		id: 1,
-		taxiType: 'Rebu Regular',
-		taxiPassengerCapacity: 4,
-		icon: <FaCarAlt />,
-		desc: 'Find the closest car',
-	},
-	{
-		id: 2,
-		taxiType: 'Rebu Plus',
-		taxiPassengerCapacity: 2,
-		icon: <FaCar />,
-		desc: 'Better cars',
-	},
-]
-
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
 	const [options, setOptions] = useState<Array<any>>([])
@@ -47,58 +30,56 @@ export const RideConfirmation = (data) => {
 	const [screen, setScreen] = useState<string>('')
 	const [bookingID, setBookingID] = useState<number>(null)
 	const [rideConfirmed, setRideConfirmed] = useState(false)
-	const [routes, setRoutes] = useState([]) // route polylines
+	const [routes, setRoutes] = useState({ 1: null, 2: null })
 
-	// Pre-calculating all the routes
 	useEffect(() => {
-		// distance in meters
-		// duration in seconds
-		taxiRouteDisplay = new google.maps.DirectionsRenderer({
-			polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
-			suppressMarkers: true,
-		})
-
-		async function calcPath() {
-			for (let i = 0; i < 2; i++) {
-				const directionsService = new google.maps.DirectionsService()
-				const tempList = routes.concat(
-					await directionsService.route({
-						origin: data.taxis[i].position,
-						destination: data.destination,
-						travelMode: google.maps.TravelMode.DRIVING,
-					})
-				)
-				const tempOption = options.concat({
-					id: taxiOptions[i].id,
-					taxiType: taxiOptions[i].taxiType,
-					taxiPassengerCapacity: taxiOptions[i].taxiPassengerCapacity,
-					fare: (3.9 + data.distance / 500).toFixed(2),
-					dropTime: (
-						((data.duration + tempList[0].routes[0].legs[0].duration.value) /
-							60) *
-						(i + 1.2)
-					).toFixed(1),
-					pickUpTime: (
-						(tempList[0].routes[0].legs[0].duration.value / 60) *
-						(1.2 + i)
-					).toFixed(1),
-					icon: taxiOptions[i].icon,
-					desc: taxiOptions[i].desc,
-				})
-
-				setRoutes(tempList)
-				setOptions(tempOption)
-			}
-		}
-
-		calcPath()
-
-		taxiRouteDisplay.setMap(data.map)
+		drawTaxiRoute(data.taxis, data.origin, data.map, setRoutes, routes)
 	}, [])
 
 	useEffect(() => {
+		// distance in meters
+		// duration in seconds
+		// TODO: Get routes for each path and render all but highlight clicked
+		// TODO: taxiDistance needs to be pre-calculated
+		setOptions([
+			{
+				id: 1,
+				taxiType: 'Rebu Regular',
+				taxiPassengerCapacity: 4,
+				fare: (3.9 + data.distance / 500).toFixed(2),
+				dropTime: (
+					(data.duration + data.taxiDuration ? data.taxiDuration / 60 : 5) / 60
+				).toFixed(1),
+				pickUpTime: (data.taxiDuration / 60
+					? data.taxiDuration / 60
+					: 5
+				).toFixed(1),
+				icon: <FaCarAlt />,
+				desc: 'Find the closest car',
+			},
+			{
+				id: 2,
+				taxiType: 'RebuPlus',
+				taxiPassengerCapacity: 2,
+				fare: (4.1 + data.distance / 400).toFixed(2),
+				dropTime: (
+					((data.duration + data.taxiDuration ? data.taxiDuration : 5) / 60) *
+					1.2
+				).toFixed(1),
+				pickUpTime: (
+					((data.taxiDuration ? data.taxiDuration : 3600) * 1.2) /
+					60
+				).toFixed(1),
+				icon: <FaCar />,
+				desc: 'Better cars',
+			},
+		])
+	}, [data])
+
+	useEffect(() => {
 		if (clickedOption) {
-			taxiRouteDisplay.setDirections(routes[clickedOption - 1])
+			console.log(routes)
+			taxiRouteDisplay.setDirections(routes[clickedOption])
 		}
 	}, [clickedOption])
 
@@ -121,7 +102,6 @@ export const RideConfirmation = (data) => {
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
 		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path
 
-		// TODO: Duration state into the below
 		moveToStep(data.taxis[clickedOption - 1], expandArray(taxiRoute, 10), 0, 3)
 		// Settings: subdivisions=100, time(ms) between divisions=30
 	}
@@ -235,20 +215,7 @@ export const RideConfirmation = (data) => {
 	)
 }
 
-async function drawTaxiRoute(
-	N = 0,
-	taxis,
-	destination,
-	map,
-	setRoutes,
-	routes
-) {
-	if (taxiRouteDisplay != null) {
-		taxiRouteDisplay.set('directions', null)
-		taxiRouteDisplay.setMap(null)
-		taxiRouteDisplay = null
-	}
-
+function drawTaxiRoute(taxis, destination, map, setRoutes, routes) {
 	taxiRouteDisplay = new google.maps.DirectionsRenderer({
 		polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
 		suppressMarkers: true,
@@ -256,15 +223,31 @@ async function drawTaxiRoute(
 
 	if (taxis.length > 0) {
 		const directionsService = new google.maps.DirectionsService()
-		setRoutes([
-			...(routes +
-				(await directionsService.route({
-					origin: taxis[N].getPosition(),
+		let tempObj = {1: null, 2: null}
+
+		for (let i = 0; i < 2; i++) {
+			directionsService.route(
+				{
+					origin: taxis[i].getPosition(),
 					destination: destination,
 					travelMode: google.maps.TravelMode.DRIVING,
-				}))),
-		])
-		taxiRouteDisplay.setMap(map)
+				},
+				function (result, status) {
+					if (status == 'OK') {
+						taxiRouteDisplay.setMap(map)
+						tempObj[i+1] = result
+						console.log(result, i + 1)
+					} else {
+						console.log('Error: Taxi directions API failed')
+					}
+				}
+			)
+			setRoutes(tempObj)
+		}
+
+		// setTaxiDuration(taxiPolyline.routes[0].legs[0].duration.value)
+	} else {
+		console.log('Error: Taxis not done loading')
 	}
 }
 
