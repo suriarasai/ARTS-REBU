@@ -31,29 +31,35 @@ export const RideConfirmation = (data) => {
 	const [bookingID, setBookingID] = useState<number>(null)
 	const [rideConfirmed, setRideConfirmed] = useState(false)
 	const [routes, setRoutes] = useState({ 1: null, 2: null })
+	const [taxiETA, setTaxiETA] = useState({ 1: null, 2: null })
 
 	useEffect(() => {
-		drawTaxiRoute(data.taxis, data.origin, data.map, setRoutes, routes)
+		drawTaxiRoute(
+			data.taxis,
+			data.origin,
+			data.map,
+			setRoutes,
+			setTaxiETA,
+			initializeOptions
+		)
 	}, [])
 
-	useEffect(() => {
+	function initializeOptions(ETA) {
 		// distance in meters
 		// duration in seconds
 		// TODO: Get routes for each path and render all but highlight clicked
 		// TODO: taxiDistance needs to be pre-calculated
+
+		if (!ETA[2]) return
+
 		setOptions([
 			{
 				id: 1,
 				taxiType: 'Rebu Regular',
 				taxiPassengerCapacity: 4,
 				fare: (3.9 + data.distance / 500).toFixed(2),
-				dropTime: (
-					(data.duration + data.taxiDuration ? data.taxiDuration / 60 : 5) / 60
-				).toFixed(1),
-				pickUpTime: (data.taxiDuration / 60
-					? data.taxiDuration / 60
-					: 5
-				).toFixed(1),
+				dropTime: (data.duration + ETA[1] / 60).toFixed(1),
+				pickUpTime: (ETA[1] / 60).toFixed(1),
 				icon: <FaCarAlt />,
 				desc: 'Find the closest car',
 			},
@@ -62,23 +68,16 @@ export const RideConfirmation = (data) => {
 				taxiType: 'RebuPlus',
 				taxiPassengerCapacity: 2,
 				fare: (4.1 + data.distance / 400).toFixed(2),
-				dropTime: (
-					((data.duration + data.taxiDuration ? data.taxiDuration : 5) / 60) *
-					1.2
-				).toFixed(1),
-				pickUpTime: (
-					((data.taxiDuration ? data.taxiDuration : 3600) * 1.2) /
-					60
-				).toFixed(1),
+				dropTime: ((data.duration + ETA[2] / 60) * 1.2).toFixed(1),
+				pickUpTime: (ETA[2] / 60).toFixed(1),
 				icon: <FaCar />,
 				desc: 'Better cars',
 			},
 		])
-	}, [data])
+	}
 
 	useEffect(() => {
 		if (clickedOption) {
-			console.log(routes)
 			taxiRouteDisplay.setDirections(routes[clickedOption])
 		}
 	}, [clickedOption])
@@ -133,7 +132,7 @@ export const RideConfirmation = (data) => {
 				</button>
 			)}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
-				{AccordionHeader(clickedOption, setCollapsed, collapsed, screen)}
+				{AccordionHeader(clickedOption, setCollapsed, collapsed, screen, taxiETA)}
 
 				{collapsed ? null : (
 					<div className='accordion-content pb-4 pl-4 pr-4'>
@@ -215,7 +214,14 @@ export const RideConfirmation = (data) => {
 	)
 }
 
-function drawTaxiRoute(taxis, destination, map, setRoutes, routes) {
+function drawTaxiRoute(
+	taxis,
+	destination,
+	map,
+	setRoutes,
+	setTaxiETA,
+	_callback
+) {
 	taxiRouteDisplay = new google.maps.DirectionsRenderer({
 		polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
 		suppressMarkers: true,
@@ -223,7 +229,8 @@ function drawTaxiRoute(taxis, destination, map, setRoutes, routes) {
 
 	if (taxis.length > 0) {
 		const directionsService = new google.maps.DirectionsService()
-		let tempObj = {1: null, 2: null}
+		let tempObj = { 1: null, 2: null }
+		let tempETA = { 1: null, 2: null }
 
 		for (let i = 0; i < 2; i++) {
 			directionsService.route(
@@ -235,17 +242,17 @@ function drawTaxiRoute(taxis, destination, map, setRoutes, routes) {
 				function (result, status) {
 					if (status == 'OK') {
 						taxiRouteDisplay.setMap(map)
-						tempObj[i+1] = result
-						console.log(result, i + 1)
+						tempObj[i + 1] = result
+						tempETA[i + 1] = result.routes[0].legs[0].duration.value
+						setRoutes(tempObj)
+						setTaxiETA(tempETA)
+						_callback(tempETA)
 					} else {
 						console.log('Error: Taxi directions API failed')
 					}
 				}
 			)
-			setRoutes(tempObj)
 		}
-
-		// setTaxiDuration(taxiPolyline.routes[0].legs[0].duration.value)
 	} else {
 		console.log('Error: Taxis not done loading')
 	}
@@ -391,11 +398,12 @@ function AccordionHeader(
 	clickedOption: number,
 	setCollapsed: React.Dispatch<React.SetStateAction<boolean>>,
 	collapsed: boolean,
-	screen
+	screen: string,
+	taxiETA
 ) {
 	return (
 		<div className='accordion-header flex flex-wrap pl-4 pt-4'>
-			<label className={screen === 'confirmed' ? 'w-11/12' : 'w-9/12'}>
+			<label className={clickedOption ? 'w-11/12' : 'w-9/12'}>
 				{!clickedOption ? (
 					'Suggested Rides'
 				) : screen === '' ? (
@@ -405,7 +413,9 @@ function AccordionHeader(
 				) : screen === 'confirmed' ? (
 					<>
 						En Route
-						<div className='float-right pr-4'>xx min.</div>
+						<div className='float-right pr-4'>
+							{Math.round(taxiETA[clickedOption] / 60)} min.
+						</div>
 					</>
 				) : (
 					''
