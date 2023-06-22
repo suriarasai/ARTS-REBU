@@ -1,4 +1,13 @@
-export function moveToStep(marker, polyline, iter, timer) {
+export function moveToStep(
+	marker,
+	polyline,
+	iter,
+	timer,
+	taxiETA,
+	setTaxiETA,
+	stepsPerMinute,
+	clickedOption
+) {
 	/*
 	 * Incrementally moves a given marker along a polyline to simulate real-time motion
 	 *
@@ -12,8 +21,23 @@ export function moveToStep(marker, polyline, iter, timer) {
 			lat: polyline[iter].lat,
 			lng: polyline[iter].lng,
 		})
+		if (iter % stepsPerMinute == 0) {
+			setTaxiETA((taxiETA) => ({
+				...taxiETA,
+				[clickedOption]: taxiETA[clickedOption] - 60,
+			}))
+		}
 		window.setTimeout(function () {
-			moveToStep(marker, polyline, iter + 1, timer)
+			moveToStep(
+				marker,
+				polyline,
+				iter + 1,
+				timer,
+				taxiETA,
+				setTaxiETA,
+				stepsPerMinute,
+				clickedOption
+			)
 		}, timer)
 	}
 }

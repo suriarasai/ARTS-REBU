@@ -100,8 +100,23 @@ export const RideConfirmation = (data) => {
 		matchedBooking(bookingID, 1, 1) // API for matching
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
 		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path
+		const polyline = expandArray(taxiRoute, 10)
+		const stepsPerMinute = Math.round(
+			(polyline.length - 1) / (taxiETA[clickedOption] / 60) + 1
+		)
+		console.log(polyline.length)
+		console.log(taxiETA)
 
-		moveToStep(data.taxis[clickedOption - 1], expandArray(taxiRoute, 10), 0, 3)
+		moveToStep(
+			data.taxis[clickedOption - 1],
+			polyline,
+			0,
+			50,
+			taxiETA,
+			setTaxiETA,
+			stepsPerMinute,
+			clickedOption
+		)
 		// Settings: subdivisions=100, time(ms) between divisions=30
 	}
 
@@ -132,7 +147,13 @@ export const RideConfirmation = (data) => {
 				</button>
 			)}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
-				{AccordionHeader(clickedOption, setCollapsed, collapsed, screen, taxiETA)}
+				{AccordionHeader(
+					clickedOption,
+					setCollapsed,
+					collapsed,
+					screen,
+					taxiETA
+				)}
 
 				{collapsed ? null : (
 					<div className='accordion-content pb-4 pl-4 pr-4'>
@@ -247,6 +268,7 @@ function drawTaxiRoute(
 						setRoutes(tempObj)
 						setTaxiETA(tempETA)
 						_callback(tempETA)
+						console.log(tempETA)
 					} else {
 						console.log('Error: Taxi directions API failed')
 					}
@@ -319,7 +341,7 @@ const TripInformation = (props) => {
 			<hr className='my-2' />
 			<div className='ml-5 flex items-center'>
 				<FaClock className='text-lg text-green-500' />
-				<div className='p-2 px-5'>{dropTime + ' min.'}</div>
+				<div className='p-2 px-5'>{Math.round(dropTime / 60) + ' min.'}</div>
 			</div>
 		</div>
 	)
