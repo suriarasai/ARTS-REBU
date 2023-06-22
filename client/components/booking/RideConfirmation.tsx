@@ -11,7 +11,7 @@ import {
 	FaFlag,
 	FaFontAwesomeFlag,
 } from 'react-icons/fa'
-import { createBooking } from '@/server'
+import { cancelBooking, completeBooking, createBooking, matchedBooking } from '@/server'
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
@@ -19,6 +19,7 @@ export const RideConfirmation = (data) => {
 	const [clickedOption, setClickedOption] = useState<number | null>(null)
 	const [collapsed, setCollapsed] = useState<boolean>(false)
 	const [screen, setScreen] = useState<string>('')
+	const [bookingID, setBookingID] = useState<number>(null)
 
 	useEffect(() => {
 		// distance in meters
@@ -70,12 +71,28 @@ export const RideConfirmation = (data) => {
 		e.preventDefault()
 		setScreen('waiting')
 		data.setRideConfirmed(true)
+
 		createBooking(
 			data.user,
 			options[clickedOption - 1],
 			data.origin,
-			data.destination
-		)
+			data.destination,
+			setBookingID
+		) // API to create booking
+	}
+
+	function handleMatched() {
+		matchedBooking(bookingID, 1, 1) // API for matching
+		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
+	}
+
+	function handleCancelled() {
+		cancelBooking(bookingID) // API for trip cancellation
+		data.onCancel()
+	}
+
+	function handleCompleted() {
+		completeBooking(bookingID) // API for trip completion
 	}
 
 	return (
@@ -119,7 +136,7 @@ export const RideConfirmation = (data) => {
 									</button>
 									<button
 										className='green-button w-3/4 text-white'
-										onClick={(e) => handleConfirmation(e)}
+										onClick={handleConfirmation}
 									>
 										Confirm
 									</button>
@@ -130,7 +147,7 @@ export const RideConfirmation = (data) => {
 								<h5>Please wait..</h5>
 								<button
 									className='green-button mt-5 w-full'
-									onClick={() => setScreen('confirmed')}
+									onClick={handleMatched}
 								>
 									Skip
 								</button>
@@ -138,70 +155,17 @@ export const RideConfirmation = (data) => {
 						) : screen === 'confirmed' ? (
 							<div>
 								{/* Driver and Vehicle Information */}
-								<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
-									<div className='mb-3 flex flex-wrap items-center justify-center'>
-										<div className='mr-5 flex h-16 w-16 items-center justify-center rounded-full border border-green-500'>
-											DN
-										</div>
-										<div className='w-2/5'>
-											<p className='font-medium'>{'[ Taxi Driver Name ]'}</p>
-											<p>{'[ Car Model ]'}</p>
-										</div>
-										<div className='flex h-10 w-2/5 items-center justify-center rounded border border-green-700 text-xl text-green-700 '>
-											{'[ Car Plate ]'}
-										</div>
-									</div>
-									<hr className='mb-2' />
-									<button
-										className='w-1/2 p-1 text-red-700'
-										onClick={data.onCancel}
-									>
-										<p className='font-normal'>Cancel</p>
-									</button>
-									<button className='w-1/2 p-1 text-green-700'>
-										<p className='font-normal'>Contact</p>
-									</button>
-								</div>
+								<DriverInformation onCancel={handleCancelled} />
 
 								{/* Trip Information */}
-								<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
-									<b className='text-sm'>Your current trip</b>
-									<div className='ml-5 mt-2 flex w-full items-center'>
-										<FaFlag className='text-lg text-green-500' />
-										<div className='w-4/5 p-2 px-5'>
-											{data.destination.placeName +
-												', Singapore ' +
-												data.destination.postcode}
-										</div>
-										<div className='float-right -ml-3'>
-											<p>Change</p>
-										</div>
-									</div>
-									<hr className='my-2' />
-									<div className='ml-5 flex items-center'>
-										<FaClock className='text-lg text-green-500' />
-										<div className='p-2 px-5'>
-											{options[clickedOption - 1].dropTime + ' min.'}
-										</div>
-									</div>
-								</div>
+								<TripInformation
+									placeName={data.destination.placeName}
+									postcode={data.destination.postcode}
+									dropTime={options[clickedOption - 1].dropTime}
+								/>
 
 								{/* Payment Information */}
-								<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
-									<div className='flex w-11/12 flex-row items-center'>
-										<FaCoins className='mx-5 text-lg text-green-500' />
-										<div>
-											$
-											<b className='font-normal'>
-												{options[clickedOption].fare}
-											</b>
-											<p className='text-sm'>Cash</p>
-										</div>
-									</div>
-									<div className='float-right'>
-										<FaAngleDown className='text-lg text-green-500' />
-									</div>
-								</div>
+								<PaymentInformation fare={options[clickedOption].fare} />
 							</div>
 						) : (
 							<div>Error: Option not found</div>
@@ -212,6 +176,73 @@ export const RideConfirmation = (data) => {
 			{screen === 'waiting' && (
 				<div className='absolute left-0 top-0 z-20 h-full w-full backdrop-brightness-50'></div>
 			)}
+		</div>
+	)
+}
+
+const DriverInformation = ({onCancel}) => {
+	// "Sno":3,"TaxiNumber":"SHX6464","TaxiType":"Standard","TaxiFeature":{"TaxiMakeModel":"Toyota Prius","TaxiPassengerCapacity":4,"TaxiColor":"Blue"},"TMDTID":"TMA12020","RegisteredDrivers":[{"DriverName":"Fazil","DriverPhone":85152186},{"DriverName":"Chen Lee","DriverPhone":92465573},{"DriverName":"Muthu","DriverPhone":96839679}]}
+	return (
+		<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
+			<div className='mb-3 flex flex-wrap items-center justify-center'>
+				<div className='mr-5 flex h-16 w-16 items-center justify-center rounded-full border border-green-500'>
+					DN
+				</div>
+				<div className='w-2/5'>
+					<p className='font-medium'>{'[ Taxi Driver Name ]'}</p>
+					<p>{'[ Car Model ]'}</p>
+				</div>
+				<div className='flex h-10 w-2/5 items-center justify-center rounded border border-green-700 text-xl text-green-700 '>
+					{'[ Car Plate ]'}
+				</div>
+			</div>
+			<hr className='mb-2' />
+			<button className='w-1/2 p-1 text-red-700' onClick={onCancel}>
+				<p className='font-normal'>Cancel</p>
+			</button>
+			<button className='w-1/2 p-1 text-green-700'>
+				<p className='font-normal'>Contact</p>
+			</button>
+		</div>
+	)
+}
+
+const PaymentInformation = ({ fare }) => {
+	return (
+		<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
+			<div className='flex w-11/12 flex-row items-center'>
+				<FaCoins className='mx-5 text-lg text-green-500' />
+				<div>
+					$<b className='font-normal'>{fare}</b>
+					<p className='text-sm'>Cash</p>
+				</div>
+			</div>
+			<div className='float-right'>
+				<FaAngleDown className='text-lg text-green-500' />
+			</div>
+		</div>
+	)
+}
+
+const TripInformation = (props) => {
+	const { placeName, postcode, dropTime } = props
+	return (
+		<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
+			<b className='text-sm'>Your current trip</b>
+			<div className='ml-5 mt-2 flex w-full items-center'>
+				<FaFlag className='text-lg text-green-500' />
+				<div className='w-4/5 p-2 px-5'>
+					{placeName + ', Singapore ' + postcode}
+				</div>
+				<div className='float-right -ml-3'>
+					<p>Change</p>
+				</div>
+			</div>
+			<hr className='my-2' />
+			<div className='ml-5 flex items-center'>
+				<FaClock className='text-lg text-green-500' />
+				<div className='p-2 px-5'>{dropTime + ' min.'}</div>
+			</div>
 		</div>
 	)
 }

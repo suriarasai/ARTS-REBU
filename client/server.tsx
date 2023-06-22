@@ -87,7 +87,8 @@ export const createBooking = async (
 	user: User,
 	option,
 	origin,
-	destination
+	destination,
+	setBookingID
 ) => {
 	const response = await api.post('/api/v1/Booking/createBooking', {
 		customerID: user.customerID,
@@ -103,28 +104,30 @@ export const createBooking = async (
 		pickUpLocation: origin,
 		dropLocation: destination,
 	})
-	return response
+
+	setBookingID(response.data.bookingID)
+	return response.data
 }
 
-export const matchedBooking = async (customerID, driverID, taxiID) => {
+export const matchedBooking = async (bookingID, driverID, taxiID) => {
 	const response = await api.post('/api/v1/Booking/matchedBooking', {
-		customerID: customerID,
+		bookingID: bookingID,
 		driverID: driverID,
 		taxiID: taxiID,
 	})
 	return response
 }
 
-export const cancelBooking = async (customerID) => {
+export const cancelBooking = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/cancelBooking', {
-		customerID: customerID,
+		bookingID: bookingID,
 	})
 	return response
 }
 
-export const completeBooking = async (customerID) => {
+export const completeBooking = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/completeBooking', {
-		customerID: customerID,
+		bookingID: bookingID,
 	})
 	return response
 }

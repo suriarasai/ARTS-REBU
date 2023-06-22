@@ -39,47 +39,53 @@ const Activity = () => {
 	}, [])
 
 	return (
-		<Page title={Title.ACTIVITY}>
+		<Page title={Title.ACTIVITY} className='overflow-y-hidden h-screen'>
 			{DateFilter}
 
 			<TabController activeTab={activeTab} setActiveTab={setActiveTab} />
 
 			<Suspense fallback={<PulseLoadingVisual />}>
-				{tripList.length !== 0 ? (
-					tripList.map(
-						(trip, index) =>
-							// Filter by upcoming trips (requested or dispatch status)
-							((activeTab === 'Upcoming' &&
-								['requested', 'dispatched'].includes(trip['status'])) ||
-								// or... Filter by previous trips (cancelled or completed status)
-								(activeTab === 'Previous' &&
-									['completed', 'cancelled'].includes(trip['status']))) && (
-								<div key={index} className='trip-container'>
-									<StatusIcon status={trip['status']} />
-									<LocationInfo
-										address1={trip['dropLocation']['address']}
-										name1={trip['dropLocation']['placeName']}
-										address2={trip['pickUpLocation']['address']}
-										name2={trip['pickUpLocation']['placeName']}
-									/>
-									<TripStatistics
-										fare={trip['fare']}
-										distance={trip['distance']}
-										id={trip['bookingID']}
-										date={trip['messageSubmittedTime']}
-									/>
-								</div>
-							)
-					)
-				) : (
-					<p className='ml-3 mt-3'>No trips found</p>
-				)}
+				<TripList tripList={tripList} activeTab={activeTab} />
 			</Suspense>
 		</Page>
 	)
 }
 
 export default Activity
+
+const TripList = ({ tripList, activeTab }) => (
+	<div className='overflow-auto h-96'>
+		{tripList.length !== 0 ? (
+			tripList.map(
+				(trip, index) =>
+					// Filter by upcoming trips (requested or dispatch status)
+					((activeTab === 'Upcoming' &&
+						['requested', 'dispatched'].includes(trip['status'])) ||
+						// or... Filter by previous trips (cancelled or completed status)
+						(activeTab === 'Previous' &&
+							['completed', 'cancelled'].includes(trip['status']))) && (
+						<div key={index} className='trip-container'>
+							<StatusIcon status={trip['status']} />
+							<LocationInfo
+								address1={trip['dropLocation']['address']}
+								name1={trip['dropLocation']['placeName']}
+								address2={trip['pickUpLocation']['address']}
+								name2={trip['pickUpLocation']['placeName']}
+							/>
+							<TripStatistics
+								fare={trip['fare']}
+								distance={trip['distance']}
+								id={trip['bookingID']}
+								date={trip['messageSubmittedTime']}
+							/>
+						</div>
+					)
+			)
+		) : (
+			<p className='ml-3 mt-3'>No trips found</p>
+		)}
+	</div>
+)
 
 const TabController = ({ activeTab, setActiveTab }) => (
 	<ul className='flex'>
@@ -128,20 +134,21 @@ const LocationInfo = ({ address1, name1, address2, name2 }) => (
 
 // Numeric details of the ride
 const TripStatistics = ({ fare, distance, id, date }) => {
-	const dt = new Date(parseInt(date, 10));
+	const dt = new Date(parseInt(date, 10))
 	return (
-	// TODO: Time instead of distance
-	// TODO: Booking ID
-	<div className='order-2 w-3/12 text-right'>
-		<h1>${fare}</h1>
-		<h5>
-			{dt.toLocaleDateString()} | {distance} km
-		</h5>
-		{/* <h5>
+		// TODO: Time instead of distance
+		// TODO: Booking ID
+		<div className='order-2 w-3/12 text-right'>
+			<h1>${fare}</h1>
+			<h5>
+				{dt.toLocaleDateString()} | {distance} km
+			</h5>
+			{/* <h5>
 			ID: {id} <br />
 		</h5> */}
-	</div>
-)}
+		</div>
+	)
+}
 
 const convertToMonth = (date) => {
 	const month = date[1]
