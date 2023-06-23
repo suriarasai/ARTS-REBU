@@ -270,9 +270,9 @@ function Booking() {
 				)}
 
 			{/* If the user is not searching... */}
-			{[0, 3, 4].includes(expandSearch) && taxis.length > 1 ? (
+			{[0, 3, 4].includes(expandSearch) ? (
 				// If the input is valid, then begin the booking confirmation procedure
-				distance ? (
+				taxis.length > 1 && distance ? (
 					<RideConfirmation
 						map={map}
 						taxis={taxis}

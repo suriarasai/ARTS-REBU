@@ -22,11 +22,11 @@ export function moveToStep(
 			lng: polyline[iter].lng,
 		})
 		if (iter % stepsPerMinute == 0) {
-			const nextDecrement = ETA[clickedOption] - 60
 			setETA((ETA) => ({
 				...ETA,
-				[clickedOption]: nextDecrement >= 0 ? nextDecrement : 0,
+				[clickedOption]: Math.max(ETA[clickedOption] - 60, 0),
 			}))
+			console.log(iter)
 		}
 		window.setTimeout(function () {
 			moveToStep(

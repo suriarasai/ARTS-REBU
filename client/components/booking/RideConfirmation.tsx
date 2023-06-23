@@ -19,6 +19,7 @@ import {
 } from '@/server'
 import { moveToStep } from '@/utils/moveTaxiMarker'
 import { expandArray } from '@/utils/expandArray'
+import { Popup } from '../ui/Popup'
 
 let taxiRouteDisplay
 
@@ -32,6 +33,7 @@ export const RideConfirmation = (data) => {
 	const [rideConfirmed, setRideConfirmed] = useState(false)
 	const [routes, setRoutes] = useState({ 1: null, 2: null })
 	const [taxiETA, setTaxiETA] = useState({ 1: null, 2: null })
+	const [notification, setNotification] = useState(null)
 
 	useEffect(() => {
 		drawTaxiRoute(
@@ -104,8 +106,8 @@ export const RideConfirmation = (data) => {
 		const stepsPerMinute = Math.round(
 			(polyline.length - 1) / (taxiETA[clickedOption] / 60) + 1
 		)
-		console.log(polyline.length)
-		console.log(taxiETA)
+
+		console.log(stepsPerMinute, polyline.length)
 
 		moveToStep(
 			data.taxis[clickedOption - 1],
@@ -117,8 +119,19 @@ export const RideConfirmation = (data) => {
 			stepsPerMinute,
 			clickedOption
 		)
-		// Settings: subdivisions=100, time(ms) between divisions=30
 	}
+
+	useEffect(() => {
+		if (screen !== 'confirmed') return
+
+		// Proximity notification @ 1 min
+		if (Math.round(taxiETA[clickedOption] / 60) === 1) {
+			console.log('1 minute ETA')
+			setNotification(true)
+		} else if (Math.round(taxiETA[clickedOption] / 60) === 0) {
+			console.log('arriving now')
+		}
+	}, [taxiETA])
 
 	function handleCancelled(matchedStatus) {
 		matchedStatus && cancelBooking(bookingID) // API for trip cancellation
@@ -137,7 +150,7 @@ export const RideConfirmation = (data) => {
 	}
 
 	return (
-		<div>
+		<>
 			{!rideConfirmed && (
 				<button
 					className='cancel-button absolute left-0 top-0 z-10 m-5'
@@ -146,6 +159,7 @@ export const RideConfirmation = (data) => {
 					Cancel
 				</button>
 			)}
+			{notification && <Popup clear={setNotification} />}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
 				{AccordionHeader(
 					clickedOption,
@@ -231,7 +245,7 @@ export const RideConfirmation = (data) => {
 			{screen === 'waiting' && (
 				<div className='absolute left-0 top-0 z-20 h-full w-full backdrop-brightness-50'></div>
 			)}
-		</div>
+		</>
 	)
 }
 
@@ -268,7 +282,6 @@ function drawTaxiRoute(
 						setRoutes(tempObj)
 						setTaxiETA(tempETA)
 						_callback(tempETA)
-						console.log(tempETA)
 					} else {
 						console.log('Error: Taxi directions API failed')
 					}
