@@ -3,11 +3,11 @@ export function moveToStep(
 	polyline,
 	iter,
 	timer,
-	ETA,
-	setETA,
-	stepsPerMinute,
-	clickedOption,
-	_callback
+	_callback,
+	ETA: any = 0,
+	setETA = (n) => {},
+	stepsPerMinute = 1000,
+	clickedOption = 0
 ) {
 	/*
 	 * Incrementally moves a given marker along a polyline to simulate real-time motion
@@ -23,11 +23,14 @@ export function moveToStep(
 			lng: polyline[iter].lng,
 		})
 		if (iter % stepsPerMinute == 0) {
-			setETA((ETA) => ({
-				...ETA,
-				[clickedOption]: Math.max(ETA[clickedOption] - 60, 0),
-			}))
-			console.log(iter)
+			if (clickedOption === 0) {
+				setETA((ETA) => ETA)
+			} else {
+				setETA((ETA) => ({
+					...ETA,
+					[clickedOption]: Math.max(ETA[clickedOption] - 60, 0),
+				}))
+			}
 		}
 		window.setTimeout(function () {
 			moveToStep(
@@ -35,11 +38,11 @@ export function moveToStep(
 				polyline,
 				iter + 1,
 				timer,
+				_callback,
 				ETA,
 				setETA,
 				stepsPerMinute,
-				clickedOption,
-				_callback
+				clickedOption
 			)
 		}, timer)
 	} else {
