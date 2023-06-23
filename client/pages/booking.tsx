@@ -155,9 +155,9 @@ function Booking() {
 		}
 
 		if (origin.lat) {
-			loadTaxis(map, [origin.lng, origin.lat], 5, setTaxis)
+			await loadTaxis(map, [origin.lng, origin.lat], 5, setTaxis)
 		} else {
-			loadTaxis(map, [userLocation.lng, userLocation.lat], 5, setTaxis)
+			await loadTaxis(map, [userLocation.lng, userLocation.lat], 5, setTaxis)
 		}
 
 		// eslint-disable-next-line no-undef
@@ -270,7 +270,7 @@ function Booking() {
 				)}
 
 			{/* If the user is not searching... */}
-			{[0, 3, 4].includes(expandSearch) ? (
+			{[0, 3, 4].includes(expandSearch) && taxis.length > 1 ? (
 				// If the input is valid, then begin the booking confirmation procedure
 				distance ? (
 					<RideConfirmation
