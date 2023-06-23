@@ -3,8 +3,8 @@ export function moveToStep(
 	polyline,
 	iter,
 	timer,
-	taxiETA,
-	setTaxiETA,
+	ETA,
+	setETA,
 	stepsPerMinute,
 	clickedOption
 ) {
@@ -22,9 +22,10 @@ export function moveToStep(
 			lng: polyline[iter].lng,
 		})
 		if (iter % stepsPerMinute == 0) {
-			setTaxiETA((taxiETA) => ({
-				...taxiETA,
-				[clickedOption]: taxiETA[clickedOption] - 60,
+			const nextDecrement = ETA[clickedOption] - 60
+			setETA((ETA) => ({
+				...ETA,
+				[clickedOption]: nextDecrement >= 0 ? nextDecrement : 0,
 			}))
 		}
 		window.setTimeout(function () {
@@ -33,8 +34,8 @@ export function moveToStep(
 				polyline,
 				iter + 1,
 				timer,
-				taxiETA,
-				setTaxiETA,
+				ETA,
+				setETA,
 				stepsPerMinute,
 				clickedOption
 			)
