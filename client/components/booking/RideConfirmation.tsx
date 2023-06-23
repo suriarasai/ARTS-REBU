@@ -5,11 +5,20 @@ import {
 	FaAngleUp,
 	FaCar,
 	FaCarAlt,
+	FaCircle,
 	FaClock,
 	FaCoins,
 	FaCrosshairs,
+	FaDollarSign,
 	FaFlag,
 	FaFontAwesomeFlag,
+	FaNetworkWired,
+	FaPaypal,
+	FaSearchLocation,
+	FaShare,
+	FaShareAlt,
+	FaShieldAlt,
+	FaStar,
 } from 'react-icons/fa'
 import {
 	cancelBooking,
@@ -33,6 +42,7 @@ export const RideConfirmation = (data) => {
 	const [rideConfirmed, setRideConfirmed] = useState(false)
 	const [routes, setRoutes] = useState({ 1: null, 2: null })
 	const [taxiETA, setTaxiETA] = useState({ 1: null, 2: null })
+	const [tripETA, setTripETA] = useState(null)
 	const [notification, setNotification] = useState(null)
 
 	useEffect(() => {
@@ -44,6 +54,8 @@ export const RideConfirmation = (data) => {
 			setTaxiETA,
 			initializeOptions
 		)
+		setTripETA(data.duration)
+		console.log('Trip Duration', data.duration)
 	}, [])
 
 	function initializeOptions(ETA) {
@@ -87,6 +99,7 @@ export const RideConfirmation = (data) => {
 	function handleConfirmation(e) {
 		e.preventDefault()
 		setScreen('waiting')
+		// setScreen('completeTrip')
 		setRideConfirmed(true)
 
 		createBooking(
@@ -117,7 +130,32 @@ export const RideConfirmation = (data) => {
 			taxiETA,
 			setTaxiETA,
 			stepsPerMinute,
-			clickedOption
+			clickedOption,
+			handleTaxiArrived
+		)
+	}
+
+	function handleTaxiArrived() {
+		setNotification('arrived')
+		setScreen('liveTrip')
+		console.log('Taxi has arrived')
+		erasePolyline()
+
+		const polyline = expandArray(data.tripPolyline, 10)
+		const stepsPerMinute = Math.round(
+			(polyline.length - 1) / (tripETA / 60) + 1
+		)
+
+		moveToStep(
+			data.taxis[clickedOption - 1],
+			polyline,
+			0,
+			50,
+			tripETA,
+			setTripETA,
+			stepsPerMinute,
+			clickedOption,
+			handleCompleted
 		)
 	}
 
@@ -127,7 +165,7 @@ export const RideConfirmation = (data) => {
 		// Proximity notification @ 1 min
 		if (Math.round(taxiETA[clickedOption] / 60) === 1) {
 			console.log('1 minute ETA')
-			setNotification(true)
+			setNotification('arrivingSoon')
 		} else if (Math.round(taxiETA[clickedOption] / 60) === 0) {
 			console.log('arriving now')
 		}
@@ -136,12 +174,18 @@ export const RideConfirmation = (data) => {
 	function handleCancelled(matchedStatus) {
 		matchedStatus && cancelBooking(bookingID) // API for trip cancellation
 		erasePolyline()
-
 		data.onCancel()
 	}
 
 	function handleCompleted() {
 		completeBooking(bookingID) // API for trip completion
+		console.log('Trip fini')
+		setScreen('completeTrip')
+	}
+
+	function handleCompletedCleanup() {
+		erasePolyline()
+		data.onCancel()
 	}
 
 	function handleChooseAnotherOption() {
@@ -159,20 +203,32 @@ export const RideConfirmation = (data) => {
 					Cancel
 				</button>
 			)}
-			{notification && <Popup clear={setNotification} />}
+			{notification === 'arrivingSoon' && (
+				<Popup
+					clear={setNotification}
+					msg='Your ride is arriving soon - please get ready and enjoy the trip!'
+				/>
+			)}
+			{notification === 'arrived' && (
+				<Popup
+					clear={setNotification}
+					msg='The wait is over! Please make your way to the taxi'
+				/>
+			)}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
 				{AccordionHeader(
 					clickedOption,
 					setCollapsed,
 					collapsed,
 					screen,
-					taxiETA
+					taxiETA,
+					tripETA
 				)}
 
 				{collapsed ? null : (
 					<div className='accordion-content pb-4 pl-4 pr-4'>
 						{!clickedOption ? (
-							<div>
+							<>
 								{/* Show available taxis */}
 								{options.map((option) => (
 									<ShowOption
@@ -181,9 +237,9 @@ export const RideConfirmation = (data) => {
 										setClickedOption={setClickedOption}
 									/>
 								))}
-							</div>
+							</>
 						) : screen === '' ? (
-							<div>
+							<>
 								{/* Confirm details */}
 								<ShowOption
 									option={options[clickedOption - 1]}
@@ -194,7 +250,7 @@ export const RideConfirmation = (data) => {
 
 								{/* Origin and Destination Confirmation */}
 								<label className='mt-2'>Route</label>
-								{RouteConfirmation(data)}
+								<RouteConfirmation data={data} />
 
 								<div className='flex items-center justify-center gap-5'>
 									<button
@@ -210,34 +266,37 @@ export const RideConfirmation = (data) => {
 										Confirm
 									</button>
 								</div>
-							</div>
+							</>
 						) : screen === 'waiting' ? (
-							<div>
-								<h5>Please wait..</h5>
-								<button
-									className='green-button mt-5 w-full'
-									onClick={handleMatched}
-								>
-									Skip
-								</button>
-							</div>
+							<WaitingUI handleMatched={handleMatched} />
 						) : screen === 'confirmed' ? (
-							<div>
-								{/* Driver and Vehicle Information */}
+							<>
 								<DriverInformation onCancel={handleCancelled} />
-
-								{/* Trip Information */}
 								<TripInformation
 									placeName={data.destination.placeName}
 									postcode={data.destination.postcode}
 									dropTime={options[clickedOption - 1].dropTime}
 								/>
-
-								{/* Payment Information */}
 								<PaymentInformation fare={options[clickedOption - 1].fare} />
-							</div>
+							</>
+						) : screen === 'liveTrip' ? (
+							<LiveTripUI
+								data={data}
+								options={options}
+								clickedOption={clickedOption}
+								onCancel={handleCancelled}
+							/>
+						) : screen === 'completeTrip' ? (
+							<CompleteTripUI
+								options={options}
+								clickedOption={clickedOption}
+								tripETA={tripETA}
+								taxiETA={taxiETA}
+								data={data}
+								handleCompletedCleanup={handleCompletedCleanup}
+							/>
 						) : (
-							<div>Error: Option not found</div>
+							'Error: Option not found'
 						)}
 					</div>
 				)}
@@ -248,6 +307,137 @@ export const RideConfirmation = (data) => {
 		</>
 	)
 }
+
+const WaitingUI = ({ handleMatched }): React.ReactNode => (
+	<>
+		<h5>Please wait..</h5>
+		<button className='green-button mt-5 w-full' onClick={handleMatched}>
+			Skip
+		</button>
+	</>
+)
+
+const LiveTripUI = ({
+	data,
+	options,
+	clickedOption,
+	onCancel,
+}): React.ReactNode => (
+	<>
+		<div className='flex items-center border-b border-zinc-200 pb-3 pt-3'>
+			<FaSearchLocation className='mr-5 text-green-500' />
+			<div className='flex flex-col'>
+				<p className='font-medium'>{data.destination.address}</p>
+				{options[clickedOption - 1].dropTime}
+			</div>
+			<div className='ml-auto flex items-center text-green-500'>
+				Add or Change
+			</div>
+		</div>
+		<div className='flex items-center border-b border-zinc-200 pb-3 pt-3'>
+			<FaStar className='mr-5 text-green-500' />
+			How's your ride going?
+			<div className='ml-auto flex items-center text-green-500'>
+				Rate or tip
+			</div>
+		</div>
+		<div className='flex items-center border-b border-zinc-200 pb-3 pt-3'>
+			<FaDollarSign className='mr-5 text-green-500' />
+			<div className='flex flex-col'>
+				<p className='font-medium'>{options[clickedOption - 1].fare}</p>
+				Cash
+			</div>
+			<div className='ml-auto flex items-center text-green-500'>Switch</div>
+		</div>
+		<div className='flex items-center border-b border-zinc-200 pb-3 pt-3'>
+			<FaShare className='mr-5 text-green-500' />
+			Sharing with someone?
+			<div className='ml-auto flex items-center text-green-500'>Split Fare</div>
+		</div>
+		<div className='flex items-center border-b border-zinc-200 pb-3 pt-3'>
+			<FaShareAlt className='mr-5 text-green-500' />
+			Share trip status
+			<div className='ml-auto flex items-center text-green-500'>Share</div>
+		</div>
+		<div className='inline-flex w-full'>
+			<button
+				className='w-1/2 border-r border-zinc-300 px-4 py-2 py-3 text-red-600 hover:text-red-800'
+				onClick={() => onCancel(true)}
+			>
+				Cancel
+			</button>
+			<button className='flex w-1/2 items-center justify-center px-4 py-2 py-3 text-green-500 hover:text-green-800'>
+				<FaShieldAlt className='mr-3' /> Safety
+			</button>
+		</div>
+	</>
+)
+
+const CompleteTripUI = ({
+	options,
+	clickedOption,
+	tripETA,
+	taxiETA,
+	data,
+	handleCompletedCleanup,
+}): React.ReactNode => (
+	<div className='px-4'>
+		<div className='flex items-center border-b border-zinc-300 py-3'>
+			<div className='mr-5 h-8 w-8 rounded-2xl bg-gradient-to-tr from-lime-500 to-green-200'></div>
+			<div className='flex-1'>
+				<p className='font-medium'>Driver Name</p>
+				<h5 className='flex items-center'>
+					<FaStar className='text-yellow mr-2' />
+					4.8
+				</h5>
+			</div>
+			<div className='flex-1'>
+				<h5>Final cost:</h5>
+				<h5 className='font-bold'>SG${options[clickedOption - 1].fare}</h5>
+			</div>
+			<div className='flex-1'>
+				<h5>Time</h5>
+				<h5 className='font-bold'>
+					{Math.round((tripETA + taxiETA[clickedOption]) / 60)} min.
+				</h5>
+			</div>
+		</div>
+		<div className='border-b border-zinc-300 py-4'>
+			<label>Trip</label>
+			<div className='flex items-center pr-5'>
+				<FaCrosshairs className='mr-3 text-zinc-500' />
+				<p className='font-normal'>{data.origin.placeName}</p>
+				<p className='ml-auto'>9:40 PM</p>
+			</div>
+			<div className='flex items-center pr-5'>
+				<FaFlag className='mr-3 text-green-600' />
+				<p className='font-normal'>{data.destination.placeName}</p>
+				<p className='ml-auto'>10:10 PM</p>
+			</div>
+		</div>
+		<div className='mt-5 flex flex-col justify-center'>
+			<label>How was your trip?</label>
+			<h5 className='my-3'>
+				Your feedback will help us improve the customer experience.
+			</h5>
+			<div className='mb-5 flex justify-center p-3'>
+				<FaStar className='mx-2 text-3xl text-zinc-300' />
+				<FaStar className='mx-2 text-3xl text-zinc-300' />
+				<FaStar className='mx-2 text-3xl text-zinc-300' />
+				<FaStar className='mx-2 text-3xl text-zinc-300' />
+				<FaStar className='mx-2 text-3xl text-zinc-300' />
+			</div>
+		</div>
+		<div className='w-full'>
+			<button
+				className='rect-button w-full p-3 shadow-md'
+				onClick={handleCompletedCleanup}
+			>
+				Done
+			</button>
+		</div>
+	</div>
+)
 
 function drawTaxiRoute(
 	taxis,
@@ -325,10 +515,10 @@ const PaymentInformation = ({ fare }) => {
 		<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
 			<div className='flex w-11/12 flex-row items-center'>
 				<FaCoins className='mx-5 text-lg text-green-500' />
-				<div>
+				<>
 					$<b className='font-normal'>{fare}</b>
 					<p className='text-sm'>Cash</p>
-				</div>
+				</>
 			</div>
 			<div className='float-right'>
 				<FaAngleDown className='text-lg text-green-500' />
@@ -398,35 +588,33 @@ const ShowOption = ({
 	</div>
 )
 
-function RouteConfirmation(data: any) {
-	return (
-		<table className='mb-5'>
-			<tbody className='mb-3 pb-2 pl-2'>
-				<tr className='flex items-center'>
-					<th className='p-1 text-right'>
-						<FaCrosshairs className='text-xl text-green-500' />
-					</th>
-					<th className='text-left'>
-						<p className='p-2 text-sm'>
-							<b>{data.origin.placeName}</b>, Singapore {data.origin.postcode}
-						</p>
-					</th>
-				</tr>
-				<tr className='flex items-center'>
-					<th className='p-1 text-right'>
-						<FaFontAwesomeFlag className='text-xl text-green-500' />
-					</th>
-					<th className='text-left'>
-						<p className='p-2 text-sm'>
-							<b>{data.destination.placeName}</b>, Singapore{' '}
-							{data.destination.postcode}
-						</p>
-					</th>
-				</tr>
-			</tbody>
-		</table>
-	)
-}
+const RouteConfirmation = ({ data }) => (
+	<table className='mb-5'>
+		<tbody className='mb-3 pb-2 pl-2'>
+			<tr className='flex items-center'>
+				<th className='p-1 text-right'>
+					<FaCrosshairs className='text-xl text-green-500' />
+				</th>
+				<th className='text-left'>
+					<p className='p-2 text-sm'>
+						<b>{data.origin.placeName}</b>, Singapore {data.origin.postcode}
+					</p>
+				</th>
+			</tr>
+			<tr className='flex items-center'>
+				<th className='p-1 text-right'>
+					<FaFontAwesomeFlag className='text-xl text-green-500' />
+				</th>
+				<th className='text-left'>
+					<p className='p-2 text-sm'>
+						<b>{data.destination.placeName}</b>, Singapore{' '}
+						{data.destination.postcode}
+					</p>
+				</th>
+			</tr>
+		</tbody>
+	</table>
+)
 
 // Dynamic header text in bottom screen
 function AccordionHeader(
@@ -434,7 +622,8 @@ function AccordionHeader(
 	setCollapsed: React.Dispatch<React.SetStateAction<boolean>>,
 	collapsed: boolean,
 	screen: string,
-	taxiETA
+	taxiETA,
+	tripETA
 ) {
 	return (
 		<div className='accordion-header flex flex-wrap pl-4 pt-4'>
@@ -452,6 +641,15 @@ function AccordionHeader(
 							{Math.round(taxiETA[clickedOption] / 60)} min.
 						</div>
 					</>
+				) : screen === 'liveTrip' ? (
+					<>
+						Heading to your destination
+						<div className='float-right pr-4'>
+							{Math.round(tripETA / 60)} min.
+						</div>
+					</>
+				) : screen === 'completeTrip' ? (
+					"You've arrived"
 				) : (
 					''
 				)}

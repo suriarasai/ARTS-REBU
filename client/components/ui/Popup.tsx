@@ -1,7 +1,7 @@
 import { FaClock, FaTimes } from 'react-icons/fa'
 
 export const Popup = (props) => {
-	const { clear } = props
+	const { clear, msg } = props
 
 	return (
 		<div className='w-screen flex justify-center'>
@@ -10,7 +10,7 @@ export const Popup = (props) => {
 				<div className='flex flex-col'>
 					<h2 className='mb-1 font-medium'>Notice</h2>
 					<p className='font-normal'>
-						Your ride is arriving soon - please get ready and enjoy the trip!
+						{msg}
 					</p>
 				</div>
 				<div onClick={() => clear(null)}>

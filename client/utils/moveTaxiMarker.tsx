@@ -6,7 +6,8 @@ export function moveToStep(
 	ETA,
 	setETA,
 	stepsPerMinute,
-	clickedOption
+	clickedOption,
+	_callback
 ) {
 	/*
 	 * Incrementally moves a given marker along a polyline to simulate real-time motion
@@ -37,8 +38,12 @@ export function moveToStep(
 				ETA,
 				setETA,
 				stepsPerMinute,
-				clickedOption
+				clickedOption,
+				_callback
 			)
 		}, timer)
+	} else {
+		// the taxi has 'arrived', but in practice this also requires the driver's confirmation
+		_callback()
 	}
 }

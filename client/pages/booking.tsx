@@ -282,6 +282,7 @@ function Booking() {
 						origin={origin.lat ? origin : userLocation}
 						destination={destination}
 						onCancel={clearRoute}
+						tripPolyline={directionsDisplay.directions.routes[0].overview_path}
 					/>
 				) : (
 					// If the input is invalid, then continue to show them the map controls
