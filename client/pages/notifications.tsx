@@ -17,7 +17,7 @@ import { db } from '@/utils/firebase'
 // }
 
 import { UserContext } from '@/context/UserContext'
-import { addDoc, collection, onSnapshot } from 'firebase/firestore'
+import { addDoc, collection, doc, onSnapshot, setDoc } from 'firebase/firestore'
 
 export default function Notifications() {
 	// const [notification, setNotification] = useState('')
@@ -39,7 +39,7 @@ export default function Notifications() {
 	}, [])
 
 	function createBookingRequest() {
-		addDoc(bookingRequestRef, {
+		setBooking({
 			customerID: user.customerID,
 			customerName: user.customerName,
 			phoneNumber: user.phoneNumber,
@@ -49,6 +49,25 @@ export default function Notifications() {
 			taxiType: 'Rebu Plus',
 			fareType: 'metered',
 			fare: 1,
+			status: 'requested'
+		})
+	}
+
+	function setBookingDispatched() {
+		setBooking({status: 'dispatched'})
+	}
+
+	function setBookingCancelled() {
+		setBooking({status: 'cancelled'})
+	}
+
+	function setBookingCompleted() {
+		setBooking({status: 'completed'})
+	}
+
+	function setBooking(data) {
+		setDoc(doc(db, 'BookingEvent', user.customerID.toString()), data, {
+			merge: true,
 		})
 			.then((response) => {
 				console.log(response)
@@ -62,9 +81,12 @@ export default function Notifications() {
 		<Page title={Title.NOTIFICATIONS}>
 			<Section>
 				{bookings.map((item) => (
-					<li key={item.id}>{item.data.customerID}</li>
+					<li key={item.id}>{item.data.customerID + " Status: " +  item.data.status}</li>
 				))}
 				<button onClick={createBookingRequest}>Create Booking</button>
+				<button onClick={setBookingDispatched}>Set Dispatched</button>
+				<button onClick={setBookingCancelled}>Set Cancelled</button>
+				<button onClick={setBookingCompleted}>Set Completed</button>
 			</Section>
 		</Page>
 	)
