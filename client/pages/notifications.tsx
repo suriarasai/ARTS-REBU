@@ -17,7 +17,7 @@ import { db } from '@/utils/firebase'
 // }
 
 import { UserContext } from '@/context/UserContext'
-import { collection, onSnapshot } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot } from 'firebase/firestore'
 
 export default function Notifications() {
 	// const [notification, setNotification] = useState('')
@@ -38,12 +38,33 @@ export default function Notifications() {
 		}
 	}, [])
 
+	function createBookingRequest() {
+		addDoc(bookingRequestRef, {
+			customerID: user.customerID,
+			customerName: user.customerName,
+			phoneNumber: user.phoneNumber,
+			pickUpLocation: 'NUS High Boarding School of Maths and Science',
+			pickUpTime: '9:48 AM',
+			dropLocation: '25 Heng Keng Mui Terrace',
+			taxiType: 'Rebu Plus',
+			fareType: 'metered',
+			fare: 1,
+		})
+			.then((response) => {
+				console.log(response)
+			})
+			.catch((error) => {
+				console.log(error.message)
+			})
+	}
+
 	return (
 		<Page title={Title.NOTIFICATIONS}>
 			<Section>
 				{bookings.map((item) => (
 					<li key={item.id}>{item.data.customerID}</li>
 				))}
+				<button onClick={createBookingRequest}>Create Booking</button>
 			</Section>
 		</Page>
 	)

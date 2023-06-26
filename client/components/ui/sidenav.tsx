@@ -17,11 +17,11 @@ export default function SideNav() {
 
 	return (
 		<div className='w-full'>
-			<div className='fixed h-screen w-1/12 lg:w-2/12'>
+			<div className='fixed h-screen w-1/12 lg:w-2/12 z-20'>
 				<div className='sidenav-gradient absolute h-full w-full' />
 				<div className='flex h-full flex-col items-center lg:items-start lg:px-8 lg:py-5'>
 					<div
-						className='mb-16 mt-5 flex items-center lg:mt-0'
+						className='mb-16 mt-5 flex items-center lg:mt-0 z-50'
 						onClick={() => router.push(HREF.SIGN_IN)}
 					>
 						<FaTaxi className='sidenav-icon' />

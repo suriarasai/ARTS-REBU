@@ -182,7 +182,7 @@ p {
 }
 
 .sidenav-link {
-	@apply font-medium text-base text-zinc-600 z-50 hidden lg:block;
+	@apply font-medium text-base text-zinc-600 hidden lg:block;
 }
 
 .sidenav-gradient {
@@ -191,7 +191,7 @@ p {
 }
 
 .sidenav-link-container {
-	@apply mb-5 flex items-center
+	@apply mb-5 flex items-center z-50
 }
 
 .sidenav-icon {
