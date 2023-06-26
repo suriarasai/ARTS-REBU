@@ -15,7 +15,6 @@ import { moveToStep } from '@/utils/moveTaxiMarker'
 import { expandArray } from '@/utils/expandArray'
 import { Popup } from '../ui/Popup'
 import { DriverInformation, TripInformation, PaymentInformation } from './UI/PostMatchingUI'
-import { drawTaxiRoute } from '../../utils/drawTaxiRoute'
 import { CompleteTripUI } from './UI/CompleteTripUI'
 import { LiveTripUI } from './UI/LiveTripUI'
 import { WaitingUI } from './UI/MatchingUI'
@@ -140,7 +139,7 @@ export const RideConfirmation = (data) => {
 			data.taxis[clickedOption - 1],
 			polyline,
 			0,
-			50,
+			10,
 			handleCompleted
 		)
 	}
@@ -351,5 +350,49 @@ function erasePolyline() {
 		taxiRouteDisplay.set('directions', null)
 		// taxiRouteDisplay.setMap(null)
 		// taxiRouteDisplay = null
+	}
+}
+
+export function drawTaxiRoute(
+	taxis,
+	destination,
+	map,
+	setRoutes,
+	setTaxiETA,
+	_callback
+) {
+	taxiRouteDisplay = new google.maps.DirectionsRenderer({
+		polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
+		suppressMarkers: true,
+	});
+
+	if (taxis.length > 0) {
+		const directionsService = new google.maps.DirectionsService();
+		let tempObj = { 1: null, 2: null };
+		let tempETA = { 1: null, 2: null };
+
+		for (let i = 0; i < 2; i++) {
+			directionsService.route(
+				{
+					origin: taxis[i].getPosition(),
+					destination: destination,
+					travelMode: google.maps.TravelMode.DRIVING,
+				},
+				function (result, status) {
+					if (status == 'OK') {
+						taxiRouteDisplay.setMap(map);
+						tempObj[i + 1] = result;
+						tempETA[i + 1] = result.routes[0].legs[0].duration.value;
+						setRoutes(tempObj);
+						setTaxiETA(tempETA);
+						_callback(tempETA);
+					} else {
+						console.log('Error: Taxi directions API failed');
+					}
+				}
+			);
+		}
+	} else {
+		console.log('Error: Taxis not done loading');
 	}
 }
