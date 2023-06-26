@@ -19,7 +19,6 @@ import { db } from '@/utils/firebase'
 import { UserContext } from '@/context/UserContext'
 import { collection, onSnapshot } from 'firebase/firestore'
 
-// TODO: Issue with FS - workaround or Kafka...
 export default function Notifications() {
 	// const [notification, setNotification] = useState('')
 	const [bookings, setBookings] = useState([])

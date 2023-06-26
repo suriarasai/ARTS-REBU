@@ -9,13 +9,7 @@ import { SignOutModal } from '@/components/account/SignOutModal'
 import { navButtonProps } from '@/redux/types'
 import { HREF, Title } from '@/redux/types/constants'
 import { UserContext } from '@/context/UserContext'
-import {
-	FaAngleRight,
-	FaBookmark,
-	FaCreditCard,
-	FaGifts,
-	FaMoneyBill,
-} from 'react-icons/fa'
+import { FaAngleRight, FaBookmark, FaCreditCard, FaGifts } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 
 const NavButton = ({ label, href, className, icon }: navButtonProps) => {
@@ -39,7 +33,7 @@ const NavButton = ({ label, href, className, icon }: navButtonProps) => {
 
 function splitName(name: string): Array<string> {
 	let nameArray = []
-	let tempArray = name.toUpperCase().split(' ')
+	let tempArray = name?.toUpperCase().split(' ')
 	nameArray.push(tempArray[0][0])
 	nameArray.push(tempArray[tempArray.length - 1][0])
 	return nameArray
@@ -57,13 +51,15 @@ const Settings = () => {
 					onClick={() => router.push(HREF.ACCOUNT)}
 				>
 					<div className='flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-tr from-lime-500 to-green-200 text-2xl text-white shadow-md'>
-						{splitName(user.customerName)}
+						{user.customerName ? splitName(user.customerName) : 'Null'}
 					</div>
 					<div className='ml-5'>
 						<h2 className='text-lg font-medium'>{user.customerName}</h2>
 						<hr className='my-1' />
 						<h5>
-							+({user.phoneCountryCode}) {user.phoneNumber}
+							{user.phoneCountryCode
+								? '+' + user.phoneCountryCode + ' ' + user.phoneNumber
+								: 'Null'}
 						</h5>
 					</div>
 					<div className='absolute right-0 mb-auto mt-auto pr-6'>

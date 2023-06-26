@@ -7,7 +7,7 @@ import { UserContext } from '@/context/UserContext'
 import { LoadingScreen } from '../components/ui/LoadingScreen'
 import { HREF } from '@/redux/types/constants'
 import { EmailSignIn } from '../components/account/EmailSignIn'
-import { FaEnvelopeOpen, FaGooglePlusG } from 'react-icons/fa'
+import { FaEnvelopeOpen, FaGooglePlusG, FaKey } from 'react-icons/fa'
 import { MainScreenVisual } from '@/components/ui/MainScreenVisual'
 
 // Main component
@@ -60,9 +60,12 @@ const AlternateSignIn = ({ setForm }) => (
 			<FaEnvelopeOpen className='mr-3' />
 			Email
 		</button>
-		<button className='flex items-center bg-green-200 px-5 py-2 font-medium text-zinc-600 shadow-md'>
-			<FaGooglePlusG className='mr-3' />
-			Google
+		<button className='flex items-center bg-green-200 px-5 py-2 font-medium text-zinc-600 shadow-md'
+		onClick={() => Router.push(HREF.BOOKINGUI)}>
+			{/* <FaGooglePlusG className='mr-3' />
+			Google */}
+			<FaKey className='mr-3' />
+			Admin
 		</button>
 	</div>
 )

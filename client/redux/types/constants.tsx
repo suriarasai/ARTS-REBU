@@ -13,6 +13,7 @@ export enum HREF {
 	MESSAGES = '/messages',
 	RATINGS = '/ratings',
 	PAYMENT = '/managePayment',
+	BOOKINGUI = '/admin/booking'
 }
 
 // SVG Strings
