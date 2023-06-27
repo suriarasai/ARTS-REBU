@@ -1,5 +1,5 @@
 import { db } from '@/utils/firebase'
-import { doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { deleteDoc, doc, onSnapshot, setDoc } from 'firebase/firestore'
 
 export function createBookingRequest(data) {
 	setBooking(data.customerID.toString(), {
@@ -13,6 +13,9 @@ export function createBookingRequest(data) {
 		fareType: data.fareType,
 		fare: data.fare,
 		status: 'requested',
+		bookingID: data.bookingID,
+		sno: data.sno,
+		driverID: data.driverID,
 	})
 }
 
@@ -26,6 +29,10 @@ export function setBookingCancelled(customerID) {
 
 export function setBookingCompleted(customerID) {
 	setBooking(customerID, { status: 'completed' })
+}
+
+export async function deleteBooking(customerID) {
+	await deleteDoc(doc(db, 'BookingEvent', customerID))
 }
 
 function setBooking(customerID, data) {

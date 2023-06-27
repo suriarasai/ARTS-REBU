@@ -132,7 +132,8 @@ export const createBooking = async (
 	origin,
 	destination,
 	setBookingID,
-	setStopStream
+	setStopStream,
+	_callback
 ) => {
 	const response = await api.post('/api/v1/Booking/createBooking', {
 		customerID: user.customerID,
@@ -151,6 +152,7 @@ export const createBooking = async (
 
 	setBookingID(response.data.bookingID)
 	setStopStream(false)
+	_callback(response.data.bookingID)
 	return response.data
 }
 

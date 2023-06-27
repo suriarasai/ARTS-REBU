@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { db } from '@/utils/firebase'
 import { collection, onSnapshot } from 'firebase/firestore'
 import Admin from '@/components/ui/admin'
+import { deleteBooking, setBookingDispatched } from '@/utils/taxiBookingSystem'
 
 export default function Dashboard() {
 	const [bookings, setBookings] = useState([])
@@ -56,30 +57,7 @@ export default function Dashboard() {
 									</thead>
 									<tbody>
 										{bookings.map((item) => (
-											<tr
-												className='border-b dark:border-neutral-500'
-												key={item.id}
-											>
-												<td className='whitespace-nowrap px-6 py-4 font-medium'>
-													{item.data.bookingID}
-												</td>
-												<td className='whitespace-nowrap px-6 py-4'>
-													{item.data.status}
-												</td>
-												<td className='whitespace-nowrap px-6 py-4'>
-													{item.data.customerName}
-												</td>
-												<td className='whitespace-nowrap px-6 py-4'>
-													{item.data.customerID}
-												</td>
-												<td className='whitespace-nowrap px-6 py-4'>
-													{item.data.driverID}
-												</td>
-												<td className='whitespace-nowrap px-6 py-4'>
-													{item.data.sno}
-												</td>
-												<td className='whitespace-nowrap px-6 py-4'>Approve</td>
-											</tr>
+											<TR item={item} />
 										))}
 									</tbody>
 								</table>
@@ -89,5 +67,57 @@ export default function Dashboard() {
 				</div>
 			</div>
 		</Admin>
+	)
+}
+
+const TR = ({ item }) => {
+	function handleApproval() {
+		setBookingDispatched(item.data.customerID.toString())
+	}
+
+	const StatusButton = () => (
+		<>
+			{item.data.status === 'requested' && (
+				<button
+					className='w-full rounded-md bg-green-300 p-2 shadow-md'
+					onClick={handleApproval}
+				>
+					Dispatch
+				</button>
+			)}
+			{item.data.status === 'dispatched' && (
+				<button
+					className='w-full rounded-md bg-zinc-200 p-2 shadow-md'
+					onClick={() => {}}
+				>
+					Monitor
+				</button>
+			)}
+			{(item.data.status === 'cancelled' ||
+				item.data.status === 'completed') && (
+				<button
+					className='w-full rounded-md bg-red-200 p-2 shadow-md'
+					onClick={() => deleteBooking(item.data.customerID.toString())}
+				>
+					Remove
+				</button>
+			)}
+		</>
+	)
+
+	return (
+		<tr className='border-b dark:border-neutral-500' key={item.id}>
+			<td className='whitespace-nowrap px-6 py-4 font-medium'>
+				{item.data.bookingID}
+			</td>
+			<td className='whitespace-nowrap px-6 py-4'>
+				{item.data.status}
+			</td>
+			<td className='whitespace-nowrap px-6 py-4'>{item.data.customerName}</td>
+			<td className='whitespace-nowrap px-6 py-4'>{item.data.customerID}</td>
+			<td className='whitespace-nowrap px-6 py-4'>{item.data.driverID}</td>
+			<td className='whitespace-nowrap px-6 py-4'>{item.data.sno}</td>
+			<td className='whitespace-nowrap px-6 py-4'><StatusButton /></td>
+		</tr>
 	)
 }

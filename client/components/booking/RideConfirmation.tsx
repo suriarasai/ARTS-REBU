@@ -128,17 +128,20 @@ export const RideConfirmation = (data) => {
 			data.origin,
 			data.destination,
 			setBookingID,
-			setStopStream
-		) // API to create booking
+			setStopStream,
 
-		createBookingRequest({
-			...data.user,
-			...options[clickedOption - 1],
-			pickUpLocation: data.origin.placeName,
-			dropLocation: data.destination.placeName,
-			fareType: 'metered',
-			paymentMethod: 'cash'
-		})
+			(bookingID) => createBookingRequest({
+				...data.user,
+				...options[clickedOption - 1],
+				pickUpLocation: data.origin.placeName,
+				dropLocation: data.destination.placeName,
+				fareType: 'metered',
+				paymentMethod: 'cash',
+				sno: 1,
+				driverID: 1,
+				bookingID: bookingID
+			})
+		) // API to create booking
 	}
 
 	function handleMatched() {
@@ -193,14 +196,14 @@ export const RideConfirmation = (data) => {
 	}, [taxiETA])
 
 	function handleCancelled(matchedStatus) {
-		setBookingCancelled(data.user.customerID)
+		setBookingCancelled(data.user.customerID.toString())
 		matchedStatus && cancelBooking(bookingID) // API for trip cancellation
 		erasePolyline()
 		data.onCancel()
 	}
 
 	function handleCompleted() {
-		setBookingCompleted(data.user.customerID)
+		setBookingCompleted(data.user.customerID.toString())
 		completeBooking(bookingID) // API for trip completion
 		console.log('Trip fini')
 		setScreen('completeTrip')
