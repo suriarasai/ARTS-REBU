@@ -295,7 +295,7 @@ export const RideConfirmation = (data) => {
 								</div>
 							</>
 						) : screen === 'waiting' ? (
-							<WaitingUI handleMatched={handleMatched} />
+							<WaitingUI />
 						) : screen === 'confirmed' ? (
 							<>
 								<DriverInformation onCancel={handleCancelled} />
@@ -352,7 +352,7 @@ function AccordionHeader(
 				) : screen === '' ? (
 					'Confirm Details'
 				) : screen === 'waiting' ? (
-					'Confirming your Ride'
+					''
 				) : screen === 'confirmed' ? (
 					<>
 						En Route

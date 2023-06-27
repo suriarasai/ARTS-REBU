@@ -1,67 +1,24 @@
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import { Title } from '@/redux/types/constants'
-import { useContext, useEffect, useState } from 'react'
-import { db } from '@/utils/firebase'
+import { FaSearch } from 'react-icons/fa'
 
-// const data = {
-// 	customerID: 12,
-// 	customerName: 'Mr. Me',
-// 	phoneNumber: 85316475,
-// 	pickUpLocation: 'NUS High Boarding School of Maths and Science',
-// 	pickUpTime: '9:48 AM',
-// 	dropLocation: '25 Heng Keng Mui Terrace',
-// 	taxiType: 'Rebu Plus',
-// 	fareType: 'metered',
-// 	fare: 1,
-// }
-
-import { UserContext } from '@/context/UserContext'
-import { doc, onSnapshot } from 'firebase/firestore'
-import { createBookingRequest, setBookingCancelled, setBookingCompleted, setBookingDispatched } from '@/utils/taxiBookingSystem'
-
-export default function TaxiBookingSystem() {
-	const { user } = useContext(UserContext)
-	const [bookings, setBookings] = useState(null)
-	const [stopStream, setStopStream] = useState(false)
-
-	useEffect(() => {
-		if (stopStream) {
-			return
-		}
-
-		const unsubscribe = onSnapshot(
-			doc(db, 'BookingEvent', user.customerID.toString()),
-			(snapshot) => {
-				if (snapshot.data().status === 'dispatched') {
-					console.log('Matched')
-				}
-				console.log(snapshot.data())
-			}
-		)
-
-		return () => {
-			unsubscribe()
-		}
-	}, [stopStream])
-
+export default function Notifications() {
 	return (
 		<Page title={Title.NOTIFICATIONS}>
 			<Section>
-				{bookings && bookings.customerID + ' ' + bookings.status}
-				<button onClick={() => createBookingRequest(user.customerID)}>
-					Create Booking
-				</button>
-				<button onClick={() => setBookingDispatched(user.customerID)}>
-					Set Dispatched
-				</button>
-				<button onClick={() => setBookingCancelled(user.customerID)}>
-					Set Cancelled
-				</button>
-				<button onClick={() => setBookingCompleted(user.customerID)}>
-					Set Completed
-				</button>
-				<button onClick={() => setStopStream(true)}>Stop Listening</button>
+				{/* <div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
+					<div className='accordion-header flex flex-wrap pl-4 pt-4'>
+						<label>Confirming your ride</label>
+					</div>
+					<div className='accordion-content pb-4 pl-4 pr-4'>
+						<div className='flex flex-col items-center justify-center'>
+							<FaSearch className='my-5 text-3xl text-green-300' />
+							<h1 className='my-5 font-medium'>Looking for a driver...</h1>
+							<h5 className='mb-5'>This may take some time</h5>
+						</div>
+					</div>
+				</div> */}
 			</Section>
 		</Page>
 	)
