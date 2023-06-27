@@ -4,8 +4,6 @@ import { UserContext } from '@/context/UserContext'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
 import { RideConfirmation } from '@/components/booking/RideConfirmation'
-import { moveToStep } from '@/utils/moveTaxiMarker'
-import { expandArray } from '@/utils/expandArray'
 import { togglePOI } from '@/components/booking/togglePoiButton'
 import { CoordinateToAddress } from '@/server'
 import { LocationSearch } from '../components/booking/LocationSearch'
@@ -24,6 +22,8 @@ let marks = {
 	work: null,
 	saved: [],
 	user: null,
+	origin: null,
+	destination: null,
 }
 
 const libraries = ['places']
@@ -127,6 +127,13 @@ function Booking() {
 	useEffect(() => {
 		if (origin.lat) {
 			originRef.current.value = origin.placeName
+
+			if (!marks.origin) {
+				marks.origin = mark(map, origin, icon.crosshairs, '#06b6d4', '#155e75')
+			} else {
+				marks.origin.setPosition(origin)
+			}
+			map.panTo(origin)
 		}
 	}, [origin])
 
@@ -135,12 +142,21 @@ function Booking() {
 		if (destination.lat) {
 			isValidInput(true)
 			destinationRef.current.value = destination.placeName
+
+			if (!marks.destination) {
+				marks.destination = mark(
+					map,
+					destination,
+					icon.crosshairs,
+					'#06b6d4',
+					'#155e75'
+				)
+			} else {
+				marks.destination.setPosition(destination)
+			}
+			map.panTo(destination)
 		}
 	}, [destination])
-
-	// useEffect(() => {
-	// 	drawTaxiRoute()
-	// }, [taxis])
 
 	// Render a message until the map is finished loading
 	if (!isLoaded) {
@@ -173,7 +189,14 @@ function Booking() {
 		}
 
 		// Initializing a new directions polyline
-		directionsDisplay = new google.maps.DirectionsRenderer()
+		directionsDisplay = new google.maps.DirectionsRenderer({
+			polylineOptions: {
+				strokeColor: '#65a30d',
+				strokeOpacity: 1,
+				strokeWeight: 6,
+			},
+			suppressMarkers: true,
+		})
 
 		// Setting the coordinates of the directions polyline
 		const routePolyline = await directionsService.route({

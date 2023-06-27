@@ -130,17 +130,18 @@ export const RideConfirmation = (data) => {
 			setBookingID,
 			setStopStream,
 
-			(bookingID) => createBookingRequest({
-				...data.user,
-				...options[clickedOption - 1],
-				pickUpLocation: data.origin.placeName,
-				dropLocation: data.destination.placeName,
-				fareType: 'metered',
-				paymentMethod: 'cash',
-				sno: 1,
-				driverID: 1,
-				bookingID: bookingID
-			})
+			(bookingID) =>
+				createBookingRequest({
+					...data.user,
+					...options[clickedOption - 1],
+					pickUpLocation: data.origin.placeName,
+					dropLocation: data.destination.placeName,
+					fareType: 'metered',
+					paymentMethod: 'cash',
+					sno: 1,
+					driverID: 1,
+					bookingID: bookingID,
+				})
 		) // API to create booking
 	}
 
@@ -403,7 +404,11 @@ export function drawTaxiRoute(
 	_callback
 ) {
 	taxiRouteDisplay = new google.maps.DirectionsRenderer({
-		polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
+		polylineOptions: {
+			strokeColor: '#bef264',
+			strokeOpacity: 1.0,
+			strokeWeight: 3,
+		},
 		suppressMarkers: true,
 	})
 

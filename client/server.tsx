@@ -194,8 +194,10 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 				// Some state function to run a popup error...
 			}
 		})
-} // Loads the nearest N taxis onto the map
+} 
 
+// Loads the nearest N taxis onto the map
+// TODO: Return list of objects with taxiID, driverID values
 export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
 		.then(function (response) {

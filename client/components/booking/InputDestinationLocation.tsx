@@ -32,6 +32,14 @@ export const InputDestinationLocation = ({
 						isValidInput(false)
 						if (e.target.value === '') {
 							setExpandSearch(1)
+							setDestination({
+								placeID: null,
+								lat: null,
+								lng: null,
+								postcode: null,
+								address: null,
+								placeName: null,
+							})
 						} else {
 							setExpandSearch(0)
 						}
