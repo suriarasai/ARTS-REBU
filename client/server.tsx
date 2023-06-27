@@ -131,7 +131,8 @@ export const createBooking = async (
 	option,
 	origin,
 	destination,
-	setBookingID
+	setBookingID,
+	setStopStream
 ) => {
 	const response = await api.post('/api/v1/Booking/createBooking', {
 		customerID: user.customerID,
@@ -149,10 +150,12 @@ export const createBooking = async (
 	})
 
 	setBookingID(response.data.bookingID)
+	setStopStream(false)
 	return response.data
 }
 
 export const matchedBooking = async (bookingID, driverID, taxiID) => {
+	console.log(bookingID)
 	const response = await api.post('/api/v1/Booking/matchedBooking', {
 		bookingID: bookingID,
 		driverID: driverID,

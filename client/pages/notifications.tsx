@@ -17,76 +17,51 @@ import { db } from '@/utils/firebase'
 // }
 
 import { UserContext } from '@/context/UserContext'
-import { addDoc, collection, doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
+import { createBookingRequest, setBookingCancelled, setBookingCompleted, setBookingDispatched } from '@/utils/taxiBookingSystem'
 
-export default function Notifications() {
-	// const [notification, setNotification] = useState('')
-	const [bookings, setBookings] = useState([])
+export default function TaxiBookingSystem() {
 	const { user } = useContext(UserContext)
-
-	const bookingRequestRef = collection(db, 'BookingEvent')
+	const [bookings, setBookings] = useState(null)
+	const [stopStream, setStopStream] = useState(false)
 
 	useEffect(() => {
-		const unsubscribe = onSnapshot(bookingRequestRef, (snapshot) => {
-			setBookings(
-				snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
-			)
-		})
+		if (stopStream) {
+			return
+		}
+
+		const unsubscribe = onSnapshot(
+			doc(db, 'BookingEvent', user.customerID.toString()),
+			(snapshot) => {
+				if (snapshot.data().status === 'dispatched') {
+					console.log('Matched')
+				}
+				console.log(snapshot.data())
+			}
+		)
 
 		return () => {
 			unsubscribe()
 		}
-	}, [])
-
-	function createBookingRequest() {
-		setBooking({
-			customerID: user.customerID,
-			customerName: user.customerName,
-			phoneNumber: user.phoneNumber,
-			pickUpLocation: 'NUS High Boarding School of Maths and Science',
-			pickUpTime: '9:48 AM',
-			dropLocation: '25 Heng Keng Mui Terrace',
-			taxiType: 'Rebu Plus',
-			fareType: 'metered',
-			fare: 1,
-			status: 'requested'
-		})
-	}
-
-	function setBookingDispatched() {
-		setBooking({status: 'dispatched'})
-	}
-
-	function setBookingCancelled() {
-		setBooking({status: 'cancelled'})
-	}
-
-	function setBookingCompleted() {
-		setBooking({status: 'completed'})
-	}
-
-	function setBooking(data) {
-		setDoc(doc(db, 'BookingEvent', user.customerID.toString()), data, {
-			merge: true,
-		})
-			.then((response) => {
-				console.log(response)
-			})
-			.catch((error) => {
-				console.log(error.message)
-			})
-	}
+	}, [stopStream])
 
 	return (
 		<Page title={Title.NOTIFICATIONS}>
 			<Section>
-				{bookings.map((item) => (
-					<li key={item.id}>{item.data.customerID + " Status: " +  item.data.status}</li>
-				))}
-				<button onClick={createBookingRequest}>Create Booking</button>
-				<button onClick={setBookingDispatched}>Set Dispatched</button>
-				<button onClick={setBookingCancelled}>Set Cancelled</button>
-				<button onClick={setBookingCompleted}>Set Completed</button>
+				{bookings && bookings.customerID + ' ' + bookings.status}
+				<button onClick={() => createBookingRequest(user.customerID)}>
+					Create Booking
+				</button>
+				<button onClick={() => setBookingDispatched(user.customerID)}>
+					Set Dispatched
+				</button>
+				<button onClick={() => setBookingCancelled(user.customerID)}>
+					Set Cancelled
+				</button>
+				<button onClick={() => setBookingCompleted(user.customerID)}>
+					Set Completed
+				</button>
+				<button onClick={() => setStopStream(true)}>Stop Listening</button>
 			</Section>
 		</Page>
 	)

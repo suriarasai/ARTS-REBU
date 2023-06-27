@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-	FaAngleDown,
-	FaAngleUp,
-	FaCar,
-	FaCarAlt,
-} from 'react-icons/fa'
+import { FaAngleDown, FaAngleUp, FaCar, FaCarAlt } from 'react-icons/fa'
 import {
 	cancelBooking,
 	completeBooking,
@@ -14,12 +9,24 @@ import {
 import { moveToStep } from '@/utils/moveTaxiMarker'
 import { expandArray } from '@/utils/expandArray'
 import { Popup } from '../ui/Popup'
-import { DriverInformation, TripInformation, PaymentInformation } from './UI/PostMatchingUI'
+import {
+	DriverInformation,
+	TripInformation,
+	PaymentInformation,
+} from './UI/PostMatchingUI'
 import { CompleteTripUI } from './UI/CompleteTripUI'
 import { LiveTripUI } from './UI/LiveTripUI'
 import { WaitingUI } from './UI/MatchingUI'
 import { RouteConfirmation } from './UI/ConfirmationUI'
 import { ShowOption } from './UI/ConfirmationUI'
+import { doc, onSnapshot } from 'firebase/firestore'
+import {
+	createBookingRequest,
+	setBookingCancelled,
+	setBookingCompleted,
+	setBookingDispatched,
+} from '@/utils/taxiBookingSystem'
+import { db } from '@/utils/firebase'
 
 export let taxiRouteDisplay
 
@@ -46,6 +53,30 @@ export const RideConfirmation = (data) => {
 		)
 		console.log('Trip Duration', data.duration)
 	}, [])
+
+	const [stopStream, setStopStream] = useState(true)
+
+	// Firestore real-time database listener
+	useEffect(() => {
+		if (stopStream) {
+			return
+		}
+
+		const unsubscribe = onSnapshot(
+			doc(db, 'BookingEvent', data.user.customerID.toString()),
+			(snapshot) => {
+				if (snapshot.data().status === 'dispatched') {
+					console.log('Matched')
+					handleMatched()
+				}
+				console.log(snapshot.data())
+			}
+		)
+
+		return () => {
+			unsubscribe()
+		}
+	}, [stopStream])
 
 	function initializeOptions(ETA) {
 		// distance in meters
@@ -96,13 +127,24 @@ export const RideConfirmation = (data) => {
 			options[clickedOption - 1],
 			data.origin,
 			data.destination,
-			setBookingID
+			setBookingID,
+			setStopStream
 		) // API to create booking
+
+		createBookingRequest({
+			...data.user,
+			...options[clickedOption - 1],
+			pickUpLocation: data.origin.placeName,
+			dropLocation: data.destination.placeName,
+			fareType: 'metered',
+			paymentMethod: 'cash'
+		})
 	}
 
 	function handleMatched() {
 		matchedBooking(bookingID, 1, 1) // API for matching
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
+		setStopStream(true)
 		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path
 		const polyline = expandArray(taxiRoute, 10)
 		const stepsPerMinute = Math.round(
@@ -135,13 +177,7 @@ export const RideConfirmation = (data) => {
 		// 	(polyline.length - 1) / (tripETA / 60) + 1
 		// )
 
-		moveToStep(
-			data.taxis[clickedOption - 1],
-			polyline,
-			0,
-			10,
-			handleCompleted
-		)
+		moveToStep(data.taxis[clickedOption - 1], polyline, 0, 10, handleCompleted)
 	}
 
 	useEffect(() => {
@@ -157,12 +193,14 @@ export const RideConfirmation = (data) => {
 	}, [taxiETA])
 
 	function handleCancelled(matchedStatus) {
+		setBookingCancelled(data.user.customerID)
 		matchedStatus && cancelBooking(bookingID) // API for trip cancellation
 		erasePolyline()
 		data.onCancel()
 	}
 
 	function handleCompleted() {
+		setBookingCompleted(data.user.customerID)
 		completeBooking(bookingID) // API for trip completion
 		console.log('Trip fini')
 		setScreen('completeTrip')
@@ -364,12 +402,12 @@ export function drawTaxiRoute(
 	taxiRouteDisplay = new google.maps.DirectionsRenderer({
 		polylineOptions: { strokeColor: '#65a30d', strokeWeight: 5 },
 		suppressMarkers: true,
-	});
+	})
 
 	if (taxis.length > 0) {
-		const directionsService = new google.maps.DirectionsService();
-		let tempObj = { 1: null, 2: null };
-		let tempETA = { 1: null, 2: null };
+		const directionsService = new google.maps.DirectionsService()
+		let tempObj = { 1: null, 2: null }
+		let tempETA = { 1: null, 2: null }
 
 		for (let i = 0; i < 2; i++) {
 			directionsService.route(
@@ -380,19 +418,19 @@ export function drawTaxiRoute(
 				},
 				function (result, status) {
 					if (status == 'OK') {
-						taxiRouteDisplay.setMap(map);
-						tempObj[i + 1] = result;
-						tempETA[i + 1] = result.routes[0].legs[0].duration.value;
-						setRoutes(tempObj);
-						setTaxiETA(tempETA);
-						_callback(tempETA);
+						taxiRouteDisplay.setMap(map)
+						tempObj[i + 1] = result
+						tempETA[i + 1] = result.routes[0].legs[0].duration.value
+						setRoutes(tempObj)
+						setTaxiETA(tempETA)
+						_callback(tempETA)
 					} else {
-						console.log('Error: Taxi directions API failed');
+						console.log('Error: Taxi directions API failed')
 					}
 				}
-			);
+			)
 		}
 	} else {
-		console.log('Error: Taxis not done loading');
+		console.log('Error: Taxis not done loading')
 	}
 }
