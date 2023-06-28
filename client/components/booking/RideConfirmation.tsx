@@ -26,8 +26,10 @@ import {
 	setBookingCompleted,
 } from '@/utils/taxiBookingSystem'
 import { db } from '@/utils/firebase'
+import setMarkerVisibility from '@/utils/setMarkerVisibility'
 
 export let taxiRouteDisplay
+let matchedTaxi;
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
@@ -154,10 +156,22 @@ export const RideConfirmation = (data) => {
 			(polyline.length - 1) / (taxiETA[clickedOption] / 60) + 1
 		)
 
-		console.log(stepsPerMinute, polyline.length)
+		matchedTaxi = new google.maps.Marker({
+			position: {
+				lat: data.taxis[clickedOption - 1].lat,
+				lng: data.taxis[clickedOption - 1].lng,
+			},
+			map: data.map,
+			icon: {
+				url: 'https://www.svgrepo.com/show/375911/taxi.svg',
+				scaledSize: new google.maps.Size(30, 30),
+			},
+		})
+
+		setMarkerVisibility(data.taxis)
 
 		moveToStep(
-			data.taxis[clickedOption - 1],
+			matchedTaxi,
 			polyline,
 			0,
 			50,
@@ -180,7 +194,7 @@ export const RideConfirmation = (data) => {
 		// 	(polyline.length - 1) / (tripETA / 60) + 1
 		// )
 
-		moveToStep(data.taxis[clickedOption - 1], polyline, 0, 10, handleCompleted)
+		moveToStep(matchedTaxi, polyline, 0, 10, handleCompleted)
 	}
 
 	useEffect(() => {
