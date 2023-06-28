@@ -2,11 +2,11 @@
 
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from 'next-themes'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 import Meta from '@/components/ui/meta'
 import '@/styles/globals.css'
 import '@/styles/maps.css'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { User, UserContextType } from '@/redux/types'
 import { Provider } from 'react-redux'
 import store from '@/redux/store'
@@ -21,6 +21,14 @@ const App = ({ Component, pageProps }: AppProps) => {
 		() => ({ user, setUser }),
 		[user, setUser]
 	) // provider to operate on user data
+
+	// Persisting user object
+	useEffect(() => {
+		// If the user exists and they have completed registration...
+		if (user && user.customerName) {
+			localStorage.setItem('user', JSON.stringify(user))
+		}
+	}, [user])
 
 	return (
 		// Theme provider for site-wide styling (dark mode does not work)

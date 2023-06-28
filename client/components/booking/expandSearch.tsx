@@ -1,9 +1,7 @@
-// TODO: Separate menu for favorited locations
-// TODO: Merge fav and saved locations in data model?
+// TODO: Separate menu for saved locations
 
-import { SavedLocation, SearchLocationInterface } from '@/redux/types'
-import { useState, useContext, useEffect } from 'react'
-import { UserContext } from '../context/UserContext'
+import { useContext } from 'react'
+import { UserContext } from '@/context/UserContext'
 import { useRouter } from 'next/router'
 import {
 	FaHouseUser,
@@ -11,43 +9,32 @@ import {
 	FaStar,
 	FaSuitcase,
 } from 'react-icons/fa'
+import { Button, HREF, Message } from '@/redux/types/constants'
 
 const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
-	const { user, setUser } = useContext(UserContext)
+	const { user } = useContext(UserContext)
 	const router = useRouter()
-
-	const [label, setLabel] = useState<string>('')
-	const [favoriteLocation, setFavoriteLocation] = useState<SavedLocation>({
-		home: [],
-		homeName: '',
-		work: [],
-		workName: '',
-	})
 
 	// Handler for clicking either 'Home' or 'Work'
 	const handleSavedLocation = (label: string) => {
-		setLabel(label)
 		// If the user set a home/work location...
-		if (user.savedLocations[label]) {
+		if (user[label].lat) {
 			// ...navigate to the saved location
-			navigateToLocation(
-				user.savedLocations[label],
-				user.savedLocations[label + 'Name']
-			)
+			navigateToLocation(user[label])
 		} else {
-			router.push('/savedPlaces')
+			router.push(HREF.LOCATIONS)
 		}
 	}
 
-	function navigateToLocation(coords, label) {
+	function navigateToLocation(data) {
 		setExpandSearch(0)
-		setLocation(coords)
+		setLocation(data)
 	}
 
 	// UI for the Home/Saved menus
 	const SavedLocations = (
-		<span className='mt-3 flex inline-grid w-full grid-cols-2'>
-			<div>
+		<div className='mt-3 flex inline-grid w-full grid-cols-2'>
+			<>
 				<div
 					className='flex flex-wrap'
 					onClick={() => handleSavedLocation('home')}
@@ -58,13 +45,13 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 					<div className='pr-5'>
 						<b className='text-sm'>Home</b>
 						<h5>
-							{user.savedLocations?.homeName
-								? user.savedLocations?.homeName
-								: 'Set Location'}
+							{user.home?.placeName
+								? user.home?.placeName
+								: Message.SET_LOCATION}
 						</h5>
 					</div>
 				</div>
-			</div>
+			</>
 			<div
 				className='-ml-3 flex flex-wrap'
 				onClick={() => handleSavedLocation('work')}
@@ -75,20 +62,18 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 				<div>
 					<b className='text-sm'>Work</b>
 					<h5>
-						{user.savedLocations?.workName
-							? user.savedLocations?.workName
-							: 'Set Location'}
+						{user.work?.placeName ? user.work?.placeName : Button.SET_LOCATION}
 					</h5>
 				</div>
 			</div>
-		</span>
+		</div>
 	)
 
 	return (
-		<div>
-			{location === '' ? (
-				<div>
-					<div className='bg-white px-5 pb-2'>
+		<>
+			{!location.lat ? (
+				<div className='responsive'>
+					<div className='mt-2 bg-white px-5 pb-2'>
 						{/* Saved locations: Home and Work */}
 						{SavedLocations}
 					</div>
@@ -98,33 +83,35 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 						onClick={() => setExpandSearch(mode === 1 ? 3 : 4)}
 					>
 						<FaSearchLocation className='mr-6 text-xl text-green-500' />
-						<b className='text-sm'>Set Location on Map</b>
+						<b className='text-sm'>{Message.SET_LOCATION_ON_MAP}</b>
 					</div>
 
 					<div className='mt-2 flex flex-wrap bg-white p-5'>
 						<FaStar className='mr-6 text-xl text-green-500' />
-						<b className='mb-4 text-sm'>Saved Locations</b>
+						<b className='mb-4 text-sm'>{Message.SAVED_LOCATIONS}</b>
 
-						{user.favoriteLocations && user.favoriteLocations.length > 0
-							? user.favoriteLocations.map((item, index) => (
-									<div
-										className='ml-11 mb-3 w-full'
-										key={index}
-										onClick={() => {
-											navigateToLocation(item.coordinates, item.name)
-										}}
-									>
-										<p>{item.name}</p>
-										<h5>{item.address}</h5>
-									</div>
-							  ))
-							: 'No saved locations'}
+						{user.savedLocations && user.savedLocations.length > 0 ? (
+							user.savedLocations?.map((item, index) => (
+								<div
+									className='mb-3 ml-11 w-full'
+									key={index}
+									onClick={() => {
+										navigateToLocation(item)
+									}}
+								>
+									<p className='font-normal'>{item.placeName}</p>
+									<h5>Singapore {item.postcode}</h5>
+								</div>
+							))
+						) : (
+							<p className='ml-11 w-full'>{Message.NO_SAVED_LOCATIONS}</p>
+						)}
 					</div>
 				</div>
 			) : (
 				''
 			)}
-		</div>
+		</>
 	)
 }
 

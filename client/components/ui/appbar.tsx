@@ -1,13 +1,14 @@
 // Navigation Bar: For routing
 
+import { HREF, Title } from '@/redux/types/constants'
 import { useRouter } from 'next/router'
 
 // Links to be rendered
 const links = [
-	{ label: 'Home', href: '/home' },
-	{ label: 'Activity', href: '/activity' },
-	{ label: 'Notifications', href: '/notifications' },
-	{ label: 'Settings', href: '/settings' },
+	{ label: Title.HOME, href: HREF.HOME },
+	{ label: Title.ACTIVITY, href: HREF.HISTORY },
+	{ label: Title.NOTIFICATIONS, href: HREF.NOTIFICATIONS },
+	{ label: Title.SETTINGS, href: HREF.SETTINGS },
 ]
 
 interface appBarProps {

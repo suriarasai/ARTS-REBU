@@ -1,68 +1,283 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { useRouter } from 'next/router'
-import { UserContext } from '@/components/context/UserContext'
-import { UserContextType } from '@/redux/types'
-import { showOptionInterface } from '@/redux/types'
+import React, { useEffect, useState } from 'react'
+import { FaAngleDown, FaAngleUp, FaCar, FaCarAlt } from 'react-icons/fa'
 import {
-	FaAngleDown,
-	FaCar,
-	FaCarAlt,
-	FaClock,
-	FaCoins,
-	FaCrosshairs,
-	FaExpandAlt,
-	FaFlag,
-	FaFontAwesomeFlag,
-} from 'react-icons/fa'
+	cancelBooking,
+	completeBooking,
+	createBooking,
+	matchedBooking,
+} from '@/server'
+import { moveToStep } from '@/utils/moveTaxiMarker'
+import { expandArray } from '@/utils/expandArray'
+import { Popup } from '../ui/Popup'
+import {
+	DriverInformation,
+	TripInformation,
+	PaymentInformation,
+} from './UI/PostMatchingUI'
+import { CompleteTripUI } from './UI/CompleteTripUI'
+import { LiveTripUI } from './UI/LiveTripUI'
+import { WaitingUI } from './UI/MatchingUI'
+import { RouteConfirmation } from './UI/ConfirmationUI'
+import { ShowOption } from './UI/ConfirmationUI'
+import { doc, onSnapshot } from 'firebase/firestore'
+import {
+	createBookingRequest,
+	setBookingCancelled,
+	setBookingCompleted,
+} from '@/utils/taxiBookingSystem'
+import { db } from '@/utils/firebase'
+import setMarkerVisibility from '@/utils/setMarkerVisibility'
+
+export let taxiRouteDisplay
+let matchedTaxi;
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
-	const { user, setUser } = useContext<UserContextType>(UserContext)
-	const router = useRouter()
-
 	const [options, setOptions] = useState<Array<any>>([])
 	const [clickedOption, setClickedOption] = useState<number | null>(null)
 	const [collapsed, setCollapsed] = useState<boolean>(false)
 	const [screen, setScreen] = useState<string>('')
+	const [bookingID, setBookingID] = useState<number>(null)
+	const [rideConfirmed, setRideConfirmed] = useState(false)
+	const [routes, setRoutes] = useState({ 1: null, 2: null })
+	const [taxiETA, setTaxiETA] = useState({ 1: null, 2: null })
+	const [notification, setNotification] = useState(null)
 
 	useEffect(() => {
-		console.log(data.distance, typeof data.distance)
+		drawTaxiRoute(
+			data.taxis,
+			data.origin,
+			data.map,
+			setRoutes,
+			setTaxiETA,
+			initializeOptions
+		)
+		console.log('Trip Duration', data.duration)
+	}, [data.taxis])
+
+	const [stopStream, setStopStream] = useState(true)
+
+	// Firestore real-time database listener
+	useEffect(() => {
+		if (stopStream) {
+			return
+		}
+
+		const unsubscribe = onSnapshot(
+			doc(db, 'BookingEvent', data.user.customerID.toString()),
+			(snapshot) => {
+				if (snapshot.data().status === 'dispatched') {
+					console.log('Matched')
+					handleMatched()
+				}
+				console.log(snapshot.data())
+			}
+		)
+
+		return () => {
+			unsubscribe()
+		}
+	}, [stopStream])
+
+	function initializeOptions(ETA) {
+		// distance in meters
+		// duration in seconds
+		// TODO: Get routes for each path and render all but highlight clicked
+		// TODO: taxiDistance needs to be pre-calculated
+
+		if (!ETA[2]) return
+
 		setOptions([
 			{
 				id: 1,
-				type: 'Rebu Regular',
-				people: 4,
-				price: 3.9 + data.distance * 0.5,
-				dropoff: new Date().getTime() + 1000 * 60 * data.distance * 10,
+				taxiType: 'Rebu Regular',
+				taxiPassengerCapacity: 4,
+				fare: (3.9 + data.distance / 500).toFixed(2),
+				dropTime: null,
+				pickUpTime: null,
+				taxiETA: Math.round(ETA[1] / 60),
+				tripDuration: null,
 				icon: <FaCarAlt />,
 				desc: 'Find the closest car',
 			},
 			{
 				id: 2,
-				type: 'RebuPlus',
-				people: 2,
-				price: 4.1 + data.distance + 0.75,
-				dropoff: new Date().getTime() + 1000 * 60 * data.distance * 8,
+				taxiType: 'RebuPlus',
+				taxiPassengerCapacity: 2,
+				fare: (4.1 + data.distance / 400).toFixed(2),
+				dropTime: null,
+				pickUpTime: null,
+				taxiETA: Math.round(ETA[2] / 60),
+				tripDuration: null,
 				icon: <FaCar />,
 				desc: 'Better cars',
 			},
 		])
-	}, [data])
+	}
+
+	useEffect(() => {
+		if (clickedOption) {
+			taxiRouteDisplay.setDirections(routes[clickedOption])
+		}
+	}, [clickedOption])
 
 	function handleConfirmation(e) {
 		e.preventDefault()
 		setScreen('waiting')
+		// setScreen('completeTrip')
+		setRideConfirmed(true)
+
+		createBooking(
+			data.user,
+			options[clickedOption - 1],
+			data.origin,
+			data.destination,
+			setBookingID,
+			setStopStream,
+
+			(bookingID) =>
+				createBookingRequest({
+					...data.user,
+					...options[clickedOption - 1],
+					pickUpLocation: data.origin.placeName,
+					dropLocation: data.destination.placeName,
+					fareType: 'metered',
+					paymentMethod: 'cash',
+					sno: 1,
+					driverID: 1,
+					bookingID: bookingID,
+				})
+		) // API to create booking
+	}
+
+	function handleMatched() {
+		matchedBooking(bookingID, 1, 1) // API for matching
+		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
+		setStopStream(true)
+		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path
+		const polyline = expandArray(taxiRoute, 10)
+		const stepsPerMinute = Math.round(
+			(polyline.length - 1) / (taxiETA[clickedOption] / 60) + 1
+		)
+
+		matchedTaxi = new google.maps.Marker({
+			position: {
+				lat: data.taxis[clickedOption - 1].lat,
+				lng: data.taxis[clickedOption - 1].lng,
+			},
+			map: data.map,
+			icon: {
+				url: 'https://www.svgrepo.com/show/375911/taxi.svg',
+				scaledSize: new google.maps.Size(30, 30),
+			},
+		})
+
+		setMarkerVisibility(data.taxis)
+
+		moveToStep(
+			matchedTaxi,
+			polyline,
+			0,
+			50,
+			handleTaxiArrived,
+			taxiETA,
+			setTaxiETA,
+			stepsPerMinute,
+			clickedOption
+		)
+	}
+
+	function handleTaxiArrived() {
+		setNotification('arrived')
+		setScreen('liveTrip')
+		console.log('Taxi has arrived')
+		erasePolyline()
+
+		const polyline = expandArray(data.tripPolyline, 10)
+		// const stepsPerMinute = Math.round(
+		// 	(polyline.length - 1) / (tripETA / 60) + 1
+		// )
+
+		moveToStep(matchedTaxi, polyline, 0, 10, handleCompleted)
+	}
+
+	useEffect(() => {
+		if (screen !== 'confirmed') return
+
+		// Proximity notification @ 1 min
+		if (Math.round(taxiETA[clickedOption] / 60) === 1) {
+			console.log('1 minute ETA')
+			setNotification('arrivingSoon')
+		} else if (Math.round(taxiETA[clickedOption] / 60) === 0) {
+			console.log('arriving now')
+		}
+	}, [taxiETA])
+
+	function handleCancelled(matchedStatus) {
+		setBookingCancelled(data.user.customerID.toString())
+		if (matchedStatus) {
+			cancelBooking(bookingID) // API for trip cancellation
+			matchedTaxi.setMap(null)
+		}
+		erasePolyline()
+		data.onCancel()
+	}
+
+	function handleCompleted() {
+		setBookingCompleted(data.user.customerID.toString())
+		completeBooking(bookingID) // API for trip completion
+		console.log('Trip fini')
+		setScreen('completeTrip')
+		setNotification(null)
+	}
+
+	function handleCompletedCleanup() {
+		erasePolyline()
+		matchedTaxi.setMap(null)
+		data.onCancel()
+	}
+
+	function handleChooseAnotherOption() {
+		erasePolyline()
+		setClickedOption(null)
 	}
 
 	return (
-		<div>
+		<div className='responsive'>
+			{!rideConfirmed && (
+				<button
+					className='cancel-button absolute left-0 top-0 z-10 m-5'
+					onClick={() => handleCancelled(false)}
+				>
+					Cancel
+				</button>
+			)}
+			{notification === 'arrivingSoon' && (
+				<Popup
+					clear={setNotification}
+					msg='Your ride is arriving soon - please get ready and enjoy the trip!'
+				/>
+			)}
+			{notification === 'arrived' && (
+				<Popup
+					clear={setNotification}
+					msg='The wait is over! Please make your way to the taxi'
+				/>
+			)}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
-				{AccordionHeader(clickedOption, setCollapsed, collapsed, screen)}
+				{AccordionHeader(
+					clickedOption,
+					setCollapsed,
+					collapsed,
+					screen,
+					taxiETA,
+					data.duration
+				)}
 
 				{collapsed ? null : (
-					<div className='accordion-content pl-4 pr-4 pb-4'>
+					<div className='accordion-content pb-4 pl-4 pr-4'>
 						{!clickedOption ? (
-							<div>
+							<>
 								{/* Show available taxis */}
 								{options.map((option) => (
 									<ShowOption
@@ -71,112 +286,66 @@ export const RideConfirmation = (data) => {
 										setClickedOption={setClickedOption}
 									/>
 								))}
-							</div>
+							</>
 						) : screen === '' ? (
-							<div>
+							<>
 								{/* Confirm details */}
 								<ShowOption
 									option={options[clickedOption - 1]}
 									key={options[clickedOption - 1].id}
 									setClickedOption={setClickedOption}
+									disabled={true}
 								/>
 
 								{/* Origin and Destination Confirmation */}
 								<label className='mt-2'>Route</label>
-								{RouteConfirmation(data)}
+								<RouteConfirmation data={data} />
 
 								<div className='flex items-center justify-center gap-5'>
 									<button
 										className='grey-button w-1/4'
-										onClick={() => setClickedOption(null)}
+										onClick={handleChooseAnotherOption}
 									>
 										Go Back
 									</button>
 									<button
 										className='green-button w-3/4 text-white'
-										onClick={(e) => handleConfirmation(e)}
+										onClick={handleConfirmation}
 									>
 										Confirm
 									</button>
 								</div>
-							</div>
+							</>
 						) : screen === 'waiting' ? (
-							<div>
-								<h5>Please wait..</h5>
-								<button
-									className='green-button mt-5 w-full'
-									onClick={() => setScreen('confirmed')}
-								>
-									Skip
-								</button>
-							</div>
+							<WaitingUI />
 						) : screen === 'confirmed' ? (
-							<div>
-								{/* Driver and Vehicle Information */}
-								<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
-									<div className='mb-3 flex flex-wrap items-center justify-center'>
-										<div className='mr-5 flex h-16 w-16 items-center justify-center rounded-full border border-green-500'>
-											DN
-										</div>
-										<div className='w-2/5'>
-											<p className='font-medium'>{'[ Taxi Driver Name ]'}</p>
-											<p>{'[ Car Model ]'}</p>
-										</div>
-										<div className='flex h-10 w-2/5 items-center justify-center rounded border border-green-700 text-xl text-green-700 '>
-											{'[ Car Plate ]'}
-										</div>
-									</div>
-									<hr className='mb-2' />
-									<button className='w-1/2 p-1 text-red-700'>
-										<p className='font-normal'>Cancel</p>
-									</button>
-									<button className='w-1/2 p-1 text-green-700'>
-										<p className='font-normal'>Contact</p>
-									</button>
-								</div>
-
-								{/* Trip Information */}
-								<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
-									<b className='text-sm'>Your current trip</b>
-									<div className='ml-5 mt-2 flex w-full items-center'>
-										<FaFlag className='text-lg text-green-500' />
-										<div className='w-4/5 p-2 px-5'>
-											{data.destination[0] + ', ' + data.destination[1]}
-										</div>
-										<div className='float-right -ml-3'>
-											<p>Change</p>
-										</div>
-									</div>
-									<hr className='my-2' />
-									<div className='ml-5 flex items-center'>
-										<FaClock className='text-lg text-green-500' />
-										<div className='p-2 px-5'>
-											{new Date(
-												options[clickedOption].dropoff
-											).toLocaleTimeString('en-US', {
-												hour: 'numeric',
-												minute: 'numeric',
-											}) + ' arrival'}
-										</div>
-									</div>
-								</div>
-
-								{/* Payment Information */}
-								<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
-									<div className='flex w-11/12 flex-row items-center'>
-										<FaCoins className='mx-5 text-lg text-green-500' />
-										<div>
-											$<b className='font-normal'>{options[clickedOption].price}</b>
-											<p className='text-sm'>Cash</p>
-										</div>
-									</div>
-									<div className='float-right'>
-										<FaAngleDown className='text-lg text-green-500' />
-									</div>
-								</div>
-							</div>
+							<>
+								<DriverInformation onCancel={handleCancelled} />
+								<TripInformation
+									placeName={data.destination.placeName}
+									postcode={data.destination.postcode}
+									dropTime={options[clickedOption - 1].dropTime}
+								/>
+								<PaymentInformation fare={options[clickedOption - 1].fare} />
+							</>
+						) : screen === 'liveTrip' ? (
+							<LiveTripUI
+								data={data}
+								options={options}
+								clickedOption={clickedOption}
+								onCancel={handleCancelled}
+							/>
+						) : screen === 'completeTrip' ? (
+							<CompleteTripUI
+								options={options}
+								clickedOption={clickedOption}
+								tripETA={data.duration}
+								taxiETA={taxiETA}
+								data={data}
+								handleCompletedCleanup={handleCompletedCleanup}
+							/>
 						) : (
-							<div>Error: Option not found</div>
+							'Error: Option not found'
 						)}
 					</div>
 				)}
@@ -188,96 +357,109 @@ export const RideConfirmation = (data) => {
 	)
 }
 
-// helper component to show rides
-const ShowOption = ({ option, setClickedOption }: showOptionInterface) => (
-	/*
-		option				: the ride option
-		setClickedOption	: tracks which ride option was clicked 
-	*/
-	<div
-		className='ride-option'
-		key={option.id}
-		onClick={() => setClickedOption(option.id)}
-	>
-		<div className='float-left items-center p-2 pr-4 text-2xl text-green-500'>
-			{/* @ts-ignore */}
-			{option.icon}
-		</div>
-		<div className='float-left'>
-			<b>{option.type}</b>
-			<p className='text-sm'>
-				{/* @ts-ignore */}
-				1-{option.people} seats ({option.desc})
-			</p>
-		</div>
-		<div className='float-right mr-8'>
-			<b className='text-lg'>${option.price}</b>
-			<p className='text-sm'>
-				{new Date(option.dropoff).toLocaleTimeString('en-US', {
-					hour: 'numeric',
-					minute: 'numeric',
-				})}
-				{' ETA'}
-			</p>
-		</div>
-	</div>
-)
-
-function RouteConfirmation(data: any) {
-	return (
-		<div className='mb-2 pl-2 pb-2'>
-			<tr className='flex items-center'>
-				<th className='p-1 text-right'>
-					<FaCrosshairs className='text-xl text-green-500' />
-				</th>
-				<th className='text-left'>
-					<p className='p-2 text-sm'>
-						<b>{data.origin[0]}</b>
-						{data.origin[1]}
-					</p>
-				</th>
-			</tr>
-			<tr className='flex items-center'>
-				<th className='p-1 text-right'>
-					<FaFontAwesomeFlag className='text-xl text-green-500' />
-				</th>
-				<th className='text-left'>
-					<p className='p-2 text-sm'>
-						<b>{data.destination[0]}</b>
-						{data.destination[1]}
-					</p>
-				</th>
-			</tr>
-		</div>
-	)
-}
-
 // Dynamic header text in bottom screen
 function AccordionHeader(
 	clickedOption: number,
 	setCollapsed: React.Dispatch<React.SetStateAction<boolean>>,
 	collapsed: boolean,
-	screen
+	screen: string,
+	taxiETA,
+	tripETA
 ) {
 	return (
 		<div className='accordion-header flex flex-wrap pl-4 pt-4'>
-			<label className='w-9/12'>
-				{!clickedOption
-					? 'Suggested Rides'
-					: screen === ''
-					? 'Confirm Details'
-					: screen === 'waiting'
-					? 'Confirming your Ride'
-					: screen === 'confirmed'
-					? 'En Route'
-					: ''}
+			<label className={clickedOption ? 'w-11/12' : 'w-9/12'}>
+				{!clickedOption ? (
+					'Suggested Rides'
+				) : screen === '' ? (
+					'Confirm Details'
+				) : screen === 'waiting' ? (
+					''
+				) : screen === 'confirmed' ? (
+					<>
+						En Route
+						<div className='float-right pr-4'>
+							{Math.round(taxiETA[clickedOption] / 60)} min.
+						</div>
+					</>
+				) : screen === 'liveTrip' ? (
+					<>
+						Heading to your destination
+						<div className='float-right pr-4'>
+							{/* {Math.round(tripETA / 60)} min. */}
+							X:XX PM ETA.
+						</div>
+					</>
+				) : screen === 'completeTrip' ? (
+					"You've arrived"
+				) : (
+					''
+				)}
 			</label>
-			<label className='bold w-2/12 text-green-500'>
-				{clickedOption ? '' : 'View All'}
-			</label>
+
+			{!clickedOption && (
+				<label className='bold w-2/12 text-green-500'>View All</label>
+			)}
+
 			<div className='flex w-1/12' onClick={() => setCollapsed(!collapsed)}>
-				<FaExpandAlt />
+				{collapsed ? <FaAngleUp /> : <FaAngleDown />}
 			</div>
 		</div>
 	)
+}
+
+function erasePolyline() {
+	if (taxiRouteDisplay != null) {
+		taxiRouteDisplay.set('directions', null)
+		// taxiRouteDisplay.setMap(null)
+		// taxiRouteDisplay = null
+	}
+}
+
+export function drawTaxiRoute(
+	taxis,
+	destination,
+	map,
+	setRoutes,
+	setTaxiETA,
+	_callback
+) {
+	taxiRouteDisplay = new google.maps.DirectionsRenderer({
+		polylineOptions: {
+			strokeColor: '#bef264',
+			strokeOpacity: 1.0,
+			strokeWeight: 3,
+		},
+		suppressMarkers: true,
+	})
+
+	if (taxis.length > 0) {
+		const directionsService = new google.maps.DirectionsService()
+		let tempObj = { 1: null, 2: null }
+		let tempETA = { 1: null, 2: null }
+
+		for (let i = 0; i < 2; i++) {
+			directionsService.route(
+				{
+					origin: taxis[i].getPosition(),
+					destination: destination,
+					travelMode: google.maps.TravelMode.DRIVING,
+				},
+				function (result, status) {
+					if (status == 'OK') {
+						taxiRouteDisplay.setMap(map)
+						tempObj[i + 1] = result
+						tempETA[i + 1] = result.routes[0].legs[0].duration.value
+						setRoutes(tempObj)
+						setTaxiETA(tempETA)
+						_callback(tempETA)
+					} else {
+						console.log('Error: Taxi directions API failed')
+					}
+				}
+			)
+		}
+	} else {
+		console.log('Error: Taxis not done loading')
+	}
 }

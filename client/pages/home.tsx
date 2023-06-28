@@ -1,5 +1,8 @@
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import Page from '@/components/ui/page'
 import { useRouter } from 'next/router'
+import { Suspense } from 'react'
+import { HREF, Sub } from '@/redux/types/constants'
 import {
 	FaBookmark,
 	FaClock,
@@ -11,36 +14,44 @@ import {
 
 export default function Home() {
 	return (
-		<Page title='Rebu'>
-			<div className='w-full'>
-				<div className='grid aspect-square h-full grid-cols-3 gap-4'>
+		<Suspense fallback={LoadingScreen}>
+			<Page title='Rebu'>
+				<div className='grid aspect-square h-full w-full grid-cols-3 gap-4'>
 					<HomeIcon
 						icon={<FaTaxi />}
-						href='/booking'
-						label='Book a Ride'
+						href={HREF.BOOKING}
+						label={Sub.BOOKING}
 						isMain={true}
 					/>
 					<HomeIcon
 						icon={<FaCoins />}
-						href='/rewardPoints'
-						label='Your Reward Points'
+						href={HREF.REWARDS}
+						label={Sub.REWARDS}
 					/>
-					<HomeIcon icon={<FaComment />} href='/home' label='Messages' />
+					<HomeIcon
+						icon={<FaComment />}
+						href={HREF.MESSAGES}
+						label={Sub.MESSAGES}
+					/>
 					<HomeIcon
 						icon={<FaBookmark />}
-						href='/savedPlaces'
-						label='Saved Locations'
+						href={HREF.LOCATIONS}
+						label={Sub.LOCATIONS}
 					/>
 					<HomeIcon
 						icon={<FaClock />}
-						href='/activity'
-						label='Trip History'
+						href={HREF.HISTORY}
+						label={Sub.HISTORY}
 						isMain={true}
 					/>
-					<HomeIcon icon={<FaMarker />} href='/settings' label='Your Ratings' />
+					<HomeIcon
+						icon={<FaMarker />}
+						href={HREF.RATINGS}
+						label={Sub.RATINGS}
+					/>
 				</div>
-			</div>
-		</Page>
+			</Page>
+		</Suspense>
 	)
 }
 

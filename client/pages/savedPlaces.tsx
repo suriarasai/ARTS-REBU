@@ -1,10 +1,9 @@
 // TODO: Button to route to Booking and set a route to that place
 
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
-import api from '@/api/axiosConfig'
-import { UserContext } from '@/components/context/UserContext'
+import { UserContext } from '@/context/UserContext'
 import { AddPlaceAPI, RemovePlaceAPI, SetHome, SetWork } from '@/server'
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
 import {
@@ -14,6 +13,8 @@ import {
 	FaSearchLocation,
 	FaSuitcase,
 } from 'react-icons/fa'
+import { Input, Message, Title } from '@/redux/types/constants'
+import { getAddress } from '@/utils/getAddress'
 
 const libraries = ['places']
 
@@ -33,16 +34,29 @@ const SavedPlaces = () => {
 	const searchRef = useRef(null)
 
 	const addPlace = async () => {
-		const [name, address, coordinates] = getAddress(autoComplete.getPlace())
+		const {placeName, address, lat, lng, postcode, place_id} = getAddress(
+			autoComplete.getPlace()
+		)
 		const data = {
-			coordinates: coordinates as Array<number>,
-			name: name as string,
-			address: 'Singapore ' + address,
+			lat: lat,
+			lng: lng,
+			postcode: postcode,
+			address: address,
+			placeName: placeName,
+			placeID: place_id
 		}
-		await AddPlaceAPI({ id: user.id, ...data })
+		await AddPlaceAPI(user.customerID, {
+			lat: lat,
+			lng: lng,
+			postcode: postcode,
+			address: address,
+			placeName: placeName,
+			placeID: place_id
+		})
 		setUser({
 			...user,
-			favoriteLocations: [...user.favoriteLocations, data],
+			// @ts-ignore
+			savedLocations: [...user.savedLocations, data],
 		})
 	}
 
@@ -51,10 +65,8 @@ const SavedPlaces = () => {
 	}
 
 	return (
-		<Page title='Saved Locations'>
-			<Section>
-				{/* <button className='grey-button' onClick={() => router.push('/settings')}>Go Back</button> */}
-
+		<Page title={Title.LOCATIONS}>
+			<div className='relative'>
 				<Autocomplete
 					onPlaceChanged={() => {
 						addPlace()
@@ -62,13 +74,13 @@ const SavedPlaces = () => {
 						setValueObserver('')
 					}}
 					onLoad={(e) => setAutoComplete(e)}
-					fields={['address_components', 'geometry', 'formatted_address']}
+					fields={['address_components', 'geometry', 'formatted_address', 'place_id']}
 					options={{ componentRestrictions: { country: 'sg' } }}
 				>
 					<input
 						type='text'
-						className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
-						placeholder='Add a place'
+						className='rounded-sm border-none bg-zinc-50 px-3 py-2 pl-10 leading-tight shadow-none focus:bg-white'
+						placeholder={Input.PLACE}
 						ref={searchRef}
 						onChange={(e) => setValueObserver(e.target.value)}
 					/>
@@ -80,21 +92,21 @@ const SavedPlaces = () => {
 							user={user}
 							setUser={setUser}
 							label={'Home'}
-							place={user.savedLocations.homeName}
+							place={user.home.placeName}
 						/>
 
 						<SavedLocation
 							user={user}
 							setUser={setUser}
 							label={'Work'}
-							place={user.savedLocations.workName}
+							place={user.work.placeName}
 						/>
 
-						<label className='pt-5'>Saved Places</label>
-						{user.favoriteLocations.length == 0 ? (
-							<div className='pt-5'>{'No saved places'}</div>
+						<label className='pt-5'>{Message.SAVED_LOCATIONS}</label>
+						{user.savedLocations.length === 0 ? (
+							<div className='pt-5'>{Message.NO_SAVED_LOCATIONS}</div>
 						) : (
-							user.favoriteLocations.map((location, index) => (
+							user.savedLocations.map((location, index) => (
 								<Location
 									location={location}
 									setUser={setUser}
@@ -107,7 +119,7 @@ const SavedPlaces = () => {
 				) : (
 					''
 				)}
-			</Section>
+			</div>
 		</Page>
 	)
 }
@@ -120,25 +132,47 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 	const searchRef = useRef(null)
 
 	const editEntry = async () => {
-		const [name, address, coordinates] = getAddress(autoComplete.getPlace())
+		const {placeName, address, lat, lng, postcode, place_id} = getAddress(
+			autoComplete.getPlace()
+		)
 		if (label === 'Home') {
-			await SetHome(coordinates, name, user.id)
+			await SetHome(user.customerID, {
+				placeID: place_id,
+				lat: lat,
+				lng: lng,
+				postcode: postcode,
+				address: address,
+				placeName: placeName,
+			})
 			setUser({
 				...user,
-				savedLocations: {
-					...user.savedLocations,
-					home: coordinates,
-					homeName: name,
+				home: {
+					placeID: place_id,
+					lat: lat,
+					lng: lng,
+					postcode: postcode,
+					address: address,
+					placeName: placeName,
 				},
 			})
 		} else {
-			await SetWork(coordinates, name, user.id)
+			await SetWork(user.customerID, {
+				placeID: place_id,
+				lat: lat,
+				lng: lng,
+				postcode: postcode,
+				address: address,
+				placeName: placeName,
+			})
 			setUser({
 				...user,
-				savedLocations: {
-					...user.savedLocations,
-					work: coordinates,
-					workName: name,
+				work: {
+					placeID: place_id,
+					lat: lat,
+					lng: lng,
+					postcode: postcode,
+					address: address,
+					placeName: placeName,
 				},
 			})
 		}
@@ -150,17 +184,23 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 		<div className='flex flex-wrap pl-5 pt-3'>
 			<div className='w-5/6'>
 				{editLocation ? (
-					<div>
+					<div className='relative'>
 						<Autocomplete
 							onPlaceChanged={() => editEntry()}
 							onLoad={(e) => setAutoComplete(e)}
-							fields={['address_components', 'geometry', 'formatted_address']}
+							className='relative'
+							fields={[
+								'address_components',
+								'geometry',
+								'formatted_address',
+								'place_id',
+							]}
 							options={{ componentRestrictions: { country: 'sg' } }}
 						>
 							<input
 								type='text'
-								className='rounded-sm border-none bg-zinc-50 py-2 px-3 pl-10 leading-tight shadow-none focus:bg-white'
-								placeholder='Enter a new address'
+								className='rounded-sm border-none bg-zinc-50 px-3 py-2 pl-10 leading-tight shadow-none focus:bg-white'
+								placeholder={Input.ADDRESS}
 								ref={searchRef}
 							/>
 						</Autocomplete>
@@ -172,7 +212,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 				) : (
 					<div>
 						<b className='text-sm font-medium'>{label}</b>
-						<h5>{place ? place : 'Set Location'}</h5>
+						<h5>{place ? place : Message.SET_LOCATION}</h5>
 					</div>
 				)}
 			</div>
@@ -198,12 +238,14 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 }
 
 const Location = ({ location, setUser, user }) => {
-	const removeEntry = () => {
-		RemovePlaceAPI(user.id, location.name)
+	function removeEntry() {
+		RemovePlaceAPI(user.customerID, location.placeID)
 		setUser({
 			...user,
-			favoriteLocations: [
-				...user.favoriteLocations.filter((item) => item.name !== location.name),
+			savedLocations: [
+				...user.savedLocations.filter(
+					(item) => item.placeID !== location.placeID
+				),
 			],
 		})
 	}
@@ -211,8 +253,8 @@ const Location = ({ location, setUser, user }) => {
 	return (
 		<div className='ml-5 flex flex-wrap pt-3'>
 			<div className='w-5/6'>
-				<b className='text-sm font-medium'>{location.name}</b>
-				<h5>{location.address}</h5>
+				<b className='text-sm font-medium'>{location.placeName}</b>
+				<h5>{location.address}, Singapore {location.postcode}</h5>
 			</div>
 			<div
 				className='flex w-1/6 items-center justify-center'
@@ -226,38 +268,3 @@ const Location = ({ location, setUser, user }) => {
 
 export default SavedPlaces
 
-function getAddress(place) {
-	let address1 = ''
-	let postcode = ''
-	let coordinates = [
-		place.geometry.location.lat(),
-		place.geometry.location.lng(),
-	]
-
-	for (const component of place.address_components as google.maps.GeocoderAddressComponent[]) {
-		const componentType = component.types[0]
-
-		switch (componentType) {
-			case 'street_number': {
-				address1 = `${component.long_name} ${address1}`
-				break
-			}
-
-			case 'route': {
-				address1 += component.short_name
-				break
-			}
-
-			case 'postal_code': {
-				postcode = component.long_name
-				break
-			}
-		}
-	}
-
-	if (address1 === '') {
-		address1 = place.formatted_address
-	}
-
-	return [address1, postcode, coordinates]
-}

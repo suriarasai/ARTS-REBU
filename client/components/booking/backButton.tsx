@@ -5,7 +5,7 @@ export const BackButton = ({ expandSearch, setExpandSearch }) => {
 	const router = useRouter()
 	return (
 		<button
-			className='p-2 text-2xl font-medium text-green-500'
+			className='p-2 text-2xl font-medium text-green-600'
 			onClick={() =>
 				expandSearch !== 0 ? setExpandSearch(0) : router.push('/home')
 			}

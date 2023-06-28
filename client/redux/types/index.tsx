@@ -8,28 +8,34 @@ export type UserContextType = {
 
 // User data schema
 export type User = {
-	id?: string
-	firstName?: string
-	lastName?: string
-	birthdate?: string
-	prefix?: string
-	countryCode?: number
-	email?: string
-	password?: string
-	mobileNumber?: string
-	joinedDate?: string
-	rating?: number
-	activity?: any
-	savedLocations?: SavedLocation
-	favoriteLocations?: Array<FavoriteLocation>
-	rewardPoints?: number
-	rewardHistory?: Array<any>
-	reviewsAboutCustomer?: Array<any>
-	reviewsFromCustomer?: Array<any>
+	customerID?: number,
+	customerName?: string,
+	memberCategory?: string,
+	age?: number,
+	gender?: string,
+	amountSpent?: number,
+	address?: Location,
+	city?: string,
+	countryCode?: string,
+	contactTitle?: string,
+	phoneNumber?: number,
+	email?: string,
+	password?: string,
+	phoneCountryCode?: number,
+	home?: Location,
+	work?: Location,
+	savedLocations?: Array<Location>
 
-	temp?: Array<any>
-	tripInfo?: any
-	addr?: String[]
+	temp?: any
+}
+
+export interface Location {
+	placeID?: string,
+    lat?: number,
+    lng?: number,
+    postcode?: number,
+    address?: string,
+    placeName?: string
 }
 
 export interface SavedLocation {
@@ -53,15 +59,19 @@ export interface optionsInterface {
 
 export interface option {
 	id: number
-	dropoff: string
-	type: string
-	people: number
-	price: number
+	arrival: string
+	taxiType: string
+	dropTime: number
+	pickUpTime: number
+	icon: any
+	taxiPassengerCapacity: number
+	fare: number
 }
 
 export interface showOptionInterface {
 	option: option
 	setClickedOption: React.Dispatch<React.SetStateAction<number | null>>
+	disabled?: boolean
 }
 
 export interface SearchFieldInterface {
@@ -124,6 +134,7 @@ export interface rewardPoints {
 export interface navButtonProps {
 	label: string
 	href: string
+	icon: any
 	className?: string
 }
 
