@@ -178,7 +178,7 @@ p {
 }
 
 .location-search-header {
-	@apply sticky top-0 z-10 flex w-screen flex-wrap rounded-b-3xl bg-white p-2 shadow-md;
+	@apply sticky top-0 z-10 flex max-w-screen-md ml-auto mr-auto flex-wrap rounded-b-3xl bg-white p-2 shadow-md;
 }
 
 .sidenav-link {
@@ -196,4 +196,8 @@ p {
 
 .sidenav-icon {
 	@apply mr-0 lg:mr-5 text-2xl text-pink-800
+}
+
+.responsive {
+	@apply max-w-screen-md ml-auto mr-auto
 }

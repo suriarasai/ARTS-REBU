@@ -27,7 +27,7 @@ const SignIn = () => {
 	}, [])
 
 	return (
-		<main className='flex h-screen max-w-screen-md justify-center bg-zinc-50 pb-16 pt-20 sm:pb-0'>
+		<main className='flex h-screen max-w-screen-md mr-auto ml-auto justify-center bg-zinc-50 pb-16 pt-20 sm:pb-0'>
 			{loading ? (
 				LoadingScreen
 			) : (

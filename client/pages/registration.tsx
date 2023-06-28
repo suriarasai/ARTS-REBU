@@ -38,7 +38,7 @@ const Registration = () => {
 	}
 
 	return (
-		<main className='flex h-screen max-w-screen-md flex-col justify-center bg-zinc-50 p-16'>
+		<main className='flex h-screen max-w-screen-md mr-auto ml-auto flex-col justify-center bg-zinc-50 p-16'>
 			<h2 className='h-4/12 pb-1 text-xl font-medium text-green-500'>
 				Registration
 			</h2>

@@ -222,7 +222,7 @@ export const RideConfirmation = (data) => {
 	}
 
 	return (
-		<>
+		<div className='responsive'>
 			{!rideConfirmed && (
 				<button
 					className='cancel-button absolute left-0 top-0 z-10 m-5'
@@ -332,7 +332,7 @@ export const RideConfirmation = (data) => {
 			{screen === 'waiting' && (
 				<div className='absolute left-0 top-0 z-20 h-full w-full backdrop-brightness-50'></div>
 			)}
-		</>
+		</div>
 	)
 }
 

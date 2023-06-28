@@ -72,7 +72,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	return (
 		<>
 			{!location.lat ? (
-				<>
+				<div className='responsive'>
 					<div className='mt-2 bg-white px-5 pb-2'>
 						{/* Saved locations: Home and Work */}
 						{SavedLocations}
@@ -107,7 +107,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 							<p className='ml-11 w-full'>{Message.NO_SAVED_LOCATIONS}</p>
 						)}
 					</div>
-				</>
+				</div>
 			) : (
 				''
 			)}
