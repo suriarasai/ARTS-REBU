@@ -8,7 +8,7 @@ export const CompleteTripUI = ({
 		<div className='flex items-center border-b border-zinc-300 py-3'>
 			<div className='mr-5 h-8 w-8 rounded-2xl bg-gradient-to-tr from-lime-500 to-green-200'></div>
 			<div className='flex-1'>
-				<p className='font-medium'>Driver Name</p>
+				<p className='font-medium'>John Doe</p>
 				<h5 className='flex items-center'>
 					<FaStar className='text-yellow mr-2' />
 					4.8
@@ -16,7 +16,7 @@ export const CompleteTripUI = ({
 			</div>
 			<div className='flex-1'>
 				<h5>Final cost:</h5>
-				<h5 className='font-bold'>SG${options[clickedOption - 1].fare}</h5>
+				<h5 className='font-bold'>SG${options[clickedOption].fare}</h5>
 			</div>
 			<div className='flex-1'>
 				<h5>Time</h5>
@@ -28,14 +28,14 @@ export const CompleteTripUI = ({
 		<div className='border-b border-zinc-300 py-4'>
 			<label className='pb-2'>Trip</label>
 			<div className='flex items-center pr-5 pb-2'>
-				<FaCrosshairs className='mr-3 text-zinc-500' />
-				<p className='font-normal'>{data.origin.placeName}</p>
-				<p className='ml-auto'>9:40 PM</p>
+				<FaCrosshairs className='w-2/12 text-zinc-500' />
+				<p className='w-8/12 font-normal'>{data.origin.placeName}</p>
+				<p className='w-2/12 ml-auto'>9:40 PM</p>
 			</div>
 			<div className='flex items-center pr-5'>
-				<FaFlag className='mr-3 text-green-600' />
-				<p className='font-normal'>{data.destination.placeName}</p>
-				<p className='ml-auto'>10:10 PM</p>
+				<FaFlag className='w-2/12 text-green-600' />
+				<p className='w-8/12 font-normal'>{data.destination.placeName}</p>
+				<p className='w-2/12 ml-auto'>10:10 PM</p>
 			</div>
 		</div>
 		<div className='mt-5 flex flex-col justify-center'>

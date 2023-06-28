@@ -29,11 +29,11 @@ import { db } from '@/utils/firebase'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 
 export let taxiRouteDisplay
-let matchedTaxi;
+let matchedTaxi
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
-	const [options, setOptions] = useState<Array<any>>([])
+	const [options, setOptions] = useState({})
 	const [clickedOption, setClickedOption] = useState<number | null>(null)
 	const [collapsed, setCollapsed] = useState<boolean>(false)
 	const [screen, setScreen] = useState<string>('')
@@ -85,30 +85,34 @@ export const RideConfirmation = (data) => {
 		// TODO: Get routes for each path and render all but highlight clicked
 		// TODO: taxiDistance needs to be pre-calculated
 
-		if (!ETA[2]) return
+		if (!ETA[2]) return // TaxiETA
 
-		setOptions([
-			{
+		setOptions({
+			1: {
 				id: 1,
 				taxiType: 'Rebu Regular',
 				taxiPassengerCapacity: 4,
 				fare: (3.9 + data.distance / 500).toFixed(2),
-				dropTime: (data.duration + ETA[1] / 60).toFixed(1),
-				pickUpTime: (ETA[1] / 60).toFixed(1),
+				dropTime: null,
+				pickUpTime: null,
+				taxiETA: Math.round(ETA[1] / 60),
+				tripDuration: null,
 				icon: <FaCarAlt />,
 				desc: 'Find the closest car',
 			},
-			{
+			2: {
 				id: 2,
 				taxiType: 'RebuPlus',
 				taxiPassengerCapacity: 2,
 				fare: (4.1 + data.distance / 400).toFixed(2),
-				dropTime: ((data.duration + ETA[2] / 60) * 1.2).toFixed(1),
-				pickUpTime: (ETA[2] / 60).toFixed(1),
+				dropTime: null,
+				pickUpTime: null,
+				taxiETA: Math.round(ETA[2] / 60),
+				tripDuration: null,
 				icon: <FaCar />,
 				desc: 'Better cars',
 			},
-		])
+		})
 	}
 
 	useEffect(() => {
@@ -125,7 +129,7 @@ export const RideConfirmation = (data) => {
 
 		createBooking(
 			data.user,
-			options[clickedOption - 1],
+			options[clickedOption],
 			data.origin,
 			data.destination,
 			setBookingID,
@@ -134,7 +138,7 @@ export const RideConfirmation = (data) => {
 			(bookingID) =>
 				createBookingRequest({
 					...data.user,
-					...options[clickedOption - 1],
+					...options[clickedOption],
 					pickUpLocation: data.origin.placeName,
 					dropLocation: data.destination.placeName,
 					fareType: 'metered',
@@ -147,6 +151,12 @@ export const RideConfirmation = (data) => {
 	}
 
 	function handleMatched() {
+		setOptions({ ...options, [clickedOption]: {
+			...options[clickedOption],
+			pickUpTime: null,
+			dropTime: null,
+			tripDuration: null,
+		} })
 		matchedBooking(bookingID, 1, 1) // API for matching
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
 		setStopStream(true)
@@ -158,8 +168,8 @@ export const RideConfirmation = (data) => {
 
 		matchedTaxi = new google.maps.Marker({
 			position: {
-				lat: data.taxis[clickedOption - 1].lat,
-				lng: data.taxis[clickedOption - 1].lng,
+				lat: data.taxis[clickedOption].lat,
+				lng: data.taxis[clickedOption].lng,
 			},
 			map: data.map,
 			icon: {
@@ -211,7 +221,10 @@ export const RideConfirmation = (data) => {
 
 	function handleCancelled(matchedStatus) {
 		setBookingCancelled(data.user.customerID.toString())
-		matchedStatus && cancelBooking(bookingID) // API for trip cancellation
+		if (matchedStatus) {
+			cancelBooking(bookingID) // API for trip cancellation
+			matchedTaxi.setMap(null)
+		}
 		erasePolyline()
 		data.onCancel()
 	}
@@ -226,6 +239,7 @@ export const RideConfirmation = (data) => {
 
 	function handleCompletedCleanup() {
 		erasePolyline()
+		matchedTaxi.setMap(null)
 		data.onCancel()
 	}
 
@@ -271,10 +285,10 @@ export const RideConfirmation = (data) => {
 						{!clickedOption ? (
 							<>
 								{/* Show available taxis */}
-								{options.map((option) => (
+								{Object.keys(options).forEach((option) => (
 									<ShowOption
-										option={option}
-										key={option.id}
+										option={options[option]}
+										key={options[option].id}
 										setClickedOption={setClickedOption}
 									/>
 								))}
@@ -283,8 +297,8 @@ export const RideConfirmation = (data) => {
 							<>
 								{/* Confirm details */}
 								<ShowOption
-									option={options[clickedOption - 1]}
-									key={options[clickedOption - 1].id}
+									option={options[clickedOption]}
+									key={options[clickedOption].id}
 									setClickedOption={setClickedOption}
 									disabled={true}
 								/>
@@ -316,9 +330,9 @@ export const RideConfirmation = (data) => {
 								<TripInformation
 									placeName={data.destination.placeName}
 									postcode={data.destination.postcode}
-									dropTime={options[clickedOption - 1].dropTime}
+									dropTime={options[clickedOption].dropTime}
 								/>
-								<PaymentInformation fare={options[clickedOption - 1].fare} />
+								<PaymentInformation fare={options[clickedOption].fare} />
 							</>
 						) : screen === 'liveTrip' ? (
 							<LiveTripUI
@@ -378,8 +392,10 @@ function AccordionHeader(
 					<>
 						Heading to your destination
 						<div className='float-right pr-4'>
-							{/* {Math.round(tripETA / 60)} min. */}
-							X:XX PM ETA.
+							{new Date()
+								.setSeconds(new Date().getSeconds() + tripETA)
+								.toString()}{' '}
+							ETA.
 						</div>
 					</>
 				) : screen === 'completeTrip' ? (

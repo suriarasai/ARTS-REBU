@@ -10,14 +10,14 @@ export const DriverInformation = ({ onCancel }) => {
 		<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
 			<div className='mb-3 flex flex-wrap items-center justify-center'>
 				<div className='mr-5 flex h-16 w-16 items-center justify-center rounded-full border border-green-500'>
-					DN
+					JD
 				</div>
 				<div className='w-2/5'>
-					<p className='font-medium'>{'[ Taxi Driver Name ]'}</p>
-					<p>{'[ Car Model ]'}</p>
+					<p className='font-medium'>{'John Doe'}</p>
+					<p>{'Silver Honda Civic'}</p>
 				</div>
 				<div className='flex h-10 w-2/5 items-center justify-center rounded border border-green-700 text-xl text-green-700 '>
-					{'[ Car Plate ]'}
+					{'SBA 2023A'}
 				</div>
 			</div>
 			<hr className='mb-2' />
@@ -37,7 +37,7 @@ export const PaymentInformation = ({ fare }) => {
 				<FaCoins className='mx-5 text-lg text-green-500' />
 				<>
 					$<b className='font-normal'>{fare}</b>
-					<p className='text-sm'>Cash</p>
+					<p className='text-sm'>{' '}Cash</p>
 				</>
 			</div>
 			<div className='float-right'>
@@ -63,7 +63,7 @@ export const TripInformation = (props) => {
 			<hr className='my-2' />
 			<div className='ml-5 flex items-center'>
 				<FaClock className='text-lg text-green-500' />
-				<div className='p-2 px-5'>{Math.round(dropTime / 60) + ' min.'}</div>
+				<div className='p-2 px-5'>{Math.round(dropTime / 60) + ' min.'}</div> //TODO: 
 			</div>
 		</div>
 	);

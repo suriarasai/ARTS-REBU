@@ -1,9 +1,26 @@
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import { Title } from '@/redux/types/constants'
+import { useEffect } from 'react'
 import { FaSearch } from 'react-icons/fa'
 
 export default function Notifications() {
+	// time + seconds = ETA
+	// miliseconds -> start time
+	// now -> end time
+
+	useEffect(() => {
+		let time = new Date()
+		let pickUpTime = 1687924419
+		let tripETA = 300
+
+		time.setSeconds(time.getSeconds() + tripETA)
+
+		// console.log(time.toLocaleTimeString('en-US').replace(/(.*)\D\d+/, '$1'))
+		console.log(new Date(pickUpTime * 1000).toLocaleTimeString('en-US').replace(/(.*)\D\d+/, '$1'))
+
+	}, [])
+
 	return (
 		<Page title={Title.NOTIFICATIONS}>
 			<Section>
