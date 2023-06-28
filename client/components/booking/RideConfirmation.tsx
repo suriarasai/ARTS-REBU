@@ -24,7 +24,6 @@ import {
 	createBookingRequest,
 	setBookingCancelled,
 	setBookingCompleted,
-	setBookingDispatched,
 } from '@/utils/taxiBookingSystem'
 import { db } from '@/utils/firebase'
 

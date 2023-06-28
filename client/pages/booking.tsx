@@ -101,12 +101,8 @@ function Booking() {
 				},
 				map: map,
 				icon: {
-					path: icon.crosshairs,
-					fillColor: '#67e8f9',
-					fillOpacity: 1,
-					scale: 0.05,
-					strokeColor: '#67e8f9',
-					strokeWeight: 0.2,
+					url: 'https://www.svgrepo.com/show/258041/pin-maps-and-location.svg',
+					scaledSize: new google.maps.Size(30, 30)
 				},
 			})
 
@@ -129,7 +125,7 @@ function Booking() {
 			originRef.current.value = origin.placeName
 
 			if (!marks.origin) {
-				marks.origin = mark(map, origin, icon.crosshairs, '#06b6d4', '#155e75')
+				marks.origin = mark(map, origin, 'https://www.svgrepo.com/show/375834/location.svg')
 			} else {
 				marks.origin.setPosition(origin)
 			}
@@ -147,9 +143,7 @@ function Booking() {
 				marks.destination = mark(
 					map,
 					destination,
-					icon.crosshairs,
-					'#06b6d4',
-					'#155e75'
+					'https://www.svgrepo.com/show/375810/flag.svg'
 				)
 			} else {
 				marks.destination.setPosition(destination)
@@ -214,6 +208,9 @@ function Booking() {
 		// UI Updates
 		isValidInput(true)
 		setHideUI(true)
+		marks.home.setMap(null)
+		marks.work.setMap(null)
+		setMarkerVisibility(marks.saved)
 	}
 
 	function clearRoute() {
@@ -244,6 +241,11 @@ function Booking() {
 			directionsDisplay = null
 		}
 		setMarkerVisibility(taxis)
+
+		// Reshow saved locations
+		marks.home.setMap(map)
+		marks.work.setMap(map)
+		setMarkerVisibility(marks.saved, map)
 	}
 
 	function setLocationViaClick(e) {
@@ -332,18 +334,14 @@ function Booking() {
 
 export default Booking
 
-function mark(map, place, image, fill, stroke) {
+function mark(map, place, image) {
 	return new google.maps.Marker({
 		position: { lat: place.lat, lng: place.lng },
 		map: map,
 		title: place.placeName + ', ' + 'Singapore ' + place.postcode,
 		icon: {
-			path: image,
-			fillColor: fill,
-			fillOpacity: 1,
-			scale: 0.03,
-			strokeColor: stroke,
-			strokeWeight: 0.5,
+			url: image,
+			scaledSize: new google.maps.Size(30, 30)
 		},
 	})
 }
@@ -359,13 +357,13 @@ function listener(marker, info) {
 function setMarkers(map, user) {
 	const infoWindow = new google.maps.InfoWindow()
 
-	marks.home = mark(map, user.home, icon.houseMarker, '#06b6d4', '#155e75')
-	marks.work = mark(map, user.work, icon.workMarker, '#06b6d4', '#155e75')
+	marks.home = mark(map, user.home, 'https://www.svgrepo.com/show/375801/door.svg')
+	marks.work = mark(map, user.work, 'https://www.svgrepo.com/show/375762/briefcase.svg')
 	listener(marks.home, infoWindow)
 	listener(marks.work, infoWindow)
 
 	user.savedLocations.map((location, index) => {
-		marks.saved.push(mark(map, location, icon.saved, 'Yellow', 'Gold'))
+		marks.saved.push(mark(map, location, 'https://www.svgrepo.com/show/375878/ribbon.svg'))
 		listener(marks.saved[index], infoWindow)
 	})
 }

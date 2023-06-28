@@ -1,3 +1,5 @@
+import { icon } from '@/redux/types/constants'
+
 export function moveToStep(
 	marker,
 	polyline,
@@ -22,6 +24,22 @@ export function moveToStep(
 			lat: polyline[iter].lat,
 			lng: polyline[iter].lng,
 		})
+
+		// iter < polyline.length - 1 &&
+		// 	marker.setIcon({
+		// 		path: icon.taxiMarker,
+		// 		fillColor: '#d9f99d',
+		// 		fillOpacity: 1,
+		// 		scale: 0.03,
+		// 		strokeColor: '#65a30d',
+		// 		strokeWeight: 0.5,
+		// 		rotation:
+		// 			google.maps.geometry.spherical.computeHeading(
+		// 				polyline[iter],
+		// 				polyline[iter + 1]
+		// 			) + 270,
+		// 	})
+
 		if (iter % stepsPerMinute == 0) {
 			if (clickedOption === 0) {
 				setETA((ETA) => ETA)
@@ -50,3 +68,4 @@ export function moveToStep(
 		_callback()
 	}
 }
+

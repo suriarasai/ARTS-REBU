@@ -2,6 +2,7 @@ import api from '@/api/axiosConfig'
 import { User } from './redux/types'
 import { icon } from './redux/types/constants'
 import { getAddress } from './utils/getAddress'
+import taxiMarker from '@/public/images/taxiMarker.png'
 
 // const Firestore = require('@google-cloud/firestore')
 
@@ -231,13 +232,9 @@ export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 					map: map,
 					position: { lat: coords[1], lng: coords[0] },
 					icon: {
-						path: icon.taxiMarker,
-						fillColor: '#d9f99d',
-						fillOpacity: 1,
-						scale: 0.03,
-						strokeColor: '#65a30d',
-						strokeWeight: 0.5,
-					},
+						url: 'https://www.svgrepo.com/show/375911/taxi.svg',
+						scaledSize: new google.maps.Size(30, 30)
+					}
 				})
 				nearbyTaxiMarkers.push(newTaxi)
 			}
