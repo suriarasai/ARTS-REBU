@@ -53,7 +53,7 @@ export const RideConfirmation = (data) => {
 			initializeOptions
 		)
 		console.log('Trip Duration', data.duration)
-	}, [])
+	}, [data.taxis])
 
 	const [stopStream, setStopStream] = useState(true)
 
@@ -93,8 +93,10 @@ export const RideConfirmation = (data) => {
 				taxiType: 'Rebu Regular',
 				taxiPassengerCapacity: 4,
 				fare: (3.9 + data.distance / 500).toFixed(2),
-				dropTime: (data.duration + ETA[1] / 60).toFixed(1),
-				pickUpTime: (ETA[1] / 60).toFixed(1),
+				dropTime: null,
+				pickUpTime: null,
+				taxiETA: Math.round(ETA[1] / 60),
+				tripDuration: null,
 				icon: <FaCarAlt />,
 				desc: 'Find the closest car',
 			},
@@ -103,8 +105,10 @@ export const RideConfirmation = (data) => {
 				taxiType: 'RebuPlus',
 				taxiPassengerCapacity: 2,
 				fare: (4.1 + data.distance / 400).toFixed(2),
-				dropTime: ((data.duration + ETA[2] / 60) * 1.2).toFixed(1),
-				pickUpTime: (ETA[2] / 60).toFixed(1),
+				dropTime: null,
+				pickUpTime: null,
+				taxiETA: Math.round(ETA[2] / 60),
+				tripDuration: null,
 				icon: <FaCar />,
 				desc: 'Better cars',
 			},
@@ -211,7 +215,10 @@ export const RideConfirmation = (data) => {
 
 	function handleCancelled(matchedStatus) {
 		setBookingCancelled(data.user.customerID.toString())
-		matchedStatus && cancelBooking(bookingID) // API for trip cancellation
+		if (matchedStatus) {
+			cancelBooking(bookingID) // API for trip cancellation
+			matchedTaxi.setMap(null)
+		}
 		erasePolyline()
 		data.onCancel()
 	}
@@ -226,6 +233,7 @@ export const RideConfirmation = (data) => {
 
 	function handleCompletedCleanup() {
 		erasePolyline()
+		matchedTaxi.setMap(null)
 		data.onCancel()
 	}
 

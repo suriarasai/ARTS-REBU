@@ -34,7 +34,7 @@ export const RouteConfirmation = ({ data }) => (
 );// helper component to show rides
 export const ShowOption = ({
 	option, setClickedOption, disabled = false,
-}: showOptionInterface) => (
+}) => (
 	/*
 		option				: the ride option
 		setClickedOption	: tracks which ride option was clicked
@@ -59,7 +59,7 @@ export const ShowOption = ({
 			<b className='text-lg'>${option.fare}</b>
 			<p className='text-sm'>
 				<span className='float-right'>
-					{option.pickUpTime}
+					{option.taxiETA}
 					{' min.'}
 				</span>
 			</p>
