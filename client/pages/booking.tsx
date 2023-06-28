@@ -214,6 +214,15 @@ function Booking() {
 	}
 
 	function clearRoute() {
+
+		if (marks.origin) {
+			marks.origin.setMap(null)
+			marks.origin = null
+		}
+		
+		marks.destination.setMap(null)
+		marks.destination = null
+
 		setDistance(null)
 		setDuration(null)
 		setOrigin({
@@ -245,6 +254,7 @@ function Booking() {
 		// Reshow saved locations
 		marks.home.setMap(map)
 		marks.work.setMap(map)
+
 		setMarkerVisibility(marks.saved, map)
 	}
 

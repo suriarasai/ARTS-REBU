@@ -29,7 +29,13 @@ import { db } from '@/utils/firebase'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 
 export let taxiRouteDisplay
-let matchedTaxi;
+let matchedTaxi
+let booking = {
+	dropTime: null,
+	pickUpTime: null,
+	taxiETA: null,
+	tripDuration: null,
+}
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
@@ -188,16 +194,22 @@ export const RideConfirmation = (data) => {
 	}
 
 	function handleTaxiArrived() {
+		console.log('book')
+		booking = {
+			...options[clickedOption - 1],
+			dropTime: new Date(+new Date() + data.duration * 1000)
+				.toLocaleTimeString('en-US')
+				.replace(/(.*)\D\d+/, '$1'),
+			pickUpTime: +new Date(),
+			tripDuration: Math.round(data.duration / 60),
+		}
+
 		setNotification('arrived')
 		setScreen('liveTrip')
 		console.log('Taxi has arrived')
 		erasePolyline()
 
 		const polyline = expandArray(data.tripPolyline, 10)
-		// const stepsPerMinute = Math.round(
-		// 	(polyline.length - 1) / (tripETA / 60) + 1
-		// )
-
 		moveToStep(matchedTaxi, polyline, 0, 10, handleCompleted)
 	}
 
@@ -220,6 +232,7 @@ export const RideConfirmation = (data) => {
 			matchedTaxi.setMap(null)
 		}
 		erasePolyline()
+		setStopStream(true)
 		data.onCancel()
 	}
 
@@ -271,7 +284,7 @@ export const RideConfirmation = (data) => {
 					collapsed,
 					screen,
 					taxiETA,
-					data.duration
+					booking.dropTime
 				)}
 
 				{collapsed ? null : (
@@ -324,7 +337,8 @@ export const RideConfirmation = (data) => {
 								<TripInformation
 									placeName={data.destination.placeName}
 									postcode={data.destination.postcode}
-									dropTime={options[clickedOption - 1].dropTime}
+									tripETA={data.duration}
+									taxiETA={options[clickedOption - 1].taxiETA * 60}
 								/>
 								<PaymentInformation fare={options[clickedOption - 1].fare} />
 							</>
@@ -339,8 +353,9 @@ export const RideConfirmation = (data) => {
 							<CompleteTripUI
 								options={options}
 								clickedOption={clickedOption}
-								tripETA={data.duration}
-								taxiETA={taxiETA}
+								tripETA={booking.tripDuration}
+								pickUpTime={booking.pickUpTime}
+								dropTime={booking.dropTime}
 								data={data}
 								handleCompletedCleanup={handleCompletedCleanup}
 							/>
@@ -364,7 +379,7 @@ function AccordionHeader(
 	collapsed: boolean,
 	screen: string,
 	taxiETA,
-	tripETA
+	dropTime
 ) {
 	return (
 		<div className='accordion-header flex flex-wrap pl-4 pt-4'>
@@ -385,10 +400,7 @@ function AccordionHeader(
 				) : screen === 'liveTrip' ? (
 					<>
 						Heading to your destination
-						<div className='float-right pr-4'>
-							{/* {Math.round(tripETA / 60)} min. */}
-							X:XX PM ETA.
-						</div>
+						<div className='float-right pr-4'>{dropTime} ETA</div>
 					</>
 				) : screen === 'completeTrip' ? (
 					"You've arrived"

@@ -21,10 +21,6 @@ export const LiveTripUI = ({
 				<FaSearchLocation className='mr-5 text-green-500' />
 				<div className='flex flex-col'>
 					<p className='font-medium'>{data.destination.address}</p>
-					{time.setSeconds(
-						time.getSeconds() + options[clickedOption-1].dropTime
-					)}{' '}
-					ETA.
 				</div>
 				<div className='ml-auto flex items-center text-green-500'>
 					Add or Change

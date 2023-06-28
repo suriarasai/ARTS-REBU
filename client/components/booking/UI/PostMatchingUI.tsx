@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaAngleDown, FaClock, FaCoins, FaFlag } from 'react-icons/fa'
 
 export const DriverInformation = ({ onCancel }) => {
@@ -33,8 +33,8 @@ export const PaymentInformation = ({ fare }) => {
 			<div className='flex w-11/12 flex-row items-center'>
 				<FaCoins className='mx-5 text-lg text-green-500' />
 				<>
-					$<b className='font-normal'>{fare}</b>
-					<p className='text-sm'> Cash</p>
+					$<b className='font-normal mr-1'>{fare + ' '}</b>
+					<p className='text-sm'>{' Cash'}</p>
 				</>
 			</div>
 			<div className='float-right'>
@@ -44,7 +44,18 @@ export const PaymentInformation = ({ fare }) => {
 	)
 }
 export const TripInformation = (props) => {
-	const { placeName, postcode, dropTime } = props
+	const { placeName, postcode, tripETA, taxiETA } = props
+	const [ETA, setETA] = useState(new Date())
+
+	useEffect(() => {
+		let time = new Date()
+		time.setSeconds(time.getSeconds() + tripETA + taxiETA)
+		console.log(tripETA, taxiETA)
+		console.log(new Date().toLocaleTimeString('en-US').replace(/(.*)\D\d+/, '$1'))
+		console.log(time)
+		setETA(time)
+	}, [])
+
 	return (
 		<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
 			<b className='text-sm'>Your current trip</b>
@@ -60,7 +71,9 @@ export const TripInformation = (props) => {
 			<hr className='my-2' />
 			<div className='ml-5 flex items-center'>
 				<FaClock className='text-lg text-green-500' />
-				<div className='p-2 px-5'>{Math.round(dropTime / 60) + ' min.'}</div>
+				<div className='p-2 px-5'>
+					{ETA.toLocaleTimeString('en-US').replace(/(.*)\D\d+/, '$1')}
+				</div>
 			</div>
 		</div>
 	)

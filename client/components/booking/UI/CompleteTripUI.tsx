@@ -1,8 +1,14 @@
-import React from 'react';
-import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa';
+import React from 'react'
+import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa'
 
 export const CompleteTripUI = ({
-	options, clickedOption, tripETA, taxiETA, data, handleCompletedCleanup,
+	options,
+	clickedOption,
+	tripETA,
+	pickUpTime,
+	dropTime,
+	data,
+	handleCompletedCleanup,
 }): React.ReactNode => (
 	<div className='px-4'>
 		<div className='flex items-center border-b border-zinc-300 py-3'>
@@ -20,22 +26,28 @@ export const CompleteTripUI = ({
 			</div>
 			<div className='flex-1'>
 				<h5>Time</h5>
-				<h5 className='font-bold'>
-					{Math.round((tripETA) / 60)} min.
-				</h5>
+				<h5 className='font-bold'>{tripETA} min.</h5>
 			</div>
 		</div>
 		<div className='border-b border-zinc-300 py-4'>
 			<label className='pb-2'>Trip</label>
-			<div className='flex items-center pr-5 pb-2'>
+			<div className='flex items-center pb-2 pr-5'>
 				<FaCrosshairs className='w-2/12 text-zinc-500' />
 				<p className='w-8/12 font-normal'>{data.origin.placeName}</p>
-				<p className='w-2/12 ml-auto'>9:40 PM</p>
+				<p className='ml-auto w-2/12'>
+					{new Date(pickUpTime)
+						.toLocaleTimeString('en-US')
+						.replace(/(.*)\D\d+/, '$1')}
+				</p>
 			</div>
 			<div className='flex items-center pr-5'>
 				<FaFlag className='w-2/12 text-green-600' />
 				<p className='w-8/12 font-normal'>{data.destination.placeName}</p>
-				<p className='w-2/12 ml-auto'>10:10 PM</p>
+				<p className='ml-auto w-2/12'>
+					{new Date(+new Date())
+						.toLocaleTimeString('en-US')
+						.replace(/(.*)\D\d+/, '$1')}
+				</p>
 			</div>
 		</div>
 		<div className='mt-5 flex flex-col justify-center'>
@@ -60,4 +72,4 @@ export const CompleteTripUI = ({
 			</button>
 		</div>
 	</div>
-);
+)
