@@ -9,6 +9,7 @@ import { Title } from '@/redux/types/constants'
 import { Suspense, useContext, useEffect, useState } from 'react'
 import {
 	FaAngleDown,
+	FaAngleRight,
 	FaCalendarDay,
 	FaCheckCircle,
 	FaClock,
@@ -17,6 +18,7 @@ import {
 } from 'react-icons/fa'
 import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
 import { getBookingsByCustomerID } from '@/server'
+import Receipt from '@/components/booking/UI/Receipt'
 
 const DateFilter = (
 	<button className='date-filter-button'>
@@ -32,20 +34,34 @@ const Activity = () => {
 	// On-click styling for the tabbers
 	const [activeTab, setActiveTab] = useState<string>('Upcoming')
 	const [tripList, setTripList] = useState<Array<Object>>([])
+	const [bookingID, setBookingID] = useState(null)
 
 	useEffect(() => {
 		// Retrieve all bookings associated with a user
 		getBookingsByCustomerID(user.customerID, setTripList)
 	}, [])
 
+	if (bookingID) {
+		return (
+			<div className='responsive h-screen w-screen bg-white px-10 py-3'>
+				<Receipt bookingID={bookingID} setScreen={() => setBookingID(null)} />
+			</div>
+		)
+	}
+
 	return (
-		<Page title={Title.ACTIVITY} className='overflow-y-hidden h-screen'>
+		<Page title={Title.ACTIVITY} className='h-screen overflow-y-hidden'>
 			{DateFilter}
 
 			<TabController activeTab={activeTab} setActiveTab={setActiveTab} />
 
 			<Suspense fallback={<PulseLoadingVisual />}>
-				<TripList tripList={tripList} activeTab={activeTab} />
+				<TripList
+					tripList={tripList}
+					activeTab={activeTab}
+					bookingID={bookingID}
+					setBookingID={setBookingID}
+				/>
 			</Suspense>
 		</Page>
 	)
@@ -53,39 +69,55 @@ const Activity = () => {
 
 export default Activity
 
-const TripList = ({ tripList, activeTab }) => (
-	<div className='overflow-auto h-96'>
-		{tripList.length !== 0 ? (
-			tripList.map(
-				(trip, index) =>
-					// Filter by upcoming trips (requested or dispatch status)
-					((activeTab === 'Upcoming' &&
-						['requested', 'dispatched'].includes(trip['status'])) ||
-						// or... Filter by previous trips (cancelled or completed status)
-						(activeTab === 'Previous' &&
-							['completed', 'cancelled'].includes(trip['status']))) && (
-						<div key={index} className='trip-container'>
-							<StatusIcon status={trip['status']} />
-							<LocationInfo
-								address1={trip['dropLocation']['address']}
-								name1={trip['dropLocation']['placeName']}
-								address2={trip['pickUpLocation']['address']}
-								name2={trip['pickUpLocation']['placeName']}
+const TripList = ({ tripList, activeTab, bookingID, setBookingID }) => {
+	return (
+		<div className='h-96 overflow-auto'>
+			{tripList.length !== 0 ? (
+				tripList.map(
+					(trip, index) =>
+						// Filter by upcoming trips (requested or dispatch status)
+						((activeTab === 'Upcoming' &&
+							['requested', 'dispatched'].includes(trip['status'])) ||
+							// or... Filter by previous trips (cancelled or completed status)
+							(activeTab === 'Previous' &&
+								['completed', 'cancelled'].includes(trip['status']))) && (
+							<TripDetails
+								trip={trip}
+								key={index}
+								setBookingID={setBookingID}
 							/>
-							<TripStatistics
-								fare={trip['fare']}
-								distance={trip['distance']}
-								id={trip['bookingID']}
-								date={trip['messageSubmittedTime']}
-							/>
-						</div>
-					)
-			)
-		) : (
-			<p className='ml-3 mt-3'>No trips found</p>
-		)}
-	</div>
-)
+						)
+				)
+			) : (
+				<p className='ml-3 mt-3'>No trips found</p>
+			)}
+		</div>
+	)
+}
+
+const TripDetails = ({ trip, setBookingID }) => {
+	return (
+		<div
+			className='trip-container'
+			onClick={() => setBookingID(trip.bookingID)}
+		>
+			<StatusIcon status={trip['status']} />
+			<LocationInfo
+				address1={trip['dropLocation']['address']}
+				name1={trip['dropLocation']['placeName']}
+				address2={trip['pickUpLocation']['address']}
+				name2={trip['pickUpLocation']['placeName']}
+			/>
+			<TripStatistics
+				fare={trip['fare']}
+				distance={trip['distance']}
+				id={trip['bookingID']}
+				date={trip['messageSubmittedTime']}
+			/>
+			<FaAngleRight className='w-1/12 order-3 mt-auto mb-auto'/>
+		</div>
+	)
+}
 
 const TabController = ({ activeTab, setActiveTab }) => (
 	<ul className='flex'>
@@ -126,7 +158,7 @@ const StatusIcon = ({ status }) => (
 
 // Location details of the ride
 const LocationInfo = ({ address1, name1, address2, name2 }) => (
-	<div className='ml-3 w-9/12 flex-col items-center'>
+	<div className='pl-3 w-7/12 flex-col items-center'>
 		<h2 className='mb-1'>{name1 || address1}</h2>
 		<h5>from | {name2 || address2}</h5>
 	</div>
@@ -138,14 +170,11 @@ const TripStatistics = ({ fare, distance, id, date }) => {
 	return (
 		// TODO: Time instead of distance
 		// TODO: Booking ID
-		<div className='order-2 w-3/12 text-right'>
+		<div className='order-2 w-3/12 text-right mt-auto mb-auto'>
 			<h1>${fare}</h1>
 			<h5>
 				{dt.toLocaleDateString()} | {distance} km
 			</h5>
-			{/* <h5>
-			ID: {id} <br />
-		</h5> */}
 		</div>
 	)
 }
