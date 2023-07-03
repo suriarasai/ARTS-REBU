@@ -200,6 +200,7 @@ function Booking() {
 			travelMode: google.maps.TravelMode.DRIVING,
 		})
 
+		setExpandSearch(0)
 		setDistance(routePolyline.routes[0].legs[0].distance.value)
 		setDuration(routePolyline.routes[0].legs[0].duration.value)
 		directionsDisplay.setMap(map) // Binding polyline to the map
