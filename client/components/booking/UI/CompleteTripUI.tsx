@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa'
 
 export const CompleteTripUI = ({
@@ -9,6 +9,7 @@ export const CompleteTripUI = ({
 	dropTime,
 	data,
 	handleCompletedCleanup,
+	setShowReceipt
 }): React.ReactNode => (
 	<div className='px-4'>
 		<div className='flex items-center border-b border-zinc-300 py-3'>
@@ -55,20 +56,27 @@ export const CompleteTripUI = ({
 			<h5 className='my-3'>
 				Your feedback will help us improve the customer experience.
 			</h5>
-			<div className='mb-5 flex justify-center p-3'>
-				<FaStar className='mx-2 text-3xl text-zinc-300' />
-				<FaStar className='mx-2 text-3xl text-zinc-300' />
-				<FaStar className='mx-2 text-3xl text-zinc-300' />
-				<FaStar className='mx-2 text-3xl text-zinc-300' />
-				<FaStar className='mx-2 text-3xl text-zinc-300' />
+
+			<div className='mb-5 flex flex-row-reverse justify-center'>
+				<FaStar className='star peer peer-hover:text-green-500' />
+				<FaStar className='star peer peer-hover:text-green-500' />
+				<FaStar className='star peer peer-hover:text-green-500' />
+				<FaStar className='star peer peer-hover:text-green-500' />
+				<FaStar className='star peer peer-hover:text-green-500' />
 			</div>
 		</div>
-		<div className='w-full'>
+		<div className='inline-flex w-full space-x-3'>
 			<button
-				className='rect-button w-full p-3 shadow-md'
+				className='w-full rounded-full border border-green-500 bg-white p-2 text-green-500'
 				onClick={handleCompletedCleanup}
 			>
-				Done
+				Back to home
+			</button>
+			<button
+				className='w-full rounded-full border bg-green-500 p-2 text-white'
+				onClick={() => setShowReceipt('receipt')}
+			>
+				View Receipt
 			</button>
 		</div>
 	</div>

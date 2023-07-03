@@ -27,6 +27,7 @@ import {
 } from '@/utils/taxiBookingSystem'
 import { db } from '@/utils/firebase'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
+import Receipt from './UI/Receipt'
 
 export let taxiRouteDisplay
 let matchedTaxi
@@ -48,6 +49,7 @@ export const RideConfirmation = (data) => {
 	const [routes, setRoutes] = useState({ 1: null, 2: null })
 	const [taxiETA, setTaxiETA] = useState({ 1: null, 2: null })
 	const [notification, setNotification] = useState(null)
+	const [stopStream, setStopStream] = useState(true)
 
 	useEffect(() => {
 		drawTaxiRoute(
@@ -60,8 +62,6 @@ export const RideConfirmation = (data) => {
 		)
 		console.log('Trip Duration', data.duration)
 	}, [data.taxis])
-
-	const [stopStream, setStopStream] = useState(true)
 
 	// Firestore real-time database listener
 	useEffect(() => {
@@ -358,7 +358,10 @@ export const RideConfirmation = (data) => {
 								dropTime={booking.dropTime}
 								data={data}
 								handleCompletedCleanup={handleCompletedCleanup}
+								setShowReceipt={setScreen}
 							/>
+						) : screen === 'receipt' ? (
+							<Receipt bookingID={bookingID} setScreen={undefined} />
 						) : (
 							'Error: Option not found'
 						)}

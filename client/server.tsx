@@ -126,6 +126,13 @@ export const getBookingsByCustomerID = async (customerID, setTripList) => {
 	setTripList(response.data)
 }
 
+// Retrieves all bookings associated with a bookingID
+export const getBooking = async (bookingID, setBookingInformation) => {
+	const response = await api.get('/api/v1/Booking/' + bookingID)
+	setBookingInformation(response.data)
+}
+
+
 // Creates a new booking with the 'requested' status
 export const createBooking = async (
 	user: User,

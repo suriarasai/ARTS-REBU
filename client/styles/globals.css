@@ -178,26 +178,30 @@ p {
 }
 
 .location-search-header {
-	@apply sticky top-0 z-10 flex max-w-screen-md ml-auto mr-auto flex-wrap rounded-b-3xl bg-white p-2 shadow-md;
+	@apply sticky top-0 z-10 ml-auto mr-auto flex max-w-screen-md flex-wrap rounded-b-3xl bg-white p-2 shadow-md;
 }
 
 .sidenav-link {
-	@apply font-medium text-base text-zinc-600 hidden lg:block;
+	@apply hidden text-base font-medium text-zinc-600 lg:block;
 }
 
 .sidenav-gradient {
-	background-image: linear-gradient(#870000, #190A05);
-	opacity: 0.15
+	background-image: linear-gradient(#870000, #190a05);
+	opacity: 0.15;
 }
 
 .sidenav-link-container {
-	@apply mb-5 flex items-center z-50
+	@apply z-50 mb-5 flex items-center;
 }
 
 .sidenav-icon {
-	@apply mr-0 lg:mr-5 text-2xl text-pink-800
+	@apply mr-0 text-2xl text-pink-800 lg:mr-5;
 }
 
 .responsive {
-	@apply max-w-screen-md ml-auto mr-auto
+	@apply ml-auto mr-auto max-w-screen-md;
+}
+
+.star {
+	@apply mx-2 h-10 w-10 mb-5 hover:text-green-500 text-zinc-400
 }
