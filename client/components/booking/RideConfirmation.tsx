@@ -361,7 +361,10 @@ export const RideConfirmation = (data) => {
 								setShowReceipt={setScreen}
 							/>
 						) : screen === 'receipt' ? (
-							<Receipt bookingID={bookingID} setScreen={undefined} />
+							<Receipt
+								bookingID={bookingID}
+								setScreen={() => setScreen('completeTrip')}
+							/>
 						) : (
 							'Error: Option not found'
 						)}
@@ -407,6 +410,8 @@ function AccordionHeader(
 					</>
 				) : screen === 'completeTrip' ? (
 					"You've arrived"
+				) : screen === 'receipt' ? (
+					'Receipt'
 				) : (
 					''
 				)}

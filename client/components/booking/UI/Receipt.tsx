@@ -25,7 +25,7 @@ const Receipt = ({ bookingID, setScreen, booking = null }) => {
 		<div className='flex flex-col'>
 			<button
 				className='mb-5 p-2 text-3xl font-medium text-green-600'
-				onClick={() => setScreen()}
+				onClick={setScreen}
 			>
 				<FaRegArrowAltCircleLeft />
 			</button>
