@@ -1,3 +1,4 @@
+import Rating from '@/components/booking/Rating'
 import Receipt from '@/components/booking/UI/Receipt'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
@@ -9,7 +10,7 @@ export default function Notifications() {
 	const router = useRouter()
 	return (
 		<div className='responsive bg-white h-screen w-screen px-10 py-3'>
-			<Receipt bookingID={4} setScreen={() => router.push('/activity')}/>
+			<Rating />
 		</div>
 	)
 }
