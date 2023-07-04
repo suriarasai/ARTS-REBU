@@ -46,7 +46,7 @@ const AccountInformation = ({
 							<option value='Mrs.'>Mrs.</option>
 							<option value='Other'>Other</option>
 						</select>
-						<DropDownArrow mt={0} px={2} />
+						<DropDownArrow mt={3} px={2} />
 						{errors.contactTitle && (
 							<p className='text-error mt-1'>Select a value</p>
 						)}
@@ -89,7 +89,7 @@ const AccountInformation = ({
 						<option value='HKG'>Hong Kong</option>
 						<option value='PHL'>Philippines</option>
 					</select>
-					<DropDownArrow mt={1} px={6} />
+					<DropDownArrow mt={3} px={6} />
 					{errors.countryCode && (
 						<p className='text-error mt-1'>Select a value</p>
 					)}
@@ -108,7 +108,7 @@ const AccountInformation = ({
 							<option key={index}>{age}</option>
 						))}
 					</select>
-					<DropDownArrow mt={1} px={6} />
+					<DropDownArrow mt={3} px={6} />
 					{errors.age && (
 						<p className='text-error mt-1'>Select a value</p>
 					)}
@@ -143,7 +143,7 @@ const phoneCountryCodes = {
 
 const DropDownArrow = ({ mt, px }) => (
 	<div
-		className={`pointer-events-none absolute inset-y-0 right-0 mt-${mt} flex items-center px-${px} text-gray-700`}
+		className={`pointer-events-none absolute inset-y-0 right-0 mt-${mt} flex px-${px} text-gray-700`}
 	>
 		<svg
 			className='h-4 w-4 fill-current'
