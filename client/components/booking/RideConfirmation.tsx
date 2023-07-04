@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { FaAngleDown, FaAngleUp, FaCar, FaCarAlt } from 'react-icons/fa'
+import {
+	FaAngleDown,
+	FaAngleUp,
+	FaCar,
+	FaCarAlt,
+	FaFileAlt,
+	FaThumbsUp,
+} from 'react-icons/fa'
 import {
 	cancelBooking,
 	completeBooking,
@@ -28,6 +35,7 @@ import {
 import { db } from '@/utils/firebase'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import Receipt from './UI/Receipt'
+import Rating from './Rating'
 
 export let taxiRouteDisplay
 let matchedTaxi
@@ -350,21 +358,35 @@ export const RideConfirmation = (data) => {
 								onCancel={handleCancelled}
 							/>
 						) : screen === 'completeTrip' ? (
-							<CompleteTripUI
-								options={options}
-								clickedOption={clickedOption}
-								tripETA={booking.tripDuration}
-								pickUpTime={booking.pickUpTime}
-								dropTime={booking.dropTime}
-								data={data}
-								handleCompletedCleanup={handleCompletedCleanup}
-								setShowReceipt={setScreen}
-							/>
+							<>
+								<CompleteTripUI
+									options={options}
+									clickedOption={clickedOption}
+									tripETA={booking.tripDuration}
+									pickUpTime={booking.pickUpTime}
+									dropTime={booking.dropTime}
+									data={data}
+								/>
+								<FinishTrip
+									setScreen={setScreen}
+									handleCompletedCleanup={handleCompletedCleanup}
+								/>
+							</>
 						) : screen === 'receipt' ? (
-							<Receipt
-								bookingID={bookingID}
-								setScreen={() => setScreen('completeTrip')}
-							/>
+							<>
+								<Receipt
+									bookingID={bookingID}
+									setScreen={() => setScreen('completeTrip')}
+								/>
+							</>
+						) : screen === 'review' ? (
+							<>
+								<Rating closeModal={() => setScreen('completeTrip')} />
+								<FinishTrip
+									setScreen={setScreen}
+									handleCompletedCleanup={handleCompletedCleanup}
+								/>
+							</>
 						) : (
 							'Error: Option not found'
 						)}
@@ -374,6 +396,31 @@ export const RideConfirmation = (data) => {
 			{screen === 'waiting' && (
 				<div className='absolute left-0 top-0 z-20 h-full w-full backdrop-brightness-50'></div>
 			)}
+		</div>
+	)
+}
+
+const FinishTrip = ({ setScreen, handleCompletedCleanup }) => {
+	return (
+		<div className='mt-3 flex w-full space-x-3'>
+			<button
+				className='w-10/12 rounded-full border border-green-500 bg-white p-2 text-green-500'
+				onClick={handleCompletedCleanup}
+			>
+				Back to home
+			</button>
+			<button
+				className='flex h-12 w-12 items-center justify-center rounded-full border bg-green-500 p-2 text-white'
+				onClick={() => setScreen('receipt')}
+			>
+				<FaFileAlt />
+			</button>
+			<button
+				className='flex h-12 w-12 items-center justify-center rounded-full border bg-green-500 p-2 text-white'
+				onClick={() => setScreen('review')}
+			>
+				<FaThumbsUp />
+			</button>
 		</div>
 	)
 }
@@ -411,7 +458,9 @@ function AccordionHeader(
 				) : screen === 'completeTrip' ? (
 					"You've arrived"
 				) : screen === 'receipt' ? (
-					'Receipt'
+					''
+				) : screen === 'review' ? (
+					'Trip Review'
 				) : (
 					''
 				)}

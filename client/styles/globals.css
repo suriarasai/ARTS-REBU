@@ -213,7 +213,7 @@ p {
 	width: 160px;
 	flex-direction: row-reverse;
 	justify-content: space-between;
-	margin: 40px auto;
+	margin: 10px auto;
 	position: relative;
 }
 /* hide the inputs */
