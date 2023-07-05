@@ -71,6 +71,14 @@ public class BookingController {
                 HttpStatus.OK);
     }
 
+    // POST: On arrival of taxi...
+    @PostMapping("/taxiArrived")
+    public ResponseEntity<String> taxiArrived(@RequestBody Booking payload) {
+        return new ResponseEntity<String>(
+            query.taxiArrived(payload),
+            HttpStatus.OK);
+    }
+
     // Cancelled
     @PostMapping("/cancelBooking")
     public ResponseEntity<String> cancelBooking(@RequestBody Booking payload) {

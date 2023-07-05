@@ -12,6 +12,7 @@ import {
 	completeBooking,
 	createBooking,
 	matchedBooking,
+	taxiArrived,
 } from '@/server'
 import { moveToStep } from '@/utils/moveTaxiMarker'
 import { expandArray } from '@/utils/expandArray'
@@ -111,6 +112,7 @@ export const RideConfirmation = (data) => {
 				pickUpTime: null,
 				taxiETA: Math.round(ETA[1] / 60),
 				tripDuration: null,
+				distance: data.distance,
 				icon: <FaCarAlt />,
 				desc: 'Find the closest car',
 			},
@@ -123,6 +125,7 @@ export const RideConfirmation = (data) => {
 				pickUpTime: null,
 				taxiETA: Math.round(ETA[2] / 60),
 				tripDuration: null,
+				distance: data.distance,
 				icon: <FaCar />,
 				desc: 'Better cars',
 			},
@@ -212,9 +215,9 @@ export const RideConfirmation = (data) => {
 			tripDuration: Math.round(data.duration / 60),
 		}
 
+		taxiArrived(bookingID)
 		setNotification('arrived')
 		setScreen('liveTrip')
-		console.log('Taxi has arrived')
 		erasePolyline()
 
 		const polyline = expandArray(data.tripPolyline, 10)

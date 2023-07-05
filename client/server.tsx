@@ -153,7 +153,7 @@ export const createBooking = async (
 		messageSubmittedTime: +new Date(),
 		customerName: user.customerName,
 		phoneNumber: user.phoneNumber,
-		pickUpTime: option.pickUpTime, // TODO: Time
+		// pickUpTime: option.pickUpTime, // TODO: Time
 		taxiType: option.taxiType,
 		fareType: 'metered',
 		fare: option.fare,
@@ -179,6 +179,14 @@ export const matchedBooking = async (bookingID, driverID, taxiID) => {
 	return response
 }
 
+export const taxiArrived = async (bookingID) => {
+	const response = await api.post('/api/v1/Booking/taxiArrived', {
+		bookingID: bookingID,
+		pickUpTime: +new Date()
+	})
+	return response
+}
+
 export const cancelBooking = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/cancelBooking', {
 		bookingID: bookingID,
@@ -189,6 +197,7 @@ export const cancelBooking = async (bookingID) => {
 export const completeBooking = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/completeBooking', {
 		bookingID: bookingID,
+		dropTime: +new Date()
 	})
 	return response
 }

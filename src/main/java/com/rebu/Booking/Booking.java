@@ -66,7 +66,7 @@ public class Booking {
     private String customerName;
     private Integer phoneNumber;
     private Location pickUpLocation;
-    private String pickUpTime;
+    private Long pickUpTime;
     private Location dropLocation;
     private String taxiType;
     private String fareType;
@@ -78,6 +78,7 @@ public class Booking {
     private Integer taxiID;
     private Float distance;
     private String paymentMethod;
+    private Long dropTime;
 
     // Initial setter for when customers post a request
     public Booking(Integer bookingID) {
@@ -115,8 +116,14 @@ public class Booking {
         this.status = "dispatched";
     }
 
+    // On taxi arrival, log the pickUpTime
+    public void taxiArrived(Long pickUpTime) {
+        this.pickUpTime = pickUpTime;
+    }
+
     // Completing the booking request
-    public void CompleteBooking() {
+    public void CompleteBooking(Long droptime) {
+        this.dropTime = droptime;
         this.status = "completed";
     }
 

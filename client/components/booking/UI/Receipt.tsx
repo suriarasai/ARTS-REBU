@@ -61,7 +61,7 @@ const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
 
 			<label>Your booking</label>
 			<p className='mb-5 flex'>
-				Booking Number: <p className='ml-1 text-green-500'>{bookingID}</p>
+				Booking Number: <b className='ml-1 text-green-500'>{bookingID}</b>
 			</p>
 			<p className='mb-1 font-medium'>
 				From {bookingInformation.pickUpLocation.placeName} to{' '}

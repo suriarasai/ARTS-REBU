@@ -101,7 +101,7 @@ function Booking() {
 				},
 				map: map,
 				icon: {
-					url: 'https://www.svgrepo.com/show/258041/pin-maps-and-location.svg',
+					url: 'https://www.svgrepo.com/show/115216/pointer-inside-a-circle.svg',
 					scaledSize: new google.maps.Size(30, 30)
 				},
 			})
@@ -154,7 +154,7 @@ function Booking() {
 
 	// Render a message until the map is finished loading
 	if (!isLoaded) {
-		return LoadingScreen
+		return <LoadingScreen />
 	}
 
 	// Retrieve and render the route to the destination
