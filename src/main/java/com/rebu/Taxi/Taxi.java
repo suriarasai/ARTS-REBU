@@ -11,9 +11,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "Taxi")
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class Taxi {
     /*
@@ -31,9 +33,10 @@ public class Taxi {
     String taxiType; 
     String tmdtid; 
     TaxiFeature taxiFeature = new TaxiFeature(); 
-    List<RegisteredDriver> RegisteredDrivers = new ArrayList<RegisteredDriver>(); 
+    List<RegisteredDriver> registeredDrivers = new ArrayList<RegisteredDriver>(); 
 
-    public Taxi() {
+    public Taxi(Integer sno) {
+        this.sno = sno;
     }
 
     // Add or update a taxi
@@ -49,7 +52,7 @@ public class Taxi {
     public void RegisterDriver(Integer DriverID, String DriverName, Integer DriverPhone) {
         RegisteredDriver _driver = new RegisteredDriver();
         _driver.SetDriver(DriverID, DriverName, DriverPhone);
-        this.RegisteredDrivers.add(_driver);
+        this.registeredDrivers.add(_driver);
     }
 
 }
