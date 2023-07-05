@@ -1,24 +1,46 @@
 import { UserContext } from '@/context/UserContext'
-import { getBooking } from '@/server'
-import { useContext, useEffect, useState } from 'react'
+import { getBooking, getTaxi } from '@/server'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import RebuLogo from '@/public/images/rebu-logo.png'
 import Image from 'next/image'
 import { FaRegArrowAltCircleLeft } from 'react-icons/fa'
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
-const Receipt = ({ bookingID, setScreen, booking = null }) => {
+const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
 	const { user } = useContext(UserContext)
 	const [bookingInformation, setBookingInformation] = useState(null)
+	const [taxiInformation, setTaxiInformation] = useState(null)
 
 	useEffect(() => {
 		if (booking) {
 			setBookingInformation(booking)
+			setTaxiInformation(taxi)
 		} else {
 			getBooking(bookingID, setBookingInformation)
 		}
 	}, [])
 
-	if (!bookingInformation) {
-		return 'Loading'
+	useEffect(() => {
+		if (bookingInformation) {
+			if (bookingInformation.status === 'requested') {
+				setTaxiInformation({ status: 'requested' })
+			} else if (bookingInformation.status === 'cancelled') {
+				setTaxiInformation({ status: 'cancelled' })
+			} else {
+				getTaxi(bookingInformation.taxiID, setTaxiInformation)
+				console.log('status: Booking has a taxi number')
+				console.log(taxiInformation)
+
+				if (taxiInformation === null) {
+					setTaxiInformation({ status: 'missing' })
+					console.log('Taxi number not found')
+				}
+			}
+		}
+	}, [bookingInformation])
+
+	if (!bookingInformation || !taxiInformation) {
+		return <LoadingScreen />
 	}
 
 	return (
@@ -76,7 +98,15 @@ const Receipt = ({ bookingID, setScreen, booking = null }) => {
 					<b>${bookingInformation.fare}</b>
 				</div>
 			</div>
-			<h5 className='ml-6'>{new Date(bookingInformation.pickUpTime).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</h5>
+			<h5 className='ml-6'>
+				{new Date(bookingInformation.pickUpTime).toLocaleString([], {
+					year: 'numeric',
+					month: 'numeric',
+					day: 'numeric',
+					hour: '2-digit',
+					minute: '2-digit',
+				})}
+			</h5>
 			<button className='ml-auto mr-auto mt-7 w-3/4 rounded-xl bg-green-300 px-4 py-2 text-white shadow-sm'>
 				Print receipt
 			</button>

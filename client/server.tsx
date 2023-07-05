@@ -132,6 +132,11 @@ export const getBooking = async (bookingID, setBookingInformation) => {
 	setBookingInformation(response.data)
 }
 
+// Retrieves taxi information based on the ID (sno)
+export const getTaxi = async (sno, setTaxiInformation) => {
+	const response = await api.get('/api/v1/Taxi/' + sno)
+	setTaxiInformation(response.data)
+}
 
 // Creates a new booking with the 'requested' status
 export const createBooking = async (

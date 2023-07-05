@@ -14,7 +14,7 @@ import {
 
 export default function Home() {
 	return (
-		<Suspense fallback={LoadingScreen}>
+		<Suspense fallback={<LoadingScreen />}>
 			<Page title='Rebu'>
 				<div className='grid aspect-square h-full w-full grid-cols-3 gap-4'>
 					<HomeIcon

@@ -27,9 +27,9 @@ const SignIn = () => {
 	}, [])
 
 	return (
-		<main className='flex h-screen max-w-screen-md mr-auto ml-auto justify-center bg-zinc-50 pb-16 pt-20 sm:pb-0'>
+		<main className='ml-auto mr-auto flex h-screen max-w-screen-md justify-center bg-zinc-50 pb-16 pt-20 sm:pb-0'>
 			{loading ? (
-				LoadingScreen
+				<LoadingScreen />
 			) : (
 				<div className='p-6'>
 					<MainScreenVisual />
@@ -60,8 +60,10 @@ const AlternateSignIn = ({ setForm }) => (
 			<FaEnvelopeOpen className='mr-3' />
 			Email
 		</button>
-		<button className='flex items-center bg-green-200 px-5 py-2 font-medium text-zinc-600 shadow-md'
-		onClick={() => Router.push(HREF.BOOKINGUI)}>
+		<button
+			className='flex items-center bg-green-200 px-5 py-2 font-medium text-zinc-600 shadow-md'
+			onClick={() => Router.push(HREF.BOOKINGUI)}
+		>
 			{/* <FaGooglePlusG className='mr-3' />
 			Google */}
 			<FaKey className='mr-3' />
