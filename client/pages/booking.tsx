@@ -4,7 +4,7 @@ import { UserContext } from '@/context/UserContext'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
 import { RideConfirmation } from '@/components/booking/RideConfirmation'
-import { togglePOI } from '@/components/booking/togglePoiButton'
+import TogglePOI from '@/components/booking/togglePoiButton'
 import { CoordinateToAddress } from '@/server'
 import { LocationSearch } from '../components/booking/LocationSearch'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
@@ -13,6 +13,7 @@ import { icon } from '@/redux/types/constants'
 import { loadTaxis } from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import BottomNav from '@/components/ui/bottom-nav'
+import { loadNearbyTaxiStops } from '@/components/booking/loadNearbyTaxiStops'
 
 const center = { lat: 1.2952078, lng: 103.773675 }
 let directionsDisplay
@@ -42,6 +43,7 @@ function Booking() {
 	const [validInput, isValidInput] = useState(false)
 	const [poi, setPoi] = useState(true)
 	const [taxis, setTaxis] = useState([])
+	const [nearbyTaxiStops, setNearbyTaxiStops] = useState([])
 
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
@@ -102,7 +104,7 @@ function Booking() {
 				map: map,
 				icon: {
 					url: 'https://www.svgrepo.com/show/115216/pointer-inside-a-circle.svg',
-					scaledSize: new google.maps.Size(30, 30)
+					scaledSize: new google.maps.Size(30, 30),
 				},
 			})
 
@@ -125,11 +127,19 @@ function Booking() {
 			originRef.current.value = origin.placeName
 
 			if (!marks.origin) {
-				marks.origin = mark(map, origin, 'https://www.svgrepo.com/show/375834/location.svg')
+				marks.origin = mark(
+					map,
+					origin,
+					'https://www.svgrepo.com/show/375834/location.svg'
+				)
 			} else {
 				marks.origin.setPosition(origin)
 			}
 			map.panTo(origin)
+			if (!poi) {
+				setMarkerVisibility(nearbyTaxiStops)
+				loadNearbyTaxiStops(map, [origin.lng, origin.lat], setNearbyTaxiStops)
+			}
 		}
 	}, [origin])
 
@@ -215,12 +225,11 @@ function Booking() {
 	}
 
 	function clearRoute() {
-
 		if (marks.origin) {
 			marks.origin.setMap(null)
 			marks.origin = null
 		}
-		
+
 		marks.destination.setMap(null)
 		marks.destination = null
 
@@ -251,6 +260,7 @@ function Booking() {
 			directionsDisplay = null
 		}
 		setMarkerVisibility(taxis)
+		setMarkerVisibility(nearbyTaxiStops)
 
 		// Reshow saved locations
 		marks.home.setMap(map)
@@ -324,7 +334,14 @@ function Booking() {
 					// If the input is invalid, then continue to show them the map controls
 					<>
 						<Locate map={map} />
-						{togglePOI(map, poi, setPoi)}
+						<TogglePOI
+							map={map}
+							poi={poi}
+							setPoi={setPoi}
+							origin={origin.lat ? origin : userLocation}
+							setNearbyTaxiStops={setNearbyTaxiStops}
+							nearbyTaxiStops={nearbyTaxiStops}
+						/>
 						<BottomNav />
 					</>
 				)
@@ -352,7 +369,7 @@ function mark(map, place, image) {
 		title: place.placeName + ', ' + 'Singapore ' + place.postcode,
 		icon: {
 			url: image,
-			scaledSize: new google.maps.Size(30, 30)
+			scaledSize: new google.maps.Size(30, 30),
 		},
 	})
 }
@@ -368,13 +385,23 @@ function listener(marker, info) {
 function setMarkers(map, user) {
 	const infoWindow = new google.maps.InfoWindow()
 
-	marks.home = mark(map, user.home, 'https://www.svgrepo.com/show/375801/door.svg')
-	marks.work = mark(map, user.work, 'https://www.svgrepo.com/show/375762/briefcase.svg')
+	marks.home = mark(
+		map,
+		user.home,
+		'https://www.svgrepo.com/show/375801/door.svg'
+	)
+	marks.work = mark(
+		map,
+		user.work,
+		'https://www.svgrepo.com/show/375762/briefcase.svg'
+	)
 	listener(marks.home, infoWindow)
 	listener(marks.work, infoWindow)
 
 	user.savedLocations.map((location, index) => {
-		marks.saved.push(mark(map, location, 'https://www.svgrepo.com/show/375878/ribbon.svg'))
+		marks.saved.push(
+			mark(map, location, 'https://www.svgrepo.com/show/375878/ribbon.svg')
+		)
 		listener(marks.saved[index], infoWindow)
 	})
 }
