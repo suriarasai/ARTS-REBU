@@ -6,6 +6,7 @@ import {
 	LoadScriptNext,
 	useJsApiLoader,
 } from '@react-google-maps/api'
+import axios from 'axios'
 import { useCallback, useState } from 'react'
 
 const libraries = ['places', 'geometry']
@@ -28,7 +29,7 @@ const Notifications = () => {
 		<>
 			<div className='absolute left-0 top-0 h-full w-full'>
 				<LoadScriptNext
-					googleMapsApiKey='AIzaSyB47Udo8JGZJC7kIphClxu1SqHCEEVuw5s'
+					googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
 					loadingElement={<LoadingScreen />}
 					// @ts-ignore
 					libraries={libraries}
@@ -54,28 +55,76 @@ const Notifications = () => {
 }
 
 const getDirections = (origin, destination) => {
-	return fetch(
-		`https://routes.googleapis.com/directions/v2:computeRoutes/json?origin=${origin}&destination=${destination}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-	).then((res) => res.json())
+	axios
+		.post(
+			`https://routes.googleapis.com/directions/v2:computeRoutes?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
+			{
+				origin: {
+					location: {
+						latLng: {
+							latitude: origin.lat,
+							longitude: origin.lng,
+						},
+					},
+				},
+				destination: {
+					location: {
+						latLng: {
+							latitude: destination.lat,
+							longitude: destination.lng,
+						},
+					},
+				},
+				travelMode: 'DRIVE',
+				routingPreference: 'TRAFFIC_AWARE',
+				departureTime: '2023-10-15T15:01:23.045123456Z',
+				computeAlternativeRoutes: false,
+				extraComputations: ['TRAFFIC_ON_POLYLINE'],
+				routeModifiers: {
+					avoidTolls: false,
+					avoidHighways: false,
+					avoidFerries: false,
+				},
+				languageCode: 'en-US',
+				units: 'IMPERIAL',
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Goog-FieldMask':
+						'routes.duration,routes.distanceMeters,routes.polyline,routes.legs.polyline,routes.travelAdvisory,routes.legs.travelAdvisory',
+				},
+			}
+		)
+		.then((response) => {
+			console.log(response.data)
+			return response.data
+		})
 }
 
 enum polylineTrafficColors {
-	NORMAL = "#22c55e",
-	SLOW = "#fcd34d",
-	TRAFFIC_JAM = "#ef4444"
+	NORMAL = '#22c55e',
+	SLOW = '#fcd34d',
+	TRAFFIC_JAM = '#ef4444',
 }
 
 export const renderDirections = async (map, origin, destination) => {
 	const path = google.maps.geometry.encoding.decodePath(
 		'uo~Fq}|xRpBS`AO^Md@SJMnBkAx@g@r@]rDsBt@g@f@]PAZCHJb@j@xAhB^d@~@nA`A|AV`@n@dAtAlCVd@Tb@l@_@tAy@RWBS?QeIiMqDaGqImO_GmKi@{AYsAKuASiIQeFOcAK]OYUc@MQQM[_@e@[}Ao@Hm@xBiHvAoFt@}BZw@n@gAd@o@`@q@Ve@PWz@iA\\i@v@y@`AiAjBiBhBeAx@]pAUx@GvASREhC_BVMZYj@Kj@CvHRfABjC?bAFV?r@DrCBrF??XPjAXfAAxIHtFRpK^pJFfAPl@Xl@d@v@f@f@`@ZpAl@dBj@hCl@fALr@B|@HdA@z@E~@OrCy@hB{@`@SpCwBbDkC|@q@t@e@|Am@pA]`BUpAErAFhALhARbBf@bBx@rAdAzAbBtCxD~AdCh\\bg@|C|EjIhN~LtRtBrDpChFRn@Jd@\\lCDbAAz@IvAWfB]nAcA|BcF~IwC|Eu@xAU\\g@vA_@dBMrAAjABhAL|@Pt@`AvChBjEXlAL`BA|@o@|IGbC@hG'
 	)
-	console.log('Path length', path.length)
+
+	const pathfinder = await getDirections(origin, destination)
+	console.log(pathfinder)
+
 	const intervals = route.routes[0].travelAdvisory.speedReadingIntervals
 	let routePolyline = []
 
 	intervals.map((segment, index) => {
 		const segmentPolyline = new google.maps.Polyline({
-			path: path.slice(segment.startPolylinePointIndex, segment.endPolylinePointIndex+1),
+			path: path.slice(
+				segment.startPolylinePointIndex,
+				segment.endPolylinePointIndex + 1
+			),
 			strokeColor: polylineTrafficColors[segment.speed],
 			strokeOpacity: 1,
 			strokeWeight: 6,
