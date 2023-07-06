@@ -244,6 +244,7 @@ export const RideConfirmation = (data) => {
 		}
 		erasePolyline()
 		setStopStream(true)
+		setRideConfirmed(false)
 		data.onCancel()
 	}
 
@@ -258,6 +259,7 @@ export const RideConfirmation = (data) => {
 	function handleCompletedCleanup() {
 		erasePolyline()
 		matchedTaxi.setMap(null)
+		setScreen('')
 		data.onCancel()
 	}
 
@@ -483,8 +485,6 @@ function AccordionHeader(
 function erasePolyline() {
 	if (taxiRouteDisplay != null) {
 		taxiRouteDisplay.set('directions', null)
-		// taxiRouteDisplay.setMap(null)
-		// taxiRouteDisplay = null
 	}
 }
 

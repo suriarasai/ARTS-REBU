@@ -1,22 +1,18 @@
-import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api'
+import { GoogleMap, LoadScriptNext } from '@react-google-maps/api'
 import { useEffect, useRef, useState, useContext, useCallback } from 'react'
 import { UserContext } from '@/context/UserContext'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
 import { RideConfirmation } from '@/components/booking/RideConfirmation'
 import TogglePOI from '@/components/booking/togglePoiButton'
-import { CoordinateToAddress } from '@/server'
+import { CoordinateToAddress, getDirections } from '@/server'
 import { LocationSearch } from '../components/booking/LocationSearch'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import mapStyles from '@/utils/noPoi'
-import { icon } from '@/redux/types/constants'
 import { loadTaxis } from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import BottomNav from '@/components/ui/bottom-nav'
 import { loadNearbyTaxiStops } from '@/components/booking/loadNearbyTaxiStops'
-
-const center = { lat: 1.2952078, lng: 103.773675 }
-let directionsDisplay
 
 let marks = {
 	home: null,
@@ -27,23 +23,20 @@ let marks = {
 	destination: null,
 }
 
-const libraries = ['places']
+const libraries = ['places', 'geometry']
 
 function Booking() {
 	const { user, setUser } = useContext(UserContext)
-	const { isLoaded } = useJsApiLoader({
-		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-		// @ts-ignore
-		libraries: libraries,
-	})
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
-	const [distance, setDistance] = useState<number>(null)
-	const [duration, setDuration] = useState<number>(null)
+	// const [distance, setDistance] = useState<number>(null)
+	// const [duration, setDuration] = useState<number>(null)
+	const [route, setRoute] = useState(null)
 	const [validInput, isValidInput] = useState(false)
 	const [poi, setPoi] = useState(true)
 	const [taxis, setTaxis] = useState([])
 	const [nearbyTaxiStops, setNearbyTaxiStops] = useState([])
+	const [polyline, setPolyline] = useState(null)
 
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
@@ -162,11 +155,6 @@ function Booking() {
 		}
 	}, [destination])
 
-	// Render a message until the map is finished loading
-	if (!isLoaded) {
-		return <LoadingScreen />
-	}
-
 	// Retrieve and render the route to the destination
 	async function calculateRoute() {
 		if (!destination.lat) {
@@ -174,54 +162,39 @@ function Booking() {
 			return
 		}
 
-		if (origin.lat) {
-			await loadTaxis(map, [origin.lng, origin.lat], 5, setTaxis)
-		} else {
-			await loadTaxis(map, [userLocation.lng, userLocation.lat], 5, setTaxis)
-		}
-
-		// eslint-disable-next-line no-undef
-		const directionsService = new google.maps.DirectionsService()
+		await loadTaxis(
+			map,
+			origin.lat
+				? [origin.lng, origin.lat]
+				: [userLocation.lng, userLocation.lat],
+			5,
+			setTaxis
+		)
 
 		mapStyles(map, poi)
 
 		// Removing directions polyline if a polyline already exists
-		if (directionsDisplay != null) {
-			directionsDisplay.set('directions', null)
-			directionsDisplay.setMap(null)
-			directionsDisplay = null
+		if (polyline) {
+			setMarkerVisibility(polyline)
+			setPolyline(null)
 		}
 
-		// Initializing a new directions polyline
-		directionsDisplay = new google.maps.DirectionsRenderer({
-			polylineOptions: {
-				strokeColor: '#65a30d',
-				strokeOpacity: 1,
-				strokeWeight: 6,
-			},
-			suppressMarkers: true,
-		})
-
-		// Setting the coordinates of the directions polyline
-		const routePolyline = await directionsService.route({
-			origin: origin.lat ? origin : userLocation,
-			destination: destination,
-			// eslint-disable-next-line no-undef
-			travelMode: google.maps.TravelMode.DRIVING,
-		})
-
-		setExpandSearch(0)
-		setDistance(routePolyline.routes[0].legs[0].distance.value)
-		setDuration(routePolyline.routes[0].legs[0].duration.value)
-		directionsDisplay.setMap(map) // Binding polyline to the map
-		directionsDisplay.setDirections(routePolyline) // Setting the coords
-
-		// UI Updates
-		isValidInput(true)
-		setHideUI(true)
-		marks.home.setMap(null)
-		marks.work.setMap(null)
-		setMarkerVisibility(marks.saved)
+		await getDirections(
+			map,
+			origin.lat ? origin : userLocation,
+			destination,
+			setRoute,
+			setPolyline,
+			() => {
+				console.log("This code is functional")
+				setExpandSearch(0)
+				isValidInput(true)
+				setHideUI(true)
+				marks.home.setMap(null)
+				marks.work.setMap(null)
+				setMarkerVisibility(marks.saved)
+			}
+		)
 	}
 
 	function clearRoute() {
@@ -233,8 +206,6 @@ function Booking() {
 		marks.destination.setMap(null)
 		marks.destination = null
 
-		setDistance(null)
-		setDuration(null)
 		setOrigin({
 			placeID: null,
 			lat: null,
@@ -254,10 +225,9 @@ function Booking() {
 		setHideUI(false)
 		isValidInput(false)
 		mapStyles(map, poi)
-		if (directionsDisplay != null) {
-			directionsDisplay.set('directions', null)
-			directionsDisplay.setMap(null)
-			directionsDisplay = null
+		if (polyline !== null) {
+			setMarkerVisibility(polyline)
+			setPolyline(null)
 		}
 		setMarkerVisibility(taxis)
 		setMarkerVisibility(nearbyTaxiStops)
@@ -267,6 +237,7 @@ function Booking() {
 		marks.work.setMap(map)
 
 		setMarkerVisibility(marks.saved, map)
+		setRoute(null)
 	}
 
 	function setLocationViaClick(e) {
@@ -278,85 +249,93 @@ function Booking() {
 	}
 
 	return (
-		<div className='relative h-screen w-screen'>
-			{/* Google Maps screen */}
-			<div
-				className={`absolute left-0 top-0 h-full w-full ${
-					[0, 3, 4].includes(expandSearch) ? '' : 'hidden'
-				}`}
-			>
-				<GoogleMap
-					center={center}
-					zoom={15}
-					mapContainerStyle={{ width: '100%', height: '100%' }}
-					options={{
-						zoomControl: false,
-						streetViewControl: false,
-						mapTypeControl: false,
-						fullscreenControl: false,
-						minZoom: 3,
-					}}
-					onClick={(e) => setLocationViaClick(e)}
-					onLoad={loadMap}
-				></GoogleMap>
-			</div>
+		<LoadScriptNext
+			googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+			loadingElement={<LoadingScreen />}
+			// @ts-ignore
+			libraries={libraries}
+		>
+			<div className='relative h-screen w-screen'>
+				{/* Google Maps screen */}
+				<div
+					className={`absolute left-0 top-0 h-full w-full ${
+						[0, 3, 4].includes(expandSearch) ? '' : 'hidden'
+					}`}
+				>
+					<GoogleMap
+						zoom={15}
+						mapContainerStyle={{ width: '100%', height: '100%' }}
+						options={{
+							zoomControl: false,
+							streetViewControl: false,
+							mapTypeControl: false,
+							fullscreenControl: false,
+							minZoom: 3,
+						}}
+						onClick={(e) => setLocationViaClick(e)}
+						onLoad={loadMap}
+					></GoogleMap>
+				</div>
 
-			{/* Search elements */}
-			{!hideUI &&
-				LocationSearch(
-					expandSearch,
-					setExpandSearch,
-					originRef,
-					setOrigin,
-					isValidInput,
-					destinationRef,
-					setDestination,
-					calculateRoute,
-					validInput
-				)}
+				{/* Search elements */}
+				{!hideUI &&
+					LocationSearch(
+						expandSearch,
+						setExpandSearch,
+						originRef,
+						setOrigin,
+						isValidInput,
+						destinationRef,
+						setDestination,
+						calculateRoute,
+						validInput
+					)}
 
-			{/* If the user is not searching... */}
-			{[0, 3, 4].includes(expandSearch) ? (
-				// If the input is valid, then begin the booking confirmation procedure
-				taxis.length > 1 && distance ? (
-					<RideConfirmation
-						map={map}
-						taxis={taxis}
-						user={user}
-						distance={distance}
-						duration={duration}
-						origin={origin.lat ? origin : userLocation}
-						destination={destination}
-						onCancel={clearRoute}
-						tripPolyline={directionsDisplay.directions.routes[0].overview_path}
-					/>
-				) : (
-					// If the input is invalid, then continue to show them the map controls
-					<>
-						<Locate map={map} />
-						<TogglePOI
+				{/* If the user is not searching... */}
+				{[0, 3, 4].includes(expandSearch) ? (
+					// If the input is valid, then begin the booking confirmation procedure
+					taxis.length > 1 && route ? (
+						<RideConfirmation
 							map={map}
-							poi={poi}
-							setPoi={setPoi}
+							taxis={taxis}
+							user={user}
+							distance={route.distanceMeters}
+							duration={Number(route.duration.match(/\d+/)[0])}
 							origin={origin.lat ? origin : userLocation}
-							setNearbyTaxiStops={setNearbyTaxiStops}
-							nearbyTaxiStops={nearbyTaxiStops}
+							destination={destination}
+							onCancel={clearRoute}
+							tripPolyline={google.maps.geometry.encoding.decodePath(
+								route.polyline.encodedPolyline
+							)}
 						/>
-						<BottomNav />
+					) : (
+						// If the input is invalid, then continue to show them the map controls
+						<>
+							<Locate map={map} />
+							<TogglePOI
+								map={map}
+								poi={poi}
+								setPoi={setPoi}
+								origin={origin.lat ? origin : userLocation}
+								setNearbyTaxiStops={setNearbyTaxiStops}
+								nearbyTaxiStops={nearbyTaxiStops}
+							/>
+							<BottomNav />
+						</>
+					)
+				) : (
+					// If the user is searching, then show them the expanded search UI
+					<>
+						<ExpandSearch
+							mode={expandSearch}
+							setExpandSearch={setExpandSearch}
+							location={expandSearch === 1 ? origin : destination}
+							setLocation={expandSearch === 1 ? setOrigin : setDestination}
+						/>
 					</>
-				)
-			) : (
-				// If the user is searching, then show them the expanded search UI
-				<>
-					<ExpandSearch
-						mode={expandSearch}
-						setExpandSearch={setExpandSearch}
-						location={expandSearch === 1 ? origin : destination}
-						setLocation={expandSearch === 1 ? setOrigin : setDestination}
-					/>
-				</>
-			)}
-		</div>
+				)}
+			</div>
+		</LoadScriptNext>
 	)
 }
 

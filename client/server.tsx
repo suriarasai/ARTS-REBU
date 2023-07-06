@@ -3,6 +3,47 @@ import { User } from './redux/types'
 import { icon } from './redux/types/constants'
 import { getAddress } from './utils/getAddress'
 import taxiMarker from '@/public/images/taxiMarker.png'
+import // const Firestore = require('@google-cloud/firestore')
+// const db = new Firestore({
+// 	projectId: 'YOUR_PROJECT_ID',
+// 	keyFilename: '/path/to/keyfile.json',
+// })
+// Full Process ___
+// 1. get user booking request
+// 2. find nearby free taxis
+// 3. ping taxis
+// 4. assign first responder
+// 5. send taxi/driver information
+// Demo Process ___
+// 1. get user booking request, sno
+// 2. ping driver
+// 3. await confirmation
+// 4. query and return driver/taxi data
+// export const createMatchingRequest = async (data: User | any, sno: number) => {
+// 	const docRef = db.collection('BookingEvent').doc('')
+// 	await docRef.set({
+// 		customerID: data.customerID,
+// 		customerName: data.customerName,
+// 		phoneNumber: data.phoneNumber,
+// 		pickUpLocation: data.pickUpLocation,
+// 		pickUpTime: data.pickUpTime,
+// 		dropLocation: data.dropLocation,
+// 		taxiType: data.taxiType,
+// 		fareType: data.fareType,
+// 		fare: data.fare,
+// 		sno: sno // TODO: Temp field
+// 	})
+// }
+// // Return eligible booking requests to a certain taxi
+// export const bookingRequestListener = async (sno) => {
+// 	const snapshot = await db.collection('BookingEvent').get()
+// 	snapshot.forEach((doc) => {
+// 		console.log(doc.id, '=>', doc.data())
+// 	})
+// }
+// Account Settings: Updates user information
+axios from 'axios'
+import { renderDirections } from './utils/renderDirections'
 
 // const Firestore = require('@google-cloud/firestore')
 
@@ -182,7 +223,7 @@ export const matchedBooking = async (bookingID, driverID, taxiID) => {
 export const taxiArrived = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/taxiArrived', {
 		bookingID: bookingID,
-		pickUpTime: +new Date()
+		pickUpTime: +new Date(),
 	})
 	return response
 }
@@ -197,7 +238,7 @@ export const cancelBooking = async (bookingID) => {
 export const completeBooking = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/completeBooking', {
 		bookingID: bookingID,
-		dropTime: +new Date()
+		dropTime: +new Date(),
 	})
 	return response
 }
@@ -216,7 +257,7 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 				// Some state function to run a popup error...
 			}
 		})
-} 
+}
 
 // Loads the nearest N taxis onto the map
 // TODO: Return list of objects with taxiID, driverID values
@@ -254,8 +295,8 @@ export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 					position: { lat: coords[1], lng: coords[0] },
 					icon: {
 						url: 'https://www.svgrepo.com/show/375911/taxi.svg',
-						scaledSize: new google.maps.Size(30, 30)
-					}
+						scaledSize: new google.maps.Size(30, 30),
+					},
 				})
 				nearbyTaxiMarkers.push(newTaxi)
 			}
@@ -272,4 +313,60 @@ async function PlaceIDToAddress(id, setLocation) {
 			return response.json()
 		})
 		.then(function (data) {})
+}
+
+export const getDirections = (
+	map,
+	origin,
+	destination,
+	setRoute,
+	setPolyline,
+	callback
+) => {
+	axios
+		.post(
+			`https://routes.googleapis.com/directions/v2:computeRoutes?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
+			{
+				origin: {
+					location: {
+						latLng: {
+							latitude: origin.lat,
+							longitude: origin.lng,
+						},
+					},
+				},
+				destination: {
+					location: {
+						latLng: {
+							latitude: destination.lat,
+							longitude: destination.lng,
+						},
+					},
+				},
+				travelMode: 'DRIVE',
+				routingPreference: 'TRAFFIC_AWARE',
+				departureTime: '2023-10-15T15:01:23.045123456Z',
+				computeAlternativeRoutes: false,
+				extraComputations: ['TRAFFIC_ON_POLYLINE'],
+				routeModifiers: {
+					avoidTolls: false,
+					avoidHighways: false,
+					avoidFerries: false,
+				},
+				languageCode: 'en-US',
+				units: 'IMPERIAL',
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Goog-FieldMask':
+						'routes.duration,routes.distanceMeters,routes.polyline,routes.legs.polyline,routes.travelAdvisory,routes.legs.travelAdvisory',
+				},
+			}
+		)
+		.then((response) => {
+			setRoute(response.data.routes[0])
+			renderDirections(map, response.data.routes[0], setPolyline)
+			callback()
+		})
 }
