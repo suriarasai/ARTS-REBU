@@ -245,3 +245,13 @@ p {
 .star-rating input:checked ~ label:before {
 	content: '\2605';
 }
+
+.cut-text {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: no-wrap;
+}
+
+.receipt-button {
+	@apply flex h-10 w-10 items-center justify-center rounded-full border border-2 border-green-400 text-green-400;
+}

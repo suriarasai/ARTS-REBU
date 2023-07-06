@@ -158,7 +158,7 @@ const StatusIcon = ({ status }) => (
 
 // Location details of the ride
 const LocationInfo = ({ address1, name1, address2, name2 }) => (
-	<div className='pl-3 w-7/12 flex-col items-center'>
+	<div className='pl-3 w-6/12 flex-col items-center cut-text'>
 		<h2 className='mb-1'>{name1 || address1}</h2>
 		<h5>from | {name2 || address2}</h5>
 	</div>
@@ -170,10 +170,10 @@ const TripStatistics = ({ fare, distance, id, date }) => {
 	return (
 		// TODO: Time instead of distance
 		// TODO: Booking ID
-		<div className='order-2 w-3/12 text-right mt-auto mb-auto'>
+		<div className='order-2 w-4/12 text-right mt-auto mb-auto'>
 			<h1>${fare}</h1>
 			<h5>
-				{dt.toLocaleDateString()} | {distance} km
+				{dt.toLocaleDateString()} | {(distance/1000).toFixed(1)} km
 			</h5>
 		</div>
 	)

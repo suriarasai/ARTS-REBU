@@ -267,7 +267,7 @@ export const RideConfirmation = (data) => {
 	}
 
 	return (
-		<div className='responsive'>
+		<div className='responsive w-full lg:w-1/2'>
 			{!rideConfirmed && (
 				<button
 					className='cancel-button absolute left-0 top-0 z-10 m-5'
@@ -376,12 +376,12 @@ export const RideConfirmation = (data) => {
 								/>
 							</>
 						) : screen === 'receipt' ? (
-							<>
+							<div className='-mt-5'>
 								<Receipt
 									bookingID={bookingID}
 									setScreen={() => setScreen('completeTrip')}
 								/>
-							</>
+							</div>
 						) : screen === 'review' ? (
 							<>
 								<Rating closeModal={() => setScreen('completeTrip')} />
