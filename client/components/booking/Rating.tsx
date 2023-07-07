@@ -1,30 +1,32 @@
-import { useState } from 'react'
-import { FaAngleLeft } from 'react-icons/fa'
+import { UserContext } from '@/context/UserContext'
+import { addRating } from '@/server'
+import { useContext, useState } from 'react'
 
 const Rating = ({ closeModal }) => {
-	const [stars, setStars] = useState(false)
+	const {user} = useContext(UserContext)
+	const [stars, setStars] = useState(null)
 	const [feedback, setFeedback] = useState(null)
 	const [improve, setImprove] = useState({
-		clean: false,
-		polite: false,
-		punctual: false,
-		booking: false,
-		wait: false,
+		cleanliness: false,
+		politeness: false,
+		punctuality: false,
+		bookingProcess: false,
+		waitTime: false,
 	})
 
 	function handleSubmit() {
-		const data = {
-			stars: stars,
-			feedback: feedback,
-			improve: improve,
-		}
-		console.log(data)
+		addRating({
+			customerID: user.customerID,
+			driverID: 1,
+			rating: stars,
+			reviewBody: feedback,
+			areasOfImprovement: improve,
+		})
 		closeModal()
 	}
 
 	return (
-		<div className='bg-white ml-auto mr-auto mt-5 flex flex-col items-center justify-center'>
-
+		<div className='ml-auto mr-auto mt-5 flex flex-col items-center justify-center bg-white'>
 			<p className='mb-3 ml-auto mr-auto mt-5 font-medium text-zinc-500'>
 				Rate your experience
 			</p>
@@ -43,31 +45,31 @@ const Rating = ({ closeModal }) => {
 			<div className='mb-8 ml-auto mr-auto flex flex-wrap justify-center'>
 				<Field
 					label='Cleanliness'
-					id='clean'
+					id='cleanliness'
 					setField={setImprove}
 					field={improve}
 				/>
 				<Field
 					label='Politeness'
-					id='polite'
+					id='politeness'
 					setField={setImprove}
 					field={improve}
 				/>
 				<Field
 					label='Punctuality'
-					id='punctual'
+					id='punctuality'
 					setField={setImprove}
 					field={improve}
 				/>
 				<Field
 					label='Booking Process'
-					id='booking'
+					id='bookingProcess'
 					setField={setImprove}
 					field={improve}
 				/>
 				<Field
 					label='Wait Time'
-					id='wait'
+					id='waitTime'
 					setField={setImprove}
 					field={improve}
 				/>
@@ -83,7 +85,7 @@ const Rating = ({ closeModal }) => {
 			/>
 
 			<button
-				className='mt-7 h-12 w-full rounded-b-xl bg-green-300 px-4 py-2 text-white shadow-sm'
+				className='mt-7 h-12 w-full bg-green-300 px-4 py-2 text-white shadow-sm'
 				onClick={handleSubmit}
 			>
 				Relay my thoughts!

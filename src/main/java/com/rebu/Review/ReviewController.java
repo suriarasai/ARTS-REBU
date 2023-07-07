@@ -23,17 +23,17 @@ public class ReviewController {
     private ReviewService query;
 
     @GetMapping
-    public ResponseEntity<List<Review>> getAllUsers() {
+    public ResponseEntity<List<Review>> getAllReviews() {
         return new ResponseEntity<List<Review>>(query.allReviews(), HttpStatus.OK);
     }
 
     @GetMapping("/{_id}")
-    public ResponseEntity<Review> getSingleUser(@PathVariable Integer _id) {
+    public ResponseEntity<Review> getSingleReview(@PathVariable Integer _id) {
         return new ResponseEntity<Review>(query.singleReview(_id), HttpStatus.OK);
     }
 
     @PostMapping("/createReview")
-    public ResponseEntity<Review> createUser(@RequestBody Review payload) {
+    public ResponseEntity<Review> createReview(@RequestBody Review payload) {
         return new ResponseEntity<Review>(
                 query.createReview(payload), HttpStatus.CREATED);
     }

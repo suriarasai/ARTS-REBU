@@ -153,6 +153,18 @@ export const SetHome = async (customerID, location) => {
 	})
 }
 
+// Saved Places: Sets the home location
+export const addRating = async (data) => {
+	await api.post('/api/v1/Review/createReview', {
+		customerID: data.customerID,
+		driverID: data.driverID,
+		messageReceivedTime: +new Date(),
+		rating: data.rating,
+		reviewBody: data.reviewBody,
+		areasOfImprovement: data.areasOfImprovement,
+	})
+}
+
 // Saved Places: Sets the work location
 export const SetWork = async (customerID, location) => {
 	await api.post('/api/v1/Customer/setWork', {
