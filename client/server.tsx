@@ -145,6 +145,22 @@ export const AddPlaceAPI = async (customerID, location) => {
 	})
 }
 
+// Payment Methods: Remove a payment method
+export const RemovePaymentMethod = async (customerID, cardNumber) => {
+	await api.post('/api/v1/Customer/removePaymentMethod', {
+		customerID: customerID,
+		cardNumber: cardNumber
+	})
+}
+
+// Payment Methods: Add a payment method
+export const AddPaymentMethod = async (customerID, paymentMethodDetails) => {
+	await api.post('/api/v1/Customer/addPaymentMethod', {
+		customerID: customerID,
+		paymentMethod: paymentMethodDetails
+	})
+}
+
 // Saved Places: Sets the home location
 export const SetHome = async (customerID, location) => {
 	await api.post('/api/v1/Customer/setHome', {

@@ -154,4 +154,20 @@ public class CustomerService {
         CustomerRepository.save(customer);
         return null;
     }
+
+    // API: Sets a payment method
+    public String addPaymentMethod(PaymentMethod paymentMethod, Integer customerID) {
+        Customer customer = CustomerRepository.findByCustomerID(customerID);
+        customer.AddPaymentMethod(paymentMethod);
+        CustomerRepository.save(customer);
+        return null;
+    }
+
+    // API: Removes a payment method
+    public String removePaymentMethod(String cardNumber, String customerID) {
+        Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(customerID));
+        customer.RemovePaymentMethod(Integer.parseInt(cardNumber));
+        CustomerRepository.save(customer);
+        return null;
+    }
 }

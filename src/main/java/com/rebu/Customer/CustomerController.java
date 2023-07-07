@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rebu.LocationInterface;
+import com.rebu.PaymentMethodInterface;
 
 @RestController
 @RequestMapping("/api/v1/Customer") // Access DB through this URL
@@ -40,7 +41,8 @@ public class CustomerController {
     }
 
     // POST: Checks whether a user exists by their mobile number
-    // Used during initial sign in to see if a mobile number already exists - if not, then create the user
+    // Used during initial sign in to see if a mobile number already exists - if
+    // not, then create the user
     @PostMapping("/exists")
     public ResponseEntity<Customer> getByPhoneNumber(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<Customer>(
@@ -85,7 +87,8 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    // POST: Checks a user's password matches by querying their email for the associated password
+    // POST: Checks a user's password matches by querying their email for the
+    // associated password
     // Used during sign-in via email and password
     @PostMapping("/validateCredentials")
     public ResponseEntity<Customer> validateCredentials(@RequestBody Map<String, String> payload) {
@@ -128,6 +131,22 @@ public class CustomerController {
     public ResponseEntity<String> removeFavoriteLocation(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<String>(
                 query.removeSavedLocation(payload.get("placeID"), payload.get("customerID")),
+                HttpStatus.OK);
+    }
+
+    // POST: Adds a payment method
+    @PostMapping("/addPaymentMethod")
+    public ResponseEntity<String> addPaymentMethod(@RequestBody PaymentMethodInterface payload) {
+        return new ResponseEntity<String>(
+                query.addPaymentMethod(payload.getPaymentMethod(), payload.getCustomerID()),
+                HttpStatus.OK);
+    }
+
+    // POST: Removes a payment method
+    @PostMapping("/removePaymentMethod")
+    public ResponseEntity<String> removePaymentMethod(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
+                query.removePaymentMethod(payload.get("cardNumber"), payload.get("customerID")),
                 HttpStatus.OK);
     }
 }
