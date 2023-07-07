@@ -1,9 +1,5 @@
-import { showOptionInterface } from "@/redux/types";
-import React from "react";
-import {
-	FaCrosshairs,
-	FaFontAwesomeFlag
-} from 'react-icons/fa';
+import React from 'react'
+import { FaCrosshairs, FaFontAwesomeFlag } from 'react-icons/fa'
 
 export const RouteConfirmation = ({ data }) => (
 	<table className='mb-5'>
@@ -31,10 +27,9 @@ export const RouteConfirmation = ({ data }) => (
 			</tr>
 		</tbody>
 	</table>
-);// helper component to show rides
-export const ShowOption = ({
-	option, setClickedOption, disabled = false,
-}) => (
+) 
+
+export const ShowOption = ({ option, setClickedOption, disabled = false }) => (
 	/*
 		option				: the ride option
 		setClickedOption	: tracks which ride option was clicked
@@ -66,4 +61,3 @@ export const ShowOption = ({
 		</div>
 	</div>
 )
-

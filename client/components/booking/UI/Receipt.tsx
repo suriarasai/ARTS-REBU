@@ -1,12 +1,11 @@
 import { UserContext } from '@/context/UserContext'
 import { getBooking, getTaxi } from '@/server'
-import { createRef, useCallback, useContext, useEffect, useState } from 'react'
+import { createRef, useContext, useEffect, useState } from 'react'
 import RebuLogo from '@/public/images/rebu-logo.png'
 import Image from 'next/image'
 import {
 	FaDownload,
 	FaPrint,
-	FaRegArrowAltCircleLeft,
 	FaShare,
 } from 'react-icons/fa'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'

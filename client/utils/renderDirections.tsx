@@ -1,4 +1,4 @@
-import { polylineTrafficColors } from '@/resources/constants';
+import { polylineTrafficColors } from "@/redux/types/constants";
 
 
 export const renderDirections = async (map, encodedPath, setPolyline) => {
