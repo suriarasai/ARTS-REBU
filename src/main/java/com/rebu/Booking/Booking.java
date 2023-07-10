@@ -122,8 +122,9 @@ public class Booking {
     }
 
     // Completing the booking request
-    public void CompleteBooking(Long droptime) {
+    public void CompleteBooking(Long droptime, String paymentMethod) {
         this.dropTime = droptime;
+        this.paymentMethod = paymentMethod;
         this.status = "completed";
     }
 

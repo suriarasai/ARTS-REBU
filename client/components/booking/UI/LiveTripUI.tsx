@@ -1,3 +1,4 @@
+import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 import React from 'react'
 import {
 	FaDollarSign,
@@ -13,6 +14,8 @@ export const LiveTripUI = ({
 	options,
 	clickedOption,
 	onCancel,
+	set,
+	selectedCard,
 }): React.ReactNode => (
 	<>
 		<div className='flex items-center border-b border-zinc-200 pb-3 pt-3'>
@@ -35,9 +38,18 @@ export const LiveTripUI = ({
 			<FaDollarSign className='mr-5 text-green-500' />
 			<div className='flex flex-col'>
 				<p className='font-medium'>{options[clickedOption - 1].fare}</p>
-				Cash
+				<p className='text-sm'>
+					{selectedCard === 'Cash'
+						? 'Cash'
+						: 'VISA ' + formatCreditCardNumber(selectedCard.toString())}
+				</p>
 			</div>
-			<div className='ml-auto flex items-center text-green-500'>Switch</div>
+			<div
+				className='ml-auto flex items-center text-green-500'
+				onClick={() => set(true)}
+			>
+				Switch
+			</div>
 		</div>
 		<div className='flex items-center border-b border-zinc-200 pb-3 pt-3'>
 			<FaShare className='mr-5 text-green-500' />

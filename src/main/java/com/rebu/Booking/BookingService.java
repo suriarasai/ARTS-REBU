@@ -87,7 +87,7 @@ public class BookingService {
 
     public String completeBooking(Booking data) {
         Booking booking = BookingRepository.findByBookingID(data.getBookingID());
-        booking.CompleteBooking(data.getDropTime());
+        booking.CompleteBooking(data.getDropTime(), data.getPaymentMethod());
         BookingRepository.save(booking);
 
         return null;

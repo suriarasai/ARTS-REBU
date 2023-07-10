@@ -1,93 +1,8 @@
 import api from '@/api/axiosConfig'
 import { User } from './redux/types'
-import { icon } from './redux/types/constants'
 import { getAddress } from './utils/getAddress'
-import taxiMarker from '@/public/images/taxiMarker.png'
-import // const Firestore = require('@google-cloud/firestore')
-// const db = new Firestore({
-// 	projectId: 'YOUR_PROJECT_ID',
-// 	keyFilename: '/path/to/keyfile.json',
-// })
-// Full Process ___
-// 1. get user booking request
-// 2. find nearby free taxis
-// 3. ping taxis
-// 4. assign first responder
-// 5. send taxi/driver information
-// Demo Process ___
-// 1. get user booking request, sno
-// 2. ping driver
-// 3. await confirmation
-// 4. query and return driver/taxi data
-// export const createMatchingRequest = async (data: User | any, sno: number) => {
-// 	const docRef = db.collection('BookingEvent').doc('')
-// 	await docRef.set({
-// 		customerID: data.customerID,
-// 		customerName: data.customerName,
-// 		phoneNumber: data.phoneNumber,
-// 		pickUpLocation: data.pickUpLocation,
-// 		pickUpTime: data.pickUpTime,
-// 		dropLocation: data.dropLocation,
-// 		taxiType: data.taxiType,
-// 		fareType: data.fareType,
-// 		fare: data.fare,
-// 		sno: sno // TODO: Temp field
-// 	})
-// }
-// // Return eligible booking requests to a certain taxi
-// export const bookingRequestListener = async (sno) => {
-// 	const snapshot = await db.collection('BookingEvent').get()
-// 	snapshot.forEach((doc) => {
-// 		console.log(doc.id, '=>', doc.data())
-// 	})
-// }
-// Account Settings: Updates user information
-axios from 'axios'
+import axios from 'axios'
 import { renderDirections } from './utils/renderDirections'
-
-// const Firestore = require('@google-cloud/firestore')
-
-// const db = new Firestore({
-// 	projectId: 'YOUR_PROJECT_ID',
-// 	keyFilename: '/path/to/keyfile.json',
-// })
-
-// Full Process ___
-// 1. get user booking request
-// 2. find nearby free taxis
-// 3. ping taxis
-// 4. assign first responder
-// 5. send taxi/driver information
-
-// Demo Process ___
-// 1. get user booking request, sno
-// 2. ping driver
-// 3. await confirmation
-// 4. query and return driver/taxi data
-// export const createMatchingRequest = async (data: User | any, sno: number) => {
-// 	const docRef = db.collection('BookingEvent').doc('')
-
-// 	await docRef.set({
-// 		customerID: data.customerID,
-// 		customerName: data.customerName,
-// 		phoneNumber: data.phoneNumber,
-// 		pickUpLocation: data.pickUpLocation,
-// 		pickUpTime: data.pickUpTime,
-// 		dropLocation: data.dropLocation,
-// 		taxiType: data.taxiType,
-// 		fareType: data.fareType,
-// 		fare: data.fare,
-// 		sno: sno // TODO: Temp field
-// 	})
-// }
-
-// // Return eligible booking requests to a certain taxi
-// export const bookingRequestListener = async (sno) => {
-// 	const snapshot = await db.collection('BookingEvent').get()
-// 	snapshot.forEach((doc) => {
-// 		console.log(doc.id, '=>', doc.data())
-// 	})
-// }
 
 // Account Settings: Updates user information
 export const UpdateUser = async (data: User | any, customerID) => {
@@ -145,6 +60,10 @@ export const AddPlaceAPI = async (customerID, location) => {
 	})
 }
 
+export const getUser = async (customerID) => {
+	await api.get('/api/v1/Customer/' + customerID)
+}
+
 // Payment Methods: Remove a payment method
 export const RemovePaymentMethod = async (customerID, cardNumber) => {
 	await api.post('/api/v1/Customer/removePaymentMethod', {
@@ -170,11 +89,11 @@ export const SetDefaultPaymentMethod = async (customerID, cardNumber) => {
 }
 
 // Payment Methods: Get all the user's payment methods
-export const GetPaymentMethod = async (customerID, setCards) => {
+export const GetPaymentMethod = async (customerID, _callback) => {
 	const response = await api.post('/api/v1/Customer/getPaymentMethods', {
-		customerID: customerID
+		customerID: customerID,
 	})
-	setCards(response.data)
+	_callback(response.data)
 }
 
 // Saved Places: Sets the home location
@@ -243,7 +162,7 @@ export const createBooking = async (
 		fareType: 'metered',
 		fare: option.fare,
 		distance: option.distance,
-		paymentMethod: 'cash',
+		paymentMethod: 'Cash',
 		pickUpLocation: origin,
 		dropLocation: destination,
 	})
@@ -279,10 +198,11 @@ export const cancelBooking = async (bookingID) => {
 	return response
 }
 
-export const completeBooking = async (bookingID) => {
+export const completeBooking = async (bookingID, selectedCard) => {
 	const response = await api.post('/api/v1/Booking/completeBooking', {
 		bookingID: bookingID,
 		dropTime: +new Date(),
+		paymentMethod: selectedCard.toString()
 	})
 	return response
 }

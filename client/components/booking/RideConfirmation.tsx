@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
 	FaAngleDown,
+	FaAngleLeft,
 	FaAngleUp,
 	FaCar,
 	FaCarAlt,
@@ -8,6 +9,7 @@ import {
 	FaThumbsUp,
 } from 'react-icons/fa'
 import {
+	GetPaymentMethod,
 	cancelBooking,
 	completeBooking,
 	createBooking,
@@ -37,6 +39,8 @@ import { db } from '@/utils/firebase'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import Receipt from './UI/Receipt'
 import Rating from './Rating'
+import SelectPaymentMethod from '../payment/SelectPaymentMethod'
+import { userAgent } from 'next/server'
 
 export let taxiRouteDisplay
 let matchedTaxi
@@ -59,6 +63,8 @@ export const RideConfirmation = (data) => {
 	const [taxiETA, setTaxiETA] = useState({ 1: null, 2: null })
 	const [notification, setNotification] = useState(null)
 	const [stopStream, setStopStream] = useState(true)
+	const [selectedCard, setSelectedCard] = useState('Cash')
+	const [selectPaymentMethod, setSelectPaymentMethod] = useState(false)
 
 	useEffect(() => {
 		drawTaxiRoute(
@@ -71,6 +77,15 @@ export const RideConfirmation = (data) => {
 		)
 		console.log('Trip Duration', data.duration)
 	}, [data.taxis])
+
+	useEffect(() => {
+		GetPaymentMethod(data.user.customerID, (data) =>
+			data?.length > 0 && data.map((item) => {
+				item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
+				console.log(item)
+			})
+		)
+	}, [])
 
 	// Firestore real-time database listener
 	useEffect(() => {
@@ -250,7 +265,8 @@ export const RideConfirmation = (data) => {
 
 	function handleCompleted() {
 		setBookingCompleted(data.user.customerID.toString())
-		completeBooking(bookingID) // API for trip completion
+		completeBooking(bookingID, selectedCard) // API for trip completion
+		console.log('selected card', selectedCard)
 		console.log('Trip fini')
 		setScreen('completeTrip')
 		setNotification(null)
@@ -290,14 +306,16 @@ export const RideConfirmation = (data) => {
 					msg='The wait is over! Please make your way to the taxi'
 				/>
 			)}
-			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white pb-2 md:pb-4 lg:w-6/12 lg:pb-4'>
+			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white md:pb-4 lg:w-6/12 lg:pb-4'>
 				{AccordionHeader(
 					clickedOption,
 					setCollapsed,
 					collapsed,
 					screen,
 					taxiETA,
-					booking.dropTime
+					booking.dropTime,
+					setSelectPaymentMethod,
+					selectPaymentMethod
 				)}
 
 				{collapsed ? null : (
@@ -345,23 +363,45 @@ export const RideConfirmation = (data) => {
 						) : screen === 'waiting' ? (
 							<WaitingUI />
 						) : screen === 'confirmed' ? (
-							<>
-								<DriverInformation onCancel={handleCancelled} />
-								<TripInformation
-									placeName={data.destination.placeName}
-									postcode={data.destination.postcode}
-									tripETA={data.duration}
-									taxiETA={options[clickedOption - 1].taxiETA * 60}
+							selectPaymentMethod ? (
+								<SelectPaymentMethod
+									selectedCard={selectedCard}
+									setSelectedCard={setSelectedCard}
+									set={setSelectPaymentMethod}
 								/>
-								<PaymentInformation fare={options[clickedOption - 1].fare} />
-							</>
+							) : (
+								<>
+									<DriverInformation onCancel={handleCancelled} />
+									<TripInformation
+										placeName={data.destination.placeName}
+										postcode={data.destination.postcode}
+										tripETA={data.duration}
+										taxiETA={options[clickedOption - 1].taxiETA * 60}
+									/>
+									<PaymentInformation
+										fare={options[clickedOption - 1].fare}
+										set={setSelectPaymentMethod}
+										selectedCard={selectedCard}
+									/>
+								</>
+							)
 						) : screen === 'liveTrip' ? (
-							<LiveTripUI
-								data={data}
-								options={options}
-								clickedOption={clickedOption}
-								onCancel={handleCancelled}
-							/>
+							selectPaymentMethod ? (
+								<SelectPaymentMethod
+									selectedCard={selectedCard}
+									setSelectedCard={setSelectedCard}
+									set={setSelectPaymentMethod}
+								/>
+							) : (
+								<LiveTripUI
+									data={data}
+									options={options}
+									clickedOption={clickedOption}
+									onCancel={handleCancelled}
+									set={setSelectPaymentMethod}
+									selectedCard={selectedCard}
+								/>
+							)
 						) : screen === 'completeTrip' ? (
 							<>
 								<CompleteTripUI
@@ -437,7 +477,9 @@ function AccordionHeader(
 	collapsed: boolean,
 	screen: string,
 	taxiETA,
-	dropTime
+	dropTime,
+	setSelectPaymentMethod,
+	selectPaymentMethod
 ) {
 	return (
 		<div className='accordion-header flex flex-wrap pl-4 pt-4'>
@@ -449,17 +491,37 @@ function AccordionHeader(
 				) : screen === 'waiting' ? (
 					''
 				) : screen === 'confirmed' ? (
-					<>
-						En Route
-						<div className='float-right pr-4'>
-							{Math.round(taxiETA[clickedOption] / 60)} min.
-						</div>
-					</>
+					selectPaymentMethod ? (
+						<p className='mb-3 mt-5 flex items-center font-medium text-zinc-500'>
+							<FaAngleLeft
+								className='mx-5 text-2xl'
+								onClick={() => setSelectPaymentMethod(false)}
+							/>
+							Choose a payment
+						</p>
+					) : (
+						<>
+							En Route
+							<div className='float-right pr-4'>
+								{Math.round(taxiETA[clickedOption] / 60)} min.
+							</div>
+						</>
+					)
 				) : screen === 'liveTrip' ? (
-					<>
-						Heading to your destination
-						<div className='float-right pr-4'>{dropTime} ETA</div>
-					</>
+					selectPaymentMethod ? (
+						<p className='mb-3 mt-5 flex items-center font-medium text-zinc-500'>
+							<FaAngleLeft
+								className='mx-5 text-2xl'
+								onClick={() => setSelectPaymentMethod(false)}
+							/>
+							Choose a payment
+						</p>
+					) : (
+						<>
+							Heading to your destination
+							<div className='float-right pr-4'>{dropTime} ETA</div>
+						</>
+					)
 				) : screen === 'completeTrip' ? (
 					"You've arrived"
 				) : screen === 'receipt' ? (

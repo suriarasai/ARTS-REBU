@@ -1,3 +1,4 @@
+import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 import React, { useEffect, useState } from 'react'
 import { FaAngleDown, FaClock, FaCoins, FaFlag } from 'react-icons/fa'
 
@@ -25,17 +26,24 @@ export const DriverInformation = ({ onCancel }) => (
 	</div>
 )
 
-export const PaymentInformation = ({ fare }) => (
+export const PaymentInformation = ({ fare, set, selectedCard }) => (
 	<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
 		<div className='flex w-11/12 flex-row items-center'>
 			<FaCoins className='mx-5 text-lg text-green-500' />
 			<>
 				$<b className='mr-1 font-normal'>{fare + ' '}</b>
-				<p className='text-sm'>{' Cash'}</p>
+				<p className='text-sm'>
+					{selectedCard === 'Cash'
+						? ' Cash'
+						: ' VISA ' + formatCreditCardNumber(selectedCard.toString())}
+				</p>
 			</>
 		</div>
 		<div className='float-right'>
-			<FaAngleDown className='text-lg text-green-500' />
+			<FaAngleDown
+				className='text-lg text-green-500'
+				onClick={() => set(true)}
+			/>
 		</div>
 	</div>
 )

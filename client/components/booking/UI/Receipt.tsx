@@ -11,6 +11,7 @@ import {
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { Popup } from '@/components/ui/Popup'
 import { PDFExport } from '@progress/kendo-react-pdf'
+import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 
 const ref: any = createRef()
 
@@ -87,6 +88,7 @@ const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
 				<PaymentInformation
 					fare={bookingInformation.fare}
 					dropTime={bookingInformation.dropTime}
+					paymentMethod={bookingInformation.paymentMethod}
 				/>
 			</PDFExport>
 
@@ -150,11 +152,11 @@ const FareBreakdown = ({ fare }) => (
 	</div>
 )
 
-const PaymentInformation = ({ fare, dropTime }) => (
+const PaymentInformation = ({ fare, dropTime, paymentMethod }) => (
 	<>
 		<div className='w-full columns-2'>
 			<div>
-				<p className='ml-6'>VISA ****6904</p>
+				<p className='ml-6'>{paymentMethod === 'Cash' ? 'Cash' : 'VISA ' + formatCreditCardNumber(paymentMethod)}</p>
 			</div>
 			<div className='mr-8 text-right'>
 				<b>${fare}</b>
