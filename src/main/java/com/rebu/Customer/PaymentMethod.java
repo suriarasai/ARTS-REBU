@@ -13,8 +13,9 @@ import lombok.Data;
 public class PaymentMethod {
     private String cardHolder;
     private Long cardNumber;
-    private String expiryDate;
+    private Integer expiryDate;
     private Integer cvv;
+    private Boolean defaultPaymentMethod;
 
     public PaymentMethod() {
     }
@@ -24,5 +25,10 @@ public class PaymentMethod {
         this.cardNumber = _data.cardNumber;
         this.expiryDate = _data.expiryDate;
         this.cvv = _data.cvv;
+        this.defaultPaymentMethod = false;
+    }
+
+    public void setDefaultPaymentMethod(Boolean truthiness) {
+        this.defaultPaymentMethod = truthiness;
     }
 }

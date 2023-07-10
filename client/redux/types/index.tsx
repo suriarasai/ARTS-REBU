@@ -24,9 +24,19 @@ export type User = {
 	phoneCountryCode?: number,
 	home?: Location,
 	work?: Location,
-	savedLocations?: Array<Location>
+	savedLocations?: Array<Location>,
+	paymentMethods?: Array<PaymentMethod>
 
 	temp?: any
+}
+
+interface PaymentMethod {
+	cardHolder: string;
+    cardNumber: number;
+    expiryDate: number;
+    cvv: number;
+    defaultPaymentMethod: boolean;
+
 }
 
 export interface Location {

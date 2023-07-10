@@ -149,4 +149,20 @@ public class CustomerController {
                 query.removePaymentMethod(payload.get("cardNumber"), payload.get("customerID")),
                 HttpStatus.OK);
     }
+
+    // POST: Sets a default payment method
+    @PostMapping("/setDefaultPaymentMethod")
+    public ResponseEntity<String> setDefaultPaymentMethod(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<String>(
+                query.setDefaultPaymentMethod(payload.get("cardNumber"), payload.get("customerID")),
+                HttpStatus.OK);
+    }
+
+    // POST: Sets a default payment method
+    @PostMapping("/getPaymentMethods")
+    public ResponseEntity<List<PaymentMethod>> getPaymentMethods(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<List<PaymentMethod>>(
+                query.getPaymentMethods(payload.get("customerID")),
+                HttpStatus.OK);
+    }
 }

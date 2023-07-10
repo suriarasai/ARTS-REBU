@@ -166,8 +166,21 @@ public class CustomerService {
     // API: Removes a payment method
     public String removePaymentMethod(String cardNumber, String customerID) {
         Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(customerID));
-        customer.RemovePaymentMethod(Integer.parseInt(cardNumber));
+        customer.RemovePaymentMethod(Long.parseLong(cardNumber));
         CustomerRepository.save(customer);
         return null;
+    }
+
+    // API: Sets a default payment method
+    public String setDefaultPaymentMethod(String cardNumber, String customerID) {
+        Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(customerID));
+        customer.SetDefaultPaymentMethod(Long.parseLong(cardNumber));
+        CustomerRepository.save(customer);
+        return null;
+    }
+
+    public List<PaymentMethod> getPaymentMethods(String customerID) {
+        Customer customer = CustomerRepository.findByCustomerID(Integer.parseInt(customerID));
+        return customer.GetPaymentMethods();
     }
 }

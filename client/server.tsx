@@ -149,7 +149,7 @@ export const AddPlaceAPI = async (customerID, location) => {
 export const RemovePaymentMethod = async (customerID, cardNumber) => {
 	await api.post('/api/v1/Customer/removePaymentMethod', {
 		customerID: customerID,
-		cardNumber: cardNumber
+		cardNumber: cardNumber,
 	})
 }
 
@@ -157,8 +157,24 @@ export const RemovePaymentMethod = async (customerID, cardNumber) => {
 export const AddPaymentMethod = async (customerID, paymentMethodDetails) => {
 	await api.post('/api/v1/Customer/addPaymentMethod', {
 		customerID: customerID,
-		paymentMethod: paymentMethodDetails
+		paymentMethod: paymentMethodDetails,
 	})
+}
+
+// Payment Methods: Sets default payment method
+export const SetDefaultPaymentMethod = async (customerID, cardNumber) => {
+	await api.post('/api/v1/Customer/setDefaultPaymentMethod', {
+		customerID: customerID,
+		cardNumber: cardNumber,
+	})
+}
+
+// Payment Methods: Get all the user's payment methods
+export const GetPaymentMethod = async (customerID, setCards) => {
+	const response = await api.post('/api/v1/Customer/getPaymentMethods', {
+		customerID: customerID
+	})
+	setCards(response.data)
 }
 
 // Saved Places: Sets the home location

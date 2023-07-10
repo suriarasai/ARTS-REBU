@@ -137,13 +137,30 @@ public class Customer {
     }
 
     // Remove a payment method
-    public void RemovePaymentMethod(Integer _cardNumber) {
+    public void RemovePaymentMethod(Long _cardNumber) {
         for (Iterator<PaymentMethod> iter = this.paymentMethods.listIterator(); iter.hasNext();) {
             PaymentMethod _paymentMethod = iter.next();
-            if (_paymentMethod.getCardNumber() == _cardNumber) {
+            if (Long.toString(_paymentMethod.getCardNumber()).equals(Long.toString(_cardNumber))) {
+                _paymentMethod.setCardHolder("Matched");
                 iter.remove();
             }
         }
+    }
+
+    // Set default payment method
+    public void SetDefaultPaymentMethod(Long _cardNumber) {
+        for (Iterator<PaymentMethod> iter = this.paymentMethods.listIterator(); iter.hasNext();) {
+            PaymentMethod _paymentMethod = iter.next();
+            if (Long.toString(_paymentMethod.getCardNumber()).equals(Long.toString(_cardNumber))) {
+                _paymentMethod.setDefaultPaymentMethod(true);
+            } else {
+                _paymentMethod.setDefaultPaymentMethod(false);
+            }
+        }
+    }
+
+    public List<PaymentMethod> GetPaymentMethods() {
+        return this.paymentMethods;
     }
 
     // Set amount spent
