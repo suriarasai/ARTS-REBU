@@ -75,8 +75,8 @@ public class BookingController {
     @PostMapping("/taxiArrived")
     public ResponseEntity<String> taxiArrived(@RequestBody Booking payload) {
         return new ResponseEntity<String>(
-            query.taxiArrived(payload),
-            HttpStatus.OK);
+                query.taxiArrived(payload),
+                HttpStatus.OK);
     }
 
     // Cancelled
@@ -92,6 +92,14 @@ public class BookingController {
     public ResponseEntity<String> completeBooking(@RequestBody Booking payload) {
         return new ResponseEntity<String>(
                 query.completeBooking(payload),
+                HttpStatus.OK);
+    }
+
+    // Set payment method
+    @PostMapping("/setPaymentMethod")
+    public ResponseEntity<String> setPaymentMethod(@RequestBody Booking payload) {
+        return new ResponseEntity<String>(
+                query.setPaymentMethod(payload),
                 HttpStatus.OK);
     }
 

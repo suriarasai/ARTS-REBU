@@ -96,6 +96,13 @@ export const GetPaymentMethod = async (customerID, _callback) => {
 	_callback(response.data)
 }
 
+export const setPaymentMethod = async (bookingID, cardNumber) => {
+	await api.post('/api/v1/Booking/setPaymentMethod', {
+		bookingID: bookingID,
+		paymentMethod: cardNumber.toString(),
+	})
+}
+
 // Saved Places: Sets the home location
 export const SetHome = async (customerID, location) => {
 	await api.post('/api/v1/Customer/setHome', {
@@ -198,11 +205,10 @@ export const cancelBooking = async (bookingID) => {
 	return response
 }
 
-export const completeBooking = async (bookingID, selectedCard) => {
+export const completeBooking = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/completeBooking', {
 		bookingID: bookingID,
-		dropTime: +new Date(),
-		paymentMethod: selectedCard.toString()
+		dropTime: +new Date()
 	})
 	return response
 }

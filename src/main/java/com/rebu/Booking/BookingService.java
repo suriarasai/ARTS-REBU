@@ -61,7 +61,7 @@ public class BookingService {
         return booking;
     }
 
-        public String taxiArrived(Booking data) {
+    public String taxiArrived(Booking data) {
         Booking booking = BookingRepository.findByBookingID(data.getBookingID());
         booking.taxiArrived(data.getPickUpTime());
         BookingRepository.save(booking);
@@ -87,9 +87,18 @@ public class BookingService {
 
     public String completeBooking(Booking data) {
         Booking booking = BookingRepository.findByBookingID(data.getBookingID());
-        booking.CompleteBooking(data.getDropTime(), data.getPaymentMethod());
+        booking.CompleteBooking(data.getDropTime());
         BookingRepository.save(booking);
 
         return null;
     }
+
+    public String setPaymentMethod(Booking data) {
+        Booking booking = BookingRepository.findByBookingID(data.getBookingID());
+        booking.SetPaymentMethod(data.getPaymentMethod());
+        BookingRepository.save(booking);
+
+        return null;
+    }
+
 }

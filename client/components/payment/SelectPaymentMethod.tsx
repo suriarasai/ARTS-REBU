@@ -14,13 +14,13 @@ const SelectPaymentMethod = ({ selectedCard, setSelectedCard, set }) => {
 		if (user) {
 			GetPaymentMethod(user.customerID, (data) => {
 				setCards(data)
-				data.map(
-					(item) =>
-						item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
-				)
+				// data.map(
+				// 	(item) =>
+				// 		item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
+				// )
 			})
 		}
-	}, [user])
+	}, [])
 
 	if (!user) {
 		return <LoadingScreen />
@@ -28,6 +28,7 @@ const SelectPaymentMethod = ({ selectedCard, setSelectedCard, set }) => {
 
 	function handleSelectCard() {
 		setSelectedCard(tempCard)
+		console.log(tempCard)
 		set(false)
 	}
 

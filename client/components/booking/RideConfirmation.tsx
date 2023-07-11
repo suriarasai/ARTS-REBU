@@ -14,6 +14,7 @@ import {
 	completeBooking,
 	createBooking,
 	matchedBooking,
+	setPaymentMethod,
 	taxiArrived,
 } from '@/server'
 import { moveToStep } from '@/utils/moveTaxiMarker'
@@ -79,11 +80,14 @@ export const RideConfirmation = (data) => {
 	}, [data.taxis])
 
 	useEffect(() => {
-		GetPaymentMethod(data.user.customerID, (data) =>
-			data?.length > 0 && data.map((item) => {
-				item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
-				console.log(item)
-			})
+		GetPaymentMethod(
+			data.user.customerID,
+			(data) =>
+				data?.length > 0 &&
+				data.map((item) => {
+					item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
+					console.log(item)
+				})
 		)
 	}, [])
 
@@ -251,6 +255,10 @@ export const RideConfirmation = (data) => {
 		}
 	}, [taxiETA])
 
+	useEffect(() => {
+		bookingID && setPaymentMethod(bookingID, selectedCard)
+	}, [selectedCard])
+
 	function handleCancelled(matchedStatus) {
 		setBookingCancelled(data.user.customerID.toString())
 		if (matchedStatus) {
@@ -265,8 +273,7 @@ export const RideConfirmation = (data) => {
 
 	function handleCompleted() {
 		setBookingCompleted(data.user.customerID.toString())
-		completeBooking(bookingID, selectedCard) // API for trip completion
-		console.log('selected card', selectedCard)
+		completeBooking(bookingID) // API for trip completion
 		console.log('Trip fini')
 		setScreen('completeTrip')
 		setNotification(null)

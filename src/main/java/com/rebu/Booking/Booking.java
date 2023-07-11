@@ -122,10 +122,14 @@ public class Booking {
     }
 
     // Completing the booking request
-    public void CompleteBooking(Long droptime, String paymentMethod) {
+    public void CompleteBooking(Long droptime) {
         this.dropTime = droptime;
-        this.paymentMethod = paymentMethod;
         this.status = "completed";
+    }
+
+    // Set the payment method
+    public void SetPaymentMethod(String cardNumber) {
+        this.paymentMethod = cardNumber;
     }
 
     // Either customer or driver cancels the request
