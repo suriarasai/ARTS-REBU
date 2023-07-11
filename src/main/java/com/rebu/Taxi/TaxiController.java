@@ -30,10 +30,26 @@ public class TaxiController {
         return new ResponseEntity<List<Taxi>>(query.getAllTaxis(), HttpStatus.OK);
     }
 
-    // (unused) GET: Returns a single Taxi based on Taxi ID
+    // GET: Returns a single Taxi based on Taxi ID
     @GetMapping("/{_id}")
     public ResponseEntity<Taxi> getByTaxiID(@PathVariable Integer _id) {
         return new ResponseEntity<Taxi>(query.getByTaxiID(_id), HttpStatus.OK);
+    }
+
+    // POST: Add a new taxi
+    @PostMapping("/addTaxi")
+    public ResponseEntity<Taxi> addTaxi(@RequestBody Taxi payload) {
+        return new ResponseEntity<Taxi>(
+                query.createTaxi(payload),
+                HttpStatus.OK);
+    }
+
+    // POST: Register a driver with the vehicle
+    @PostMapping("/registerDriver")
+    public ResponseEntity<String> registerDriver(@RequestBody Taxi payload) {
+        return new ResponseEntity<String>(
+                query.addDriver(payload),
+                HttpStatus.OK);
     }
 
 }

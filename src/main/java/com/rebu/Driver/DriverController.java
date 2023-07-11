@@ -41,4 +41,12 @@ public class DriverController {
                 HttpStatus.OK);
     }
 
+    // POST: Set the driver's rating
+    @PostMapping("/setRating")
+    public ResponseEntity<String> setRating(@RequestBody Driver payload) {
+        return new ResponseEntity<String>(
+                query.setRating(payload),
+                HttpStatus.OK);
+    }
+
 }

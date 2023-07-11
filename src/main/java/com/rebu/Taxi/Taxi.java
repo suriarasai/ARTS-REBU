@@ -19,39 +19,43 @@ import lombok.NoArgsConstructor;
 @Data
 public class Taxi {
     /*
-     * @param taxiNumber        : main ID parameter for querrying
-     * @param sno               : serial number
-     * @param taxiType          : type of vehicle (car/van/etc.)
-     * @param tmdtid            : vehicle identification number for corporate use
-     * @param taxiFeature       : physical features (make, color, seats, etc.)
-     * @param RegisterdDrivers  : logistic features (driver information)
+     * @param taxiNumber : main ID parameter for querrying
+     * 
+     * @param sno : serial number
+     * 
+     * @param taxiType : type of vehicle (car/van/etc.)
+     * 
+     * @param tmdtid : vehicle identification number for corporate use
+     * 
+     * @param taxiFeature : physical features (make, color, seats, etc.)
+     * 
+     * @param RegisterdDrivers : logistic features (driver information)
      */
     @Id
     ObjectId _id;
-    String taxiNumber; 
-    Integer sno; 
-    String taxiType; 
-    String tmdtid; 
-    TaxiFeature taxiFeature = new TaxiFeature(); 
-    List<RegisteredDriver> registeredDrivers = new ArrayList<RegisteredDriver>(); 
+    String taxiNumber;
+    Integer sno;
+    String taxiType;
+    String tmdtid;
+    TaxiFeature taxiFeature = new TaxiFeature();
+    List<RegisteredDriver> registeredDrivers = new ArrayList<RegisteredDriver>();
 
     public Taxi(Integer sno) {
         this.sno = sno;
     }
 
     // Add or update a taxi
-    public void UpsertTaxi(String taxiNumber, Integer sno, String taxiType, String tmdtid, TaxiFeature taxiFeature) {
-        this.taxiNumber = taxiNumber;
-        this.sno = sno;
-        this.taxiType = taxiType;
-        this.tmdtid = tmdtid;
-        this.taxiFeature.SetFeatures(taxiFeature);
+    public void UpsertTaxi(Taxi data) {
+        this.taxiNumber = data.taxiNumber;
+        this.taxiType = data.taxiType;
+        this.tmdtid = data.tmdtid;
+        this.taxiFeature.SetFeatures(data.taxiFeature);
     }
 
-    // Associate a new driver to the vehicle 
-    public void RegisterDriver(Integer DriverID, String DriverName, Integer DriverPhone) {
+    // Associate a new driver to the vehicle
+    public void RegisterDriver(RegisteredDriver data) {
         RegisteredDriver _driver = new RegisteredDriver();
-        _driver.SetDriver(DriverID, DriverName, DriverPhone);
+        _driver.SetDriver(data);
         this.registeredDrivers.add(_driver);
     }
 

@@ -7,6 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.rebu.Booking.Booking;
+import com.rebu.Booking.BookingRepository;
+
 @Service
 public class DriverService {
 
@@ -36,6 +39,14 @@ public class DriverService {
         DriverRepository.save(Driver);
 
         return Driver;
+    }
+
+    // API: Sets the driver's rating
+    public String setRating(Driver data) {
+        Driver Driver = DriverRepository.findByDriverID(data.getDriverID());
+        Driver.setRating(data.getRating());
+        DriverRepository.save(Driver);
+        return null;
     }
 
 }

@@ -21,6 +21,7 @@ public class Driver {
     private String driverName;
     private Integer phoneNumber;
     private Integer taxiID;
+    private Double rating;
 
     public Driver(Integer driverID) {
         this.driverID = driverID;
@@ -30,6 +31,10 @@ public class Driver {
         this.driverName = data.driverName;
         this.phoneNumber = data.phoneNumber;
         this.taxiID = data.taxiID;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 
 }

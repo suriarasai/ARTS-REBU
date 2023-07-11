@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaxiRepository extends MongoRepository<Taxi, Integer> {
     public Taxi findBySno(Integer sno);
+    public Taxi findFirstByOrderBySnoDesc();
 }

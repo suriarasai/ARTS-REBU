@@ -1,6 +1,5 @@
 package com.rebu.Taxi;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -15,19 +14,11 @@ public class RegisteredDriver {
      * @param driverName    : driver's name
      * @param driverPhone   : driver's phone number
      */
-    @Id
     Integer driverID;
     String driverName;
     Integer driverPhone;
 
     public RegisteredDriver() {
-    }
-
-    // Setter
-    public void SetDriver(Integer driverID, String driverName, Integer driverPhone) {
-        this.driverID = driverID;
-        this.driverName = driverName;
-        this.driverPhone = driverPhone;
     }
 
     // Setter
