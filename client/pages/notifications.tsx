@@ -1,26 +1,38 @@
+import Dispatch from '@/components/booking/UI/Dispatch'
 import SelectPaymentMethod from '@/components/payment/SelectPaymentMethod'
 import Page from '@/components/ui/page'
 import { useState } from 'react'
 
+const dispatchEvent = {
+	tmdtid: 1,
+	taxiNumber: 'SN 123456',
+	taxiType: 'Regular',
+	taxiPassengerCapacity: 4,
+	taxiMakeModel: 'Honda Civic',
+	taxiColor: 'Grey',
+	driverID: 1,
+	driverName: 'Friendly Neighborhood Driver',
+	driverPhone: 12345678,
+	sno: 1,
+	rating: 4.8,
+}
+
+const bookingEvent = {
+	pickUpLocation: {
+		placeName: '25 Heng Keng Mui',
+	},
+	dropLocation: {
+		placeName: 'NUS High Boarding School of Mathematics and Science',
+	},
+	distance: 3578,
+	duration: 3500,
+	fare: 25.3,
+}
+
 const Notifications = () => {
 	const [selectedCard, setSelectedCard] = useState('Cash')
 	return (
-		<div className='relative h-screen w-screen'>
-			<div className='responsive w-full lg:w-1/2'>
-				<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white lg:w-6/12'>
-					<div className='accordion-header flex flex-wrap pl-4 pt-4'>
-						<label>Text</label>
-					</div>
-					<div className='accordion-content pb-4 pl-4 pr-4'>
-						<SelectPaymentMethod
-							set={() => {}}
-							selectedCard={selectedCard}
-							setSelectedCard={setSelectedCard}
-						/>
-					</div>
-				</div>
-			</div>
-		</div>
+		<Dispatch dispatchEvent={dispatchEvent} bookingEvent={bookingEvent} />
 	)
 }
 

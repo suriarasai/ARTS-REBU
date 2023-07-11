@@ -66,6 +66,7 @@ export const RideConfirmation = (data) => {
 	const [stopStream, setStopStream] = useState(true)
 	const [selectedCard, setSelectedCard] = useState('Cash')
 	const [selectPaymentMethod, setSelectPaymentMethod] = useState(false)
+	const [dispatchEvent, setDispatchEvent] = useState(null)
 
 	useEffect(() => {
 		drawTaxiRoute(
@@ -99,7 +100,9 @@ export const RideConfirmation = (data) => {
 			doc(db, 'BookingEvent', data.user.customerID.toString()),
 			(snapshot) => {
 				if (snapshot.data().status === 'dispatched') {
-					handleMatched()
+					handleMatched(snapshot.data())
+					setDispatchEvent(snapshot.data())
+					console.log("Firestore Booking Event", snapshot.data())
 				}
 			}
 		)
@@ -156,7 +159,6 @@ export const RideConfirmation = (data) => {
 	function handleConfirmation(e) {
 		e.preventDefault()
 		setScreen('waiting')
-		// setScreen('completeTrip')
 		setRideConfirmed(true)
 
 		createBooking(
@@ -182,8 +184,9 @@ export const RideConfirmation = (data) => {
 		) // API to create booking
 	}
 
-	function handleMatched() {
-		matchedBooking(bookingID, 1, 1) // API for matching
+	function handleMatched(event) {
+		matchedBooking(bookingID, event.driverID, event.sno) // API for matching
+
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
 		setStopStream(true)
 		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path

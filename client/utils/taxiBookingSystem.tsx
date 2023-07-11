@@ -31,6 +31,23 @@ export function setBookingCompleted(customerID) {
 	setBooking(customerID, { status: 'completed' })
 }
 
+// This is supposed to be from the driver application
+export function setDispatchData(customerID) {
+	setBooking(customerID, {
+		tmdtid: 1,
+		taxiNumber: "SN 123456",
+		taxiType: "Regular",
+		taxiPassengerCapacity: 4,
+		taxiMakeModel: "Honda Civic",
+		taxiColor: "Grey",
+		driverID: 1,
+		driverName: "Augustine",
+		driverPhone: 12345678,
+		sno: 1,
+		rating: 4.8
+	})
+}
+
 export async function deleteBooking(customerID) {
 	await deleteDoc(doc(db, 'BookingEvent', customerID))
 }
