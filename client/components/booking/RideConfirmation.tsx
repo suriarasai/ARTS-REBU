@@ -76,7 +76,6 @@ export const RideConfirmation = (data) => {
 			setTaxiETA,
 			initializeOptions
 		)
-		console.log('Trip Duration', data.duration)
 	}, [data.taxis])
 
 	useEffect(() => {
@@ -86,7 +85,6 @@ export const RideConfirmation = (data) => {
 				data?.length > 0 &&
 				data.map((item) => {
 					item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
-					console.log(item)
 				})
 		)
 	}, [])
@@ -101,10 +99,8 @@ export const RideConfirmation = (data) => {
 			doc(db, 'BookingEvent', data.user.customerID.toString()),
 			(snapshot) => {
 				if (snapshot.data().status === 'dispatched') {
-					console.log('Matched')
 					handleMatched()
 				}
-				console.log(snapshot.data())
 			}
 		)
 
@@ -224,7 +220,6 @@ export const RideConfirmation = (data) => {
 	}
 
 	function handleTaxiArrived() {
-		console.log('book')
 		booking = {
 			...options[clickedOption - 1],
 			dropTime: new Date(+new Date() + data.duration * 1000)
@@ -248,10 +243,8 @@ export const RideConfirmation = (data) => {
 
 		// Proximity notification @ 1 min
 		if (Math.round(taxiETA[clickedOption] / 60) === 1) {
-			console.log('1 minute ETA')
 			setNotification('arrivingSoon')
 		} else if (Math.round(taxiETA[clickedOption] / 60) === 0) {
-			console.log('arriving now')
 		}
 	}, [taxiETA])
 

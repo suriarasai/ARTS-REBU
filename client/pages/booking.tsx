@@ -186,7 +186,6 @@ function Booking() {
 			setRoute,
 			setPolyline,
 			() => {
-				console.log("This code is functional")
 				setExpandSearch(0)
 				isValidInput(true)
 				setHideUI(true)

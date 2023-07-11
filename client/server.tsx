@@ -164,7 +164,6 @@ export const createBooking = async (
 		messageSubmittedTime: +new Date(),
 		customerName: user.customerName,
 		phoneNumber: user.phoneNumber,
-		// pickUpTime: option.pickUpTime, // TODO: Time
 		taxiType: option.taxiType,
 		fareType: 'metered',
 		fare: option.fare,
@@ -181,7 +180,6 @@ export const createBooking = async (
 }
 
 export const matchedBooking = async (bookingID, driverID, taxiID) => {
-	console.log(bookingID)
 	const response = await api.post('/api/v1/Booking/matchedBooking', {
 		bookingID: bookingID,
 		driverID: driverID,
@@ -208,7 +206,7 @@ export const cancelBooking = async (bookingID) => {
 export const completeBooking = async (bookingID) => {
 	const response = await api.post('/api/v1/Booking/completeBooking', {
 		bookingID: bookingID,
-		dropTime: +new Date()
+		dropTime: +new Date(),
 	})
 	return response
 }
@@ -237,32 +235,31 @@ export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 			return response.json()
 		})
 		.then(function (data) {
-			const coordinates: [number, number] =
-				data.features[0].geometry.coordinates
-			const distances: [number, number, number][] = []
+			const coordinates = data.features[0].geometry.coordinates
+			const distances = []
 
 			// Calculating the Euclidean distance
-			coordinates.forEach(([a, b]: any) =>
-				distances.push([
-					Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
-					a,
-					b,
-				])
+			coordinates.forEach(([a, b], index) =>
+				distances.push({
+					distance: Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
+					lng: a,
+					lat: b,
+					index: index+1,
+				})
 			)
 
-			// Sorting the distances
-			distances.sort()
+			// Sorting the distances in ascending order
+			distances.sort((a, b) => a.distance - b.distance)
 
-			let coords
 			let newTaxi
 			let nearbyTaxiMarkers = []
 
 			// Saving the marker to the state variable
 			for (let i = 0; i < N; i++) {
-				coords = distances[i].slice(1, 3)
 				newTaxi = new google.maps.Marker({
 					map: map,
-					position: { lat: coords[1], lng: coords[0] },
+					title: distances[i].index.toString(),
+					position: { lat: distances[i].lat, lng: distances[i].lng },
 					icon: {
 						url: 'https://www.svgrepo.com/show/375911/taxi.svg',
 						scaledSize: new google.maps.Size(30, 30),
