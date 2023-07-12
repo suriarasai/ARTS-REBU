@@ -110,7 +110,6 @@ function Booking() {
 		if (loggedInUser && !user.customerName) {
 			setUser(JSON.parse(loggedInUser))
 			setMarkers(map, JSON.parse(loggedInUser))
-			localStorage.setItem('user', JSON.stringify(JSON.parse(loggedInUser)))
 		} else if (user.customerName) {
 			setMarkers(map, user)
 		}

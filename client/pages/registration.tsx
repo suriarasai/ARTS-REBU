@@ -32,7 +32,6 @@ const Registration = () => {
 	// Second screen w/profile inputs
 	const onSubmit = async (data: User) => {
 		setUser(await RegisterUser({ ...data }, user.customerID))
-		localStorage.setItem('user', JSON.stringify(user))
 		setRegistrationSuccessful(true)
 		router.push(HREF.HOME)
 	}

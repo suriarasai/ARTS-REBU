@@ -31,7 +31,6 @@ export const EmailSignIn = ({ setForm }: any) => {
 		})
 		if (response.data != '') {
 			setUser(response.data)
-			localStorage.setItem('user', JSON.stringify(response.data))
 			setSignInError(false)
 			router.push(HREF.HOME)
 		} else {

@@ -25,7 +25,6 @@ export const AddCard = ({ customerID, setScreen, setCards, cards }) => {
 		setUser({ ...user, paymentMethods: [...cards, data] })
 		setCards([...cards, data])
 		setScreen('main')
-		localStorage.setItem('user', JSON.stringify(user))
 	})
 
 	return (

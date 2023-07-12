@@ -21,7 +21,6 @@ const SignIn = () => {
 		const loggedInUser = localStorage.getItem('user')
 		if (loggedInUser !== null) {
 			setUser(JSON.parse(loggedInUser))
-			localStorage.setItem('user', JSON.stringify(JSON.parse(loggedInUser)))
 			Router.push(HREF.HOME)
 		} else {
 			setLoading(false)

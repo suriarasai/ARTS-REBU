@@ -58,7 +58,6 @@ const SavedPlaces = () => {
 			// @ts-ignore
 			savedLocations: [...user.savedLocations, data],
 		})
-		localStorage.setItem('user', JSON.stringify(user))
 	}
 
 	if (!isLoaded) {
@@ -177,7 +176,6 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 				},
 			})
 		}
-		localStorage.setItem('user', JSON.stringify(user))
 
 		updateEditLocation(false)
 	}
@@ -250,7 +248,6 @@ const Location = ({ location, setUser, user }) => {
 				),
 			],
 		})
-		localStorage.setItem('user', JSON.stringify(user))
 	}
 
 	return (

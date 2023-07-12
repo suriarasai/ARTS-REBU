@@ -14,15 +14,6 @@ const App = ({ Component, pageProps }: AppProps) => {
 		Component	: the page/component to be rendered
 		pageProps	: the props of each page/component
 	*/
-	// const user = useRecoilValue(userSelector)
-
-	// // Persisting user object
-	// useEffect(() => {
-	// 	// If the user exists and they have completed registration...
-	// 	if (user && user.customerName) {
-	// 		localStorage.setItem('user', JSON.stringify(user))
-	// 	}
-	// }, [user])
 
 	return (
 		// Theme provider for site-wide styling (dark mode does not work)

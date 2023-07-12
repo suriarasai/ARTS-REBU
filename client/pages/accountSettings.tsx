@@ -23,7 +23,6 @@ const AccountSettings = () => {
 
 	async function onSubmit(data: User) {
 		setUser(await UpdateUser(data, user.customerID))
-		localStorage.setItem('user', JSON.stringify(user))
 		setChangesSaved(true)
 	}
 

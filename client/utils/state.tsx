@@ -1,23 +1,30 @@
-import { useEffect } from 'react'
 import { atom, selector } from 'recoil'
 
 export const userAtom = atom({
-	key: 'user',
+	key: 'user-atom',
 	default: null,
+	effects: [
+		({onSet}) => {
+			onSet(data => {
+				localStorage.setItem('user', JSON.stringify(data))
+				console.log("Updated User Data (state.tsx): ", data)
+			})
+		}
+	]
 })
 
 export const bookingAtom = atom({
-	key: 'booking',
+	key: 'booking-atom',
 	default: null,
 })
 
 export const taxiAtom = atom({
-	key: 'taxi',
+	key: 'taxi-atom',
 	default: null,
 })
 
 export const driverAtom = atom({
-	key: 'driver',
+	key: 'driver-atom',
 	default: null,
 })
 

@@ -28,7 +28,6 @@ const RewardPoints = () => {
 
 			// setUser({ ...user, rewardHistory: rewardData, rewardPoints: rewardPoints - points })
 			// updateRewardHistory(rewardData)
-			// localStorage.setItem('user', JSON.stringify(user))
 			updateRewardPoints(rewardPoints - points)
 		} else {
 			updateInvalidInput(true)

@@ -67,7 +67,6 @@ export const MobileNumber = ({ newUser = true, populateData = {} }: any) => {
 			// If the user exists
 		} else {
 			setUser(response.data)
-			localStorage.setItem('user', JSON.stringify(response.data))
 		}
 	}
 
