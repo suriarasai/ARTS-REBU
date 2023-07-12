@@ -127,3 +127,74 @@ export const selectedCardSelector = selector({
 		return get(selectedCardAtom)
 	},
 })
+
+const temp = {
+	customerID: null,
+	customerName: null,
+	customerPhoneNumber: null, // Renamed to phoneNumber for consistency with bookingEvent
+	pickupDate: null, // Excluded - can be computed from pickUpTime (in miliseconds from epoch)
+	pickupTime: null,
+	pickupLocation: null,
+	eta: null,
+	tripFare: null, // Renamed to fare for consistency with bookingEvent
+	dropLocation: null,
+	tmdtid: null,
+	taxiNumber: null,
+	taxiType: null, // This might need to be moved to the bookingEvent as users typically select this prior to matching
+	taxiPassengerCapacity: null, // This might need to be moved to the bookingEvent as users typically select this prior to matching
+	taxiMakeModel: null,
+	driverID: null,
+	driverName: null,
+	driverPhoneNumber: null,
+}
+
+// 1. On page load >>> pickUpLocation, customerID, customerName, phoneNumber
+// 2. On location input >>> pickUpLocation, dropLocation
+// 3. On taxi selection >>> taxiPassengerCapacity, taxiType, fareType, fare, eta, distance, paymentMethod, bookingID, status
+// 4. On dispatch >>> tmdtid, taxiNumber, taxiMakeModel, driverID, driverName, driverPhoneNumber, status
+// 5. On pickup >>> pickUpTime
+// 6. On arrival >>> dropTime, status
+
+interface bookingEvent {
+	// From bookingEvent
+	customerID: number,
+	customerName: string,
+	phoneNumber: number,
+	pickUpLocation: {
+		placeID: string,
+		lat: number,
+		lng: number,
+		postcode: string,
+		address: string,
+		placeName: string,
+	},
+	taxiPassengerCapacity: number,
+	pickUpTime: number,
+	dropLocation: {
+		placeID: string,
+		lat: number,
+		lng: number,
+		postcode: string,
+		address: string,
+		placeName: string,
+	},
+	taxiType: string,
+	fareType: string,
+	fare: number,
+	eta: number,
+
+	// Appended from dispatch event
+	tmdtid: number,
+	taxiNumber: string,
+	taxiMakeModel: string,
+	driverID: number,
+	driverName: string,
+	driverPhoneNumber: number,
+
+	// Additional fields (not in the current stream data model)
+	distance: number, // in meters
+	paymentMethod: string, // 'Cash' or [card number]
+	status: string, // 'requested', 'dispatched', 'cancelled', 'completed'
+	dropTime: number, // in miliseconds from epoch
+	bookingID: number
+}

@@ -169,6 +169,7 @@ export const createBooking = async (
 		fare: option.fare,
 		distance: option.distance,
 		paymentMethod: 'Cash',
+		eta: option.duration,
 		pickUpLocation: origin,
 		dropLocation: destination,
 	})

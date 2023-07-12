@@ -42,6 +42,7 @@ import Receipt from './UI/Receipt'
 import Rating from './Rating'
 import SelectPaymentMethod from '../payment/SelectPaymentMethod'
 import {
+	bookingAtom,
 	clickedOptionAtom,
 	screenAtom,
 	selectedCardAtom,
@@ -67,6 +68,7 @@ export const RideConfirmation = (data) => {
 	const [collapsed, setCollapsed] = useState<boolean>(false)
 	const [screen, setScreen] = useRecoilState(screenAtom)
 	const [bookingID, setBookingID] = useState<number>(null)
+	// const [booking, setBooking] = useRecoilState(bookingAtom)
 	const [rideConfirmed, setRideConfirmed] = useState(false)
 	const [routes, setRoutes] = useState({ 1: null, 2: null })
 	const [taxiETA, setTaxiETA] = useRecoilState(taxiETAAtom)
@@ -187,6 +189,7 @@ export const RideConfirmation = (data) => {
 					dropLocation: data.destination.placeName,
 					fareType: 'metered',
 					paymentMethod: 'cash',
+					eta: data.duration,
 					sno: 1,
 					driverID: 1,
 					bookingID: bookingID,

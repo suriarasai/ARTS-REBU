@@ -71,6 +71,7 @@ public class Booking {
     private String taxiType;
     private String fareType;
     private String fare;
+    private Integer eta;
 
     // New Fields
     private String status;
@@ -107,6 +108,7 @@ public class Booking {
         this.paymentMethod = data.paymentMethod;
         this.pickUpLocation = data.pickUpLocation;
         this.dropLocation = data.dropLocation;
+        this.eta = data.eta;
     }
 
     // Matching a driver to the booking request

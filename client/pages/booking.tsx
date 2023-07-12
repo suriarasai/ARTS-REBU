@@ -13,7 +13,7 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import BottomNav from '@/components/ui/bottom-nav'
 import { loadNearbyTaxiStops } from '@/components/booking/loadNearbyTaxiStops'
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { bookingAtom, userAtom } from '@/utils/state'
 
 let marks = {
 	home: null,
@@ -28,10 +28,9 @@ const libraries = ['places', 'geometry']
 
 function Booking() {
 	const [user, setUser] = useRecoilState(userAtom)
+	const [booking, setBooking] = useRecoilState(bookingAtom)
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
-	// const [distance, setDistance] = useState<number>(null)
-	// const [duration, setDuration] = useState<number>(null)
 	const [route, setRoute] = useState(null)
 	const [validInput, isValidInput] = useState(false)
 	const [poi, setPoi] = useState(true)
