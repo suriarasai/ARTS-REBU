@@ -1,4 +1,6 @@
+import { bookingAtom, bookingEvent } from '@/utils/state'
 import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa'
+import { useRecoilValue } from 'recoil'
 
 export const CompleteTripUI = ({
 	option,
@@ -6,15 +8,17 @@ export const CompleteTripUI = ({
 	pickUpTime,
 	data,
 }): React.ReactNode => {
+	const booking = useRecoilValue<bookingEvent | any>(bookingAtom)
+
 	return (
 		<div className='px-4'>
 			<div className='flex items-center border-b border-zinc-300 py-3'>
 				<div className='mr-5 h-8 w-8 rounded-2xl bg-gradient-to-tr from-lime-500 to-green-200'></div>
 				<div className='flex-1'>
-					<p className='font-medium'>John Doe</p>
+					<p className='font-medium'>{booking.driverName}</p>
 					<h5 className='flex items-center'>
 						<FaStar className='text-yellow mr-2' />
-						4.8
+						{booking.rating}
 					</h5>
 				</div>
 				<div className='flex-1'>

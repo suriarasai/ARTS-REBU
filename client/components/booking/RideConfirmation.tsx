@@ -119,6 +119,8 @@ export const RideConfirmation = (data) => {
 						driverID: snapshot.data().driverID,
 						driverName: snapshot.data().driverName,
 						driverPhoneNumber: snapshot.data().driverPhoneNumber,
+						rating: snapshot.data().rating,
+						sno: snapshot.data().sno
 					})
 					handleMatched(snapshot.data())
 				}

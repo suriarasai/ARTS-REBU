@@ -1,32 +1,35 @@
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
-import { selectedCardAtom } from '@/utils/state'
+import { bookingAtom, bookingEvent, selectedCardAtom } from '@/utils/state'
 import { useEffect, useState } from 'react'
-import { FaAngleDown, FaClock, FaCoins, FaFlag } from 'react-icons/fa'
+import { FaAngleDown, FaClock, FaCoins, FaFlag, FaUser } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'
 
-export const DriverInformation = ({ onCancel }) => (
-	<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
-		<div className='mb-3 flex flex-wrap items-center justify-center'>
-			<div className='mr-5 flex h-16 w-16 items-center justify-center rounded-full border border-green-500'>
-				JD
+export const DriverInformation = ({ onCancel }) => {
+	const booking = useRecoilValue<bookingEvent | any>(bookingAtom)
+	return (
+		<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
+			<div className='mb-3 flex flex-wrap items-center justify-center'>
+				<div className='mr-5 flex h-16 w-16 items-center justify-center rounded-full border border-green-500'>
+					<FaUser className='text-lg' />
+				</div>
+				<div className='w-2/5'>
+					<p className='font-medium'>{booking.driverName}</p>
+					<p>{booking.taxiColor + ' ' + booking.taxiMakeModel}</p>
+				</div>
+				<div className='flex h-10 w-2/5 items-center justify-center rounded border border-green-700 text-xl text-green-700 '>
+					{booking.taxiNumber}
+				</div>
 			</div>
-			<div className='w-2/5'>
-				<p className='font-medium'>{'John Doe'}</p>
-				<p>{'Silver Honda Civic'}</p>
-			</div>
-			<div className='flex h-10 w-2/5 items-center justify-center rounded border border-green-700 text-xl text-green-700 '>
-				{'SBA 2023A'}
-			</div>
+			<hr className='mb-2' />
+			<button className='w-1/2 p-1 text-red-700' onClick={() => onCancel(true)}>
+				<p className='font-normal'>Cancel</p>
+			</button>
+			<button className='w-1/2 p-1 text-green-700'>
+				<p className='font-normal'>Contact</p>
+			</button>
 		</div>
-		<hr className='mb-2' />
-		<button className='w-1/2 p-1 text-red-700' onClick={() => onCancel(true)}>
-			<p className='font-normal'>Cancel</p>
-		</button>
-		<button className='w-1/2 p-1 text-green-700'>
-			<p className='font-normal'>Contact</p>
-		</button>
-	</div>
-)
+	)
+}
 
 export const PaymentInformation = ({ fare, set }) => {
 	const selectedCard = useRecoilValue(selectedCardAtom)
