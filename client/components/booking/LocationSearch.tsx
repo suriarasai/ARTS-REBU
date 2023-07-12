@@ -1,36 +1,30 @@
-import { FaPlusCircle, FaPlusSquare } from 'react-icons/fa'
+import { FaPlusCircle } from 'react-icons/fa'
 import { BackButton } from '@/components/booking/backButton'
 import { InputCurrentLocation } from './InputCurrentLocation'
 import { InputDestinationLocation } from './InputDestinationLocation'
+import { searchTypeAtom } from '@/utils/state'
+import { useRecoilState } from 'recoil'
 
-export function LocationSearch(
-	expandSearch: number,
-	setExpandSearch,
+export const LocationSearch = ({
 	originRef,
-	setOrigin,
 	isValidInput,
 	destinationRef,
-	setDestination,
 	calculateRoute,
-	validInput
-) {
+	validInput,
+}) => {
+	const [searchType, setSearchType] = useRecoilState(searchTypeAtom)
 	return (
 		<div className='location-search-header'>
-			{expandSearch !== 0 && (
+			{searchType !== 0 && (
 				<div className='absolute left-0 top-0 z-50 ml-1 mt-5'>
-					<BackButton
-						expandSearch={expandSearch}
-						setExpandSearch={setExpandSearch}
-					/>
+					<BackButton searchType={searchType} setSearchType={setSearchType} />
 				</div>
 			)}
 			<div className='relative w-full px-6 pl-10 pt-2'>
 				<div className='pr-12'>
 					{/* Origin Search */}
 					<InputCurrentLocation
-						setExpandSearch={setExpandSearch}
 						originRef={originRef}
-						setOrigin={setOrigin}
 						isValidInput={isValidInput}
 					/>
 
@@ -38,9 +32,7 @@ export function LocationSearch(
 
 					{/* Destination Search */}
 					<InputDestinationLocation
-						setExpandSearch={setExpandSearch}
 						destinationRef={destinationRef}
-						setDestination={setDestination}
 						isValidInput={isValidInput}
 					/>
 				</div>

@@ -8,11 +8,13 @@ import {
 } from 'react-icons/fa'
 import { Button, HREF, Message } from '@/redux/types/constants'
 import { useRecoilValue } from 'recoil'
-import { userSelector } from '@/utils/state'
+import { searchTypeAtom, userSelector } from '@/utils/state'
+import { useRecoilState } from 'recoil'
 
-const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
+const ExpandSearch = ({ mode, location, setLocation }) => {
 	const user = useRecoilValue(userSelector)
 	const router = useRouter()
+	const [, setSearchType] = useRecoilState(searchTypeAtom)
 
 	// Handler for clicking either 'Home' or 'Work'
 	const handleSavedLocation = (label: string) => {
@@ -26,7 +28,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 	}
 
 	function navigateToLocation(data) {
-		setExpandSearch(0)
+		setSearchType(0)
 		setLocation(data)
 	}
 
@@ -79,7 +81,7 @@ const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
 
 					<div
 						className='mt-2 flex flex-wrap bg-white p-3 px-5'
-						onClick={() => setExpandSearch(mode === 1 ? 3 : 4)}
+						onClick={() => setSearchType(mode === 1 ? 3 : 4)}
 					>
 						<FaSearchLocation className='mr-6 text-xl text-green-500' />
 						<b className='text-sm'>{Message.SET_LOCATION_ON_MAP}</b>

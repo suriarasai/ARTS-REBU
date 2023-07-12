@@ -22,7 +22,7 @@ export const userSelector = selector({
 
 export const bookingAtom = atom({
 	key: 'booking-atom',
-	default: null,
+	default: {},
 	effects: [
 		({ onSet }) => {
 			onSet((data) => {
@@ -37,6 +37,100 @@ export const bookingSelector = selector({
 	key: 'booking-modifier',
 	get: ({ get }) => {
 		return get(bookingAtom)
+	},
+})
+
+export const statusAtom = atom({
+	key: 'status-atom',
+	default: '',
+	effects: [
+		({ onSet }) => {
+			onSet((data) => {
+				localStorage.setItem('status', JSON.stringify(data))
+				console.log('Updated status data (state.tsx): ', data)
+			})
+		},
+	],
+})
+
+export const statusSelector = selector({
+	key: 'status-modifier',
+	get: ({ get }) => {
+		return get(statusAtom)
+	},
+})
+
+export const destinationAtom = atom({
+	key: 'destination-atom',
+	default: {
+		placeID: null,
+		lat: null,
+		lng: null,
+		postcode: null,
+		address: null,
+		placeName: null,
+	},
+	effects: [
+		({ onSet }) => {
+			onSet((data) => {
+				localStorage.setItem('destination', JSON.stringify(data))
+				console.log('Updated destination data (state.tsx): ', data)
+			})
+		},
+	],
+})
+
+export const destinationSelector = selector({
+	key: 'destination-modifier',
+	get: ({ get }) => {
+		return get(destinationAtom)
+	},
+})
+
+export const originAtom = atom({
+	key: 'origin-atom',
+	default: {
+		placeID: null,
+		lat: null,
+		lng: null,
+		postcode: null,
+		address: null,
+		placeName: null,
+	},
+	effects: [
+		({ onSet }) => {
+			onSet((data) => {
+				localStorage.setItem('origin', JSON.stringify(data))
+				console.log('Updated origin data (state.tsx): ', data)
+			})
+		},
+	],
+})
+
+export const originSelector = selector({
+	key: 'origin-modifier',
+	get: ({ get }) => {
+		return get(originAtom)
+	},
+})
+
+export const searchTypeAtom = atom({
+	key: 'searchType-atom',
+	default: 0,
+	effects: [
+		({ onSet }) => {
+			onSet((data) => {
+				localStorage.setItem('searchType', JSON.stringify(data))
+				console.log('Updated searchType data (state.tsx): ', data)
+			})
+		},
+	],
+})
+
+export const searchTypeSelector = selector({
+	key: 'searchType-modifier',
+	get: ({ get }) => {
+		return get(searchTypeAtom)
 	},
 })
 
@@ -155,46 +249,46 @@ const temp = {
 // 5. On pickup >>> pickUpTime
 // 6. On arrival >>> dropTime, status
 
-interface bookingEvent {
+export interface bookingEvent {
 	// From bookingEvent
-	customerID: number,
-	customerName: string,
-	phoneNumber: number,
+	customerID: number
+	customerName: string
+	phoneNumber: number
 	pickUpLocation: {
-		placeID: string,
-		lat: number,
-		lng: number,
-		postcode: string,
-		address: string,
-		placeName: string,
-	},
-	taxiPassengerCapacity: number,
-	pickUpTime: number,
+		placeID: string
+		lat: number
+		lng: number
+		postcode: string
+		address: string
+		placeName: string
+	}
+	taxiPassengerCapacity: number
+	pickUpTime: number
 	dropLocation: {
-		placeID: string,
-		lat: number,
-		lng: number,
-		postcode: string,
-		address: string,
-		placeName: string,
-	},
-	taxiType: string,
-	fareType: string,
-	fare: number,
-	eta: number,
+		placeID: string
+		lat: number
+		lng: number
+		postcode: string
+		address: string
+		placeName: string
+	}
+	taxiType: string
+	fareType: string
+	fare: number
+	eta: number
 
 	// Appended from dispatch event
-	tmdtid: number,
-	taxiNumber: string,
-	taxiMakeModel: string,
-	driverID: number,
-	driverName: string,
-	driverPhoneNumber: number,
+	tmdtid: number
+	taxiNumber: string
+	taxiMakeModel: string
+	driverID: number
+	driverName: string
+	driverPhoneNumber: number
 
 	// Additional fields (not in the current stream data model)
-	distance: number, // in meters
-	paymentMethod: string, // 'Cash' or [card number]
-	status: string, // 'requested', 'dispatched', 'cancelled', 'completed'
-	dropTime: number, // in miliseconds from epoch
+	distance: number // in meters
+	paymentMethod: string // 'Cash' or [card number]
+	status: string // 'requested', 'dispatched', 'cancelled', 'completed'
+	dropTime: number // in miliseconds from epoch
 	bookingID: number
 }

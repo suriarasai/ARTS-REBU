@@ -1,21 +1,21 @@
 import { getAddress } from '@/utils/getAddress'
+import { originAtom, searchTypeAtom } from '@/utils/state'
 import { Autocomplete } from '@react-google-maps/api'
 import { useState } from 'react'
 import { FaCircle } from 'react-icons/fa'
+import { useRecoilState } from 'recoil'
 
-export const InputCurrentLocation = ({
-	setExpandSearch,
-	originRef,
-	setOrigin,
-	isValidInput,
-}) => {
+export const InputCurrentLocation = ({ originRef, isValidInput }) => {
 	const [originAutocomplete, setOriginAutocomplete] = useState(null)
+	const [, setOrigin] = useRecoilState(originAtom)
+	const [, setSearchType] = useRecoilState(searchTypeAtom)
+
 	return (
 		<div>
 			<Autocomplete
 				onLoad={(e) => setOriginAutocomplete(e)}
 				onPlaceChanged={() => {
-					setExpandSearch(0)
+					setSearchType(0)
 					setOrigin(getAddress(originAutocomplete.getPlace()))
 				}}
 				options={{ componentRestrictions: { country: 'sg' } }}
@@ -29,12 +29,12 @@ export const InputCurrentLocation = ({
 					onChange={(e) => {
 						isValidInput(false)
 						if (e.target.value === '') {
-							setExpandSearch(1)
+							setSearchType(1)
 						} else {
-							setExpandSearch(0)
+							setSearchType(0)
 						}
 					}}
-					onClick={() => setExpandSearch(1)}
+					onClick={() => setSearchType(1)}
 				/>
 			</Autocomplete>
 			<FaCircle className='absolute -mt-7 ml-3 text-xs text-zinc-500' />

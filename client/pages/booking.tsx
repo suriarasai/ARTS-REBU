@@ -13,7 +13,13 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import BottomNav from '@/components/ui/bottom-nav'
 import { loadNearbyTaxiStops } from '@/components/booking/loadNearbyTaxiStops'
 import { useRecoilState } from 'recoil'
-import { bookingAtom, userAtom } from '@/utils/state'
+import {
+	bookingAtom,
+	destinationAtom,
+	originAtom,
+	searchTypeAtom,
+	userAtom,
+} from '@/utils/state'
 
 let marks = {
 	home: null,
@@ -28,7 +34,6 @@ const libraries = ['places', 'geometry']
 
 function Booking() {
 	const [user, setUser] = useRecoilState(userAtom)
-	const [booking, setBooking] = useRecoilState(bookingAtom)
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
 	const [route, setRoute] = useState(null)
@@ -40,7 +45,7 @@ function Booking() {
 
 	// Tracks which input box to trigger
 	// 0 = None selected, 1 = Origin, 2 = Destination, 3 = Origin (select on map), 4 = Dest (select on map)
-	const [expandSearch, setExpandSearch] = useState(0)
+	const [searchType, setSearchType] = useRecoilState(searchTypeAtom)
 	const [userLocation, setUserLocation] = useState<any>({
 		placeID: null,
 		lat: null,
@@ -50,22 +55,8 @@ function Booking() {
 		placeName: null,
 	})
 
-	const [origin, setOrigin] = useState({
-		placeID: null,
-		lat: null,
-		lng: null,
-		postcode: null,
-		address: null,
-		placeName: null,
-	}) // Coordinates of the origin location
-	const [destination, setDestination] = useState({
-		placeID: null,
-		lat: null,
-		lng: null,
-		postcode: null,
-		address: null,
-		placeName: null,
-	}) // Coordinates of the origin location
+	const [origin, setOrigin] = useRecoilState(originAtom)
+	const [destination, setDestination] = useRecoilState(destinationAtom)
 
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const originRef = useRef(null) // Tracks input value of origin box
@@ -73,46 +64,6 @@ function Booking() {
 	const destinationRef = useRef(null) // Tracks input value of destination box
 
 	const [hideUI, setHideUI] = useState(false)
-
-	// On map load
-	const loadMap = useCallback(function callback(map) {
-		mapStyles(map, poi)
-		setMap(map)
-
-		// Center to current location
-		navigator.geolocation.getCurrentPosition((position) => {
-			CoordinateToAddress(
-				[position.coords.latitude, position.coords.longitude],
-				setUserLocation
-			)
-			map.panTo({
-				lat: position.coords.latitude,
-				lng: position.coords.longitude,
-			})
-			marks.user = new google.maps.Marker({
-				position: {
-					lat: position.coords.latitude,
-					lng: position.coords.longitude,
-				},
-				map: map,
-				icon: {
-					url: 'https://www.svgrepo.com/show/115216/pointer-inside-a-circle.svg',
-					scaledSize: new google.maps.Size(30, 30),
-				},
-			})
-
-			map.setZoom(18)
-		})
-
-		// Adding markers to the map after the user object has loaded
-		const loggedInUser = localStorage.getItem('user')
-		if (loggedInUser && !user.customerName) {
-			setUser(JSON.parse(loggedInUser))
-			setMarkers(map, JSON.parse(loggedInUser))
-		} else if (user.customerName) {
-			setMarkers(map, user)
-		}
-	}, [])
 
 	// Set origin address after clicking a saved location
 	useEffect(() => {
@@ -155,6 +106,46 @@ function Booking() {
 		}
 	}, [destination])
 
+	// On map load
+	const loadMap = useCallback(function callback(map) {
+		mapStyles(map, poi)
+		setMap(map)
+
+		// Center to current location
+		navigator.geolocation.getCurrentPosition((position) => {
+			CoordinateToAddress(
+				[position.coords.latitude, position.coords.longitude],
+				setUserLocation
+			)
+			map.panTo({
+				lat: position.coords.latitude,
+				lng: position.coords.longitude,
+			})
+			marks.user = new google.maps.Marker({
+				position: {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+				},
+				map: map,
+				icon: {
+					url: 'https://www.svgrepo.com/show/115216/pointer-inside-a-circle.svg',
+					scaledSize: new google.maps.Size(30, 30),
+				},
+			})
+
+			map.setZoom(18)
+		})
+
+		// Adding markers to the map after the user object has loaded
+		const loggedInUser = localStorage.getItem('user')
+		if (loggedInUser && !user.customerName) {
+			setUser(JSON.parse(loggedInUser))
+			setMarkers(map, JSON.parse(loggedInUser))
+		} else if (user.customerName) {
+			setMarkers(map, user)
+		}
+	}, [])
+
 	// Retrieve and render the route to the destination
 	async function calculateRoute() {
 		if (!destination.lat) {
@@ -186,7 +177,7 @@ function Booking() {
 			setRoute,
 			setPolyline,
 			() => {
-				setExpandSearch(0)
+				setSearchType(0)
 				isValidInput(true)
 				setHideUI(true)
 				marks.home.setMap(null)
@@ -240,9 +231,9 @@ function Booking() {
 	}
 
 	function setLocationViaClick(e) {
-		if (expandSearch === 3) {
+		if (searchType === 3) {
 			CoordinateToAddress([e.latLng.lat(), e.latLng.lng()], setOrigin)
-		} else if (expandSearch === 4) {
+		} else if (searchType === 4) {
 			CoordinateToAddress([e.latLng.lat(), e.latLng.lng()], setDestination)
 		}
 	}
@@ -258,7 +249,7 @@ function Booking() {
 				{/* Google Maps screen */}
 				<div
 					className={`absolute left-0 top-0 h-full w-full ${
-						[0, 3, 4].includes(expandSearch) ? '' : 'hidden'
+						[0, 3, 4].includes(searchType) ? '' : 'hidden'
 					}`}
 				>
 					<GoogleMap
@@ -277,21 +268,18 @@ function Booking() {
 				</div>
 
 				{/* Search elements */}
-				{!hideUI &&
-					LocationSearch(
-						expandSearch,
-						setExpandSearch,
-						originRef,
-						setOrigin,
-						isValidInput,
-						destinationRef,
-						setDestination,
-						calculateRoute,
-						validInput
-					)}
+				{!hideUI && (
+					<LocationSearch
+						originRef={originRef}
+						isValidInput={isValidInput}
+						destinationRef={destinationRef}
+						calculateRoute={calculateRoute}
+						validInput={validInput}
+					/>
+				)}
 
 				{/* If the user is not searching... */}
-				{[0, 3, 4].includes(expandSearch) ? (
+				{[0, 3, 4].includes(searchType) ? (
 					// If the input is valid, then begin the booking confirmation procedure
 					taxis.length > 1 && route ? (
 						<RideConfirmation
@@ -326,10 +314,9 @@ function Booking() {
 					// If the user is searching, then show them the expanded search UI
 					<>
 						<ExpandSearch
-							mode={expandSearch}
-							setExpandSearch={setExpandSearch}
-							location={expandSearch === 1 ? origin : destination}
-							setLocation={expandSearch === 1 ? setOrigin : setDestination}
+							mode={searchType}
+							location={searchType === 1 ? origin : destination}
+							setLocation={searchType === 1 ? setOrigin : setDestination}
 						/>
 					</>
 				)}

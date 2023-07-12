@@ -1,22 +1,21 @@
 import { getAddress } from '@/utils/getAddress'
+import { destinationAtom, searchTypeAtom } from '@/utils/state'
 import { Autocomplete } from '@react-google-maps/api'
 import { useState } from 'react'
 import { FaCircle } from 'react-icons/fa'
+import { useRecoilState } from 'recoil'
 
-export const InputDestinationLocation = ({
-	setExpandSearch,
-	destinationRef,
-	setDestination,
-	isValidInput,
-}) => {
+export const InputDestinationLocation = ({ destinationRef, isValidInput }) => {
 	const [destinationAutocomplete, setDestinationAutocomplete] = useState(null)
+	const [, setDestination] = useRecoilState(destinationAtom)
+	const [, setSearchType] = useRecoilState(searchTypeAtom)
 
 	return (
 		<div className='destination'>
 			<Autocomplete
 				onLoad={(e) => setDestinationAutocomplete(e)}
 				onPlaceChanged={() => {
-					setExpandSearch(0)
+					setSearchType(0)
 					isValidInput(true)
 					setDestination(getAddress(destinationAutocomplete.getPlace()))
 				}}
@@ -31,7 +30,7 @@ export const InputDestinationLocation = ({
 					onChange={(e) => {
 						isValidInput(false)
 						if (e.target.value === '') {
-							setExpandSearch(1)
+							setSearchType(1)
 							setDestination({
 								placeID: null,
 								lat: null,
@@ -41,10 +40,10 @@ export const InputDestinationLocation = ({
 								placeName: null,
 							})
 						} else {
-							setExpandSearch(0)
+							setSearchType(0)
 						}
 					}}
-					onClick={() => setExpandSearch(2)}
+					onClick={() => setSearchType(2)}
 				/>
 			</Autocomplete>
 			<FaCircle className='absolute -mt-7 ml-3 text-xs text-green-600' />

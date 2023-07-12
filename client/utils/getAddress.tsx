@@ -38,6 +38,6 @@ export function getAddress(place, clickEvent = false) {
 			? place.geometry.location.lng
 			: place.geometry.location.lng(),
 		postcode: Postcode,
-		place_id: place.place_id,
+		placeID: place.place_id,
 	}
 }
