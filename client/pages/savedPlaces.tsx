@@ -1,9 +1,7 @@
 // TODO: Button to route to Booking and set a route to that place
 
-import { useContext, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import Page from '@/components/ui/page'
-import Section from '@/components/ui/section'
-import { UserContext } from '@/context/UserContext'
 import { AddPlaceAPI, RemovePlaceAPI, SetHome, SetWork } from '@/server'
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
 import {
@@ -15,6 +13,8 @@ import {
 } from 'react-icons/fa'
 import { Input, Message, Title } from '@/redux/types/constants'
 import { getAddress } from '@/utils/getAddress'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '@/utils/state'
 
 const libraries = ['places']
 
@@ -25,7 +25,7 @@ const SavedPlaces = () => {
 		libraries: libraries,
 	})
 
-	const { user, setUser } = useContext(UserContext)
+	const [user, setUser] = useRecoilState(userAtom)
 
 	const [autoComplete, setAutoComplete] = useState(null)
 	const [valueObserver, setValueObserver] = useState('')
@@ -58,6 +58,7 @@ const SavedPlaces = () => {
 			// @ts-ignore
 			savedLocations: [...user.savedLocations, data],
 		})
+		localStorage.setItem('user', JSON.stringify(user))
 	}
 
 	if (!isLoaded) {
@@ -176,6 +177,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 				},
 			})
 		}
+		localStorage.setItem('user', JSON.stringify(user))
 
 		updateEditLocation(false)
 	}
@@ -248,6 +250,7 @@ const Location = ({ location, setUser, user }) => {
 				),
 			],
 		})
+		localStorage.setItem('user', JSON.stringify(user))
 	}
 
 	return (

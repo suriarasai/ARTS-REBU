@@ -1,34 +1,34 @@
-import { useContext, useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
-import api from '@/api/axiosConfig'
-import { UserContext } from '@/context/UserContext'
 import { rewardPoints } from '@/redux/types'
-import { Message, Rewards, Title } from '@/redux/types/constants'
-// import { RewardPointsAPI } from '@/server'
+import { Rewards, Title } from '@/redux/types/constants'
+import { userAtom } from '@/utils/state'
+import { useRecoilState } from 'recoil'
 
 const RewardPoints = () => {
-	const { user, setUser } = useContext(UserContext)
+	const [user, setUser] = useRecoilState(userAtom)
 	const rewardsForm = useRef<any>(null)
 
-	const [rewardPoints, updateRewardPoints] = useState<number>(
-		// user.rewardPoints ? user.rewardPoints : 0
-	)
-	const [rewardHistory, updateRewardHistory] = useState<rewardPoints[]>(
-		// user.rewardHistory!
-	)
+	const [rewardPoints, updateRewardPoints] = useState<number>()
+	// user.rewardPoints ? user.rewardPoints : 0
+	const [rewardHistory, updateRewardHistory] = useState<rewardPoints[]>()
+	// user.rewardHistory!
 	const [invalidInput, updateInvalidInput] = useState<boolean>(false) // Validation checks on redemption input box
 
-	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleSubmit = async (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
 		const points: number = rewardsForm.current?.points.value
 		e.preventDefault()
 
 		// Ensures the user has the number of points they want
 		if (rewardPoints - points >= 0 && points > 0) {
 			// const rewardData = await RewardPointsAPI(user.id!, rewardPoints - points)
-			
+
 			// setUser({ ...user, rewardHistory: rewardData, rewardPoints: rewardPoints - points })
 			// updateRewardHistory(rewardData)
+			// localStorage.setItem('user', JSON.stringify(user))
 			updateRewardPoints(rewardPoints - points)
 		} else {
 			updateInvalidInput(true)
@@ -38,8 +38,8 @@ const RewardPoints = () => {
 	return (
 		<Page title={Title.REWARDS}>
 			<Section>
-				<div className='mt-3 mb-8'>
-					<h2 className='mt-3 mb-8 text-center text-xl font-bold'>
+				<div className='mb-8 mt-3'>
+					<h2 className='mb-8 mt-3 text-center text-xl font-bold'>
 						{Rewards.REDEEM_POINTS}
 					</h2>
 					<div className='flex-cols flex pb-8 text-3xl'>
@@ -59,7 +59,7 @@ const RewardPoints = () => {
 								type='number'
 								name='points'
 								placeholder='Enter Points to Redeem'
-								className='py-2 px-4'
+								className='px-4 py-2'
 							/>
 							{invalidInput && (
 								<p className='text-error px-3'>
@@ -69,7 +69,7 @@ const RewardPoints = () => {
 						</div>
 						<div className='mt-1 w-1/4'>
 							<button
-								className='green-button w-full uppercase -mt-1'
+								className='green-button -mt-1 w-full uppercase'
 								onClick={(e) => handleSubmit(e)}
 							>
 								Redeem

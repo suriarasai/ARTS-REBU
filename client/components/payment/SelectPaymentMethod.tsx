@@ -1,23 +1,20 @@
-import { UserContext } from '@/context/UserContext'
 import { GetPaymentMethod } from '@/server'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaCheck, FaCreditCard, FaMoneyBill } from 'react-icons/fa'
 import { LoadingScreen } from '../ui/LoadingScreen'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
+import { userSelector } from '@/utils/state'
+import { useRecoilValue } from 'recoil'
 
 const SelectPaymentMethod = ({ selectedCard, setSelectedCard, set }) => {
 	const [cards, setCards] = useState([])
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 	const [tempCard, setTempCard] = useState(selectedCard)
 
 	useEffect(() => {
 		if (user) {
 			GetPaymentMethod(user.customerID, (data) => {
 				setCards(data)
-				// data.map(
-				// 	(item) =>
-				// 		item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
-				// )
 			})
 		}
 	}, [])
@@ -52,7 +49,10 @@ const SelectPaymentMethod = ({ selectedCard, setSelectedCard, set }) => {
 					selected={tempCard}
 				/>
 			))}
-			<button className='mt-8 w-full rounded-md bg-green-300 py-3' onClick={handleSelectCard}>
+			<button
+				className='mt-8 w-full rounded-md bg-green-300 py-3'
+				onClick={handleSelectCard}
+			>
 				<h2>Select</h2>
 			</button>
 		</div>

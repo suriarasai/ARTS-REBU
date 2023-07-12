@@ -1,4 +1,3 @@
-import React from 'react'
 import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa'
 
 export const CompleteTripUI = ({

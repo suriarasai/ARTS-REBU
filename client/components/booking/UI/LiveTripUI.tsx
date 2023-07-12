@@ -1,5 +1,4 @@
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
-import React from 'react'
 import {
 	FaDollarSign,
 	FaSearchLocation,

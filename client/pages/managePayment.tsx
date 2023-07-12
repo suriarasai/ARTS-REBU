@@ -6,15 +6,20 @@ import {
 	FaEllipsisV,
 	FaPlusCircle,
 } from 'react-icons/fa'
-import { UserContext } from '@/context/UserContext'
-import { GetPaymentMethod, RemovePaymentMethod, SetDefaultPaymentMethod } from '@/server'
+import {
+	GetPaymentMethod,
+	RemovePaymentMethod,
+	SetDefaultPaymentMethod,
+} from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { AddCard } from '../components/payment/AddCard'
 import { formatCreditCardNumber } from '../utils/formatCreditCardNumber'
+import { userSelector } from '@/utils/state'
+import { useRecoilValue } from 'recoil'
 
 const PaymentOptions = ({}) => {
 	const [screen, setScreen] = useState<String>('main')
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 	const [cards, setCards] = useState([])
 
 	useEffect(() => {
@@ -77,7 +82,7 @@ const PaymentOptions = ({}) => {
 }
 
 const Card = (props) => {
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 	const { card, setCards, cards } = props
 	const [showCardOptions, setShowCardOptions] = useState(false)
 	const dropdownRef = useRef(null)

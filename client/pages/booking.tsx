@@ -1,6 +1,5 @@
 import { GoogleMap, LoadScriptNext } from '@react-google-maps/api'
-import { useEffect, useRef, useState, useContext, useCallback } from 'react'
-import { UserContext } from '@/context/UserContext'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { Locate } from '@/components/booking/Locate'
 import ExpandSearch from '@/components/booking/expandSearch'
 import { RideConfirmation } from '@/components/booking/RideConfirmation'
@@ -13,6 +12,8 @@ import { loadTaxis } from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import BottomNav from '@/components/ui/bottom-nav'
 import { loadNearbyTaxiStops } from '@/components/booking/loadNearbyTaxiStops'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '@/utils/state'
 
 let marks = {
 	home: null,
@@ -26,7 +27,7 @@ let marks = {
 const libraries = ['places', 'geometry']
 
 function Booking() {
-	const { user, setUser } = useContext(UserContext)
+	const [user, setUser] = useRecoilState(userAtom)
 
 	const [map, setMap] = useState(/** @type google.maps.Map */ null)
 	// const [distance, setDistance] = useState<number>(null)
@@ -109,6 +110,7 @@ function Booking() {
 		if (loggedInUser && !user.customerName) {
 			setUser(JSON.parse(loggedInUser))
 			setMarkers(map, JSON.parse(loggedInUser))
+			localStorage.setItem('user', JSON.stringify(JSON.parse(loggedInUser)))
 		} else if (user.customerName) {
 			setMarkers(map, user)
 		}

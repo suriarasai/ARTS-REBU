@@ -1,9 +1,10 @@
-import { UserContext } from '@/context/UserContext'
 import { addRating } from '@/server'
-import { useContext, useState } from 'react'
+import { userSelector } from '@/utils/state'
+import { useState } from 'react'
+import { useRecoilValue } from 'recoil'
 
 const Rating = ({ closeModal }) => {
-	const {user} = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 	const [stars, setStars] = useState(null)
 	const [feedback, setFeedback] = useState(null)
 	const [improve, setImprove] = useState({

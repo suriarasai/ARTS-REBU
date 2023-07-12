@@ -1,25 +1,27 @@
 // First page, for signing in
 
-import React, { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Router from 'next/router'
 import { MobileNumber } from '@/components/account/MobileNumber'
-import { UserContext } from '@/context/UserContext'
 import { LoadingScreen } from '../components/ui/LoadingScreen'
 import { HREF } from '@/redux/types/constants'
 import { EmailSignIn } from '../components/account/EmailSignIn'
-import { FaEnvelopeOpen, FaGooglePlusG, FaKey } from 'react-icons/fa'
+import { FaEnvelopeOpen, FaKey } from 'react-icons/fa'
 import { MainScreenVisual } from '@/components/ui/MainScreenVisual'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '@/utils/state'
 
 // Main component
 const SignIn = () => {
-	const [loading, setLoading] = React.useState(true)
+	const [loading, setLoading] = useState(true)
 	const [form, setForm] = useState('main')
-	const { setUser } = useContext(UserContext)
+	const [user, setUser] = useRecoilState(userAtom)
 
 	useEffect(() => {
 		const loggedInUser = localStorage.getItem('user')
 		if (loggedInUser !== null) {
 			setUser(JSON.parse(loggedInUser))
+			localStorage.setItem('user', JSON.stringify(JSON.parse(loggedInUser)))
 			Router.push(HREF.HOME)
 		} else {
 			setLoading(false)

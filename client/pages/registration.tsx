@@ -5,24 +5,23 @@
 // Note: Validation checks aren't fully developed; duplicate emails are unchecked for
 // 		 TODO: No validation to enforce dropdown selection...
 
-import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { EmailForm } from '@/components/account/EmailForm'
 import AccountInformation from '@/components/account/AccountInformation'
-import { UserContext } from '@/context/UserContext'
 import { User } from '@/redux/types'
 import { RegisterUser } from '@/server'
-import { HREF, Message } from '@/redux/types/constants'
-import { MainScreenVisual } from '@/components/ui/MainScreenVisual'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { HREF } from '@/redux/types/constants'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '@/utils/state'
+import { FaArrowRight } from 'react-icons/fa'
+import { useState } from 'react'
 
 const Registration = () => {
 	const router = useRouter()
-	const { user, setUser } = useContext(UserContext)
-	const [formData, updateFormData] = React.useState<Object>({})
+	const [user, setUser] = useRecoilState(userAtom)
 	const [registrationSuccessful, setRegistrationSuccessful] =
-		React.useState<boolean>(false)
+		useState<boolean>(false)
 
 	const {
 		register: register,
@@ -33,6 +32,7 @@ const Registration = () => {
 	// Second screen w/profile inputs
 	const onSubmit = async (data: User) => {
 		setUser(await RegisterUser({ ...data }, user.customerID))
+		localStorage.setItem('user', JSON.stringify(user))
 		setRegistrationSuccessful(true)
 		router.push(HREF.HOME)
 	}

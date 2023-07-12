@@ -1,12 +1,8 @@
 // Displays user activity (ex. booked rides, reviews)
-// TODO: Expand for details
-// TODO: Review button?
-// TODO: Date filter
 
 import Page from '@/components/ui/page'
-import { UserContext } from '@/context/UserContext'
 import { Title } from '@/redux/types/constants'
-import { Suspense, useContext, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import {
 	FaAngleDown,
 	FaAngleRight,
@@ -19,6 +15,8 @@ import {
 import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
 import { getBookingsByCustomerID } from '@/server'
 import Receipt from '@/components/booking/UI/Receipt'
+import { userSelector } from '@/utils/state'
+import { useRecoilValue } from 'recoil'
 
 const DateFilter = (
 	<button className='date-filter-button'>
@@ -29,7 +27,7 @@ const DateFilter = (
 )
 
 const Activity = () => {
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 
 	// On-click styling for the tabbers
 	const [activeTab, setActiveTab] = useState<string>('Upcoming')
@@ -114,7 +112,7 @@ const TripDetails = ({ trip, setBookingID }) => {
 				id={trip['bookingID']}
 				date={trip['messageSubmittedTime']}
 			/>
-			<FaAngleRight className='w-1/12 order-3 mt-auto mb-auto'/>
+			<FaAngleRight className='order-3 mb-auto mt-auto w-1/12' />
 		</div>
 	)
 }
@@ -158,7 +156,7 @@ const StatusIcon = ({ status }) => (
 
 // Location details of the ride
 const LocationInfo = ({ address1, name1, address2, name2 }) => (
-	<div className='pl-3 w-6/12 flex-col items-center cut-text'>
+	<div className='cut-text w-6/12 flex-col items-center pl-3'>
 		<h2 className='mb-1'>{name1 || address1}</h2>
 		<h5>from | {name2 || address2}</h5>
 	</div>
@@ -170,10 +168,10 @@ const TripStatistics = ({ fare, distance, id, date }) => {
 	return (
 		// TODO: Time instead of distance
 		// TODO: Booking ID
-		<div className='order-2 w-4/12 text-right mt-auto mb-auto'>
+		<div className='order-2 mb-auto mt-auto w-4/12 text-right'>
 			<h1>${fare}</h1>
 			<h5>
-				{dt.toLocaleDateString()} | {(distance/1000).toFixed(1)} km
+				{dt.toLocaleDateString()} | {(distance / 1000).toFixed(1)} km
 			</h5>
 		</div>
 	)

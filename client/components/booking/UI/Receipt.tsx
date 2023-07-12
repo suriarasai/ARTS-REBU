@@ -1,6 +1,5 @@
-import { UserContext } from '@/context/UserContext'
 import { getBooking, getTaxi } from '@/server'
-import { createRef, useContext, useEffect, useState } from 'react'
+import { createRef, useEffect, useState } from 'react'
 import RebuLogo from '@/public/images/rebu-logo.png'
 import Image from 'next/image'
 import {
@@ -12,11 +11,13 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { Popup } from '@/components/ui/Popup'
 import { PDFExport } from '@progress/kendo-react-pdf'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
+import { useRecoilValue } from 'recoil'
+import { userSelector } from '@/utils/state'
 
 const ref: any = createRef()
 
 const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 	const [bookingInformation, setBookingInformation] = useState(null)
 	const [taxiInformation, setTaxiInformation] = useState(null)
 	const [popup, setPopup] = useState(null)

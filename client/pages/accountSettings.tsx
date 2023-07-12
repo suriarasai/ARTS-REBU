@@ -1,19 +1,19 @@
 // For viewing and modifying account information
 
-import React, { useContext, useState } from 'react'
+import { useState } from 'react'
 import Page from '@/components/ui/page'
-import Section from '@/components/ui/section'
 import AccountInformation from '@/components/account/AccountInformation'
 import { useForm } from 'react-hook-form'
-import { UserContext } from '@/context/UserContext'
 import { useRouter } from 'next/router'
 import { User } from '@/redux/types'
 import { UpdateUser } from '@/server'
 import { Button, HREF, Title } from '@/redux/types/constants'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '@/utils/state'
 
 const AccountSettings = () => {
 	const router = useRouter()
-	const { user, setUser } = useContext(UserContext) // Accesses user data for preloading into input boxes
+	const [user, setUser] = useRecoilState(userAtom)
 	const [changesSaved, setChangesSaved] = useState<Boolean>(false)
 	const {
 		register: register, // assigns names to each input field to be accessed when reading the form
@@ -23,6 +23,7 @@ const AccountSettings = () => {
 
 	async function onSubmit(data: User) {
 		setUser(await UpdateUser(data, user.customerID))
+		localStorage.setItem('user', JSON.stringify(user))
 		setChangesSaved(true)
 	}
 

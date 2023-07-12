@@ -1,5 +1,5 @@
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaAngleDown, FaClock, FaCoins, FaFlag } from 'react-icons/fa'
 
 export const DriverInformation = ({ onCancel }) => (

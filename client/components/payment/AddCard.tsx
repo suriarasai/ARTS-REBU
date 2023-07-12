@@ -1,4 +1,3 @@
-import { useContext } from 'react'
 import {
 	FaCalendar,
 	FaCreditCard,
@@ -9,12 +8,13 @@ import {
 } from 'react-icons/fa'
 import WalletIcon from '@/public/images/walletIcon.png'
 import Image from 'next/image'
-import { UserContext } from '@/context/UserContext'
 import { useForm } from 'react-hook-form'
 import { AddPaymentMethod } from '@/server'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '@/utils/state'
 
 export const AddCard = ({ customerID, setScreen, setCards, cards }) => {
-	const { user, setUser } = useContext(UserContext)
+	const [user, setUser] = useRecoilState(userAtom)
 	const {
 		register: register,
 		handleSubmit: handleSubmit,
@@ -25,6 +25,7 @@ export const AddCard = ({ customerID, setScreen, setCards, cards }) => {
 		setUser({ ...user, paymentMethods: [...cards, data] })
 		setCards([...cards, data])
 		setScreen('main')
+		localStorage.setItem('user', JSON.stringify(user))
 	})
 
 	return (

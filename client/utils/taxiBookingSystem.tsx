@@ -1,5 +1,5 @@
 import { db } from '@/utils/firebase'
-import { deleteDoc, doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { deleteDoc, doc, setDoc } from 'firebase/firestore'
 
 export function createBookingRequest(data) {
 	setBooking(data.customerID.toString(), {

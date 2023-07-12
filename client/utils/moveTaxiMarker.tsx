@@ -1,5 +1,3 @@
-import { icon } from '@/redux/types/constants'
-
 export function moveToStep(
 	marker,
 	polyline,

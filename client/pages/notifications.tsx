@@ -1,6 +1,4 @@
 import Dispatch from '@/components/booking/UI/Dispatch'
-import SelectPaymentMethod from '@/components/payment/SelectPaymentMethod'
-import Page from '@/components/ui/page'
 import { useState } from 'react'
 
 const dispatchEvent = {
@@ -30,9 +28,15 @@ const bookingEvent = {
 }
 
 const Notifications = () => {
-	const [selectedCard, setSelectedCard] = useState('Cash')
+	const [screen, setScreen] = useState('main')
 	return (
-		<Dispatch dispatchEvent={dispatchEvent} bookingEvent={bookingEvent} />
+		<>
+			<Dispatch
+				dispatchEvent={dispatchEvent}
+				bookingEvent={bookingEvent}
+				taxiETA={5}
+			/>
+		</>
 	)
 }
 

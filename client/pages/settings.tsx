@@ -1,16 +1,14 @@
 // Main hub for options and account configuration
-// TODO: Set signout to clear context
 
-import Link from 'next/link'
-import React, { useContext } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import { SignOutModal } from '@/components/account/SignOutModal'
 import { navButtonProps } from '@/redux/types'
 import { HREF, Title } from '@/redux/types/constants'
-import { UserContext } from '@/context/UserContext'
 import { FaAngleRight, FaBookmark, FaCreditCard, FaGifts } from 'react-icons/fa'
 import { useRouter } from 'next/router'
+import { useRecoilValue } from 'recoil'
+import { userSelector } from '@/utils/state'
 
 const NavButton = ({ label, href, className, icon }: navButtonProps) => {
 	const router = useRouter()
@@ -40,7 +38,7 @@ function splitName(name: string): Array<string> {
 }
 
 const Settings = () => {
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 	const router = useRouter()
 
 	return (

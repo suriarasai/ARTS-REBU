@@ -1,14 +1,15 @@
-import React, { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { UserContext } from '@/context/UserContext';
 import { FaSignOutAlt } from 'react-icons/fa';
+import { useRecoilState } from 'recoil';
+import { userAtom } from '@/utils/state';
 
 export const SignOutModal = () => {
 	const router = useRouter();
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [logoutSuccessful, setLogoutSuccessful] = useState<boolean>(false);
 
-	const { setUser } = useContext(UserContext);
+	const [, setUser] = useRecoilState(userAtom)
 
 	const handleSignOut = () => {
 		setLogoutSuccessful(true);

@@ -1,7 +1,4 @@
 // TODO: Separate menu for saved locations
-
-import { useContext } from 'react'
-import { UserContext } from '@/context/UserContext'
 import { useRouter } from 'next/router'
 import {
 	FaHouseUser,
@@ -10,9 +7,11 @@ import {
 	FaSuitcase,
 } from 'react-icons/fa'
 import { Button, HREF, Message } from '@/redux/types/constants'
+import { useRecoilValue } from 'recoil'
+import { userSelector } from '@/utils/state'
 
 const ExpandSearch = ({ mode, setExpandSearch, location, setLocation }) => {
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 	const router = useRouter()
 
 	// Handler for clicking either 'Home' or 'Work'

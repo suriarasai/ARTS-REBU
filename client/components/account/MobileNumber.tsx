@@ -2,13 +2,14 @@
 // NOTE: Since phoneNumber is an integer, leading zeros are prohibited
 // but this is alright because phoneNumbers can't start with a 0
 
-import { UserContext } from '@/context/UserContext'
 import { HREF, icon } from '@/redux/types/constants'
-import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import api from '@/api/axiosConfig'
 import { FaAngleRight } from 'react-icons/fa'
 import { useRouter } from 'next/router'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '@/utils/state'
+import { useState } from 'react'
 
 export const MobileNumber = ({ newUser = true, populateData = {} }: any) => {
 	/*
@@ -42,7 +43,7 @@ export const MobileNumber = ({ newUser = true, populateData = {} }: any) => {
 		}
 	}
 
-	const { user, setUser } = useContext(UserContext)
+	const [user, setUser] = useRecoilState(userAtom)
 
 	async function checkIfUserExists(
 		phoneNumber: string,

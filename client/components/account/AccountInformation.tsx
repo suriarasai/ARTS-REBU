@@ -1,12 +1,12 @@
 // For viewing and modifying account information
 
-import React, { useContext } from 'react'
 import { MobileNumber } from '@/components/account/MobileNumber'
 import { ProfileInterface } from '@/redux/types'
-import { UserContext } from '@/context/UserContext'
 import { icon } from '@/redux/types/constants'
 import { FaUser } from 'react-icons/fa'
 import { EmailForm } from './EmailForm'
+import { userSelector } from '@/utils/state'
+import { useRecoilValue } from 'recoil'
 
 // Main component
 const AccountInformation = ({
@@ -22,7 +22,7 @@ const AccountInformation = ({
 		populateData	: populating form data for when the user wants to update their information
 	*/
 
-	const { user } = useContext(UserContext)
+	const user = useRecoilValue(userSelector)
 
 	const ageArray = Array.from({ length: 82 }).map((_, i) => i + 18)
 
@@ -52,7 +52,7 @@ const AccountInformation = ({
 						)}
 					</div>
 				</div>
-				<div className='w-3/4 relative'>
+				<div className='relative w-3/4'>
 					<input
 						placeholder='Name'
 						{...register('customerName', {
@@ -60,9 +60,9 @@ const AccountInformation = ({
 							minLength: 1,
 						})}
 						defaultValue={populateData['customerName']}
-						className='pl-10 white-input rounded-md py-2 shadow-sm'
+						className='white-input rounded-md py-2 pl-10 shadow-sm'
 					/>
-					<FaUser className='absolute top-0 mt-3 ml-3 text-green-500' />
+					<FaUser className='absolute top-0 ml-3 mt-3 text-green-500' />
 					{errors.customerName && (
 						<p className='text-error mt-1'>Please enter your name</p>
 					)}
@@ -80,7 +80,7 @@ const AccountInformation = ({
 								? populateData['countryCode']
 								: phoneCountryCodes[user.phoneCountryCode]
 						}
-						className='py-2 white-input rounded-md shadow-sm'
+						className='white-input rounded-md py-2 shadow-sm'
 					>
 						<option value=''>Country</option>
 						<option value='SGP'>Singapore</option>
@@ -101,7 +101,7 @@ const AccountInformation = ({
 							minLength: 2,
 						})}
 						defaultValue={populateData['age']}
-						className='px-4 py-2 white-input rounded-md shadow-sm'
+						className='white-input rounded-md px-4 py-2 shadow-sm'
 					>
 						<option value=''>Age</option>
 						{ageArray.map((age, index) => (
@@ -109,15 +109,13 @@ const AccountInformation = ({
 						))}
 					</select>
 					<DropDownArrow mt={3} px={6} />
-					{errors.age && (
-						<p className='text-error mt-1'>Select a value</p>
-					)}
+					{errors.age && <p className='text-error mt-1'>Select a value</p>}
 				</div>
 			</div>
 
 			{newUser ? null : (
 				<>
-					<EmailForm register={register} errors={errors}/>
+					<EmailForm register={register} errors={errors} />
 
 					<MobileNumber
 						register={register}

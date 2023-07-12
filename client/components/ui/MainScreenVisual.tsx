@@ -1,4 +1,3 @@
-import React from 'react';
 import RebuLogo from '@/public/images/rebu-logo.png';
 import Image from 'next/image';
 

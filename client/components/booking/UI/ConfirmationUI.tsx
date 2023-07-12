@@ -1,4 +1,3 @@
-import React from 'react'
 import { FaCrosshairs, FaFontAwesomeFlag } from 'react-icons/fa'
 
 export const RouteConfirmation = ({ data }) => (
