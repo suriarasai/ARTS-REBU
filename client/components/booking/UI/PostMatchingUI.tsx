@@ -1,6 +1,8 @@
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
+import { selectedCardAtom } from '@/utils/state'
 import { useEffect, useState } from 'react'
 import { FaAngleDown, FaClock, FaCoins, FaFlag } from 'react-icons/fa'
+import { useRecoilValue } from 'recoil'
 
 export const DriverInformation = ({ onCancel }) => (
 	<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
@@ -26,27 +28,30 @@ export const DriverInformation = ({ onCancel }) => (
 	</div>
 )
 
-export const PaymentInformation = ({ fare, set, selectedCard }) => (
-	<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
-		<div className='flex w-11/12 flex-row items-center'>
-			<FaCoins className='mx-5 text-lg text-green-500' />
-			<>
-				$<b className='mr-1 font-normal'>{fare + ' '}</b>
-				<p className='text-sm'>
-					{selectedCard === 'Cash'
-						? ' Cash'
-						: ' VISA ' + formatCreditCardNumber(selectedCard.toString())}
-				</p>
-			</>
+export const PaymentInformation = ({ fare, set }) => {
+	const selectedCard = useRecoilValue(selectedCardAtom)
+	return (
+		<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
+			<div className='flex w-11/12 flex-row items-center'>
+				<FaCoins className='mx-5 text-lg text-green-500' />
+				<>
+					$<b className='mr-1 font-normal'>{fare + ' '}</b>
+					<p className='text-sm'>
+						{selectedCard === 'Cash'
+							? ' Cash'
+							: ' VISA ' + formatCreditCardNumber(selectedCard.toString())}
+					</p>
+				</>
+			</div>
+			<div className='float-right'>
+				<FaAngleDown
+					className='text-lg text-green-500'
+					onClick={() => set(true)}
+				/>
+			</div>
 		</div>
-		<div className='float-right'>
-			<FaAngleDown
-				className='text-lg text-green-500'
-				onClick={() => set(true)}
-			/>
-		</div>
-	</div>
-)
+	)
+}
 
 export const TripInformation = (props) => {
 	const { placeName, postcode, tripETA, taxiETA } = props

@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react'
 import { FaCheck, FaCreditCard, FaMoneyBill } from 'react-icons/fa'
 import { LoadingScreen } from '../ui/LoadingScreen'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
-import { userSelector } from '@/utils/state'
-import { useRecoilValue } from 'recoil'
+import { selectedCardAtom, userSelector } from '@/utils/state'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
-const SelectPaymentMethod = ({ selectedCard, setSelectedCard, set }) => {
+const SelectPaymentMethod = ({ set }) => {
 	const [cards, setCards] = useState([])
+	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
 	const user = useRecoilValue(userSelector)
 	const [tempCard, setTempCard] = useState(selectedCard)
 

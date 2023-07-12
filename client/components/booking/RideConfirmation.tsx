@@ -41,7 +41,13 @@ import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import Receipt from './UI/Receipt'
 import Rating from './Rating'
 import SelectPaymentMethod from '../payment/SelectPaymentMethod'
-import { userAgent } from 'next/server'
+import {
+	clickedOptionAtom,
+	screenAtom,
+	selectedCardAtom,
+	taxiETAAtom,
+} from '@/utils/state'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 export let taxiRouteDisplay
 let matchedTaxi
@@ -55,18 +61,22 @@ let booking = {
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
 	const [options, setOptions] = useState<Array<any>>([])
-	const [clickedOption, setClickedOption] = useState<number | null>(null)
+	const [clickedOption, setClickedOption] = useRecoilState<number | any>(
+		clickedOptionAtom
+	)
 	const [collapsed, setCollapsed] = useState<boolean>(false)
-	const [screen, setScreen] = useState<string>('')
+	const [screen, setScreen] = useRecoilState(screenAtom)
 	const [bookingID, setBookingID] = useState<number>(null)
 	const [rideConfirmed, setRideConfirmed] = useState(false)
 	const [routes, setRoutes] = useState({ 1: null, 2: null })
-	const [taxiETA, setTaxiETA] = useState({ 1: null, 2: null })
+	const [taxiETA, setTaxiETA] = useRecoilState(taxiETAAtom)
 	const [notification, setNotification] = useState(null)
 	const [stopStream, setStopStream] = useState(true)
-	const [selectedCard, setSelectedCard] = useState('Cash')
+	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
 	const [selectPaymentMethod, setSelectPaymentMethod] = useState(false)
 	const [dispatchEvent, setDispatchEvent] = useState(null)
+
+	const collapseMenu = () => setCollapsed(!collapsed)
 
 	useEffect(() => {
 		drawTaxiRoute(
@@ -102,7 +112,7 @@ export const RideConfirmation = (data) => {
 				if (snapshot.data().status === 'dispatched') {
 					handleMatched(snapshot.data())
 					setDispatchEvent(snapshot.data())
-					console.log("Firestore Booking Event", snapshot.data())
+					console.log('Firestore Booking Event', snapshot.data())
 				}
 			}
 		)
@@ -311,11 +321,7 @@ export const RideConfirmation = (data) => {
 			)}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white md:pb-4 lg:w-6/12 lg:pb-4'>
 				{AccordionHeader(
-					clickedOption,
-					setCollapsed,
-					collapsed,
-					screen,
-					taxiETA,
+					collapseMenu,
 					booking.dropTime,
 					setSelectPaymentMethod,
 					selectPaymentMethod
@@ -327,11 +333,7 @@ export const RideConfirmation = (data) => {
 							<>
 								{/* Show available taxis */}
 								{options.map((option) => (
-									<ShowOption
-										option={option}
-										key={option.id}
-										setClickedOption={setClickedOption}
-									/>
+									<ShowOption option={option} key={option.id} />
 								))}
 							</>
 						) : screen === '' ? (
@@ -340,7 +342,6 @@ export const RideConfirmation = (data) => {
 								<ShowOption
 									option={options[clickedOption - 1]}
 									key={options[clickedOption - 1].id}
-									setClickedOption={setClickedOption}
 									disabled={true}
 								/>
 
@@ -367,11 +368,7 @@ export const RideConfirmation = (data) => {
 							<WaitingUI />
 						) : screen === 'confirmed' ? (
 							selectPaymentMethod ? (
-								<SelectPaymentMethod
-									selectedCard={selectedCard}
-									setSelectedCard={setSelectedCard}
-									set={setSelectPaymentMethod}
-								/>
+								<SelectPaymentMethod set={setSelectPaymentMethod} />
 							) : (
 								<>
 									<DriverInformation onCancel={handleCancelled} />
@@ -384,41 +381,29 @@ export const RideConfirmation = (data) => {
 									<PaymentInformation
 										fare={options[clickedOption - 1].fare}
 										set={setSelectPaymentMethod}
-										selectedCard={selectedCard}
 									/>
 								</>
 							)
 						) : screen === 'liveTrip' ? (
 							selectPaymentMethod ? (
-								<SelectPaymentMethod
-									selectedCard={selectedCard}
-									setSelectedCard={setSelectedCard}
-									set={setSelectPaymentMethod}
-								/>
+								<SelectPaymentMethod set={setSelectPaymentMethod} />
 							) : (
 								<LiveTripUI
 									data={data}
-									options={options}
-									clickedOption={clickedOption}
+									option={options[clickedOption - 1]}
 									onCancel={handleCancelled}
 									set={setSelectPaymentMethod}
-									selectedCard={selectedCard}
 								/>
 							)
 						) : screen === 'completeTrip' ? (
 							<>
 								<CompleteTripUI
-									options={options}
-									clickedOption={clickedOption}
+									option={options[clickedOption - 1]}
 									tripETA={booking.tripDuration}
 									pickUpTime={booking.pickUpTime}
-									dropTime={booking.dropTime}
 									data={data}
 								/>
-								<FinishTrip
-									setScreen={setScreen}
-									handleCompletedCleanup={handleCompletedCleanup}
-								/>
+								<FinishTrip handleCompletedCleanup={handleCompletedCleanup} />
 							</>
 						) : screen === 'receipt' ? (
 							<div className='-mt-5'>
@@ -430,10 +415,7 @@ export const RideConfirmation = (data) => {
 						) : screen === 'review' ? (
 							<>
 								<Rating closeModal={() => setScreen('completeTrip')} />
-								<FinishTrip
-									setScreen={setScreen}
-									handleCompletedCleanup={handleCompletedCleanup}
-								/>
+								<FinishTrip handleCompletedCleanup={handleCompletedCleanup} />
 							</>
 						) : (
 							'Error: Option not found'
@@ -448,7 +430,8 @@ export const RideConfirmation = (data) => {
 	)
 }
 
-const FinishTrip = ({ setScreen, handleCompletedCleanup }) => {
+const FinishTrip = ({ handleCompletedCleanup }) => {
+	const [, setScreen] = useRecoilState(screenAtom)
 	return (
 		<div className='mt-3 flex w-full space-x-3'>
 			<button
@@ -475,15 +458,14 @@ const FinishTrip = ({ setScreen, handleCompletedCleanup }) => {
 
 // Dynamic header text in bottom screen
 function AccordionHeader(
-	clickedOption: number,
-	setCollapsed: React.Dispatch<React.SetStateAction<boolean>>,
-	collapsed: boolean,
-	screen: string,
-	taxiETA,
+	collapseMenu,
 	dropTime,
 	setSelectPaymentMethod,
 	selectPaymentMethod
 ) {
+	const screen = useRecoilValue(screenAtom)
+	const taxiETA = useRecoilValue(taxiETAAtom)
+	const clickedOption = useRecoilValue(clickedOptionAtom)
 	return (
 		<div className='accordion-header flex flex-wrap pl-4 pt-4'>
 			<label className={clickedOption ? 'w-11/12' : 'w-9/12'}>
@@ -540,8 +522,8 @@ function AccordionHeader(
 				<label className='bold w-2/12 text-green-500'>View All</label>
 			)}
 
-			<div className='flex w-1/12' onClick={() => setCollapsed(!collapsed)}>
-				{collapsed ? <FaAngleUp /> : <FaAngleDown />}
+			<div className='flex w-1/12' onClick={collapseMenu}>
+				<FaAngleUp />
 			</div>
 		</div>
 	)
@@ -572,8 +554,8 @@ export function drawTaxiRoute(
 
 	if (taxis.length > 0) {
 		const directionsService = new google.maps.DirectionsService()
-		let tempObj = { 1: null, 2: null }
-		let tempETA = { 1: null, 2: null }
+		let tempObj
+		let tempETA
 
 		for (let i = 0; i < 2; i++) {
 			directionsService.route(
@@ -585,8 +567,11 @@ export function drawTaxiRoute(
 				function (result, status) {
 					if (status == 'OK') {
 						taxiRouteDisplay.setMap(map)
-						tempObj[i + 1] = result
-						tempETA[i + 1] = result.routes[0].legs[0].duration.value
+						tempObj = { ...tempObj, [i + 1]: result }
+						tempETA = {
+							...tempETA,
+							[i + 1]: result.routes[0].legs[0].duration.value,
+						}
 						setRoutes(tempObj)
 						setTaxiETA(tempETA)
 						_callback(tempETA)

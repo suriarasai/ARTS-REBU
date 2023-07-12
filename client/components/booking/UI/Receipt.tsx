@@ -2,11 +2,7 @@ import { getBooking, getTaxi } from '@/server'
 import { createRef, useEffect, useState } from 'react'
 import RebuLogo from '@/public/images/rebu-logo.png'
 import Image from 'next/image'
-import {
-	FaDownload,
-	FaPrint,
-	FaShare,
-} from 'react-icons/fa'
+import { FaDownload, FaPrint, FaShare } from 'react-icons/fa'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { Popup } from '@/components/ui/Popup'
 import { PDFExport } from '@progress/kendo-react-pdf'
@@ -61,12 +57,7 @@ const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
 			)}
 
 			<PDFExport paperSize='A4' margin='0.5cm' ref={ref}>
-				<Image
-					className='mb-8'
-					src={RebuLogo}
-					width={100}
-					alt='Rebu Logo'
-				/>
+				<Image className='mb-8' src={RebuLogo} width={100} alt='Rebu Logo' />
 
 				<label>Your booking</label>
 				<BookingInformation
@@ -157,7 +148,11 @@ const PaymentInformation = ({ fare, dropTime, paymentMethod }) => (
 	<>
 		<div className='w-full columns-2'>
 			<div>
-				<p className='ml-6'>{paymentMethod === 'Cash' ? 'Cash' : 'VISA ' + formatCreditCardNumber(paymentMethod)}</p>
+				<p className='ml-6'>
+					{paymentMethod === 'Cash'
+						? 'Cash'
+						: 'VISA ' + formatCreditCardNumber(paymentMethod)}
+				</p>
 			</div>
 			<div className='mr-8 text-right'>
 				<b>${fare}</b>

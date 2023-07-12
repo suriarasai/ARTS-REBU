@@ -1,11 +1,9 @@
 import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa'
 
 export const CompleteTripUI = ({
-	options,
-	clickedOption,
+	option,
 	tripETA,
 	pickUpTime,
-	dropTime,
 	data,
 }): React.ReactNode => {
 	return (
@@ -21,7 +19,7 @@ export const CompleteTripUI = ({
 				</div>
 				<div className='flex-1'>
 					<h5>Final cost:</h5>
-					<h5 className='font-bold'>SG${options[clickedOption - 1].fare}</h5>
+					<h5 className='font-bold'>SG${option.fare}</h5>
 				</div>
 				<div className='flex-1'>
 					<h5>Time</h5>

@@ -1,4 +1,6 @@
+import { clickedOptionAtom } from '@/utils/state'
 import { FaCrosshairs, FaFontAwesomeFlag } from 'react-icons/fa'
+import { useRecoilState } from 'recoil'
 
 export const RouteConfirmation = ({ data }) => (
 	<table className='mb-5'>
@@ -26,37 +28,39 @@ export const RouteConfirmation = ({ data }) => (
 			</tr>
 		</tbody>
 	</table>
-) 
-
-export const ShowOption = ({ option, setClickedOption, disabled = false }) => (
-	/*
-		option				: the ride option
-		setClickedOption	: tracks which ride option was clicked
-	*/
-	<div
-		className={`ride-option ${disabled ? 'pointer-events-none' : ''}`}
-		key={option.id}
-		onClick={() => setClickedOption(option.id)}
-	>
-		<div className='float-left items-center p-2 pr-4 text-2xl text-green-500'>
-			{/* @ts-ignore */}
-			{option.icon}
-		</div>
-		<div className='float-left'>
-			<b>{option.taxiType}</b>
-			<p className='text-sm'>
-				{/* @ts-ignore */}
-				1-{option.taxiPassengerCapacity} seats ({option.desc})
-			</p>
-		</div>
-		<div className='float-right mr-8'>
-			<b className='text-lg'>${option.fare}</b>
-			<p className='text-sm'>
-				<span className='float-right'>
-					{option.taxiETA}
-					{' min.'}
-				</span>
-			</p>
-		</div>
-	</div>
 )
+
+export const ShowOption = ({ option, disabled = false }) => {
+	const [, setClickedOption] = useRecoilState(clickedOptionAtom)
+	return (
+		/*
+		option				: the ride option
+	*/
+		<div
+			className={`ride-option ${disabled ? 'pointer-events-none' : ''}`}
+			key={option.id}
+			onClick={() => setClickedOption(option.id)}
+		>
+			<div className='float-left items-center p-2 pr-4 text-2xl text-green-500'>
+				{/* @ts-ignore */}
+				{option.icon}
+			</div>
+			<div className='float-left'>
+				<b>{option.taxiType}</b>
+				<p className='text-sm'>
+					{/* @ts-ignore */}
+					1-{option.taxiPassengerCapacity} seats ({option.desc})
+				</p>
+			</div>
+			<div className='float-right mr-8'>
+				<b className='text-lg'>${option.fare}</b>
+				<p className='text-sm'>
+					<span className='float-right'>
+						{option.taxiETA}
+						{' min.'}
+					</span>
+				</p>
+			</div>
+		</div>
+	)
+}
