@@ -26,7 +26,7 @@ const PaymentOptions = ({}) => {
 		if (user) {
 			GetPaymentMethod(user.customerID, (data) => setCards(data))
 		}
-	}, [user])
+	}, [])
 
 	if (!user) {
 		return <LoadingScreen />

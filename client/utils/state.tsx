@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { atom, selector } from 'recoil'
 
 export const userAtom = atom({
@@ -16,8 +17,8 @@ export const taxiAtom = atom({
 })
 
 export const driverAtom = atom({
-    key: 'driver',
-    default: null
+	key: 'driver',
+	default: null,
 })
 
 export const userSelector = selector({
