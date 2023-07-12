@@ -155,7 +155,6 @@ export const createBooking = async (
 	option,
 	origin,
 	destination,
-	setBookingID,
 	setStopStream,
 	_callback
 ) => {
@@ -174,7 +173,6 @@ export const createBooking = async (
 		dropLocation: destination,
 	})
 
-	setBookingID(response.data.bookingID)
 	setStopStream(false)
 	_callback(response.data.bookingID)
 	return response.data

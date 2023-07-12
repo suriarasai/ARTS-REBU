@@ -7,20 +7,32 @@ export function createBookingRequest(data) {
 		customerName: data.customerName,
 		phoneNumber: data.phoneNumber,
 		pickUpLocation: data.pickUpLocation,
-		pickUpTime: data.pickUpTime,
+		eta: data.eta,
 		dropLocation: data.dropLocation,
 		taxiType: data.taxiType,
 		fareType: data.fareType,
 		fare: data.fare,
 		status: 'requested',
 		bookingID: data.bookingID,
-		sno: data.sno,
-		driverID: data.driverID,
 	})
 }
 
+// This is supposed to be from the driver application
+// Not all driver information needs to be returned; can query for it after getting the driverID
 export function setBookingDispatched(customerID) {
-	setBooking(customerID, { status: 'dispatched' })
+	setBooking(customerID, {
+		status: 'dispatched',
+		tmdtid: 1,
+		taxiNumber: 'SN 123456',
+		taxiPassengerCapacity: 4,
+		taxiMakeModel: 'Honda Civic',
+		taxiColor: 'Grey',
+		driverID: 1,
+		driverName: 'Augustine',
+		driverPhoneNumber: 12345678,
+		sno: 1,
+		rating: 4.8,
+	})
 }
 
 export function setBookingCancelled(customerID) {
@@ -29,23 +41,6 @@ export function setBookingCancelled(customerID) {
 
 export function setBookingCompleted(customerID) {
 	setBooking(customerID, { status: 'completed' })
-}
-
-// This is supposed to be from the driver application
-export function setDispatchData(customerID) {
-	setBooking(customerID, {
-		tmdtid: 1,
-		taxiNumber: "SN 123456",
-		taxiType: "Regular",
-		taxiPassengerCapacity: 4,
-		taxiMakeModel: "Honda Civic",
-		taxiColor: "Grey",
-		driverID: 1,
-		driverName: "Augustine",
-		driverPhone: 12345678,
-		sno: 1,
-		rating: 4.8
-	})
 }
 
 export async function deleteBooking(customerID) {

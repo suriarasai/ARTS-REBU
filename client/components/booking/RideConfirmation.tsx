@@ -43,21 +43,17 @@ import Rating from './Rating'
 import SelectPaymentMethod from '../payment/SelectPaymentMethod'
 import {
 	bookingAtom,
+	bookingEvent,
 	clickedOptionAtom,
 	screenAtom,
 	selectedCardAtom,
 	taxiETAAtom,
+	userAtom,
 } from '@/utils/state'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 export let taxiRouteDisplay
 let matchedTaxi
-let booking = {
-	dropTime: null,
-	pickUpTime: null,
-	taxiETA: null,
-	tripDuration: null,
-}
 
 // Shows options of rides to choose from
 export const RideConfirmation = (data) => {
@@ -67,8 +63,7 @@ export const RideConfirmation = (data) => {
 	)
 	const [collapsed, setCollapsed] = useState<boolean>(false)
 	const [screen, setScreen] = useRecoilState(screenAtom)
-	const [bookingID, setBookingID] = useState<number>(null)
-	// const [booking, setBooking] = useRecoilState(bookingAtom)
+	const [booking, setBooking] = useRecoilState<bookingEvent | any>(bookingAtom)
 	const [rideConfirmed, setRideConfirmed] = useState(false)
 	const [routes, setRoutes] = useState({ 1: null, 2: null })
 	const [taxiETA, setTaxiETA] = useRecoilState(taxiETAAtom)
@@ -76,7 +71,7 @@ export const RideConfirmation = (data) => {
 	const [stopStream, setStopStream] = useState(true)
 	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
 	const [selectPaymentMethod, setSelectPaymentMethod] = useState(false)
-	const [dispatchEvent, setDispatchEvent] = useState(null)
+	const [user, setUser] = useRecoilState(userAtom)
 
 	const collapseMenu = () => setCollapsed(!collapsed)
 
@@ -93,7 +88,7 @@ export const RideConfirmation = (data) => {
 
 	useEffect(() => {
 		GetPaymentMethod(
-			data.user.customerID,
+			user.customerID,
 			(data) =>
 				data?.length > 0 &&
 				data.map((item) => {
@@ -109,12 +104,23 @@ export const RideConfirmation = (data) => {
 		}
 
 		const unsubscribe = onSnapshot(
-			doc(db, 'BookingEvent', data.user.customerID.toString()),
+			doc(db, 'BookingEvent', user.customerID.toString()),
 			(snapshot) => {
 				if (snapshot.data().status === 'dispatched') {
+					console.log('Firestore Dispatch Event', snapshot.data())
+
+					// Append driver/taxi information from dispatch event
+					setBooking({
+						...booking,
+						tmdtid: snapshot.data().tmdtid,
+						taxiNumber: snapshot.data().taxiNumber,
+						taxiMakeModel: snapshot.data().taxiMakeModel,
+						taxiColor: snapshot.data().taxiColor,
+						driverID: snapshot.data().driverID,
+						driverName: snapshot.data().driverName,
+						driverPhoneNumber: snapshot.data().driverPhoneNumber,
+					})
 					handleMatched(snapshot.data())
-					setDispatchEvent(snapshot.data())
-					console.log('Firestore Booking Event', snapshot.data())
 				}
 			}
 		)
@@ -125,11 +131,6 @@ export const RideConfirmation = (data) => {
 	}, [stopStream])
 
 	function initializeOptions(ETA) {
-		// distance in meters
-		// duration in seconds
-		// TODO: Get routes for each path and render all but highlight clicked
-		// TODO: taxiDistance needs to be pre-calculated
-
 		if (!ETA[2]) return
 
 		setOptions([
@@ -174,31 +175,46 @@ export const RideConfirmation = (data) => {
 		setRideConfirmed(true)
 
 		createBooking(
-			data.user,
+			user,
 			options[clickedOption - 1],
 			data.origin,
 			data.destination,
-			setBookingID,
 			setStopStream,
 
-			(bookingID) =>
+			(bookingID) => {
+				setBooking({
+					bookingID: bookingID,
+					customerID: user.customerID,
+					messageSubmittedTime: +new Date(),
+					customerName: user.customerName,
+					phoneNumber: user.phoneNumber,
+					taxiType: options[clickedOption - 1].taxiType,
+					fareType: 'metered',
+					fare: options[clickedOption - 1].fare,
+					distance: options[clickedOption - 1].distance,
+					paymentMethod: 'Cash',
+					eta: data.duration,
+					pickUpLocation: data.origin.placeName,
+					dropLocation: data.destination.placeName,
+				})
+
+				// Sending bookingEvent to data stream
 				createBookingRequest({
-					...data.user,
+					...user,
 					...options[clickedOption - 1],
 					pickUpLocation: data.origin.placeName,
 					dropLocation: data.destination.placeName,
 					fareType: 'metered',
 					paymentMethod: 'cash',
 					eta: data.duration,
-					sno: 1,
-					driverID: 1,
 					bookingID: bookingID,
 				})
+			}
 		) // API to create booking
 	}
 
 	function handleMatched(event) {
-		matchedBooking(bookingID, event.driverID, event.sno) // API for matching
+		matchedBooking(booking.bookingID, event.driverID, event.sno) // API for matching
 
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
 		setStopStream(true)
@@ -236,16 +252,16 @@ export const RideConfirmation = (data) => {
 	}
 
 	function handleTaxiArrived() {
-		booking = {
-			...options[clickedOption - 1],
+		setBooking((booking) => ({
+			...booking,
 			dropTime: new Date(+new Date() + data.duration * 1000)
 				.toLocaleTimeString('en-US')
 				.replace(/(.*)\D\d+/, '$1'),
 			pickUpTime: +new Date(),
 			tripDuration: Math.round(data.duration / 60),
-		}
+		}))
 
-		taxiArrived(bookingID)
+		taxiArrived(booking.bookingID)
 		setNotification('arrived')
 		setScreen('liveTrip')
 		erasePolyline()
@@ -265,13 +281,13 @@ export const RideConfirmation = (data) => {
 	}, [taxiETA])
 
 	useEffect(() => {
-		bookingID && setPaymentMethod(bookingID, selectedCard)
+		booking.bookingID && setPaymentMethod(booking.bookingID, selectedCard)
 	}, [selectedCard])
 
 	function handleCancelled(matchedStatus) {
-		setBookingCancelled(data.user.customerID.toString())
+		setBookingCancelled(user.customerID.toString())
 		if (matchedStatus) {
-			cancelBooking(bookingID) // API for trip cancellation
+			cancelBooking(booking.bookingID) // API for trip cancellation
 			matchedTaxi.setMap(null)
 		}
 		erasePolyline()
@@ -281,8 +297,8 @@ export const RideConfirmation = (data) => {
 	}
 
 	function handleCompleted() {
-		setBookingCompleted(data.user.customerID.toString())
-		completeBooking(bookingID) // API for trip completion
+		setBookingCompleted(user.customerID.toString())
+		completeBooking(booking.bookingID) // API for trip completion
 		console.log('Trip fini')
 		setScreen('completeTrip')
 		setNotification(null)
@@ -411,7 +427,7 @@ export const RideConfirmation = (data) => {
 						) : screen === 'receipt' ? (
 							<div className='-mt-5'>
 								<Receipt
-									bookingID={bookingID}
+									bookingID={booking.bookingID}
 									setScreen={() => setScreen('completeTrip')}
 								/>
 							</div>

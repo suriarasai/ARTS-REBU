@@ -285,6 +285,10 @@ export interface bookingEvent {
 	driverName: string
 	driverPhoneNumber: number
 
+	// Addition fields (dispatch)
+	taxiColor: string
+	sno: number // I think this is the query ID? Or was it tmdtid...
+
 	// Additional fields (not in the current stream data model)
 	distance: number // in meters
 	paymentMethod: string // 'Cash' or [card number]

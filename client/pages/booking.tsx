@@ -14,7 +14,6 @@ import BottomNav from '@/components/ui/bottom-nav'
 import { loadNearbyTaxiStops } from '@/components/booking/loadNearbyTaxiStops'
 import { useRecoilState } from 'recoil'
 import {
-	bookingAtom,
 	destinationAtom,
 	originAtom,
 	searchTypeAtom,
@@ -285,7 +284,6 @@ function Booking() {
 						<RideConfirmation
 							map={map}
 							taxis={taxis}
-							user={user}
 							distance={route.distanceMeters}
 							duration={Number(route.duration.match(/\d+/)[0])}
 							origin={origin.lat ? origin : userLocation}
