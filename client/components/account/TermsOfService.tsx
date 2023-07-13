@@ -1,4 +1,4 @@
-import { Message } from '@/redux/types/constants';
+import { Message } from '@/constants';
 
 
 export const TermsOfService = () => (

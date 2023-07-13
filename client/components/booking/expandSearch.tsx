@@ -6,7 +6,7 @@ import {
 	FaStar,
 	FaSuitcase,
 } from 'react-icons/fa'
-import { Button, HREF, Message } from '@/redux/types/constants'
+import { Button, HREF, Message } from '@/constants'
 import { useRecoilValue } from 'recoil'
 import { searchTypeAtom, userSelector } from '@/utils/state'
 import { useRecoilState } from 'recoil'

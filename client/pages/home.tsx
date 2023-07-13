@@ -2,7 +2,7 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import Page from '@/components/ui/page'
 import { useRouter } from 'next/router'
 import { Suspense } from 'react'
-import { HREF, Sub } from '@/redux/types/constants'
+import { HREF, Sub } from '@/constants'
 import {
 	FaBookmark,
 	FaClock,

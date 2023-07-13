@@ -1,8 +1,8 @@
 // For viewing and modifying account information
 
 import { MobileNumber } from '@/components/account/MobileNumber'
-import { ProfileInterface } from '@/redux/types'
-import { icon } from '@/redux/types/constants'
+import { ProfileInterface } from '@/redux/types/types'
+import { icon } from '@/constants'
 import { FaUser } from 'react-icons/fa'
 import { EmailForm } from './EmailForm'
 import { userSelector } from '@/utils/state'

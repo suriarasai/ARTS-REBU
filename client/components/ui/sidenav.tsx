@@ -1,4 +1,4 @@
-import { HREF } from '@/redux/types/constants'
+import { HREF } from '@/constants'
 import { useRouter } from 'next/router'
 import {
 	FaAngleLeft,

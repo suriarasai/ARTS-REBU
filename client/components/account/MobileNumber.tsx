@@ -2,7 +2,7 @@
 // NOTE: Since phoneNumber is an integer, leading zeros are prohibited
 // but this is alright because phoneNumbers can't start with a 0
 
-import { HREF, icon } from '@/redux/types/constants'
+import { HREF, icon } from '@/constants'
 import { useForm } from 'react-hook-form'
 import api from '@/api/axiosConfig'
 import { FaAngleRight } from 'react-icons/fa'

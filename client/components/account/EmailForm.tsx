@@ -2,7 +2,7 @@
 // TODO: Forgot email/password?
 
 import { useRouter } from 'next/router'
-import { EmailInterface } from '@/redux/types'
+import { EmailInterface } from '@/redux/types/types'
 import { FaEnvelope, FaKey } from 'react-icons/fa'
 
 export function EmailForm({

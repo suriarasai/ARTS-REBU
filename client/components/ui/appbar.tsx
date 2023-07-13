@@ -1,6 +1,6 @@
 // Navigation Bar: For routing
 
-import { HREF, Title } from '@/redux/types/constants'
+import { HREF, Title } from '@/constants'
 import { useRouter } from 'next/router'
 
 // Links to be rendered

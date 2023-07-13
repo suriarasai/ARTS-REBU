@@ -3,7 +3,7 @@ import api from '@/api/axiosConfig'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { EmailForm } from '@/components/account/EmailForm'
-import { HREF } from '@/redux/types/constants'
+import { HREF } from '@/constants'
 import { useRecoilState } from 'recoil'
 import { userAtom } from '@/utils/state'
 

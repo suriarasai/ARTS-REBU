@@ -1,6 +1,6 @@
 // Bottom Navigation bar: For mobile navigation
 
-import { HREF, Title, icon } from '@/redux/types/constants'
+import { HREF, Title, icon } from '@/constants'
 import { useRouter } from 'next/router'
 import { FaCalendar, FaComments, FaSearch, FaTaxi, FaUser } from 'react-icons/fa'
 

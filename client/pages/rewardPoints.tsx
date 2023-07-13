@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
-import { rewardPoints } from '@/redux/types'
-import { Rewards, Title } from '@/redux/types/constants'
+import { rewardPoints } from '@/redux/types/types'
+import { Rewards, Title } from '@/constants'
 import { userAtom } from '@/utils/state'
 import { useRecoilState } from 'recoil'
 

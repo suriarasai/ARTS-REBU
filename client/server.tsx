@@ -1,5 +1,5 @@
 import api from '@/api/axiosConfig'
-import { User } from './redux/types'
+import { User } from './redux/types/types'
 import { getAddress } from './utils/getAddress'
 import axios from 'axios'
 import { renderDirections } from './utils/renderDirections'

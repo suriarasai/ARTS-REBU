@@ -1,7 +1,7 @@
 // Displays user activity (ex. booked rides, reviews)
 
 import Page from '@/components/ui/page'
-import { Title } from '@/redux/types/constants'
+import { Title } from '@/constants'
 import { Suspense, useEffect, useState } from 'react'
 import {
 	FaAngleDown,

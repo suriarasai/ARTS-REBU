@@ -11,7 +11,7 @@ import {
 	FaSearchLocation,
 	FaSuitcase,
 } from 'react-icons/fa'
-import { Input, Message, Title } from '@/redux/types/constants'
+import { Input, Message, Title } from '@/constants'
 import { getAddress } from '@/utils/getAddress'
 import { useRecoilState } from 'recoil'
 import { userAtom } from '@/utils/state'
