@@ -1,3 +1,4 @@
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { bookingAtom, screenAtom } from '@/utils/state'
 import { useState } from 'react'
 import {
@@ -5,36 +6,27 @@ import {
 	FaComments,
 	FaFlag,
 	FaHashtag,
+	FaPhone,
 	FaRoad,
 	FaStar,
 	FaThumbtack,
+	FaUser,
 } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'
 
 const Dispatch = ({ taxiETA }) => {
-	const [collapse, setCollapse] = useState(false)
-	const collapseMenu = () => setCollapse(!collapse)
 	const booking = useRecoilValue(bookingAtom)
+
+	if (!booking) {
+		return <LoadingScreen />
+	}
 
 	return (
 		<>
-			<DriverInformation
-				booking={booking}
-				collapseMenu={collapseMenu}
-				taxiETA={taxiETA}
-			/>
-			{!collapse && (
-				<>
-					<TripInformation booking={booking} />
-					<CarInformation booking={booking} />
-					<TripStatistics booking={booking} />
-				</>
-			)}
-			<div className='p-4'>
-				<button className='shadow-xs h-10 w-full rounded-lg bg-green-700 text-zinc-50'>
-					Cancel Request
-				</button>
-			</div>
+			<DriverInformation booking={booking} />
+			{/* <CarInformation booking={booking} /> */}
+			<TripInformation booking={booking} />
+			<TripStatistics booking={booking} />
 		</>
 	)
 }
@@ -42,21 +34,15 @@ const Dispatch = ({ taxiETA }) => {
 export default Dispatch
 
 const CarInformation = ({ booking }) => (
-	<div className='flex items-center justify-center space-x-8 border-b border-zinc-200 px-5 py-2'>
-		<div className='flex items-center space-x-4'>
-			<h5 className=''>
-				<FaHashtag className='text-lg' />
-			</h5>
+	<div className='flex items-center space-x-4 border-b border-zinc-200 px-6 py-2'>
+		<FaCar className='text-3xl' />
+		<div>
 			<b className=''>{booking.taxiNumber}</b>
-		</div>
-		<div className='flex items-center space-x-4'>
-			<h5 className=''>
-				<FaCar className='text-lg' />
-			</h5>
-			<b className=''>
+			<h5>
 				{booking.taxiColor} {booking.taxiMakeModel}
-			</b>
+			</h5>
 		</div>
+
 	</div>
 )
 
@@ -71,9 +57,7 @@ const TripStatistics = ({ booking }) => (
 		</div>
 		<div className='flex flex-1 flex-col space-y-2'>
 			<h5 className='ml-auto mr-auto'>TIME</h5>
-			<b className='ml-auto mr-auto'>
-				{(booking.duration / 60).toFixed(1)} min
-			</b>
+			<b className='ml-auto mr-auto'>{(booking.eta / 60).toFixed(1)} min</b>
 		</div>
 		<div className='flex flex-1 flex-col space-y-2'>
 			<h5 className='ml-auto mr-auto'>PRICE</h5>
@@ -96,29 +80,32 @@ const TripInformation = ({ booking }) => (
 	</div>
 )
 
-const DriverInformation = ({ booking, collapseMenu, taxiETA }) => (
-	<div className='rounded-t-xl border-b border-zinc-200 bg-zinc-50 pt-1.5'>
-		<hr
-			className='ml-auto mr-auto w-40 rounded-full border-2 border-zinc-200'
-			onClick={collapseMenu}
-		/>
-		<div className='flex space-x-5 p-4'>
-			<div className=''>
-				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-300'>
-					<FaComments />
-				</div>
+const DriverInformation = ({ booking }) => (
+	<div className='rounded-t-xl border-b border-zinc-400'>
+		<div className='flex space-x-3 px-6 py-4'>
+			<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-300'>
+				<FaUser />
 			</div>
 			<div className=''>
 				{booking.driverName}
-				<div className='flex space-x-2'>
-					<FaStar className='text-yellow-400' />
-					<h5>{booking.rating}</h5>
+				{/* <div className='flex space-x-2'> */}
+				<div>
+					{/* <FaStar className='text-yellow-400' /> */}
+					{/* <h5>{booking.rating}</h5> */}
+					<h5>{booking.taxiColor} {booking.taxiMakeModel}</h5>
 				</div>
 			</div>
-			<div className='!ml-auto flex h-12 w-12 flex-col justify-center bg-green-600 px-2 py-1 text-zinc-50'>
-				<h1 className='ml-auto mr-auto !font-semibold'>{taxiETA}</h1>
-				<p className='ml-auto mr-auto text-xs'>min.</p>
+			<div className='!ml-auto border border-zinc-200 px-3 py-1 flex items-center rounded-xl'>
+				<p className='!font-semibold text-green-600'>{booking.taxiNumber}</p>
 			</div>
+			{/* <div className='!ml-auto flex space-x-3'>
+				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-300'>
+					<FaComments />
+				</div>
+				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-300'>
+					<FaPhone />
+				</div>
+			</div> */}
 		</div>
 	</div>
 )

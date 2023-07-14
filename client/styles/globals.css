@@ -4,7 +4,6 @@
 
 body {
 	@apply min-h-screen select-none bg-zinc-100 text-zinc-900 antialiased p-safe dark:bg-zinc-900 dark:text-zinc-50;
-
 	/* PWA enhancements */
 	-webkit-overflow-scrolling: touch;
 	-webkit-tap-highlight-color: transparent;
@@ -64,16 +63,16 @@ input::-webkit-inner-spin-button {
 	margin: 0;
 }
 
-select[id=payment] {
+select[id='payment'] {
 	padding: 2px 2px 2px 2px;
-	border: none; 
-	background-image: url("http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png");
+	border: none;
+	background-image: url('http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png');
 	background-position: right center; /*Positioning*/
 	background-repeat: no-repeat; /*Prevent showing multiple background images*/
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearence: none;
-  }
+}
 
 .blue-button {
 	@apply rounded bg-cyan-600 px-4 py-3 text-xs font-bold text-white hover:bg-cyan-800 !important;
@@ -287,4 +286,14 @@ select[id=payment] {
 
 .payment-card {
 	@apply flex w-full space-x-3 rounded-md border border-zinc-200 bg-zinc-50 px-5 py-3 hover:border-green-300;
+}
+
+.transparent-gradient {
+	background: rgb(255, 255, 255);
+	background: linear-gradient(
+		180deg,
+		rgba(255, 255, 255, 1) 0%,
+		rgba(255, 255, 255, 0.17988445378151263) 93%,
+		rgba(221, 216, 203, 0) 100%
+	);
 }
