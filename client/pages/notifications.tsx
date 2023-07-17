@@ -1,6 +1,6 @@
 import Dispatch from '@/components/booking/UI/Dispatch'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
-import { produceMessage } from '@/server'
+import { sendBookingToKafka } from '@/server'
 import {
 	bookingAtom,
 	clickedOptionAtom,
@@ -134,7 +134,7 @@ const Header = ({ booking, taxiETA }) => {
 	return (
 		<div className='transparent-gradient flex w-screen items-center space-x-6 p-8'>
 			<div className='flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl text-white'>
-				<FaArrowLeft onClick={() => produceMessage('My message')}/>
+				<FaArrowLeft onClick={() => sendBookingToKafka('SendingMessage')}/>
 			</div>
 			<div className=''>
 				{/* Upper text with user name */}

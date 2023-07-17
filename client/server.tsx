@@ -4,24 +4,10 @@ import { getAddress } from './utils/getAddress'
 import axios from 'axios'
 import { renderDirections } from './utils/renderDirections'
 
-const { Kafka } = require('kafkajs')
-
-const kafka = new Kafka({
-	clientId: 'myproducer',
-	brokers: ['localhost:9092'],
-})
-
-const producer = kafka.producer()
-
-export async function produceMessage(message, topic='firsttopic') {
-	await producer.connect()
-
-	await producer.send({
-		topic: topic,
-		messages: [{ value: message}],
+export async function sendBookingToKafka(message) {
+	api.post('/api/v1/Kafka/producerMsg', {
+		message: message,
 	})
-
-	await producer.disconnect()
 }
 
 // Account Settings: Updates user information
@@ -263,7 +249,7 @@ export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 					distance: Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
 					lng: a,
 					lat: b,
-					index: index+1,
+					index: index + 1,
 				})
 			)
 
