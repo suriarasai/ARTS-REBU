@@ -1,8 +1,13 @@
+import { Location, option, optionsInterface } from '@/types'
 import { clickedOptionAtom } from '@/utils/state'
 import { FaCrosshairs, FaFontAwesomeFlag } from 'react-icons/fa'
 import { useRecoilState } from 'recoil'
 
-export const RouteConfirmation = ({ data }) => (
+export const RouteConfirmation = ({
+	data,
+}: {
+	data: { origin: Location; destination: Location }
+}) => (
 	<table className='mb-5'>
 		<tbody className='mb-3 pb-2 pl-2'>
 			<tr className='flex items-center'>
@@ -30,8 +35,14 @@ export const RouteConfirmation = ({ data }) => (
 	</table>
 )
 
-export const ShowOption = ({ option, disabled = false }) => {
-	const [, setClickedOption] = useRecoilState(clickedOptionAtom)
+export const ShowOption = ({
+	option,
+	disabled = false,
+}: {
+	option: option
+	disabled: boolean
+}) => {
+	const [, setClickedOption] = useRecoilState<number | null>(clickedOptionAtom)
 	return (
 		/*
 		option				: the ride option

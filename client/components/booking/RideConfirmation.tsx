@@ -14,6 +14,7 @@ import {
 	completeBooking,
 	createBooking,
 	matchedBooking,
+	sendBookingToKafka,
 	setPaymentMethod,
 	taxiArrived,
 } from '@/server'
@@ -120,7 +121,7 @@ export const RideConfirmation = (data) => {
 						driverName: snapshot.data().driverName,
 						driverPhoneNumber: snapshot.data().driverPhoneNumber,
 						rating: snapshot.data().rating,
-						sno: snapshot.data().sno
+						sno: snapshot.data().sno,
 					})
 					handleMatched(snapshot.data())
 				}
@@ -199,6 +200,24 @@ export const RideConfirmation = (data) => {
 					pickUpLocation: data.origin.placeName,
 					dropLocation: data.destination.placeName,
 				})
+
+				sendBookingToKafka(
+					JSON.stringify({
+						bookingID: bookingID,
+						customerID: user.customerID,
+						messageSubmittedTime: +new Date(),
+						customerName: user.customerName,
+						phoneNumber: user.phoneNumber,
+						taxiType: options[clickedOption - 1].taxiType,
+						fareType: 'metered',
+						fare: options[clickedOption - 1].fare,
+						distance: options[clickedOption - 1].distance,
+						paymentMethod: 'Cash',
+						eta: data.duration,
+						pickUpLocation: data.origin.placeName,
+						dropLocation: data.destination.placeName,
+					})
+				)
 
 				// Sending bookingEvent to data stream
 				createBookingRequest({

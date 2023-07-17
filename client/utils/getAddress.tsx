@@ -1,5 +1,5 @@
 // TODO: PlaceName
-export function getAddress(place, clickEvent = false) {
+export function getAddress(place: any, clickEvent = false) {
 	let PlaceName = ''
 	let Postcode = ''
 

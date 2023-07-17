@@ -2,6 +2,7 @@ import { FaMapMarkedAlt } from 'react-icons/fa'
 import mapStyles from '@/utils/noPoi'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import { loadNearbyTaxiStops } from './loadNearbyTaxiStops'
+import { Location } from '@/types'
 
 const TogglePOI = ({
 	map,
@@ -10,12 +11,20 @@ const TogglePOI = ({
 	origin,
 	setNearbyTaxiStops,
 	nearbyTaxiStops,
+}: {
+	map: google.maps.Map
+	poi: boolean
+	setPoi: React.Dispatch<React.SetStateAction<boolean>>
+	origin: Location
+	setNearbyTaxiStops: Function
+	nearbyTaxiStops: Array<google.maps.Marker>
 }) => {
 	function handleClick() {
 		mapStyles(map, !poi)
 		setPoi(!poi)
 		setMarkerVisibility(nearbyTaxiStops)
-		poi && loadNearbyTaxiStops(map, [origin.lng, origin.lat], setNearbyTaxiStops)
+		poi &&
+			loadNearbyTaxiStops(map, [origin.lng!, origin.lat!], setNearbyTaxiStops)
 	}
 
 	return (
@@ -29,5 +38,3 @@ const TogglePOI = ({
 }
 
 export default TogglePOI
-
-

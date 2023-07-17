@@ -1,6 +1,6 @@
 import { FaClock, FaTimes } from 'react-icons/fa'
 
-export const Popup = (props) => {
+export const Popup = (props: { clear: Function; msg: string }) => {
 	const { clear, msg } = props
 
 	return (

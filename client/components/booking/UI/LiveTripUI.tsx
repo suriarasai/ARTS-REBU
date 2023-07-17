@@ -1,3 +1,4 @@
+import { Location, option } from '@/types'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 import { selectedCardAtom } from '@/utils/state'
 import {
@@ -15,6 +16,11 @@ export const LiveTripUI = ({
 	option,
 	onCancel,
 	set,
+}: {
+	data: { destination: Location; origin: Location }
+	option: option
+	onCancel: Function
+	set: Function
 }): React.ReactNode => {
 	const selectedCard = useRecoilValue(selectedCardAtom)
 	return (

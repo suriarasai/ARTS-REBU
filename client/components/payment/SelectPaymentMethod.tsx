@@ -6,7 +6,7 @@ import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 import { selectedCardAtom, userSelector } from '@/utils/state'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-const SelectPaymentMethod = ({ set }) => {
+const SelectPaymentMethod = ({ set }: { set: Function }) => {
 	const [cards, setCards] = useState([])
 	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
 	const user = useRecoilValue(userSelector)
@@ -14,7 +14,7 @@ const SelectPaymentMethod = ({ set }) => {
 
 	useEffect(() => {
 		if (user) {
-			GetPaymentMethod(user.customerID, (data) => {
+			GetPaymentMethod(user.customerID!, (data: any) => {
 				setCards(data)
 			})
 		}
@@ -42,7 +42,7 @@ const SelectPaymentMethod = ({ set }) => {
 				isCard={false}
 				selected={tempCard}
 			/>
-			{cards.map((card, index) => (
+			{cards.map((card: any, index) => (
 				<Card
 					cardNumber={card.cardNumber}
 					key={index}
@@ -60,7 +60,17 @@ const SelectPaymentMethod = ({ set }) => {
 	)
 }
 
-const Card = ({ cardNumber, set, selected, isCard = true }) => {
+const Card = ({
+	cardNumber,
+	set,
+	selected,
+	isCard = true,
+}: {
+	cardNumber: string
+	set: Function
+	selected: string
+	isCard?: boolean
+}) => {
 	return (
 		<div
 			className={`flex items-center px-5 py-3 ${

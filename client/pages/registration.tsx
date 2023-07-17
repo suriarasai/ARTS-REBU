@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { EmailForm } from '@/components/account/EmailForm'
 import AccountInformation from '@/components/account/AccountInformation'
-import { User } from '@/redux/types/types'
+import { User } from '@/types'
 import { RegisterUser } from '@/server'
 import { HREF } from '@/constants'
 import { useRecoilState } from 'recoil'
@@ -19,7 +19,7 @@ import { useState } from 'react'
 
 const Registration = () => {
 	const router = useRouter()
-	const [user, setUser] = useRecoilState(userAtom)
+	const [user, setUser] = useRecoilState<User>(userAtom)
 	const [registrationSuccessful, setRegistrationSuccessful] =
 		useState<boolean>(false)
 
@@ -31,7 +31,7 @@ const Registration = () => {
 
 	// Second screen w/profile inputs
 	const onSubmit = async (data: User) => {
-		setUser(await RegisterUser({ ...data }, user.customerID))
+		setUser(await RegisterUser({ ...data }, user.customerID!))
 		setRegistrationSuccessful(true)
 		router.push(HREF.HOME)
 	}
@@ -43,7 +43,7 @@ const Registration = () => {
 			</h2>
 			<h2 className='pb-5 font-light'>Please enter details to register</h2>
 			<form className='flex flex-col' onSubmit={handleSubmit(onSubmit)}>
-				<EmailForm existingUser={false} register={register} errors={errors} />
+				<EmailForm register={register} errors={errors} />
 				<AccountInformation
 					newUser={true}
 					register={register}

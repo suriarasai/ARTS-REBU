@@ -3,7 +3,7 @@
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import { SignOutModal } from '@/components/account/SignOutModal'
-import { navButtonProps } from '@/redux/types/types'
+import { User, navButtonProps } from '@/types'
 import { HREF, Title } from '@/constants'
 import { FaAngleRight, FaBookmark, FaCreditCard, FaGifts } from 'react-icons/fa'
 import { useRouter } from 'next/router'
@@ -38,7 +38,7 @@ function splitName(name: string): Array<string> {
 }
 
 const Settings = () => {
-	const user = useRecoilValue(userSelector)
+	const user = useRecoilValue(userSelector) as User
 	const router = useRouter()
 
 	return (

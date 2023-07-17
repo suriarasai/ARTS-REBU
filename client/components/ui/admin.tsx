@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import SideNav from '@/components/ui/sidenav'
 
-const Admin = ({ title, children }) => (
+const Admin = ({ title, children }: {title: string, children: React.ReactNode}) => (
 	<>
 		{/* For web: Changes the name in the browser tab */}
 		{title ? (

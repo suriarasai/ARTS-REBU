@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { FaAngleDown, FaClock, FaCoins, FaFlag, FaUser } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'
 
-export const DriverInformation = ({ onCancel }) => {
+export const DriverInformation = ({ onCancel }: { onCancel: Function }) => {
 	const booking = useRecoilValue<bookingEvent | any>(bookingAtom)
 	return (
 		<div className='mt-2 w-full rounded bg-zinc-50 p-3 px-5'>
@@ -31,7 +31,13 @@ export const DriverInformation = ({ onCancel }) => {
 	)
 }
 
-export const PaymentInformation = ({ fare, set }) => {
+export const PaymentInformation = ({
+	fare,
+	set,
+}: {
+	fare: number
+	set: Function
+}) => {
 	const selectedCard = useRecoilValue(selectedCardAtom)
 	return (
 		<div className='mt-2 flex w-full flex-wrap items-center rounded bg-zinc-50 p-3 px-5'>
@@ -56,7 +62,12 @@ export const PaymentInformation = ({ fare, set }) => {
 	)
 }
 
-export const TripInformation = (props) => {
+export const TripInformation = (props: {
+	placeName: string
+	postcode: number
+	tripETA: number
+	taxiETA: number
+}) => {
 	const { placeName, postcode, tripETA, taxiETA } = props
 	const [ETA, setETA] = useState(new Date())
 

@@ -1,17 +1,17 @@
 import api from '@/api/axiosConfig'
-import { User } from './types'
+import { Location, Rating, User, option } from './types'
 import { getAddress } from './utils/getAddress'
 import axios from 'axios'
 import { renderDirections } from './utils/renderDirections'
 
-export async function sendBookingToKafka(message) {
+export async function sendBookingToKafka(message: string) {
 	api.post('/api/v1/Kafka/producerMsg', {
 		message: message,
 	})
 }
 
 // Account Settings: Updates user information
-export const UpdateUser = async (data: User | any, customerID) => {
+export const UpdateUser = async (data: User | any, customerID: number) => {
 	const response = await api.post('/api/v1/Customer/updateUser', {
 		customerID: customerID,
 		customerName: data.customerName,
@@ -30,8 +30,8 @@ export const UpdateUser = async (data: User | any, customerID) => {
 }
 
 // Registration: Registering a new user by updating their information
-export const RegisterUser = async (data: User | any, customerID) => {
-	const prefixByGender = {
+export const RegisterUser = async (data: User | any, customerID: number) => {
+	const prefixByGender: any = {
 		'Mr.': 'M',
 		'Ms.': 'F',
 		'Mrs.': 'F',
@@ -51,7 +51,7 @@ export const RegisterUser = async (data: User | any, customerID) => {
 }
 
 // Saved Places: Removes a saved location
-export const RemovePlaceAPI = async (customerID, placeID) => {
+export const RemovePlaceAPI = async (customerID: number, placeID: string) => {
 	await api.post('/api/v1/Customer/removeSavedLocation', {
 		customerID: customerID,
 		placeID: placeID,
@@ -59,19 +59,22 @@ export const RemovePlaceAPI = async (customerID, placeID) => {
 }
 
 // Saved Places: Adds a saved location
-export const AddPlaceAPI = async (customerID, location) => {
+export const AddPlaceAPI = async (customerID: number, location: Location) => {
 	await api.post('/api/v1/Customer/addSavedLocation', {
 		customerID: customerID,
 		location: location,
 	})
 }
 
-export const getUser = async (customerID) => {
+export const getUser = async (customerID: number) => {
 	await api.get('/api/v1/Customer/' + customerID)
 }
 
 // Payment Methods: Remove a payment method
-export const RemovePaymentMethod = async (customerID, cardNumber) => {
+export const RemovePaymentMethod = async (
+	customerID: number,
+	cardNumber: string
+) => {
 	await api.post('/api/v1/Customer/removePaymentMethod', {
 		customerID: customerID,
 		cardNumber: cardNumber,
@@ -79,7 +82,10 @@ export const RemovePaymentMethod = async (customerID, cardNumber) => {
 }
 
 // Payment Methods: Add a payment method
-export const AddPaymentMethod = async (customerID, paymentMethodDetails) => {
+export const AddPaymentMethod = async (
+	customerID: number,
+	paymentMethodDetails: string
+) => {
 	await api.post('/api/v1/Customer/addPaymentMethod', {
 		customerID: customerID,
 		paymentMethod: paymentMethodDetails,
@@ -87,7 +93,10 @@ export const AddPaymentMethod = async (customerID, paymentMethodDetails) => {
 }
 
 // Payment Methods: Sets default payment method
-export const SetDefaultPaymentMethod = async (customerID, cardNumber) => {
+export const SetDefaultPaymentMethod = async (
+	customerID: number,
+	cardNumber: string
+) => {
 	await api.post('/api/v1/Customer/setDefaultPaymentMethod', {
 		customerID: customerID,
 		cardNumber: cardNumber,
@@ -95,14 +104,20 @@ export const SetDefaultPaymentMethod = async (customerID, cardNumber) => {
 }
 
 // Payment Methods: Get all the user's payment methods
-export const GetPaymentMethod = async (customerID, _callback) => {
+export const GetPaymentMethod = async (
+	customerID: number,
+	_callback: Function
+) => {
 	const response = await api.post('/api/v1/Customer/getPaymentMethods', {
 		customerID: customerID,
 	})
 	_callback(response.data)
 }
 
-export const setPaymentMethod = async (bookingID, cardNumber) => {
+export const setPaymentMethod = async (
+	bookingID: number,
+	cardNumber: String
+) => {
 	await api.post('/api/v1/Booking/setPaymentMethod', {
 		bookingID: bookingID,
 		paymentMethod: cardNumber.toString(),
@@ -110,7 +125,7 @@ export const setPaymentMethod = async (bookingID, cardNumber) => {
 }
 
 // Saved Places: Sets the home location
-export const SetHome = async (customerID, location) => {
+export const SetHome = async (customerID: number, location: Location) => {
 	await api.post('/api/v1/Customer/setHome', {
 		customerID: customerID,
 		location: location,
@@ -118,7 +133,7 @@ export const SetHome = async (customerID, location) => {
 }
 
 // Saved Places: Sets the home location
-export const addRating = async (data) => {
+export const addRating = async (data: Rating) => {
 	await api.post('/api/v1/Review/createReview', {
 		customerID: data.customerID,
 		driverID: data.driverID,
@@ -130,7 +145,7 @@ export const addRating = async (data) => {
 }
 
 // Saved Places: Sets the work location
-export const SetWork = async (customerID, location) => {
+export const SetWork = async (customerID: number, location: Location) => {
 	await api.post('/api/v1/Customer/setWork', {
 		customerID: customerID,
 		location: location,
@@ -138,19 +153,25 @@ export const SetWork = async (customerID, location) => {
 }
 
 // Retrieves all bookings associated with a customerID
-export const getBookingsByCustomerID = async (customerID, setTripList) => {
+export const getBookingsByCustomerID = async (
+	customerID: number,
+	setTripList: Function
+) => {
 	const response = await api.get('/api/v1/Booking/customer/' + customerID)
 	setTripList(response.data)
 }
 
 // Retrieves all bookings associated with a bookingID
-export const getBooking = async (bookingID, setBookingInformation) => {
+export const getBooking = async (
+	bookingID: number,
+	setBookingInformation: Function
+) => {
 	const response = await api.get('/api/v1/Booking/' + bookingID)
 	setBookingInformation(response.data)
 }
 
 // Retrieves taxi information based on the ID (sno)
-export const getTaxi = async (sno, setTaxiInformation) => {
+export const getTaxi = async (sno: number, setTaxiInformation: Function) => {
 	const response = await api.get('/api/v1/Taxi/' + sno)
 	setTaxiInformation(response.data)
 }
@@ -158,11 +179,11 @@ export const getTaxi = async (sno, setTaxiInformation) => {
 // Creates a new booking with the 'requested' status
 export const createBooking = async (
 	user: User,
-	option,
-	origin,
-	destination,
-	setStopStream,
-	_callback
+	option: option,
+	origin: Location,
+	destination: Location,
+	setStopStream: React.Dispatch<React.SetStateAction<boolean>>,
+	_callback: Function
 ) => {
 	const response = await api.post('/api/v1/Booking/createBooking', {
 		customerID: user.customerID,
@@ -184,7 +205,11 @@ export const createBooking = async (
 	return response.data
 }
 
-export const matchedBooking = async (bookingID, driverID, taxiID) => {
+export const matchedBooking = async (
+	bookingID: number,
+	driverID: number,
+	taxiID: number
+) => {
 	const response = await api.post('/api/v1/Booking/matchedBooking', {
 		bookingID: bookingID,
 		driverID: driverID,
@@ -193,7 +218,7 @@ export const matchedBooking = async (bookingID, driverID, taxiID) => {
 	return response
 }
 
-export const taxiArrived = async (bookingID) => {
+export const taxiArrived = async (bookingID: number) => {
 	const response = await api.post('/api/v1/Booking/taxiArrived', {
 		bookingID: bookingID,
 		pickUpTime: +new Date(),
@@ -201,14 +226,14 @@ export const taxiArrived = async (bookingID) => {
 	return response
 }
 
-export const cancelBooking = async (bookingID) => {
+export const cancelBooking = async (bookingID: number) => {
 	const response = await api.post('/api/v1/Booking/cancelBooking', {
 		bookingID: bookingID,
 	})
 	return response
 }
 
-export const completeBooking = async (bookingID) => {
+export const completeBooking = async (bookingID: number) => {
 	const response = await api.post('/api/v1/Booking/completeBooking', {
 		bookingID: bookingID,
 		dropTime: +new Date(),
@@ -216,7 +241,10 @@ export const completeBooking = async (bookingID) => {
 	return response
 }
 
-export async function CoordinateToAddress(coordinates, setLocation) {
+export async function CoordinateToAddress(
+	coordinates: Array<number>,
+	setLocation: Function
+) {
 	await fetch(
 		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 	)
@@ -234,17 +262,28 @@ export async function CoordinateToAddress(coordinates, setLocation) {
 
 // Loads the nearest N taxis onto the map
 // TODO: Return list of objects with taxiID, driverID values
-export const loadTaxis = (map, coord, N = 1, setTaxis) => {
+export const loadTaxis = (
+	map: google.maps.Map,
+	coord: number[],
+	N = 1,
+	setTaxis: Function
+) => {
 	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
 		.then(function (response) {
 			return response.json()
 		})
 		.then(function (data) {
 			const coordinates = data.features[0].geometry.coordinates
-			const distances = []
+
+			const distances: Array<{
+				distance: number
+				lng: number
+				lat: number
+				index: number
+			}> = []
 
 			// Calculating the Euclidean distance
-			coordinates.forEach(([a, b], index) =>
+			coordinates.forEach(([a, b]: number[], index: number) =>
 				distances.push({
 					distance: Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
 					lng: a,
@@ -277,7 +316,7 @@ export const loadTaxis = (map, coord, N = 1, setTaxis) => {
 }
 
 // (unused) API: Extracts data from Google Maps place_id
-async function PlaceIDToAddress(id, setLocation) {
+async function PlaceIDToAddress(id: string, setLocation: Function) {
 	await fetch(
 		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 	)
@@ -288,12 +327,12 @@ async function PlaceIDToAddress(id, setLocation) {
 }
 
 export const getDirections = (
-	map,
-	origin,
-	destination,
-	setRoute,
-	setPolyline,
-	callback
+	map: google.maps.Map,
+	origin: Location,
+	destination: Location,
+	setRoute: Function,
+	setPolyline: Function,
+	callback: Function
 ) => {
 	axios
 		.post(

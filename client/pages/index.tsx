@@ -15,7 +15,7 @@ import { userAtom } from '@/utils/state'
 const SignIn = () => {
 	const [loading, setLoading] = useState(true)
 	const [form, setForm] = useState('main')
-	const [user, setUser] = useRecoilState(userAtom)
+	const [, setUser] = useRecoilState(userAtom)
 
 	useEffect(() => {
 		const loggedInUser = localStorage.getItem('user')
@@ -51,7 +51,11 @@ const SignIn = () => {
 	)
 }
 
-const AlternateSignIn = ({ setForm }) => (
+const AlternateSignIn = ({
+	setForm,
+}: {
+	setForm: React.Dispatch<React.SetStateAction<string>>
+}) => (
 	<div className='mb-8 mt-16 flex text-zinc-400'>
 		<h3 className='font-base mr-5 flex items-center'>Or connect using</h3>
 		<button

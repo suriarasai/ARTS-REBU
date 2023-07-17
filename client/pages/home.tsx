@@ -55,7 +55,17 @@ export default function Home() {
 	)
 }
 
-const HomeIcon = ({ icon, href, label, isMain = false }) => {
+const HomeIcon = ({
+	icon,
+	href,
+	label,
+	isMain = false,
+}: {
+	icon: React.ReactNode
+	href: string
+	label: string
+	isMain?: boolean
+}) => {
 	const router = useRouter()
 	return (
 		<div

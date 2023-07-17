@@ -1,4 +1,4 @@
-export function expandArray(coords, steps) {
+export function expandArray(coords: google.maps.LatLng[], steps: number) {
 	/* Adds points to an array by interpolating the coordinates between 2 points
 	 *
 	 * @param coords	: the polyline returned by Google Maps (DirectionService API)

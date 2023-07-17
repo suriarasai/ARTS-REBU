@@ -1,3 +1,4 @@
+import { Location, option } from '@/types'
 import { bookingAtom, bookingEvent } from '@/utils/state'
 import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'
@@ -7,6 +8,11 @@ export const CompleteTripUI = ({
 	tripETA,
 	pickUpTime,
 	data,
+}: {
+	option: option
+	tripETA: number
+	pickUpTime: number
+	data: { origin: Location; destination: Location }
 }): React.ReactNode => {
 	const booking = useRecoilValue<bookingEvent | any>(bookingAtom)
 

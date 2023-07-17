@@ -1,8 +1,9 @@
+import { User } from '@/types'
 import { atom, selector } from 'recoil'
 
 export const userAtom = atom({
 	key: 'user-atom',
-	default: null,
+	default: {} as User,
 	effects: [
 		({ onSet }) => {
 			onSet((data) => {
@@ -22,7 +23,7 @@ export const userSelector = selector({
 
 export const bookingAtom = atom({
 	key: 'booking-atom',
-	default: {},
+	default: {} as bookingEvent,
 	effects: [
 		({ onSet }) => {
 			onSet((data) => {
@@ -200,7 +201,7 @@ export const taxiETASelector = selector({
 
 export const clickedOptionAtom = atom({
 	key: 'clickedOption-atom',
-	default: null,
+	default: null as number | null,
 })
 
 export const clickedOptionSelector = selector({
@@ -251,10 +252,10 @@ const temp = {
 
 export interface bookingEvent {
 	// From bookingEvent
-	customerID: number
-	customerName: string
-	phoneNumber: number
-	pickUpLocation: {
+	customerID?: number
+	customerName?: string
+	phoneNumber?: number
+	pickUpLocation?: {
 		placeID: string
 		lat: number
 		lng: number
@@ -262,9 +263,9 @@ export interface bookingEvent {
 		address: string
 		placeName: string
 	}
-	taxiPassengerCapacity: number
-	pickUpTime: number
-	dropLocation: {
+	taxiPassengerCapacity?: number
+	pickUpTime?: number
+	dropLocation?: {
 		placeID: string
 		lat: number
 		lng: number
@@ -272,27 +273,27 @@ export interface bookingEvent {
 		address: string
 		placeName: string
 	}
-	taxiType: string
-	fareType: string
-	fare: number
-	eta: number
+	taxiType?: string
+	fareType?: string
+	fare?: number
+	eta?: number
 
 	// Appended from dispatch event
-	tmdtid: number
-	taxiNumber: string
-	taxiMakeModel: string
-	driverID: number
-	driverName: string
-	driverPhoneNumber: number
+	tmdtid?: number
+	taxiNumber?: string
+	taxiMakeModel?: string
+	driverID?: number
+	driverName?: string
+	driverPhoneNumber?: number
 
 	// Addition fields (dispatch)
-	taxiColor: string
-	sno: number // I think this is the query ID? Or was it tmdtid...
+	taxiColor?: string
+	sno?: number // I think this is the query ID? Or was it tmdtid...
 
 	// Additional fields (not in the current stream data model)
-	distance: number // in meters
-	paymentMethod: string // 'Cash' or [card number]
-	status: string // 'requested', 'dispatched', 'cancelled', 'completed'
-	dropTime: number // in miliseconds from epoch
-	bookingID: number
+	distance?: number // in meters
+	paymentMethod?: string // 'Cash' or [card number]
+	status?: string // 'requested', 'dispatched', 'cancelled', 'completed'
+	dropTime?: number // in miliseconds from epoch
+	bookingID?: number
 }

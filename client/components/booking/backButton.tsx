@@ -1,7 +1,13 @@
 import { useRouter } from 'next/router'
 import { FaRegArrowAltCircleLeft } from 'react-icons/fa'
 
-export const BackButton = ({ searchType, setSearchType }) => {
+export const BackButton = ({
+	searchType,
+	setSearchType,
+}: {
+	searchType: number
+	setSearchType: React.Dispatch<React.SetStateAction<number>>
+}) => {
 	const router = useRouter()
 	return (
 		<button

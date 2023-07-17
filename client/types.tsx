@@ -8,44 +8,60 @@ export type UserContextType = {
 
 // User data schema
 export type User = {
-	customerID?: number,
-	customerName?: string,
-	memberCategory?: string,
-	age?: number,
-	gender?: string,
-	amountSpent?: number,
-	address?: Location,
-	city?: string,
-	countryCode?: string,
-	contactTitle?: string,
-	phoneNumber?: number,
-	email?: string,
-	password?: string,
-	phoneCountryCode?: number,
-	home?: Location,
-	work?: Location,
-	savedLocations?: Array<Location>,
+	customerID?: number
+	customerName?: string
+	memberCategory?: string
+	age?: number
+	gender?: string
+	amountSpent?: number
+	address?: Location
+	city?: string
+	countryCode?: string
+	contactTitle?: string
+	phoneNumber?: number
+	email?: string
+	password?: string
+	phoneCountryCode?: number
+	home?: Location
+	work?: Location
+	savedLocations?: Array<Location>
 	paymentMethods?: Array<PaymentMethod>
 
 	temp?: any
 }
 
 interface PaymentMethod {
-	cardHolder: string;
-    cardNumber: number;
-    expiryDate: number;
-    cvv: number;
-    defaultPaymentMethod: boolean;
-
+	cardHolder: string
+	cardNumber: number
+	expiryDate: number
+	cvv: number
+	defaultPaymentMethod: boolean
 }
 
 export interface Location {
-	placeID?: string,
-    lat?: number,
-    lng?: number,
-    postcode?: number,
-    address?: string,
-    placeName?: string
+	placeID?: string
+	lat?: number
+	lng?: number
+	postcode?: number
+	address?: string
+	placeName?: string
+}
+
+export interface Rating {
+	customerID: number
+	driverID: number
+	messageReceivedTime?: number
+	rating: number | null
+	reviewBody: string | null
+	areasOfImprovement: string
+}
+
+export interface areasOfImprovement {
+	cleanliness: boolean
+	politeness: boolean
+	punctuality: boolean
+	bookingProcess: boolean
+	waitTime: boolean
 }
 
 export interface SavedLocation {
@@ -70,12 +86,15 @@ export interface optionsInterface {
 export interface option {
 	id: number
 	arrival: string
+	taxiETA: number,
 	taxiType: string
 	dropTime: number
 	pickUpTime: number
 	icon: any
 	taxiPassengerCapacity: number
 	fare: number
+	distance?: number
+	duration?: number
 }
 
 export interface showOptionInterface {
@@ -100,9 +119,9 @@ export interface SearchFieldInterface {
 
 export interface SearchLocationInterface {
 	type: string
-	setSearchQueryVisible:React.Dispatch<React.SetStateAction<boolean>>
-	setToLocation:React.Dispatch<React.SetStateAction<boolean>>
-	setFromLocation:React.Dispatch<React.SetStateAction<boolean>>
+	setSearchQueryVisible: React.Dispatch<React.SetStateAction<boolean>>
+	setToLocation: React.Dispatch<React.SetStateAction<boolean>>
+	setFromLocation: React.Dispatch<React.SetStateAction<boolean>>
 	setToAddress: React.Dispatch<React.SetStateAction<string>>
 	searchBoxSuggestions: any
 	callback: Function

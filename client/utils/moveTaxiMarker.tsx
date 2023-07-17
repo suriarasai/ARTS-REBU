@@ -1,11 +1,11 @@
 export function moveToStep(
-	marker,
-	polyline,
-	iter,
-	timer,
-	_callback,
+	marker: google.maps.Marker,
+	polyline: google.maps.LatLng[],
+	iter: number,
+	timer: number,
+	_callback: Function,
 	ETA: any = 0,
-	setETA = (n) => {},
+	setETA: Function = () => {},
 	stepsPerMinute = 1000,
 	clickedOption = 0
 ) {
@@ -21,28 +21,13 @@ export function moveToStep(
 		marker.setPosition({
 			lat: polyline[iter].lat,
 			lng: polyline[iter].lng,
-		})
-
-		// iter < polyline.length - 1 &&
-		// 	marker.setIcon({
-		// 		path: icon.taxiMarker,
-		// 		fillColor: '#d9f99d',
-		// 		fillOpacity: 1,
-		// 		scale: 0.03,
-		// 		strokeColor: '#65a30d',
-		// 		strokeWeight: 0.5,
-		// 		rotation:
-		// 			google.maps.geometry.spherical.computeHeading(
-		// 				polyline[iter],
-		// 				polyline[iter + 1]
-		// 			) + 270,
-		// 	})
+		} as google.maps.LatLng)
 
 		if (iter % stepsPerMinute == 0) {
 			if (clickedOption === 0) {
-				setETA((ETA) => ETA)
+				setETA((ETA: any) => ETA)
 			} else {
-				setETA((ETA) => ({
+				setETA((ETA: any) => ({
 					...ETA,
 					[clickedOption]: Math.max(ETA[clickedOption] - 60, 0),
 				}))

@@ -1,9 +1,10 @@
 import { addRating } from '@/server'
+import { Rating } from '@/types'
 import { userSelector } from '@/utils/state'
 import { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-const Rating = ({ closeModal }) => {
+const Rating = ({ closeModal }: { closeModal: Function }) => {
 	const user = useRecoilValue(userSelector)
 	const [stars, setStars] = useState(null)
 	const [feedback, setFeedback] = useState(null)
@@ -17,12 +18,12 @@ const Rating = ({ closeModal }) => {
 
 	function handleSubmit() {
 		addRating({
-			customerID: user.customerID,
+			customerID: user.customerID as number,
 			driverID: 1,
 			rating: stars,
 			reviewBody: feedback,
 			areasOfImprovement: improve,
-		})
+		} as Rating)
 		closeModal()
 	}
 

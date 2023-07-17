@@ -1,14 +1,13 @@
 // Email form for entering/modifying email and password
 // TODO: Forgot email/password?
 
-import { useRouter } from 'next/router'
 import { FaEnvelope, FaKey } from 'react-icons/fa'
 
 export function EmailForm({
 	register,
 	errors,
 	signInError = false,
-}) {
+}: any) {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks
@@ -26,7 +25,7 @@ export function EmailForm({
 	)
 }
 
-function PasswordInput(register, errors, signInError: boolean) {
+function PasswordInput(register: any, errors: any, signInError: boolean) {
 	return (
 		<div className='relative w-full pb-4 md:mb-0'>
 			<input
@@ -52,7 +51,7 @@ function PasswordInput(register, errors, signInError: boolean) {
 	)
 }
 
-function EmailInput(register, errors) {
+function EmailInput(register: any, errors: any) {
 	return (
 		<div className='relative w-full pb-6 md:mb-0'>
 			<input

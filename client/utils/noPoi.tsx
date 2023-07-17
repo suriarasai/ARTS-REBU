@@ -1,6 +1,6 @@
 import Styles from '@/styles/maps.json'
 
-function noPoi(visible) {
+function noPoi(visible: boolean) {
 	/* Google Maps custom styling to hide/show points of interest
 	 * Used by: togglePoiButton, Booking
 	 *
@@ -18,27 +18,27 @@ function noPoi(visible) {
 			],
 		},
 		{
-			"featureType": "all",
-			"elementType": "labels.text",
-			"stylers": [
+			featureType: 'all',
+			elementType: 'labels.text',
+			stylers: [
 				{
-					"color": "#878787"
-				}
-			]
+					color: '#878787',
+				},
+			],
 		},
 		{
-			"featureType": "all",
-			"elementType": "labels.text.stroke",
-			"stylers": [
+			featureType: 'all',
+			elementType: 'labels.text.stroke',
+			stylers: [
 				{
-					"visibility": "off"
-				}
-			]
+					visibility: 'off',
+				},
+			],
 		},
 	]
 }
 
-export default function mapStyles(map, poi) {
+export default function mapStyles(map: google.maps.Map, poi: boolean) {
 	map.setOptions({
 		styles: noPoi(!poi),
 		zoomControl: false,

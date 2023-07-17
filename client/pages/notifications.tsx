@@ -3,17 +3,12 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { sendBookingToKafka } from '@/server'
 import {
 	bookingAtom,
+	bookingEvent,
 	clickedOptionAtom,
 	screenAtom,
-	userAtom,
 } from '@/utils/state'
 import { useEffect, useState } from 'react'
-import {
-	FaAngleDown,
-	FaArrowCircleLeft,
-	FaArrowLeft,
-	FaCreditCard,
-} from 'react-icons/fa'
+import { FaAngleDown, FaArrowLeft, FaCreditCard } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 const bookingStub = {
@@ -59,7 +54,7 @@ const Notifications = () => {
 	useEffect(() => {
 		setBooking(bookingStub)
 		if (!user) {
-			setUser(JSON.parse(localStorage.getItem('user')))
+			setUser(JSON.parse(localStorage.getItem('user') as string))
 		}
 	}, [])
 
@@ -107,7 +102,7 @@ const RideSelection = () => {
 	return (
 		<div className='p-4'>
 			<h3 className='font-bold'>Select an option:</h3>
-			<div className='py-4 flex w-full space-x-4 border-b border-zinc-200'>
+			<div className='flex w-full space-x-4 border-b border-zinc-200 py-4'>
 				<div className='flex w-1/2 flex-col rounded-xl bg-zinc-100 px-4 py-2 shadow-md'>
 					<p>Standard</p>
 					<p>$9.90</p>
@@ -120,21 +115,29 @@ const RideSelection = () => {
 				</div>
 			</div>
 			<div className='flex items-center space-x-3 py-4'>
-				<FaCreditCard className='text-green-500 mr-3' />
+				<FaCreditCard className='mr-3 text-green-500' />
 				{booking.paymentMethod}
 				<FaAngleDown className='text-zinc-200' />
-				<button className='!ml-auto bg-green-500 text-white py-2 px-4 rounded-lg'>Order Now</button>
+				<button className='!ml-auto rounded-lg bg-green-500 px-4 py-2 text-white'>
+					Order Now
+				</button>
 			</div>
 		</div>
 	)
 }
 
-const Header = ({ booking, taxiETA }) => {
+const Header = ({
+	booking,
+	taxiETA,
+}: {
+	booking: bookingEvent
+	taxiETA: number
+}) => {
 	const [screen, setScreen] = useRecoilState(screenAtom)
 	return (
 		<div className='transparent-gradient flex w-screen items-center space-x-6 p-8'>
 			<div className='flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-xl text-white'>
-				<FaArrowLeft onClick={() => sendBookingToKafka('SendingMessage')}/>
+				<FaArrowLeft onClick={() => sendBookingToKafka('SendingMessage')} />
 			</div>
 			<div className=''>
 				{/* Upper text with user name */}

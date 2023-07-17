@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
-import { rewardPoints } from '@/redux/types/types'
+import { rewardPoints } from '@/types'
 import { Rewards, Title } from '@/constants'
 import { userAtom } from '@/utils/state'
 import { useRecoilState } from 'recoil'
@@ -10,7 +10,7 @@ const RewardPoints = () => {
 	const [user, setUser] = useRecoilState(userAtom)
 	const rewardsForm = useRef<any>(null)
 
-	const [rewardPoints, updateRewardPoints] = useState<number>()
+	const [rewardPoints, updateRewardPoints] = useState<number>(0)
 	// user.rewardPoints ? user.rewardPoints : 0
 	const [rewardHistory, updateRewardHistory] = useState<rewardPoints[]>()
 	// user.rewardHistory!

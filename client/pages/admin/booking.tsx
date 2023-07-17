@@ -3,9 +3,10 @@ import { db } from '@/utils/firebase'
 import { collection, onSnapshot } from 'firebase/firestore'
 import Admin from '@/components/ui/admin'
 import { deleteBooking, setBookingDispatched } from '@/utils/taxiBookingSystem'
+import { bookingEvent } from '@/utils/state'
 
 export default function Dashboard() {
-	const [bookings, setBookings] = useState([])
+	const [bookings, setBookings] = useState<any>([])
 	const bookingRequestRef = collection(db, 'BookingEvent')
 
 	useEffect(() => {
@@ -56,7 +57,7 @@ export default function Dashboard() {
 										</tr>
 									</thead>
 									<tbody>
-										{bookings.map((item) => (
+										{bookings.map((item: any) => (
 											<TR item={item} />
 										))}
 									</tbody>
@@ -70,9 +71,9 @@ export default function Dashboard() {
 	)
 }
 
-const TR = ({ item }) => {
+const TR = ({ item }: { item: { data: bookingEvent, id: number } }) => {
 	function handleApproval() {
-		setBookingDispatched(item.data.customerID.toString())
+		setBookingDispatched(item.data.customerID!.toString())
 	}
 
 	const StatusButton = () => (
@@ -97,7 +98,7 @@ const TR = ({ item }) => {
 				item.data.status === 'completed') && (
 				<button
 					className='w-full rounded-md bg-red-200 p-2 shadow-md'
-					onClick={() => deleteBooking(item.data.customerID.toString())}
+					onClick={() => deleteBooking(item.data.customerID!.toString())}
 				>
 					Remove
 				</button>
@@ -110,14 +111,14 @@ const TR = ({ item }) => {
 			<td className='whitespace-nowrap px-6 py-4 font-medium'>
 				{item.data.bookingID}
 			</td>
-			<td className='whitespace-nowrap px-6 py-4'>
-				{item.data.status}
-			</td>
+			<td className='whitespace-nowrap px-6 py-4'>{item.data.status}</td>
 			<td className='whitespace-nowrap px-6 py-4'>{item.data.customerName}</td>
 			<td className='whitespace-nowrap px-6 py-4'>{item.data.customerID}</td>
 			<td className='whitespace-nowrap px-6 py-4'>{item.data.driverID}</td>
 			<td className='whitespace-nowrap px-6 py-4'>{item.data.sno}</td>
-			<td className='whitespace-nowrap px-6 py-4'><StatusButton /></td>
+			<td className='whitespace-nowrap px-6 py-4'>
+				<StatusButton />
+			</td>
 		</tr>
 	)
 }
