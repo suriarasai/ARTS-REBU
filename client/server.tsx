@@ -1,8 +1,28 @@
 import api from '@/api/axiosConfig'
-import { User } from './redux/types/types'
+import { User } from './types'
 import { getAddress } from './utils/getAddress'
 import axios from 'axios'
 import { renderDirections } from './utils/renderDirections'
+
+const { Kafka } = require('kafkajs')
+
+const kafka = new Kafka({
+	clientId: 'myproducer',
+	brokers: ['localhost:9092'],
+})
+
+const producer = kafka.producer()
+
+export async function produceMessage(message, topic='firsttopic') {
+	await producer.connect()
+
+	await producer.send({
+		topic: topic,
+		messages: [{ value: message}],
+	})
+
+	await producer.disconnect()
+}
 
 // Account Settings: Updates user information
 export const UpdateUser = async (data: User | any, customerID) => {

@@ -2,14 +2,13 @@
 // TODO: Forgot email/password?
 
 import { useRouter } from 'next/router'
-import { EmailInterface } from '@/redux/types/types'
 import { FaEnvelope, FaKey } from 'react-icons/fa'
 
 export function EmailForm({
 	register,
 	errors,
 	signInError = false,
-}: EmailInterface) {
+}) {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks

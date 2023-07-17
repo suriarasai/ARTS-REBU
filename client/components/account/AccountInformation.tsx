@@ -1,7 +1,6 @@
 // For viewing and modifying account information
 
 import { MobileNumber } from '@/components/account/MobileNumber'
-import { ProfileInterface } from '@/redux/types/types'
 import { icon } from '@/constants'
 import { FaUser } from 'react-icons/fa'
 import { EmailForm } from './EmailForm'
@@ -14,7 +13,7 @@ const AccountInformation = ({
 	errors,
 	newUser = false,
 	populateData = {},
-}: ProfileInterface) => {
+}) => {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks

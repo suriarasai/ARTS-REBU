@@ -14,17 +14,12 @@ import {
 } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'
 
-const Dispatch = ({ taxiETA }) => {
+const Dispatch = () => {
 	const booking = useRecoilValue(bookingAtom)
-
-	if (!booking) {
-		return <LoadingScreen />
-	}
 
 	return (
 		<>
 			<DriverInformation booking={booking} />
-			{/* <CarInformation booking={booking} /> */}
 			<TripInformation booking={booking} />
 			<TripStatistics booking={booking} />
 		</>
@@ -32,19 +27,6 @@ const Dispatch = ({ taxiETA }) => {
 }
 
 export default Dispatch
-
-const CarInformation = ({ booking }) => (
-	<div className='flex items-center space-x-4 border-b border-zinc-200 px-6 py-2'>
-		<FaCar className='text-3xl' />
-		<div>
-			<b className=''>{booking.taxiNumber}</b>
-			<h5>
-				{booking.taxiColor} {booking.taxiMakeModel}
-			</h5>
-		</div>
-
-	</div>
-)
 
 const TripStatistics = ({ booking }) => (
 	<div className='flex items-center space-x-5 p-4'>
@@ -81,31 +63,22 @@ const TripInformation = ({ booking }) => (
 )
 
 const DriverInformation = ({ booking }) => (
-	<div className='rounded-t-xl border-b border-zinc-400'>
+	<div className='border-b border-zinc-300'>
 		<div className='flex space-x-3 px-6 py-4'>
 			<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-300'>
 				<FaUser />
 			</div>
 			<div className=''>
 				{booking.driverName}
-				{/* <div className='flex space-x-2'> */}
 				<div>
-					{/* <FaStar className='text-yellow-400' /> */}
-					{/* <h5>{booking.rating}</h5> */}
-					<h5>{booking.taxiColor} {booking.taxiMakeModel}</h5>
+					<h5>
+						{booking.taxiColor} {booking.taxiMakeModel}
+					</h5>
 				</div>
 			</div>
-			<div className='!ml-auto border border-zinc-200 px-3 py-1 flex items-center rounded-xl'>
+			<div className='!ml-auto flex items-center rounded-xl border border-zinc-200 px-3 py-1'>
 				<p className='!font-semibold text-green-600'>{booking.taxiNumber}</p>
 			</div>
-			{/* <div className='!ml-auto flex space-x-3'>
-				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-300'>
-					<FaComments />
-				</div>
-				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-300'>
-					<FaPhone />
-				</div>
-			</div> */}
 		</div>
 	</div>
 )
