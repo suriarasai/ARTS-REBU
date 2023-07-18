@@ -46,7 +46,7 @@ public class BookingController {
     // (unused) GET: Returns all bookings associated with a taxi driver
     @GetMapping("/taxi/{_id}")
     public ResponseEntity<List<Booking>> getByTaxiID(@PathVariable Integer _id) {
-        return new ResponseEntity<List<Booking>>(query.getByTaxiID(_id), HttpStatus.OK);
+        return new ResponseEntity<List<Booking>>(query.getByTaxiSno(_id), HttpStatus.OK);
     }
 
     // GET: Returns all bookings associated with a user

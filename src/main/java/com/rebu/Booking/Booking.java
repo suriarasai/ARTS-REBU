@@ -48,7 +48,7 @@ public class Booking {
      * 
      * @param driverID : unique ID associated with a driver
      * 
-     * @param taxiID : unique ID associated with a taxi
+     * @param sno : unique ID associated with a taxi
      * 
      * @param distance : distance travelled (in kilometers)
      * 
@@ -73,7 +73,7 @@ public class Booking {
     // New Fields
     private String status;
     private Integer driverID;
-    private Integer taxiID;
+    private Integer sno;
     private Float distance;
     private String paymentMethod;
     private Long dropTime;
@@ -109,9 +109,9 @@ public class Booking {
     }
 
     // Matching a driver to the booking request
-    public void MatchedBooking(Integer driverID, Integer taxiID) {
+    public void MatchedBooking(Integer driverID, Integer sno) {
         this.driverID = driverID;
-        this.taxiID = taxiID;
+        this.sno = sno;
         this.status = "dispatched";
     }
 

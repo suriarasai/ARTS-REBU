@@ -208,12 +208,12 @@ export const createBooking = async (
 export const matchedBooking = async (
 	bookingID: number,
 	driverID: number,
-	taxiID: number
+	sno: number
 ) => {
 	const response = await api.post('/api/v1/Booking/matchedBooking', {
 		bookingID: bookingID,
 		driverID: driverID,
-		taxiID: taxiID,
+		sno: sno,
 	})
 	return response
 }
@@ -261,7 +261,7 @@ export async function CoordinateToAddress(
 }
 
 // Loads the nearest N taxis onto the map
-// TODO: Return list of objects with taxiID, driverID values
+// TODO: Return list of objects with sno, driverID values
 export const loadTaxis = (
 	map: google.maps.Map,
 	coord: number[],

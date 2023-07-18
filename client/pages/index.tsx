@@ -18,9 +18,9 @@ const SignIn = () => {
 	const [, setUser] = useRecoilState(userAtom)
 
 	useEffect(() => {
-		const loggedInUser = localStorage.getItem('user')
-		if (loggedInUser !== null) {
-			setUser(JSON.parse(loggedInUser))
+		const loggedInUser = JSON.parse(localStorage.getItem('user') as string)
+		if (loggedInUser && loggedInUser.customerName) {
+			setUser(loggedInUser)
 			Router.push(HREF.HOME)
 		} else {
 			setLoading(false)

@@ -11,6 +11,6 @@ public interface BookingRepository extends MongoRepository<Booking, Integer> {
     public Booking findByBookingID(Integer bookingID);
     public List<Booking> findByCustomerID(Integer customerID);
     public List<Booking> findByDriverID(Integer driverID);
-    public List<Booking> findByTaxiID(Integer taxiID);
+    public List<Booking> findBySno(Integer sno);
     public Booking findFirstByOrderByBookingIDDesc();
 }

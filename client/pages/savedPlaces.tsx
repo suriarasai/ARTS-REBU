@@ -65,9 +65,10 @@ const SavedPlaces = () => {
 			<div className='relative'>
 				<Autocomplete
 					onPlaceChanged={() => {
-						;(searchRef as React.Ref<HTMLInputElement> | any).value = ''
 						addPlace()
 						setValueObserver('')
+						// @ts-ignore
+						searchRef.current.value = ''
 					}}
 					onLoad={(e) => setAutoComplete(e)}
 					fields={[
@@ -120,10 +121,15 @@ const SavedPlaces = () => {
 	)
 }
 
-const SavedLocation = ({ user, setUser, label, place }: {
-	user: User,
-	setUser: React.Dispatch<React.SetStateAction<User>>,
-	label: string,
+const SavedLocation = ({
+	user,
+	setUser,
+	label,
+	place,
+}: {
+	user: User
+	setUser: React.Dispatch<React.SetStateAction<User>>
+	label: string
 	place: Location
 }) => {
 	const [editLocation, updateEditLocation] = useState<boolean>(false)
@@ -213,7 +219,7 @@ const SavedLocation = ({ user, setUser, label, place }: {
 				) : (
 					<div>
 						<b className='text-sm font-medium'>{label}</b>
-						<h5>{place ? place.placeName : Message.SET_LOCATION}</h5>
+						<h5>{place.placeName ? place.placeName : Message.SET_LOCATION}</h5>
 					</div>
 				)}
 			</div>

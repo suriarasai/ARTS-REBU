@@ -68,8 +68,8 @@ function Booking() {
 	// Set origin address after clicking a saved location
 	useEffect(() => {
 		if (origin.lat) {
-			;(originRef.current as React.Ref<HTMLInputElement> | any).value =
-				origin.placeName
+			// @ts-ignore
+			originRef.current.value = origin.placeName
 
 			if (!marks.origin) {
 				marks.origin = mark(
@@ -94,10 +94,11 @@ function Booking() {
 
 	// Set destination address after clicking a saved location
 	useEffect(() => {
-		if (destination.lat) {			
-			(destinationRef.current as React.Ref<HTMLInputElement> | any).value = destination.placeName
-
+		if (destination.lat) {
 			isValidInput(true)
+
+			// @ts-ignore
+			destinationRef.current.value = destination.placeName
 
 			if (!marks.destination) {
 				marks.destination = mark(

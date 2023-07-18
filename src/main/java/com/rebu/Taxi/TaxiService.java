@@ -26,7 +26,7 @@ public class TaxiService {
     // API: Adds a new taxi
     public Taxi createTaxi(Taxi data) {
 
-        // Auto-incrementing TaxiID
+        // Auto-incrementing sno
         Taxi prevTaxi = TaxiRepository.findFirstByOrderBySnoDesc();
         Integer sno = prevTaxi == null ? 1 : prevTaxi.getSno() + 1;
 

@@ -20,7 +20,7 @@ public class Driver {
     private Integer driverID;
     private String driverName;
     private Integer driverNumber;
-    private Integer taxiID;
+    private Integer sno;
     private Double rating;
 
     public Driver(Integer driverID) {
@@ -30,7 +30,7 @@ public class Driver {
     public void setDriver(Driver data) {
         this.driverName = data.driverName;
         this.driverNumber = data.driverNumber;
-        this.taxiID = data.taxiID;
+        this.sno = data.sno;
     }
 
     public void setRating(Double rating) {

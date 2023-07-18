@@ -24,9 +24,9 @@ public class BookingService {
         return BookingRepository.findByBookingID(_id);
     }
 
-    // (unused) API: Returns all bookings associated with a taxiID
-    public List<Booking> getByTaxiID(Integer _id) {
-        return BookingRepository.findByTaxiID(_id);
+    // (unused) API: Returns all bookings associated with a sno
+    public List<Booking> getByTaxiSno(Integer _id) {
+        return BookingRepository.findBySno(_id);
     }
 
     // (unused) API: Returns all bookings associated with a driverID
@@ -66,7 +66,7 @@ public class BookingService {
 
     public String matchedBooking(Booking data) {
         Booking booking = BookingRepository.findByBookingID(data.getBookingID());
-        booking.MatchedBooking(data.getDriverID(), data.getTaxiID());
+        booking.MatchedBooking(data.getDriverID(), data.getSno());
         BookingRepository.save(booking);
 
         return null;
