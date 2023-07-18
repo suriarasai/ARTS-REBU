@@ -13,7 +13,7 @@ const AccountInformation = ({
 	errors,
 	newUser = false,
 	populateData = {},
-}) => {
+}: any) => {
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks
@@ -77,7 +77,7 @@ const AccountInformation = ({
 						defaultValue={
 							populateData['countryCode']
 								? populateData['countryCode']
-								: phoneCountryCodes[user.phoneCountryCode]
+								: phoneCountryCodes[user.phoneCountryCode as number]
 						}
 						className='white-input rounded-md py-2 shadow-sm'
 					>
@@ -130,7 +130,7 @@ const AccountInformation = ({
 
 export default AccountInformation
 
-const phoneCountryCodes = {
+const phoneCountryCodes: any = {
 	65: 'SGP',
 	60: 'MYS',
 	62: 'IDN',
@@ -138,7 +138,7 @@ const phoneCountryCodes = {
 	63: 'PHL',
 }
 
-const DropDownArrow = ({ mt, px }) => (
+const DropDownArrow = ({ mt, px }: { mt: number; px: number }) => (
 	<div
 		className={`pointer-events-none absolute inset-y-0 right-0 mt-${mt} flex px-${px} text-gray-700`}
 	>

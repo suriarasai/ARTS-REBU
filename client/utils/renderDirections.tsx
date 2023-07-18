@@ -1,26 +1,31 @@
-import { polylineTrafficColors } from "@/constants";
+import { polylineTrafficColors } from '@/constants'
 
+export const renderDirections = async (
+	map: google.maps.Map,
+	encodedPath: any,
+	setPolyline: any
+) => {
+	const path = google.maps.geometry.encoding.decodePath(
+		encodedPath.polyline.encodedPolyline
+	)
 
-export const renderDirections = async (map, encodedPath, setPolyline) => {
-	const path = google.maps.geometry.encoding.decodePath(encodedPath.polyline.encodedPolyline);
+	const intervals = encodedPath.travelAdvisory.speedReadingIntervals
+	let routePolyline: google.maps.Polyline[] = []
 
-	const intervals = encodedPath.travelAdvisory.speedReadingIntervals;
-	let routePolyline = [];
-
-	intervals.map((segment) => {
+	intervals.map((segment: any) => {
 		const segmentPolyline = new google.maps.Polyline({
 			path: path.slice(
 				segment.startPolylinePointIndex,
 				segment.endPolylinePointIndex + 1
 			),
-			strokeColor: polylineTrafficColors[segment.speed],
+			strokeColor: (polylineTrafficColors as any)[segment.speed],
 			strokeOpacity: 1,
 			strokeWeight: 6,
-		});
-		segmentPolyline.setMap(map);
+		})
+		segmentPolyline.setMap(map)
 
-		routePolyline.push(segmentPolyline);
-	});
+		routePolyline.push(segmentPolyline)
+	})
 
 	setPolyline(routePolyline)
-};
+}

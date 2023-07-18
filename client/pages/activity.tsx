@@ -32,11 +32,11 @@ const Activity = () => {
 	// On-click styling for the tabbers
 	const [activeTab, setActiveTab] = useState<string>('Upcoming')
 	const [tripList, setTripList] = useState<Array<Object>>([])
-	const [bookingID, setBookingID] = useState(null)
+	const [bookingID, setBookingID] = useState<number | null>(null)
 
 	useEffect(() => {
 		// Retrieve all bookings associated with a user
-		getBookingsByCustomerID(user.customerID, setTripList)
+		getBookingsByCustomerID(user.customerID as number, setTripList)
 	}, [])
 
 	if (bookingID) {
@@ -57,8 +57,7 @@ const Activity = () => {
 				<TripList
 					tripList={tripList}
 					activeTab={activeTab}
-					bookingID={bookingID}
-					setBookingID={setBookingID}
+					setBookingID={setBookingID as any}
 				/>
 			</Suspense>
 		</Page>
@@ -67,12 +66,20 @@ const Activity = () => {
 
 export default Activity
 
-const TripList = ({ tripList, activeTab, bookingID, setBookingID }) => {
+const TripList = ({
+	tripList,
+	activeTab,
+	setBookingID,
+}: {
+	tripList: any
+	activeTab: string
+	setBookingID: React.Dispatch<React.SetStateAction<number>>
+}) => {
 	return (
 		<div className='h-96 overflow-auto'>
 			{tripList.length !== 0 ? (
 				tripList.map(
-					(trip, index) =>
+					(trip: any, index: number) =>
 						// Filter by upcoming trips (requested or dispatch status)
 						((activeTab === 'Upcoming' &&
 							['requested', 'dispatched'].includes(trip['status'])) ||
@@ -93,7 +100,13 @@ const TripList = ({ tripList, activeTab, bookingID, setBookingID }) => {
 	)
 }
 
-const TripDetails = ({ trip, setBookingID }) => {
+const TripDetails = ({
+	trip,
+	setBookingID,
+}: {
+	trip: any
+	setBookingID: React.Dispatch<React.SetStateAction<number>>
+}) => {
 	return (
 		<div
 			className='trip-container'
@@ -109,7 +122,6 @@ const TripDetails = ({ trip, setBookingID }) => {
 			<TripStatistics
 				fare={trip['fare']}
 				distance={trip['distance']}
-				id={trip['bookingID']}
 				date={trip['messageSubmittedTime']}
 			/>
 			<FaAngleRight className='order-3 mb-auto mt-auto w-1/12' />
@@ -117,7 +129,13 @@ const TripDetails = ({ trip, setBookingID }) => {
 	)
 }
 
-const TabController = ({ activeTab, setActiveTab }) => (
+const TabController = ({
+	activeTab,
+	setActiveTab,
+}: {
+	activeTab: string
+	setActiveTab: React.Dispatch<React.SetStateAction<string>>
+}) => (
 	<ul className='flex'>
 		<li className='mr-2 flex-1'>
 			<a
@@ -139,7 +157,7 @@ const TabController = ({ activeTab, setActiveTab }) => (
 )
 
 // Icon for pending, dispatched, cancelled, and completed rides
-const StatusIcon = ({ status }) => (
+const StatusIcon = ({ status }: { status: string }) => (
 	<div className='center w-2/12'>
 		{status === 'requested' && <FaClock className='trip-icon text-zinc-500' />}
 		{status === 'dispatched' && (
@@ -155,7 +173,17 @@ const StatusIcon = ({ status }) => (
 )
 
 // Location details of the ride
-const LocationInfo = ({ address1, name1, address2, name2 }) => (
+const LocationInfo = ({
+	address1,
+	name1,
+	address2,
+	name2,
+}: {
+	address1: string
+	name1: string
+	address2: string
+	name2: string
+}) => (
 	<div className='cut-text w-6/12 flex-col items-center pl-3'>
 		<h2 className='mb-1'>{name1 || address1}</h2>
 		<h5>from | {name2 || address2}</h5>
@@ -163,11 +191,17 @@ const LocationInfo = ({ address1, name1, address2, name2 }) => (
 )
 
 // Numeric details of the ride
-const TripStatistics = ({ fare, distance, id, date }) => {
+const TripStatistics = ({
+	fare,
+	distance,
+	date,
+}: {
+	fare: number
+	distance: number
+	date: string
+}) => {
 	const dt = new Date(parseInt(date, 10))
 	return (
-		// TODO: Time instead of distance
-		// TODO: Booking ID
 		<div className='order-2 mb-auto mt-auto w-4/12 text-right'>
 			<h1>${fare}</h1>
 			<h5>
@@ -175,23 +209,4 @@ const TripStatistics = ({ fare, distance, id, date }) => {
 			</h5>
 		</div>
 	)
-}
-
-const convertToMonth = (date) => {
-	const month = date[1]
-	const months = [
-		'January',
-		'February',
-		'March',
-		'April',
-		'May',
-		'June',
-		'July',
-		'August',
-		'September',
-		'October',
-		'November',
-		'December',
-	]
-	return months[month - 1] + ' ' + date[0]
 }

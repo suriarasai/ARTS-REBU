@@ -6,8 +6,8 @@ import { useRecoilValue } from 'recoil'
 
 const Rating = ({ closeModal }: { closeModal: Function }) => {
 	const user = useRecoilValue(userSelector)
-	const [stars, setStars] = useState(null)
-	const [feedback, setFeedback] = useState(null)
+	const [stars, setStars] = useState<number | null>(null)
+	const [feedback, setFeedback] = useState<string | null>(null)
 	const [improve, setImprove] = useState({
 		cleanliness: false,
 		politeness: false,
@@ -23,7 +23,7 @@ const Rating = ({ closeModal }: { closeModal: Function }) => {
 			rating: stars,
 			reviewBody: feedback,
 			areasOfImprovement: improve,
-		} as Rating)
+		} as Rating | any)
 		closeModal()
 	}
 
@@ -82,7 +82,7 @@ const Rating = ({ closeModal }: { closeModal: Function }) => {
 				rows={3}
 				className='focus:outline-0.5 ml-auto mr-auto w-3/4 rounded-lg p-3 shadow-sm outline-green-500'
 				placeholder='Leave a message'
-				value={feedback}
+				value={feedback as any}
 				onChange={(e) => setFeedback(e.target.value)}
 			/>
 
@@ -96,7 +96,15 @@ const Rating = ({ closeModal }: { closeModal: Function }) => {
 	)
 }
 
-const Star = ({ label, value, setClicked }) => {
+const Star = ({
+	label,
+	value,
+	setClicked,
+}: {
+	label: string
+	value: number
+	setClicked: React.Dispatch<React.SetStateAction<number | null>>
+}) => {
 	return (
 		<>
 			<input
@@ -110,7 +118,12 @@ const Star = ({ label, value, setClicked }) => {
 	)
 }
 
-const Field = ({ label, id, setField, field }) => {
+const Field = ({ label, id, setField, field }: {
+	label: string,
+	id: string,
+	setField: React.Dispatch<React.SetStateAction<any>>,
+	field: any
+}) => {
 	function handleClick() {
 		setField({ ...field, [id]: !field[id] })
 	}

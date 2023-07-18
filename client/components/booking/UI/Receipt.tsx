@@ -8,14 +8,25 @@ import { Popup } from '@/components/ui/Popup'
 import { PDFExport } from '@progress/kendo-react-pdf'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 import { useRecoilValue } from 'recoil'
-import { userSelector } from '@/utils/state'
+import { bookingEvent, userSelector } from '@/utils/state'
 
 const ref: any = createRef()
 
-const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
+const Receipt = ({
+	bookingID,
+	setScreen,
+	booking = null,
+	taxi = null,
+}: {
+	bookingID: number
+	setScreen: React.Dispatch<React.SetStateAction<string>>
+	booking?: any
+	taxi?: any
+}) => {
 	const user = useRecoilValue(userSelector)
-	const [bookingInformation, setBookingInformation] = useState(null)
-	const [taxiInformation, setTaxiInformation] = useState(null)
+	const [bookingInformation, setBookingInformation] =
+		useState<bookingEvent | null>(null)
+	const [taxiInformation, setTaxiInformation] = useState<any>(null)
 	const [popup, setPopup] = useState(null)
 
 	useEffect(() => {
@@ -34,7 +45,7 @@ const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
 			} else if (bookingInformation.status === 'cancelled') {
 				setTaxiInformation({ status: 'cancelled' })
 			} else {
-				getTaxi(bookingInformation.taxiID, setTaxiInformation)
+				getTaxi(bookingInformation.sno as number, setTaxiInformation)
 				console.log('status: Booking has a taxi number')
 				console.log(taxiInformation)
 
@@ -62,8 +73,8 @@ const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
 				<label>Your booking</label>
 				<BookingInformation
 					bookingID={bookingID}
-					origin={bookingInformation.pickUpLocation.placeName}
-					destination={bookingInformation.dropLocation.placeName}
+					pickUpLocation={bookingInformation.pickUpLocation!}
+					dropLocation={bookingInformation.dropLocation!}
 					pickUpTime={bookingInformation.pickUpTime}
 					dropTime={bookingInformation.dropTime}
 					taxiNumber={taxiInformation.taxiNumber}
@@ -72,7 +83,7 @@ const Receipt = ({ bookingID, setScreen, booking = null, taxi = null }) => {
 				<hr className='my-4 border-2 border-zinc-100' />
 
 				<label>Payment Detail</label>
-				<FareBreakdown fare={bookingInformation.fare} />
+				<FareBreakdown fare={bookingInformation.fare as number} />
 
 				<hr className='my-4 border-2 border-zinc-100' />
 
@@ -93,32 +104,33 @@ export default Receipt
 
 const BookingInformation = ({
 	bookingID,
-	origin,
-	destination,
+	pickUpLocation,
+	dropLocation,
 	pickUpTime,
 	dropTime,
 	taxiNumber,
-}) => (
+}: bookingEvent) => (
 	<>
 		<p className='mb-5 flex'>
 			Booking Number: <b className='ml-1 text-green-500'>{bookingID}</b>
 		</p>
 		<p className='mb-1 font-medium'>
-			From <u>{origin}</u> to <u>{destination}</u>
+			From <u>{pickUpLocation!.placeName}</u> to{' '}
+			<u>{dropLocation!.placeName}</u>
 		</p>
 		<h5>
-			{new Date(pickUpTime).toLocaleString([], {
+			{new Date(pickUpTime as number).toLocaleString([], {
 				year: 'numeric',
 				month: 'numeric',
 				day: 'numeric',
 			})}{' '}
 			from{' '}
-			{new Date(pickUpTime).toLocaleString([], {
+			{new Date(pickUpTime as number).toLocaleString([], {
 				hour: '2-digit',
 				minute: '2-digit',
 			})}{' '}
 			to{' '}
-			{new Date(dropTime).toLocaleString([], {
+			{new Date(dropTime as number).toLocaleString([], {
 				hour: '2-digit',
 				minute: '2-digit',
 			})}
@@ -127,7 +139,7 @@ const BookingInformation = ({
 	</>
 )
 
-const FareBreakdown = ({ fare }) => (
+const FareBreakdown = ({ fare }: { fare: number }) => (
 	<div className='columns-2'>
 		<div className='ml-6 space-y-1'>
 			<p>Base Fare</p>
@@ -144,14 +156,18 @@ const FareBreakdown = ({ fare }) => (
 	</div>
 )
 
-const PaymentInformation = ({ fare, dropTime, paymentMethod }) => (
+const PaymentInformation = ({
+	fare,
+	dropTime,
+	paymentMethod,
+}: bookingEvent) => (
 	<>
 		<div className='w-full columns-2'>
 			<div>
 				<p className='ml-6'>
 					{paymentMethod === 'Cash'
 						? 'Cash'
-						: 'VISA ' + formatCreditCardNumber(paymentMethod)}
+						: 'VISA ' + formatCreditCardNumber(paymentMethod as string)}
 				</p>
 			</div>
 			<div className='mr-8 text-right'>
@@ -159,7 +175,7 @@ const PaymentInformation = ({ fare, dropTime, paymentMethod }) => (
 			</div>
 		</div>
 		<h5 className='ml-6'>
-			{new Date(dropTime).toLocaleString([], {
+			{new Date(dropTime as number).toLocaleString([], {
 				year: 'numeric',
 				month: 'numeric',
 				day: 'numeric',
@@ -170,7 +186,13 @@ const PaymentInformation = ({ fare, dropTime, paymentMethod }) => (
 	</>
 )
 
-const MenuOptions = ({ setScreen, setPopup }) => (
+const MenuOptions = ({
+	setScreen,
+	setPopup,
+}: {
+	setScreen: React.MouseEventHandler<HTMLButtonElement> | any
+	setPopup: React.Dispatch<React.SetStateAction<string | null>> | any
+}) => (
 	<div className='ml-auto mr-auto mt-7 flex w-full items-center justify-center space-x-2'>
 		<button
 			className='w-1/2 rounded-xl bg-zinc-400 px-4 py-2 text-white shadow-sm'

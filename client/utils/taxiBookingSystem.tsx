@@ -1,8 +1,9 @@
 import { db } from '@/utils/firebase'
 import { deleteDoc, doc, setDoc } from 'firebase/firestore'
+import { bookingEvent } from './state'
 
-export function createBookingRequest(data) {
-	setBooking(data.customerID.toString(), {
+export function createBookingRequest(data: bookingEvent) {
+	setBooking(data.customerID!, {
 		customerID: data.customerID,
 		customerName: data.customerName,
 		phoneNumber: data.phoneNumber,
@@ -19,7 +20,7 @@ export function createBookingRequest(data) {
 
 // This is supposed to be from the driver application
 // Not all driver information needs to be returned; can query for it after getting the driverID
-export function setBookingDispatched(customerID) {
+export function setBookingDispatched(customerID: number) {
 	setBooking(customerID, {
 		status: 'dispatched',
 		tmdtid: 1,
@@ -35,20 +36,20 @@ export function setBookingDispatched(customerID) {
 	})
 }
 
-export function setBookingCancelled(customerID) {
+export function setBookingCancelled(customerID: number) {
 	setBooking(customerID, { status: 'cancelled' })
 }
 
-export function setBookingCompleted(customerID) {
+export function setBookingCompleted(customerID: number) {
 	setBooking(customerID, { status: 'completed' })
 }
 
-export async function deleteBooking(customerID) {
-	await deleteDoc(doc(db, 'BookingEvent', customerID))
+export async function deleteBooking(customerID: number) {
+	await deleteDoc(doc(db, 'BookingEvent', customerID.toString()))
 }
 
-function setBooking(customerID, data) {
-	setDoc(doc(db, 'BookingEvent', customerID), data, {
+function setBooking(customerID: number, data: bookingEvent) {
+	setDoc(doc(db, 'BookingEvent', customerID.toString()), data, {
 		merge: true,
 	})
 		.then((response) => {

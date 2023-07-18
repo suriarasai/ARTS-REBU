@@ -5,8 +5,11 @@ import { useState } from 'react'
 import { FaCircle } from 'react-icons/fa'
 import { useRecoilState } from 'recoil'
 
-export const InputCurrentLocation = ({ originRef, isValidInput }) => {
-	const [originAutocomplete, setOriginAutocomplete] = useState(null)
+export const InputCurrentLocation = ({ originRef, isValidInput }: {
+	originRef: React.Ref<HTMLInputElement>,
+	isValidInput: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
+	const [originAutocomplete, setOriginAutocomplete] = useState<google.maps.places.PlaceAutocompleteElement | any>(null)
 	const [, setOrigin] = useRecoilState(originAtom)
 	const [, setSearchType] = useRecoilState(searchTypeAtom)
 
@@ -16,7 +19,7 @@ export const InputCurrentLocation = ({ originRef, isValidInput }) => {
 				onLoad={(e) => setOriginAutocomplete(e)}
 				onPlaceChanged={() => {
 					setSearchType(0)
-					setOrigin(getAddress(originAutocomplete.getPlace()))
+					setOrigin(getAddress(originAutocomplete.getPlace()) as any)
 				}}
 				options={{ componentRestrictions: { country: 'sg' } }}
 				fields={['address_components', 'geometry', 'formatted_address']}

@@ -18,13 +18,13 @@ import { userSelector } from '@/utils/state'
 import { useRecoilValue } from 'recoil'
 
 const PaymentOptions = ({}) => {
-	const [screen, setScreen] = useState<String>('main')
+	const [screen, setScreen] = useState<string>('main')
 	const user = useRecoilValue(userSelector)
 	const [cards, setCards] = useState([])
 
 	useEffect(() => {
 		if (user) {
-			GetPaymentMethod(user.customerID, (data) => setCards(data))
+			GetPaymentMethod(user.customerID as number, (data: any) => setCards(data))
 		}
 	}, [])
 
@@ -37,7 +37,7 @@ const PaymentOptions = ({}) => {
 			{screen === 'addPaymentMethod' && (
 				<AddCard
 					setScreen={setScreen}
-					customerID={user.customerID}
+					customerID={user.customerID!}
 					setCards={setCards}
 					cards={cards}
 				/>
@@ -81,7 +81,7 @@ const PaymentOptions = ({}) => {
 	)
 }
 
-const Card = (props) => {
+const Card = (props: any) => {
 	const user = useRecoilValue(userSelector)
 	const { card, setCards, cards } = props
 	const [showCardOptions, setShowCardOptions] = useState(false)
@@ -89,7 +89,7 @@ const Card = (props) => {
 
 	const toggleOpen = () => setShowCardOptions(!showCardOptions)
 
-	const handleClickOutside = (event) => {
+	const handleClickOutside = (event: any) => {
 		if (dropdownRef.current && !event.target.closest('.card-options-menu')) {
 			setShowCardOptions(false)
 		}
@@ -97,7 +97,7 @@ const Card = (props) => {
 
 	function handleSetDefault() {
 		setCards(
-			cards.map((item) => {
+			cards.map((item: any) => {
 				if (item.cardNumber === card.cardNumber) {
 					return { ...item, defaultPaymentMethod: true }
 				} else {
@@ -105,7 +105,7 @@ const Card = (props) => {
 				}
 			})
 		)
-		SetDefaultPaymentMethod(user.customerID, card.cardNumber)
+		SetDefaultPaymentMethod(user.customerID as number, card.cardNumber)
 		setShowCardOptions(false)
 	}
 
@@ -115,10 +115,10 @@ const Card = (props) => {
 
 	function handleDelete() {
 		const filteredCards = cards.filter(
-			(item) => item.cardNumber !== card.cardNumber
+			(item: any) => item.cardNumber !== card.cardNumber
 		)
 		setCards(filteredCards)
-		RemovePaymentMethod(user.customerID, card.cardNumber)
+		RemovePaymentMethod(user.customerID as number, card.cardNumber)
 		setShowCardOptions(false)
 	}
 

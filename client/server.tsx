@@ -84,7 +84,7 @@ export const RemovePaymentMethod = async (
 // Payment Methods: Add a payment method
 export const AddPaymentMethod = async (
 	customerID: number,
-	paymentMethodDetails: string
+	paymentMethodDetails: any
 ) => {
 	await api.post('/api/v1/Customer/addPaymentMethod', {
 		customerID: customerID,

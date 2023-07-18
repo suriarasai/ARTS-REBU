@@ -10,9 +10,18 @@ import { Button, HREF, Message } from '@/constants'
 import { useRecoilValue } from 'recoil'
 import { searchTypeAtom, userSelector } from '@/utils/state'
 import { useRecoilState } from 'recoil'
+import { Location, User } from '@/types'
 
-const ExpandSearch = ({ mode, location, setLocation }) => {
-	const user = useRecoilValue(userSelector)
+const ExpandSearch = ({
+	mode,
+	location,
+	setLocation,
+}: {
+	mode: number
+	location: Location
+	setLocation: React.Dispatch<React.SetStateAction<Location>>
+}) => {
+	const user = useRecoilValue<any>(userSelector)
 	const router = useRouter()
 	const [, setSearchType] = useRecoilState(searchTypeAtom)
 
@@ -27,14 +36,14 @@ const ExpandSearch = ({ mode, location, setLocation }) => {
 		}
 	}
 
-	function navigateToLocation(data) {
+	function navigateToLocation(data: any) {
 		setSearchType(0)
 		setLocation(data)
 	}
 
 	// UI for the Home/Saved menus
 	const SavedLocations = (
-		<div className='mt-3 flex inline-grid w-full grid-cols-2'>
+		<div className='mt-3 inline-grid w-full grid-cols-2'>
 			<>
 				<div
 					className='flex flex-wrap'
@@ -92,7 +101,7 @@ const ExpandSearch = ({ mode, location, setLocation }) => {
 						<b className='mb-4 text-sm'>{Message.SAVED_LOCATIONS}</b>
 
 						{user.savedLocations && user.savedLocations.length > 0 ? (
-							user.savedLocations?.map((item, index) => (
+							user.savedLocations?.map((item: Location, index: number) => (
 								<div
 									className='mb-3 ml-11 w-full'
 									key={index}

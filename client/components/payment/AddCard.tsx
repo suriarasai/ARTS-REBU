@@ -13,7 +13,17 @@ import { AddPaymentMethod } from '@/server'
 import { useRecoilState } from 'recoil'
 import { userAtom } from '@/utils/state'
 
-export const AddCard = ({ customerID, setScreen, setCards, cards }) => {
+export const AddCard = ({
+	customerID,
+	setScreen,
+	setCards,
+	cards,
+}: {
+	customerID: number
+	setScreen: React.Dispatch<React.SetStateAction<string>>
+	setCards: any
+	cards: any
+}) => {
 	const [user, setUser] = useRecoilState(userAtom)
 	const {
 		register: register,

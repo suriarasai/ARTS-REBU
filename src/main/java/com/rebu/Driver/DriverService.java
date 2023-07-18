@@ -7,9 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.rebu.Booking.Booking;
-import com.rebu.Booking.BookingRepository;
-
 @Service
 public class DriverService {
 

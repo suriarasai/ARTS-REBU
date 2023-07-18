@@ -1,5 +1,3 @@
-// TODO: Button to route to Booking and set a route to that place
-
 import { useRef, useState } from 'react'
 import Page from '@/components/ui/page'
 import { AddPlaceAPI, RemovePlaceAPI, SetHome, SetWork } from '@/server'
@@ -15,26 +13,24 @@ import { Input, Message, Title } from '@/constants'
 import { getAddress } from '@/utils/getAddress'
 import { useRecoilState } from 'recoil'
 import { userAtom } from '@/utils/state'
-
-const libraries = ['places']
+import { Location, User } from '@/types'
 
 const SavedPlaces = () => {
 	const { isLoaded } = useJsApiLoader({
-		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-		// @ts-ignore
-		libraries: libraries,
+		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+		libraries: ['places'],
 	})
 
 	const [user, setUser] = useRecoilState(userAtom)
 
-	const [autoComplete, setAutoComplete] = useState(null)
+	const [autoComplete, setAutoComplete] = useState<any>(null)
 	const [valueObserver, setValueObserver] = useState('')
 
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const searchRef = useRef(null)
 
 	const addPlace = async () => {
-		const {placeName, address, lat, lng, postcode, place_id} = getAddress(
+		const { placeName, address, lat, lng, postcode, placeID } = getAddress(
 			autoComplete.getPlace()
 		)
 		const data = {
@@ -43,15 +39,15 @@ const SavedPlaces = () => {
 			postcode: postcode,
 			address: address,
 			placeName: placeName,
-			placeID: place_id
+			placeID: placeID,
 		}
-		await AddPlaceAPI(user.customerID, {
+		await AddPlaceAPI(user.customerID!, {
 			lat: lat,
 			lng: lng,
 			postcode: postcode,
 			address: address,
 			placeName: placeName,
-			placeID: place_id
+			placeID: placeID,
 		})
 		setUser({
 			...user,
@@ -69,12 +65,17 @@ const SavedPlaces = () => {
 			<div className='relative'>
 				<Autocomplete
 					onPlaceChanged={() => {
+						;(searchRef as React.Ref<HTMLInputElement> | any).value = ''
 						addPlace()
-						searchRef.current.value = ''
 						setValueObserver('')
 					}}
 					onLoad={(e) => setAutoComplete(e)}
-					fields={['address_components', 'geometry', 'formatted_address', 'place_id']}
+					fields={[
+						'address_components',
+						'geometry',
+						'formatted_address',
+						'place_id',
+					]}
 					options={{ componentRestrictions: { country: 'sg' } }}
 				>
 					<input
@@ -92,27 +93,22 @@ const SavedPlaces = () => {
 							user={user}
 							setUser={setUser}
 							label={'Home'}
-							place={user.home.placeName}
+							place={user.home as Location}
 						/>
 
 						<SavedLocation
 							user={user}
 							setUser={setUser}
 							label={'Work'}
-							place={user.work.placeName}
+							place={user.work as Location}
 						/>
 
 						<label className='pt-5'>{Message.SAVED_LOCATIONS}</label>
-						{user.savedLocations.length === 0 ? (
+						{user.savedLocations?.length === 0 ? (
 							<div className='pt-5'>{Message.NO_SAVED_LOCATIONS}</div>
 						) : (
-							user.savedLocations.map((location, index) => (
-								<Location
-									location={location}
-									setUser={setUser}
-									user={user}
-									key={index}
-								/>
+							user.savedLocations?.map((location, index) => (
+								<Location location={location} key={index} />
 							))
 						)}
 					</>
@@ -124,7 +120,12 @@ const SavedPlaces = () => {
 	)
 }
 
-const SavedLocation = ({ user, setUser, label, place }) => {
+const SavedLocation = ({ user, setUser, label, place }: {
+	user: User,
+	setUser: React.Dispatch<React.SetStateAction<User>>,
+	label: string,
+	place: Location
+}) => {
 	const [editLocation, updateEditLocation] = useState<boolean>(false)
 	const [autoComplete, setAutoComplete] = useState(null)
 
@@ -132,12 +133,12 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 	const searchRef = useRef(null)
 
 	const editEntry = async () => {
-		const {placeName, address, lat, lng, postcode, place_id} = getAddress(
-			autoComplete.getPlace()
+		const { placeName, address, lat, lng, postcode, placeID } = getAddress(
+			(autoComplete as any).getPlace()
 		)
 		if (label === 'Home') {
-			await SetHome(user.customerID, {
-				placeID: place_id,
+			await SetHome(user.customerID!, {
+				placeID: placeID,
 				lat: lat,
 				lng: lng,
 				postcode: postcode,
@@ -147,7 +148,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 			setUser({
 				...user,
 				home: {
-					placeID: place_id,
+					placeID: placeID,
 					lat: lat,
 					lng: lng,
 					postcode: postcode,
@@ -156,8 +157,8 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 				},
 			})
 		} else {
-			await SetWork(user.customerID, {
-				placeID: place_id,
+			await SetWork(user.customerID!, {
+				placeID: placeID,
 				lat: lat,
 				lng: lng,
 				postcode: postcode,
@@ -167,7 +168,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 			setUser({
 				...user,
 				work: {
-					placeID: place_id,
+					placeID: placeID,
 					lat: lat,
 					lng: lng,
 					postcode: postcode,
@@ -187,7 +188,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 					<div className='relative'>
 						<Autocomplete
 							onPlaceChanged={() => editEntry()}
-							onLoad={(e) => setAutoComplete(e)}
+							onLoad={(e) => setAutoComplete(e as any)}
 							className='relative'
 							fields={[
 								'address_components',
@@ -212,7 +213,7 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 				) : (
 					<div>
 						<b className='text-sm font-medium'>{label}</b>
-						<h5>{place ? place : Message.SET_LOCATION}</h5>
+						<h5>{place ? place.placeName : Message.SET_LOCATION}</h5>
 					</div>
 				)}
 			</div>
@@ -237,14 +238,15 @@ const SavedLocation = ({ user, setUser, label, place }) => {
 	)
 }
 
-const Location = ({ location, setUser, user }) => {
+const Location = ({ location }: { location: Location }) => {
+	const [user, setUser] = useRecoilState(userAtom)
 	function removeEntry() {
-		RemovePlaceAPI(user.customerID, location.placeID)
+		RemovePlaceAPI(user.customerID as number, location.placeID as string)
 		setUser({
 			...user,
 			savedLocations: [
-				...user.savedLocations.filter(
-					(item) => item.placeID !== location.placeID
+				...user.savedLocations!.filter(
+					(item: Location) => item.placeID !== location.placeID
 				),
 			],
 		})
@@ -254,7 +256,9 @@ const Location = ({ location, setUser, user }) => {
 		<div className='ml-5 flex flex-wrap pt-3'>
 			<div className='w-5/6'>
 				<b className='text-sm font-medium'>{location.placeName}</b>
-				<h5>{location.address}, Singapore {location.postcode}</h5>
+				<h5>
+					{location.address}, Singapore {location.postcode}
+				</h5>
 			</div>
 			<div
 				className='flex w-1/6 items-center justify-center'
@@ -267,4 +271,3 @@ const Location = ({ location, setUser, user }) => {
 }
 
 export default SavedPlaces
-

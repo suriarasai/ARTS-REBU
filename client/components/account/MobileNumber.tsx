@@ -105,7 +105,17 @@ export const MobileNumber = ({ newUser = true, populateData = {} }: any) => {
 	)
 }
 
-const PhoneNumber = ({ populateData, register, errors, newUser }) => (
+const PhoneNumber = ({
+	populateData,
+	register,
+	errors,
+	newUser,
+}: {
+	populateData: any
+	register: any
+	errors: any
+	newUser: boolean
+}) => (
 	<div className={`pb-3 md:mb-0 ${newUser ? 'w-3/5' : 'w-4/5'}`}>
 		<input
 			className='white-input'
@@ -126,7 +136,15 @@ const PhoneNumber = ({ populateData, register, errors, newUser }) => (
 	</div>
 )
 
-const PhoneCountryCode = ({ register, populateData, errors }) => (
+const PhoneCountryCode = ({
+	register,
+	populateData,
+	errors,
+}: {
+	register: any
+	populateData: any
+	errors: any
+}) => (
 	<div className='mb-3 w-1/5'>
 		<div className='relative'>
 			<select
@@ -166,7 +184,11 @@ const PhoneCountryCode = ({ register, populateData, errors }) => (
 	</div>
 )
 
-const OTP = ({ setTriggerOTP }) => (
+const OTP = ({
+	setTriggerOTP,
+}: {
+	setTriggerOTP: React.Dispatch<React.SetStateAction<boolean>>
+}) => (
 	<>
 		<div className='w-1/5 pb-3'>
 			<button

@@ -40,7 +40,7 @@ export const ShowOption = ({
 	disabled = false,
 }: {
 	option: option
-	disabled: boolean
+	disabled?: boolean
 }) => {
 	const [, setClickedOption] = useRecoilState<number | null>(clickedOptionAtom)
 	return (

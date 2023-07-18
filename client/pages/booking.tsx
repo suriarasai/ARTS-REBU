@@ -19,8 +19,9 @@ import {
 	searchTypeAtom,
 	userAtom,
 } from '@/utils/state'
+import { Location, User } from '@/types'
 
-let marks = {
+let marks: any = {
 	home: null,
 	work: null,
 	saved: [],
@@ -34,10 +35,10 @@ const libraries = ['places', 'geometry']
 function Booking() {
 	const [user, setUser] = useRecoilState(userAtom)
 
-	const [map, setMap] = useState(/** @type google.maps.Map */ null)
-	const [route, setRoute] = useState(null)
-	const [validInput, isValidInput] = useState(false)
-	const [poi, setPoi] = useState(true)
+	const [map, setMap] = useState<google.maps.Map | null>(null)
+	const [route, setRoute] = useState<any>(null)
+	const [validInput, isValidInput] = useState<boolean>(false)
+	const [poi, setPoi] = useState<boolean>(true)
 	const [taxis, setTaxis] = useState([])
 	const [nearbyTaxiStops, setNearbyTaxiStops] = useState([])
 	const [polyline, setPolyline] = useState(null)
@@ -54,8 +55,8 @@ function Booking() {
 		placeName: null,
 	})
 
-	const [origin, setOrigin] = useRecoilState(originAtom)
-	const [destination, setDestination] = useRecoilState(destinationAtom)
+	const [origin, setOrigin] = useRecoilState<any>(originAtom)
+	const [destination, setDestination] = useRecoilState<any>(destinationAtom)
 
 	/** @type React.MutableRefObject<HTMLInputElement> */
 	const originRef = useRef(null) // Tracks input value of origin box
@@ -67,46 +68,52 @@ function Booking() {
 	// Set origin address after clicking a saved location
 	useEffect(() => {
 		if (origin.lat) {
-			originRef.current.value = origin.placeName
+			;(originRef.current as React.Ref<HTMLInputElement> | any).value =
+				origin.placeName
 
 			if (!marks.origin) {
 				marks.origin = mark(
-					map,
+					map as google.maps.Map,
 					origin,
 					'https://www.svgrepo.com/show/375834/location.svg'
 				)
 			} else {
 				marks.origin.setPosition(origin)
 			}
-			map.panTo(origin)
+			map!.panTo(origin as any)
 			if (!poi) {
 				setMarkerVisibility(nearbyTaxiStops)
-				loadNearbyTaxiStops(map, [origin.lng, origin.lat], setNearbyTaxiStops)
+				loadNearbyTaxiStops(
+					map as google.maps.Map,
+					[origin.lng, origin.lat],
+					setNearbyTaxiStops
+				)
 			}
 		}
 	}, [origin])
 
 	// Set destination address after clicking a saved location
 	useEffect(() => {
-		if (destination.lat) {
+		if (destination.lat) {			
+			(destinationRef.current as React.Ref<HTMLInputElement> | any).value = destination.placeName
+
 			isValidInput(true)
-			destinationRef.current.value = destination.placeName
 
 			if (!marks.destination) {
 				marks.destination = mark(
-					map,
+					map!,
 					destination,
 					'https://www.svgrepo.com/show/375810/flag.svg'
 				)
 			} else {
 				marks.destination.setPosition(destination)
 			}
-			map.panTo(destination)
+			map!.panTo(destination)
 		}
 	}, [destination])
 
 	// On map load
-	const loadMap = useCallback(function callback(map) {
+	const loadMap = useCallback(function callback(map: google.maps.Map) {
 		mapStyles(map, poi)
 		setMap(map)
 
@@ -153,7 +160,7 @@ function Booking() {
 		}
 
 		await loadTaxis(
-			map,
+			map!,
 			origin.lat
 				? [origin.lng, origin.lat]
 				: [userLocation.lng, userLocation.lat],
@@ -161,7 +168,7 @@ function Booking() {
 			setTaxis
 		)
 
-		mapStyles(map, poi)
+		mapStyles(map!, poi)
 
 		// Removing directions polyline if a polyline already exists
 		if (polyline) {
@@ -170,7 +177,7 @@ function Booking() {
 		}
 
 		await getDirections(
-			map,
+			map!,
 			origin.lat ? origin : userLocation,
 			destination,
 			setRoute,
@@ -213,7 +220,7 @@ function Booking() {
 		}) // Coordinates of the origin location
 		setHideUI(false)
 		isValidInput(false)
-		mapStyles(map, poi)
+		mapStyles(map!, poi)
 		if (polyline !== null) {
 			setMarkerVisibility(polyline)
 			setPolyline(null)
@@ -225,11 +232,11 @@ function Booking() {
 		marks.home.setMap(map)
 		marks.work.setMap(map)
 
-		setMarkerVisibility(marks.saved, map)
+		setMarkerVisibility(marks.saved, map!)
 		setRoute(null)
 	}
 
-	function setLocationViaClick(e) {
+	function setLocationViaClick(e: any) {
 		if (searchType === 3) {
 			CoordinateToAddress([e.latLng.lat(), e.latLng.lng()], setOrigin)
 		} else if (searchType === 4) {
@@ -239,7 +246,7 @@ function Booking() {
 
 	return (
 		<LoadScriptNext
-			googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+			googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
 			loadingElement={<LoadingScreen />}
 			// @ts-ignore
 			libraries={libraries}
@@ -296,9 +303,9 @@ function Booking() {
 					) : (
 						// If the input is invalid, then continue to show them the map controls
 						<>
-							<Locate map={map} />
+							<Locate map={map!} />
 							<TogglePOI
-								map={map}
+								map={map!}
 								poi={poi}
 								setPoi={setPoi}
 								origin={origin.lat ? origin : userLocation}
@@ -325,9 +332,9 @@ function Booking() {
 
 export default Booking
 
-function mark(map, place, image) {
+function mark(map: google.maps.Map, place: Location, image: any) {
 	return new google.maps.Marker({
-		position: { lat: place.lat, lng: place.lng },
+		position: { lat: place.lat as number, lng: place.lng as number },
 		map: map,
 		title: place.placeName + ', ' + 'Singapore ' + place.postcode,
 		icon: {
@@ -337,7 +344,7 @@ function mark(map, place, image) {
 	})
 }
 
-function listener(marker, info) {
+function listener(marker: google.maps.Marker, info: google.maps.InfoWindow) {
 	marker.addListener('click', () => {
 		info.close()
 		info.setContent(marker.getTitle())
@@ -345,23 +352,23 @@ function listener(marker, info) {
 	})
 }
 
-function setMarkers(map, user) {
+function setMarkers(map: google.maps.Map, user: User) {
 	const infoWindow = new google.maps.InfoWindow()
 
 	marks.home = mark(
 		map,
-		user.home,
+		user.home as Location,
 		'https://www.svgrepo.com/show/375801/door.svg'
 	)
 	marks.work = mark(
 		map,
-		user.work,
+		user.work as Location,
 		'https://www.svgrepo.com/show/375762/briefcase.svg'
 	)
 	listener(marks.home, infoWindow)
 	listener(marks.work, infoWindow)
 
-	user.savedLocations.map((location, index) => {
+	user.savedLocations?.map((location, index: number) => {
 		marks.saved.push(
 			mark(map, location, 'https://www.svgrepo.com/show/375878/ribbon.svg')
 		)

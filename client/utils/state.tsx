@@ -296,4 +296,5 @@ export interface bookingEvent {
 	status?: string // 'requested', 'dispatched', 'cancelled', 'completed'
 	dropTime?: number // in miliseconds from epoch
 	bookingID?: number
+	rating?: number
 }

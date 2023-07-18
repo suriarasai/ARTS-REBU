@@ -11,6 +11,12 @@ export const LocationSearch = ({
 	destinationRef,
 	calculateRoute,
 	validInput,
+}: {
+	originRef: React.Ref<HTMLInputElement>
+	isValidInput: React.Dispatch<React.SetStateAction<boolean>>
+	destinationRef: React.Ref<HTMLInputElement>
+	calculateRoute: React.MouseEventHandler<HTMLButtonElement>
+	validInput: boolean
 }) => {
 	const [searchType, setSearchType] = useRecoilState(searchTypeAtom)
 	return (

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-	FaAngleDown,
 	FaAngleLeft,
 	FaAngleUp,
 	FaCar,
@@ -53,11 +52,11 @@ import {
 } from '@/utils/state'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-export let taxiRouteDisplay
-let matchedTaxi
+export let taxiRouteDisplay: any
+let matchedTaxi: any
 
 // Shows options of rides to choose from
-export const RideConfirmation = (data) => {
+export const RideConfirmation = (data: any) => {
 	const [options, setOptions] = useState<Array<any>>([])
 	const [clickedOption, setClickedOption] = useRecoilState<number | any>(
 		clickedOptionAtom
@@ -66,10 +65,10 @@ export const RideConfirmation = (data) => {
 	const [screen, setScreen] = useRecoilState(screenAtom)
 	const [booking, setBooking] = useRecoilState<bookingEvent | any>(bookingAtom)
 	const [rideConfirmed, setRideConfirmed] = useState(false)
-	const [routes, setRoutes] = useState({ 1: null, 2: null })
+	const [routes, setRoutes] = useState<any>({ 1: null, 2: null })
 	const [taxiETA, setTaxiETA] = useRecoilState(taxiETAAtom)
-	const [notification, setNotification] = useState(null)
-	const [stopStream, setStopStream] = useState(true)
+	const [notification, setNotification] = useState<string | null>(null)
+	const [stopStream, setStopStream] = useState<boolean>(true)
 	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
 	const [selectPaymentMethod, setSelectPaymentMethod] = useState(false)
 	const [user, setUser] = useRecoilState(userAtom)
@@ -89,10 +88,10 @@ export const RideConfirmation = (data) => {
 
 	useEffect(() => {
 		GetPaymentMethod(
-			user.customerID,
-			(data) =>
+			user.customerID!,
+			(data: any) =>
 				data?.length > 0 &&
-				data.map((item) => {
+				data.map((item: any) => {
 					item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
 				})
 		)
@@ -105,23 +104,23 @@ export const RideConfirmation = (data) => {
 		}
 
 		const unsubscribe = onSnapshot(
-			doc(db, 'BookingEvent', user.customerID.toString()),
+			doc(db, 'BookingEvent', user.customerID!.toString()),
 			(snapshot) => {
-				if (snapshot.data().status === 'dispatched') {
+				if (snapshot.data()!.status === 'dispatched') {
 					console.log('Firestore Dispatch Event', snapshot.data())
 
 					// Append driver/taxi information from dispatch event
 					setBooking({
 						...booking,
-						tmdtid: snapshot.data().tmdtid,
-						taxiNumber: snapshot.data().taxiNumber,
-						taxiMakeModel: snapshot.data().taxiMakeModel,
-						taxiColor: snapshot.data().taxiColor,
-						driverID: snapshot.data().driverID,
-						driverName: snapshot.data().driverName,
-						driverPhoneNumber: snapshot.data().driverPhoneNumber,
-						rating: snapshot.data().rating,
-						sno: snapshot.data().sno,
+						tmdtid: snapshot.data()!.tmdtid,
+						taxiNumber: snapshot.data()!.taxiNumber,
+						taxiMakeModel: snapshot.data()!.taxiMakeModel,
+						taxiColor: snapshot.data()!.taxiColor,
+						driverID: snapshot.data()!.driverID,
+						driverName: snapshot.data()!.driverName,
+						driverPhoneNumber: snapshot.data()!.driverPhoneNumber,
+						rating: snapshot.data()!.rating,
+						sno: snapshot.data()!.sno,
 					})
 					handleMatched(snapshot.data())
 				}
@@ -133,7 +132,7 @@ export const RideConfirmation = (data) => {
 		}
 	}, [stopStream])
 
-	function initializeOptions(ETA) {
+	function initializeOptions(ETA: any) {
 		if (!ETA[2]) return
 
 		setOptions([
@@ -172,7 +171,7 @@ export const RideConfirmation = (data) => {
 		}
 	}, [clickedOption])
 
-	function handleConfirmation(e) {
+	function handleConfirmation(e: any) {
 		e.preventDefault()
 		setScreen('waiting')
 		setRideConfirmed(true)
@@ -184,7 +183,7 @@ export const RideConfirmation = (data) => {
 			data.destination,
 			setStopStream,
 
-			(bookingID) => {
+			(bookingID: number) => {
 				setBooking({
 					bookingID: bookingID,
 					customerID: user.customerID,
@@ -234,7 +233,7 @@ export const RideConfirmation = (data) => {
 		) // API to create booking
 	}
 
-	function handleMatched(event) {
+	function handleMatched(event: any) {
 		matchedBooking(booking.bookingID, event.driverID, event.sno) // API for matching
 
 		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
@@ -242,7 +241,7 @@ export const RideConfirmation = (data) => {
 		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path
 		const polyline = expandArray(taxiRoute, 10)
 		const stepsPerMinute = Math.round(
-			(polyline.length - 1) / (taxiETA[clickedOption] / 60) + 1
+			(polyline.length - 1) / ((taxiETA as any)[clickedOption] / 60) + 1
 		)
 
 		matchedTaxi = new google.maps.Marker({
@@ -261,7 +260,7 @@ export const RideConfirmation = (data) => {
 
 		moveToStep(
 			matchedTaxi,
-			polyline,
+			polyline as any,
 			0,
 			50,
 			handleTaxiArrived,
@@ -273,7 +272,7 @@ export const RideConfirmation = (data) => {
 	}
 
 	function handleTaxiArrived() {
-		setBooking((booking) => ({
+		setBooking((booking: bookingEvent) => ({
 			...booking,
 			dropTime: new Date(+new Date() + data.duration * 1000)
 				.toLocaleTimeString('en-US')
@@ -288,16 +287,16 @@ export const RideConfirmation = (data) => {
 		erasePolyline()
 
 		const polyline = expandArray(data.tripPolyline, 10)
-		moveToStep(matchedTaxi, polyline, 0, 10, handleCompleted)
+		moveToStep(matchedTaxi, polyline as any, 0, 10, handleCompleted)
 	}
 
 	useEffect(() => {
 		if (screen !== 'confirmed') return
 
 		// Proximity notification @ 1 min
-		if (Math.round(taxiETA[clickedOption] / 60) === 1) {
+		if (Math.round((taxiETA as any)[clickedOption] / 60) === 1) {
 			setNotification('arrivingSoon')
-		} else if (Math.round(taxiETA[clickedOption] / 60) === 0) {
+		} else if (Math.round((taxiETA as any)[clickedOption] / 60) === 0) {
 		}
 	}, [taxiETA])
 
@@ -305,8 +304,8 @@ export const RideConfirmation = (data) => {
 		booking.bookingID && setPaymentMethod(booking.bookingID, selectedCard)
 	}, [selectedCard])
 
-	function handleCancelled(matchedStatus) {
-		setBookingCancelled(user.customerID.toString())
+	function handleCancelled(matchedStatus: boolean) {
+		setBookingCancelled(user.customerID!)
 		if (matchedStatus) {
 			cancelBooking(booking.bookingID) // API for trip cancellation
 			matchedTaxi.setMap(null)
@@ -318,7 +317,7 @@ export const RideConfirmation = (data) => {
 	}
 
 	function handleCompleted() {
-		setBookingCompleted(user.customerID.toString())
+		setBookingCompleted(user.customerID!)
 		completeBooking(booking.bookingID) // API for trip completion
 		console.log('Trip fini')
 		setScreen('completeTrip')
@@ -470,7 +469,11 @@ export const RideConfirmation = (data) => {
 	)
 }
 
-const FinishTrip = ({ handleCompletedCleanup }) => {
+const FinishTrip = ({
+	handleCompletedCleanup,
+}: {
+	handleCompletedCleanup: any
+}) => {
 	const [, setScreen] = useRecoilState(screenAtom)
 	return (
 		<div className='mt-3 flex w-full space-x-3'>
@@ -498,10 +501,10 @@ const FinishTrip = ({ handleCompletedCleanup }) => {
 
 // Dynamic header text in bottom screen
 function AccordionHeader(
-	collapseMenu,
-	dropTime,
-	setSelectPaymentMethod,
-	selectPaymentMethod
+	collapseMenu: any,
+	dropTime: number,
+	setSelectPaymentMethod: React.Dispatch<React.SetStateAction<boolean>>,
+	selectPaymentMethod: boolean
 ) {
 	const screen = useRecoilValue(screenAtom)
 	const taxiETA = useRecoilValue(taxiETAAtom)
@@ -528,7 +531,7 @@ function AccordionHeader(
 						<>
 							En Route
 							<div className='float-right pr-4'>
-								{Math.round(taxiETA[clickedOption] / 60)} min.
+								{Math.round((taxiETA as any)[clickedOption] / 60)} min.
 							</div>
 						</>
 					)
@@ -576,12 +579,12 @@ function erasePolyline() {
 }
 
 export function drawTaxiRoute(
-	taxis,
-	destination,
-	map,
-	setRoutes,
-	setTaxiETA,
-	_callback
+	taxis: any,
+	destination: Location | any,
+	map: google.maps.Map,
+	setRoutes: React.Dispatch<React.SetStateAction<any>>,
+	setTaxiETA: React.Dispatch<React.SetStateAction<any>>,
+	_callback: Function
 ) {
 	taxiRouteDisplay = new google.maps.DirectionsRenderer({
 		polylineOptions: {
@@ -594,8 +597,8 @@ export function drawTaxiRoute(
 
 	if (taxis.length > 0) {
 		const directionsService = new google.maps.DirectionsService()
-		let tempObj
-		let tempETA
+		let tempObj: any
+		let tempETA: any
 
 		for (let i = 0; i < 2; i++) {
 			directionsService.route(
@@ -604,7 +607,7 @@ export function drawTaxiRoute(
 					destination: destination,
 					travelMode: google.maps.TravelMode.DRIVING,
 				},
-				function (result, status) {
+				function (result: any, status) {
 					if (status == 'OK') {
 						taxiRouteDisplay.setMap(map)
 						tempObj = { ...tempObj, [i + 1]: result }

@@ -1,6 +1,6 @@
 export default function setMarkerVisibility(
 	marker: Array<google.maps.Marker>,
-	map = null
+	map: google.maps.Map | null = null
 ) {
 	/*
 	 * Hides the initial taxis that were rendered to show the nearest N taxis
