@@ -1,8 +1,16 @@
-import { db } from '@/utils/firebase'
-import { deleteDoc, doc, setDoc } from 'firebase/firestore'
 import { bookingEvent } from './state'
 
+// Customer Application:
+// Stream 1: Produce booking event with 'requested' status
+// Stream 2: Consume dispatch event with 'dispatched' status
+// Stream 3: Consume geolocation event
+// Optional: Consume/Produce messaging stream
 
+// Driver Application:
+// Stream 1: Consume all nearby geofenced booking requests
+// Stream 2: Produce a dispatch event
+// Stream 3: Produce geolocation events every N seconds
+// Optional: Consume/Produce messaging stream
 
 export function createBookingRequest(data: bookingEvent) {
 	setBooking(data.customerID!, {
@@ -47,17 +55,17 @@ export function setBookingCompleted(customerID: number) {
 }
 
 export async function deleteBooking(customerID: number) {
-	await deleteDoc(doc(db, 'BookingEvent', customerID.toString()))
+	// await deleteDoc(doc(db, 'BookingEvent', customerID.toString()))
 }
 
 function setBooking(customerID: number, data: bookingEvent) {
-	setDoc(doc(db, 'BookingEvent', customerID.toString()), data, {
-		merge: true,
-	})
-		.then((response) => {
-			console.log(response)
-		})
-		.catch((error) => {
-			console.log(error.message)
-		})
+	// setDoc(doc(db, 'BookingEvent', customerID.toString()), data, {
+	// 	merge: true,
+	// })
+	// 	.then((response) => {
+	// 		console.log(response)
+	// 	})
+	// 	.catch((error) => {
+	// 		console.log(error.message)
+	// 	})
 }

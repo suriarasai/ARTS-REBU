@@ -30,13 +30,11 @@ import { LiveTripUI } from './UI/LiveTripUI'
 import { WaitingUI } from './UI/MatchingUI'
 import { RouteConfirmation } from './UI/ConfirmationUI'
 import { ShowOption } from './UI/ConfirmationUI'
-import { doc, onSnapshot } from 'firebase/firestore'
 import {
 	createBookingRequest,
 	setBookingCancelled,
 	setBookingCompleted,
 } from '@/utils/taxiBookingSystem'
-import { db } from '@/utils/firebase'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import Receipt from './UI/Receipt'
 import Rating from './Rating'

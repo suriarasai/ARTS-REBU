@@ -1,20 +1,14 @@
 import { useEffect, useState } from 'react'
-import { db } from '@/utils/firebase'
-import { collection, onSnapshot } from 'firebase/firestore'
 import Admin from '@/components/ui/admin'
 import { deleteBooking, setBookingDispatched } from '@/utils/taxiBookingSystem'
 import { bookingEvent } from '@/utils/state'
 
 export default function Dashboard() {
 	const [bookings, setBookings] = useState<any>([])
-	const bookingRequestRef = collection(db, 'BookingEvent')
+	const bookingRequestRef = null
 
 	useEffect(() => {
-		const unsubscribe = onSnapshot(bookingRequestRef, (snapshot) => {
-			setBookings(
-				snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
-			)
-		})
+		const unsubscribe = () => {}
 
 		return () => {
 			unsubscribe()

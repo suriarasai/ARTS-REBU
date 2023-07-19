@@ -1,22 +1,43 @@
 import { sendBookingToKafka } from '@/server'
+import Stomp from 'stompjs'
+import SockJS from 'sockjs-client'
+import { useEffect, useState } from 'react'
 
 const Test = ({}) => {
-	const connect = () => {}
+	const [stompClient, setStompClient] = useState<any>(null)
+	const [connected, setConnected] = useState<boolean>(false)
 
-	const onConnected = () => {}
+	useEffect(() => {
 
-	const onMessageReceived = (payload: any) => {}
+		if (!connected) return
+
+		const socket = new SockJS('http://localhost:8080/ws')
+		const client = Stomp.over(socket)
+
+		client.connect({}, () => {
+			client.subscribe('/topic/bookingEvent', (message) => {
+				const receivedMessage = JSON.parse(message.body)
+			})
+		})
+
+		setStompClient(client)
+
+		return () => {
+			client.disconnect(() => console.log("Disconnected from server"))
+		}
+	}, [connected])
 
 	function handleTestEvent() {
-		sendBookingToKafka('Inbound message, ' + +new Date())
+		sendBookingToKafka(JSON.stringify({ message: 'test' }))
 	}
+
 	return (
 		<>
 			<button
 				className='rounded-sm bg-zinc-600 p-4 text-white'
-				onClick={connect}
+				onClick={() => setConnected(!connected)}
 			>
-				Start Listening
+				{connected ? "Stop " : "Start "} Listening
 			</button>
 			<button
 				className='rounded-sm bg-zinc-600 p-4 text-white'
