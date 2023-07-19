@@ -143,7 +143,7 @@ const Header = ({
 				{/* Upper text with user name */}
 				<h2 className='!font-semibold'>
 					<a className='text-green-500'>
-						{booking.customerName.split(' ').splice(0, 1).join(' ')}
+						{booking.customerName!.split(' ').splice(0, 1).join(' ')}
 					</a>
 					,{screen === 'dispatched' && 'taxi will arrive in'}
 				</h2>

@@ -1,13 +1,15 @@
 package com.rebu.Kafka;
 
+import java.time.Instant;
+
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ConsumerService {
 
-    @KafkaListener(topics = "firsttopic", groupId = "my-first-application")
+    @KafkaListener(topics = "firsttopic", groupId = "rebu")
     public void listenToTopic(String receivedMessage) {
-        System.out.println("Received Message: " + receivedMessage);
+        System.out.println("Consumer: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
     }
 }

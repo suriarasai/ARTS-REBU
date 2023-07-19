@@ -112,7 +112,7 @@ export interface SearchFieldInterface {
 	setSearchQueryVisible: React.Dispatch<React.SetStateAction<boolean>>
 	setShowRides: React.Dispatch<React.SetStateAction<boolean>>
 	setLocation: Function
-	setToAddress: React.Dispatch<React.SetStateAction<String>>
+	setToAddress: React.Dispatch<React.SetStateAction<string>>
 	setSearchBoxSuggestions: React.Dispatch<React.SetStateAction<any>>
 	toAddress: string
 }
@@ -156,7 +156,7 @@ export interface ProfileInterface {
 
 // Reward Points
 export interface rewardPoints {
-	date: String
+	date: string
 	points: number
 	totalPoints: number
 }

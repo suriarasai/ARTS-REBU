@@ -14,7 +14,7 @@ import { userAtom } from '@/utils/state'
 const AccountSettings = () => {
 	const router = useRouter()
 	const [user, setUser] = useRecoilState(userAtom)
-	const [changesSaved, setChangesSaved] = useState<Boolean>(false)
+	const [changesSaved, setChangesSaved] = useState<boolean>(false)
 	const {
 		register: register, // assigns names to each input field to be accessed when reading the form
 		handleSubmit: handleSubmit,
@@ -22,7 +22,7 @@ const AccountSettings = () => {
 	} = useForm()
 
 	async function onSubmit(data: User) {
-		setUser(await UpdateUser(data, user.customerID))
+		setUser(await UpdateUser(data, user.customerID!))
 		setChangesSaved(true)
 	}
 

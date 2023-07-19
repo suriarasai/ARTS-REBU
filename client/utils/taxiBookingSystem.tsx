@@ -2,6 +2,8 @@ import { db } from '@/utils/firebase'
 import { deleteDoc, doc, setDoc } from 'firebase/firestore'
 import { bookingEvent } from './state'
 
+
+
 export function createBookingRequest(data: bookingEvent) {
 	setBooking(data.customerID!, {
 		customerID: data.customerID,

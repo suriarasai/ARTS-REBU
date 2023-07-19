@@ -4,6 +4,22 @@ import { getAddress } from './utils/getAddress'
 import axios from 'axios'
 import { renderDirections } from './utils/renderDirections'
 
+// const http = require('http').createServer()
+
+// const io = require('socket.io')(http, {
+// 	cors: { origin: '*' },
+// })
+
+// io.on('connection', (socket: any) => {
+// 	console.log('WS Connected')
+// 	socket.on('message', (message: any) => {
+// 		console.log(message)
+// 		io.emit('message', `${socket.id.substr(0, 2)} said ${message}`)
+// 	})
+// })
+
+// http.listen(8080, () => console.log('listening on http://localhost:8080'))
+
 export async function sendBookingToKafka(message: string) {
 	api.post('/api/v1/Kafka/producerMsg', {
 		message: message,
@@ -116,7 +132,7 @@ export const GetPaymentMethod = async (
 
 export const setPaymentMethod = async (
 	bookingID: number,
-	cardNumber: String
+	cardNumber: string
 ) => {
 	await api.post('/api/v1/Booking/setPaymentMethod', {
 		bookingID: bookingID,
