@@ -9,6 +9,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+
 @Service
 public class ConsumerService {
 
@@ -23,8 +25,10 @@ public class ConsumerService {
 
     @KafkaListener(topics = "dispatchEvent", groupId = "rebu")
     public void dispatchConsumer(String receivedMessage) {
-        System.out.println("Dispatch Event: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
-        this.template.convertAndSend("/topic/dispatchEvent", receivedMessage);
+        Gson gson = new Gson();
+        DispatchEvent event = gson.fromJson(receivedMessage, DispatchEvent.class);
+        System.out.println("Dispatch Event: " + event + " @ " + Instant.now().toEpochMilli());
+        this.template.convertAndSendToUser(event.getCustomerID().toString(), "/queue/dispatchEvent", receivedMessage);
     }
 
     @KafkaListener(topics = "taxiLocatorEvent", groupId = "rebu")

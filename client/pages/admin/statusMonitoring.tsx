@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import Admin from '@/components/ui/admin'
-import { deleteBooking, setBookingDispatched } from '@/utils/taxiBookingSystem'
 import { bookingEvent } from '@/utils/state'
 
 export default function Dashboard() {
@@ -67,7 +66,7 @@ export default function Dashboard() {
 
 const TR = ({ item }: { item: { data: bookingEvent, id: number } }) => {
 	function handleApproval() {
-		setBookingDispatched(item.data.customerID!)
+		// setBookingDispatched(item.data.customerID!)
 	}
 
 	const StatusButton = () => (
@@ -92,7 +91,7 @@ const TR = ({ item }: { item: { data: bookingEvent, id: number } }) => {
 				item.data.status === 'completed') && (
 				<button
 					className='w-full rounded-md bg-red-200 p-2 shadow-md'
-					onClick={() => deleteBooking(item.data.customerID!)}
+					// onClick={() => deleteBooking(item.data.customerID!)}
 				>
 					Remove
 				</button>

@@ -7,7 +7,7 @@ import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 
 const dispatchEvent = {
-	customerID: 1,
+	customerID: 2,
 	customerName: 'namae',
 	customerPhoneNumber: 12345678,
 	status: 'dispatched',

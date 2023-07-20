@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 
 const AdminMainPage = () => {
 	const [messages, setMessages] = useState<message[]>([])
+	const [customerID, setCustomerID] = useState(1)
 
 	const addMessage = (newMsg: message) =>
 		setMessages((messages) => [...messages, newMsg])
@@ -15,9 +16,20 @@ const AdminMainPage = () => {
 	return (
 		<div className='flex h-screen max-w-screen-md flex-col justify-center space-y-5 !overflow-y-hidden p-4'>
 			{/* Button controls */}
-			<button onClick={returnToSignIn} className='bg-zinc-200 p-1 text-xs w-fit'>
-				Go Back
-			</button>
+			<div className='flex items-center space-x-2'>
+				<button
+					onClick={returnToSignIn}
+					className='mr-5 w-fit bg-zinc-200 p-1 text-xs'
+				>
+					Go Back
+				</button>
+				<p>User ID</p>
+				<input
+					className='h-8 w-12'
+					onBlur={(event) => setCustomerID(Number(event?.target.value))}
+					type='number'
+				/>
+			</div>
 			<div className='ml-auto mr-auto flex h-2/5 space-x-5'>
 				<UserApp addMsg={(newMsg: message) => addMessage(newMsg)} />
 				<DriverApp addMsg={(newMsg: message) => addMessage(newMsg)} />

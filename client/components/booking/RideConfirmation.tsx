@@ -30,11 +30,6 @@ import { LiveTripUI } from './UI/LiveTripUI'
 import { WaitingUI } from './UI/MatchingUI'
 import { RouteConfirmation } from './UI/ConfirmationUI'
 import { ShowOption } from './UI/ConfirmationUI'
-import {
-	createBookingRequest,
-	setBookingCancelled,
-	setBookingCompleted,
-} from '@/utils/taxiBookingSystem'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
 import Receipt from './UI/Receipt'
 import Rating from './Rating'
@@ -119,6 +114,7 @@ export const RideConfirmation = (data: any) => {
 					rating: res.rating,
 					sno: res.sno,
 				})
+				handleMatched(res)
 			})
 		})
 
@@ -288,7 +284,6 @@ export const RideConfirmation = (data: any) => {
 	}, [selectedCard])
 
 	function handleCancelled(matchedStatus: boolean) {
-		setBookingCancelled(user.customerID!)
 		if (matchedStatus) {
 			cancelBooking(booking.bookingID) // API for trip cancellation
 			matchedTaxi.setMap(null)
@@ -300,7 +295,6 @@ export const RideConfirmation = (data: any) => {
 	}
 
 	function handleCompleted() {
-		setBookingCompleted(user.customerID!)
 		completeBooking(booking.bookingID) // API for trip completion
 		console.log('Trip fini')
 		setScreen('completeTrip')

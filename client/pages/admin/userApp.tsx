@@ -58,7 +58,7 @@ const UserApp = ({ addMsg }: { addMsg: Function }) => {
 		const client = Stomp.over(socket)
 
 		client.connect({}, () => {
-			client.subscribe('/topic/dispatchEvent', (message) => {
+			client.subscribe('/user/' + 1 + '/queue/dispatchEvent', (message) => {
 				addMsg({ stream: 'dispatch', message: JSON.parse(message.body) })
 			})
 		})
