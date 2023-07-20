@@ -7,7 +7,7 @@ import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 
 const dispatchEvent = {
-	customerID: 2,
+	customerID: 1,
 	customerName: 'namae',
 	customerPhoneNumber: 12345678,
 	status: 'dispatched',
@@ -38,23 +38,23 @@ const DriverApp = ({ addMsg }: { addMsg: Function }) => {
 	const [bookingStream, setBookingStream] = useState(false)
 	const toggleBookingStream = () => setBookingStream(!bookingStream)
 
-// Booking stream consumer: Looking for rides to match with
-useEffect(() => {
-    if (!bookingStream) return
+	// Booking stream consumer: Looking for rides to match with
+	useEffect(() => {
+		if (!bookingStream) return
 
-    const socket = new SockJS('http://localhost:8080/ws')
-    const client = Stomp.over(socket)
+		const socket = new SockJS('http://localhost:8080/ws')
+		const client = Stomp.over(socket)
 
-    client.connect({}, () => {
-        client.subscribe('/topic/bookingEvent', (message) => {
-            addMsg({ stream: 'booking', message: JSON.parse(message.body) })
-        })
-    })
+		client.connect({}, () => {
+			client.subscribe('/topic/bookingEvent', (message) => {
+				addMsg({ stream: 'booking', message: JSON.parse(message.body) })
+			})
+		})
 
-    return () => {
-        client.disconnect(() => console.log('Disconnected from server'))
-    }
-}, [bookingStream])
+		return () => {
+			client.disconnect(() => console.log('Disconnected from server'))
+		}
+	}, [bookingStream])
 
 	// Dispatch stream producer: Approving a ride request
 	function produceDispatchEvent() {
@@ -74,7 +74,9 @@ useEffect(() => {
 			<div className='flex flex-col space-y-1 p-3'>
 				<label className='my-1 ml-auto mr-auto'>Consumer</label>
 				<button
-					className={`rounded-sm  px-2 py-1 text-xs text-white ${bookingStream ? 'bg-red-600' : 'bg-green-600'}`}
+					className={`rounded-sm  px-2 py-1 text-xs text-white ${
+						bookingStream ? 'bg-red-600' : 'bg-green-600'
+					}`}
 					onClick={toggleBookingStream}
 				>
 					{bookingStream ? '(Off)' : '(On)'} Booking Stream

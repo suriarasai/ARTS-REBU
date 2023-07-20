@@ -40,10 +40,7 @@ const bookingEvent = {
 // 2. Consume dispatchEvent
 // 3. Consume taxiLocatorEvent
 
-const socket = new SockJS('http://localhost:8080/ws')
-let dispatchClient: any = null
-
-const UserApp = ({ addMsg }: { addMsg: Function }) => {
+const UserApp = ({ addMsg, customerID }: { addMsg: Function, customerID: string }) => {
 	const [dispatchStream, setDispatchStream] = useState(false)
 	const [locationStream, setLocationStream] = useState(false)
 
@@ -58,7 +55,7 @@ const UserApp = ({ addMsg }: { addMsg: Function }) => {
 		const client = Stomp.over(socket)
 
 		client.connect({}, () => {
-			client.subscribe('/user/' + 1 + '/queue/dispatchEvent', (message) => {
+			client.subscribe('/user/' + customerID + '/queue/dispatchEvent', (message) => {
 				addMsg({ stream: 'dispatch', message: JSON.parse(message.body) })
 			})
 		})

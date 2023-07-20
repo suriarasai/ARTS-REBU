@@ -100,7 +100,7 @@ export const RideConfirmation = (data: any) => {
 		const client = Stomp.over(socket)
 
 		client.connect({}, () => {
-			client.subscribe('/topic/dispatchEvent', (message) => {
+			client.subscribe('/user/' + user.customerID + '/queue/dispatchEvent', (message) => {
 				const res = JSON.parse(message.body)
 				setBooking({
 					...booking,
