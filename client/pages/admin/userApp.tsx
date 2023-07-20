@@ -49,7 +49,7 @@ const UserApp = ({}) => {
 	const toggleDispatchStream = () => setDispatchStream(!dispatchStream)
 	const toggleLocationStream = () => setLocationStream(!locationStream)
 
-	// Dispatch stream listener: Waiting to be matched
+	// Dispatch stream consumer: Waiting to be matched
 	useEffect(() => {
 		if (!dispatchStream) return
 
@@ -67,6 +67,25 @@ const UserApp = ({}) => {
 		}
 	}, [dispatchStream])
 
+	// Location stream consumer: Tracking the taxi
+	useEffect(() => {
+		if (!locationStream) return
+
+		const socket = new SockJS('http://localhost:8080/ws')
+		const client = Stomp.over(socket)
+
+		client.connect({}, () => {
+			client.subscribe('/topic/taxiLocatorEvent', (message) => {
+				JSON.parse(message.body)
+			})
+		})
+
+		return () => {
+			client.disconnect(() => console.log('Disconnected from server'))
+		}
+	}, [locationStream])
+
+	// Booking stream producer: Creating a booking request
 	function produceBookingEvent() {
 		produceKafkaBookingEvent(JSON.stringify(bookingEvent))
 	}
@@ -81,9 +100,15 @@ const UserApp = ({}) => {
 			</button>
 			<button
 				className='rounded-sm bg-zinc-600 p-4 text-white'
+				onClick={toggleLocationStream}
+			>
+				Toggle Locator Stream
+			</button>
+			<button
+				className='rounded-sm bg-zinc-600 p-4 text-white'
 				onClick={produceBookingEvent}
 			>
-				Create Test Event
+				Create Booking Event
 			</button>
 		</>
 	)

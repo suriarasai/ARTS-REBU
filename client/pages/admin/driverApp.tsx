@@ -1,4 +1,7 @@
-import { produceKafkaDispatchEvent } from '@/server'
+import {
+	produceKafkaDispatchEvent,
+	produceKafkaTaxiLocatorEvent,
+} from '@/server'
 import { useEffect, useState } from 'react'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
@@ -31,14 +34,11 @@ const taxiLocatorEvent = {
 	availabilityStatus: true,
 }
 
-const socket = new SockJS('http://localhost:8080/ws')
-let dispatchClient: any = null
-
 const DriverApp = ({}) => {
 	const [bookingStream, setBookingStream] = useState(false)
 	const toggleBookingStream = () => setBookingStream(!bookingStream)
 
-	// Booking stream listener: Looking for rides to match with
+	// Booking stream consumer: Looking for rides to match with
 	useEffect(() => {
 		if (!bookingStream) return
 
@@ -56,11 +56,15 @@ const DriverApp = ({}) => {
 		}
 	}, [bookingStream])
 
+    // Dispatch stream producer: Approving a ride request
 	function produceDispatchEvent() {
 		produceKafkaDispatchEvent(JSON.stringify(dispatchEvent))
 	}
 
-	function produceLocationEvent() {}
+    // Location event producer: Sending taxi location
+	function produceLocationEvent() {
+		produceKafkaTaxiLocatorEvent(JSON.stringify(taxiLocatorEvent))
+	}
 
 	return (
 		<>
