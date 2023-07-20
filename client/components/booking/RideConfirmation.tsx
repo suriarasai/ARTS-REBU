@@ -13,7 +13,7 @@ import {
 	completeBooking,
 	createBooking,
 	matchedBooking,
-	sendBookingToKafka,
+	produceKafkaBookingEvent,
 	setPaymentMethod,
 	taxiArrived,
 } from '@/server'
@@ -49,6 +49,8 @@ import {
 	userAtom,
 } from '@/utils/state'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
 
 export let taxiRouteDisplay: any
 let matchedTaxi: any
@@ -95,38 +97,33 @@ export const RideConfirmation = (data: any) => {
 		)
 	}, [])
 
-	// Firestore real-time database listener
+	// Websocket: Listening for dispatch event
 	useEffect(() => {
-		if (stopStream) {
-			return
-		}
+		if (stopStream) return
 
-		const unsubscribe = onSnapshot(
-			doc(db, 'BookingEvent', user.customerID!.toString()),
-			(snapshot) => {
-				if (snapshot.data()!.status === 'dispatched') {
-					console.log('Firestore Dispatch Event', snapshot.data())
+		const socket = new SockJS('http://localhost:8080/ws')
+		const client = Stomp.over(socket)
 
-					// Append driver/taxi information from dispatch event
-					setBooking({
-						...booking,
-						tmdtid: snapshot.data()!.tmdtid,
-						taxiNumber: snapshot.data()!.taxiNumber,
-						taxiMakeModel: snapshot.data()!.taxiMakeModel,
-						taxiColor: snapshot.data()!.taxiColor,
-						driverID: snapshot.data()!.driverID,
-						driverName: snapshot.data()!.driverName,
-						driverPhoneNumber: snapshot.data()!.driverPhoneNumber,
-						rating: snapshot.data()!.rating,
-						sno: snapshot.data()!.sno,
-					})
-					handleMatched(snapshot.data())
-				}
-			}
-		)
+		client.connect({}, () => {
+			client.subscribe('/topic/dispatchEvent', (message) => {
+				const res = JSON.parse(message.body)
+				setBooking({
+					...booking,
+					tmdtid: res.tmdtid,
+					taxiNumber: res.taxiNumber,
+					taxiMakeModel: res.taxiMakeModel,
+					taxiColor: res.taxiColor,
+					driverID: res.driverID,
+					driverName: res.driverName,
+					driverPhoneNumber: res.driverPhoneNumber,
+					rating: res.rating,
+					sno: res.sno,
+				})
+			})
+		})
 
 		return () => {
-			unsubscribe()
+			client.disconnect(() => console.log('Disconnected from server'))
 		}
 	}, [stopStream])
 
@@ -198,7 +195,7 @@ export const RideConfirmation = (data: any) => {
 					dropLocation: data.destination.placeName,
 				})
 
-				sendBookingToKafka(
+				produceKafkaBookingEvent(
 					JSON.stringify({
 						bookingID: bookingID,
 						customerID: user.customerID,
@@ -215,18 +212,6 @@ export const RideConfirmation = (data: any) => {
 						dropLocation: data.destination.placeName,
 					})
 				)
-
-				// Sending bookingEvent to data stream
-				createBookingRequest({
-					...user,
-					...options[clickedOption - 1],
-					pickUpLocation: data.origin.placeName,
-					dropLocation: data.destination.placeName,
-					fareType: 'metered',
-					paymentMethod: 'cash',
-					eta: data.duration,
-					bookingID: bookingID,
-				})
 			}
 		) // API to create booking
 	}

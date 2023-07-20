@@ -1,6 +1,6 @@
-package com.rebu.Kafka;
+// Producer: Sends the message to the Kafka stream
 
-import java.time.Instant;
+package com.rebu.Kafka;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,8 +12,15 @@ public class ProducerService {
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendMessage(String message) {
-        kafkaTemplate.send("firsttopic", message);
-        System.out.println("Producer: " + message + " @ " + Instant.now().toEpochMilli());
+    public void bookingProducer(String message) {
+        kafkaTemplate.send("bookingEvent", message);
+    }
+
+    public void dispatchProducer(String message) {
+        kafkaTemplate.send("dispatchEvent", message);
+    }
+
+    public void taxiLocatorProducer(String message) {
+        kafkaTemplate.send("taxiLocatorEvent", message);
     }
 }

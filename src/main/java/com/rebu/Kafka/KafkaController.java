@@ -1,3 +1,5 @@
+// Controller: Defines endpoints to receive stream data from the frontend
+
 package com.rebu.Kafka;
 
 import java.util.Map;
@@ -17,8 +19,18 @@ public class KafkaController {
     @Autowired
     ProducerService producer;
 
-    @PostMapping("/producerMsg")
-    public void getMessage(@RequestBody Map<String, String> payload) {
-        producer.sendMessage(payload.get("message"));
+    @PostMapping("/bookingEvent")
+    public void getBookingEvent(@RequestBody Map<String, String> payload) {
+        producer.bookingProducer(payload.get("message"));
+    }
+
+    @PostMapping("/dispatchEvent")
+    public void getDispatchEvent(@RequestBody Map<String, String> payload) {
+        producer.dispatchProducer(payload.get("message"));
+    }
+
+    @PostMapping("/taxiLocatorEvent")
+    public void getTaxiLocatorEvent(@RequestBody Map<String, String> payload) {
+        producer.taxiLocatorProducer(payload.get("message"));
     }
 }

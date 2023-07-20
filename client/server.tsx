@@ -4,27 +4,24 @@ import { getAddress } from './utils/getAddress'
 import axios from 'axios'
 import { renderDirections } from './utils/renderDirections'
 
-// const http = require('http').createServer()
-
-// const io = require('socket.io')(http, {
-// 	cors: { origin: '*' },
-// })
-
-// io.on('connection', (socket: any) => {
-// 	console.log('WS Connected')
-// 	socket.on('message', (message: any) => {
-// 		console.log(message)
-// 		io.emit('message', `${socket.id.substr(0, 2)} said ${message}`)
-// 	})
-// })
-
-// http.listen(8080, () => console.log('listening on http://localhost:8080'))
-
-export async function sendBookingToKafka(message: string) {
-	api.post('/api/v1/Kafka/producerMsg', {
+export async function produceKafkaBookingEvent(message: string) {
+	api.post('/api/v1/Kafka/bookingEvent', {
 		message: message,
 	})
 }
+
+export async function produceKafkaDispatchEvent(message: string) {
+	api.post('/api/v1/Kafka/dispatchEvent', {
+		message: message,
+	})
+}
+
+export async function produceKafkaTaxiLocatorEvent(message: string) {
+	api.post('/api/v1/Kafka/taxiLocatorEvent', {
+		message: message,
+	})
+}
+
 
 // Account Settings: Updates user information
 export const UpdateUser = async (data: User | any, customerID: number) => {

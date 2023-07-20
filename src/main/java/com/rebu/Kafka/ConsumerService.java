@@ -1,3 +1,5 @@
+// Consumer: Reads the data from the Kafka stream
+
 package com.rebu.Kafka;
 
 import java.time.Instant;
@@ -13,9 +15,21 @@ public class ConsumerService {
     @Autowired
     private SimpMessagingTemplate template;
 
-    @KafkaListener(topics = "firsttopic", groupId = "rebu")
-    public void listenToTopic(String receivedMessage) {
-        System.out.println("Consumer: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
+    @KafkaListener(topics = "bookingEvent", groupId = "rebu")
+    public void bookingConsumer(String receivedMessage) {
+        System.out.println("Booking Event: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
         this.template.convertAndSend("/topic/bookingEvent", receivedMessage);
+    }
+
+    @KafkaListener(topics = "dispatchEvent", groupId = "rebu")
+    public void dispatchConsumer(String receivedMessage) {
+        System.out.println("Dispatch Event: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
+        this.template.convertAndSend("/topic/dispatchEvent", receivedMessage);
+    }
+
+    @KafkaListener(topics = "taxiLocatorEvent", groupId = "rebu")
+    public void taxiLocatorConsumer(String receivedMessage) {
+        System.out.println("Taxi Location: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
+        this.template.convertAndSend("/topic/taxiLocatorEvent", receivedMessage);
     }
 }

@@ -1,3 +1,5 @@
+// Web Socket: Configuration for sending data from Spring Boot to frontend
+
 package com.rebu.config;
 
 import org.springframework.context.annotation.Bean;
@@ -31,7 +33,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // Update here
+        config.setAllowCredentials(true);
         config.addAllowedOriginPattern("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
