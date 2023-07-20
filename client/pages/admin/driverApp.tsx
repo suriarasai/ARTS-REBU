@@ -38,23 +38,23 @@ const DriverApp = ({ addMsg }: { addMsg: Function }) => {
 	const [bookingStream, setBookingStream] = useState(false)
 	const toggleBookingStream = () => setBookingStream(!bookingStream)
 
-	// Booking stream consumer: Looking for rides to match with
-	useEffect(() => {
-		if (!bookingStream) return
+// Booking stream consumer: Looking for rides to match with
+useEffect(() => {
+    if (!bookingStream) return
 
-		const socket = new SockJS('http://localhost:8080/ws')
-		const client = Stomp.over(socket)
+    const socket = new SockJS('http://localhost:8080/ws')
+    const client = Stomp.over(socket)
 
-		client.connect({}, () => {
-			client.subscribe('/topic/bookingEvent', (message) => {
-				addMsg({ stream: 'booking', message: JSON.parse(message.body) })
-			})
-		})
+    client.connect({}, () => {
+        client.subscribe('/topic/bookingEvent', (message) => {
+            addMsg({ stream: 'booking', message: JSON.parse(message.body) })
+        })
+    })
 
-		return () => {
-			client.disconnect(() => console.log('Disconnected from server'))
-		}
-	}, [bookingStream])
+    return () => {
+        client.disconnect(() => console.log('Disconnected from server'))
+    }
+}, [bookingStream])
 
 	// Dispatch stream producer: Approving a ride request
 	function produceDispatchEvent() {

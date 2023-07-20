@@ -2,6 +2,7 @@ import UserApp from './userApp'
 import DriverApp from './driverApp'
 import { useState } from 'react'
 import { message } from '@/constants'
+import { useRouter } from 'next/router'
 
 const AdminMainPage = () => {
 	const [messages, setMessages] = useState<message[]>([])
@@ -9,15 +10,22 @@ const AdminMainPage = () => {
 	const addMessage = (newMsg: message) =>
 		setMessages((messages) => [...messages, newMsg])
 	const clearMessages = () => setMessages([])
+	const returnToSignIn = () => useRouter().push('/')
 
 	return (
 		<div className='flex h-screen max-w-screen-md flex-col justify-center space-y-5 !overflow-y-hidden p-4'>
+			{/* Button controls */}
+			<button onClick={returnToSignIn} className='bg-zinc-200 p-1 text-xs w-fit'>
+				Go Back
+			</button>
 			<div className='ml-auto mr-auto flex h-2/5 space-x-5'>
 				<UserApp addMsg={(newMsg: message) => addMessage(newMsg)} />
 				<DriverApp addMsg={(newMsg: message) => addMessage(newMsg)} />
 			</div>
 			<hr />
-			<div className='h-3/5 space-y-3'>
+
+			{/* Outputting stream data */}
+			<div className='h-2/5 space-y-3'>
 				<div className='flex items-center space-x-5'>
 					<h1>Stream Logs</h1>
 					<button onClick={clearMessages} className='bg-zinc-200 p-1 text-xs'>
