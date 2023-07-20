@@ -100,3 +100,9 @@ export enum polylineTrafficColors {
 	SLOW = '#fcd34d',
 	TRAFFIC_JAM = '#ef4444'
 }
+export interface message {
+	stream: 'booking' | 'dispatch' | 'taxiLocator'
+	message: any
+	messageSubmittedTime?: string
+	messageReceivedTime?: string
+}

@@ -2,6 +2,7 @@ import { produceKafkaBookingEvent } from '@/server'
 import { useEffect, useState } from 'react'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
+import { message } from '@/constants'
 
 const bookingEvent = {
 	bookingID: 1,
@@ -42,7 +43,7 @@ const bookingEvent = {
 const socket = new SockJS('http://localhost:8080/ws')
 let dispatchClient: any = null
 
-const UserApp = ({}) => {
+const UserApp = ({ addMsg }: { addMsg: Function }) => {
 	const [dispatchStream, setDispatchStream] = useState(false)
 	const [locationStream, setLocationStream] = useState(false)
 
@@ -58,7 +59,7 @@ const UserApp = ({}) => {
 
 		client.connect({}, () => {
 			client.subscribe('/topic/dispatchEvent', (message) => {
-				JSON.parse(message.body)
+				addMsg({ stream: 'dispatch', message: JSON.parse(message.body) })
 			})
 		})
 
@@ -76,7 +77,7 @@ const UserApp = ({}) => {
 
 		client.connect({}, () => {
 			client.subscribe('/topic/taxiLocatorEvent', (message) => {
-				JSON.parse(message.body)
+				addMsg({ stream: 'taxiLocator', message: JSON.parse(message.body) })
 			})
 		})
 
@@ -91,26 +92,36 @@ const UserApp = ({}) => {
 	}
 
 	return (
-		<>
-			<button
-				className='rounded-sm bg-zinc-600 p-4 text-white'
-				onClick={toggleDispatchStream}
-			>
-				Toggle Dispatch Stream
-			</button>
-			<button
-				className='rounded-sm bg-zinc-600 p-4 text-white'
-				onClick={toggleLocationStream}
-			>
-				Toggle Locator Stream
-			</button>
-			<button
-				className='rounded-sm bg-zinc-600 p-4 text-white'
-				onClick={produceBookingEvent}
-			>
-				Create Booking Event
-			</button>
-		</>
+		<div className='flex w-44 flex-col rounded-sm border border-zinc-400 bg-zinc-50'>
+			<div className='ml-auto mr-auto flex w-full items-center justify-center bg-zinc-600'>
+				<h1 className='!text-white'>Customer</h1>
+			</div>
+			<div className='flex flex-col space-y-1 p-3'>
+				<label className='my-1 ml-auto mr-auto'>Consumers</label>
+				<button
+					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					onClick={toggleDispatchStream}
+				>
+					Toggle Dispatch Stream
+				</button>
+				<button
+					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					onClick={toggleLocationStream}
+				>
+					Toggle Locator Stream
+				</button>
+			</div>
+
+			<div className='flex flex-col space-y-1 p-3'>
+				<label className='my-1 ml-auto mr-auto'>Producer</label>
+				<button
+					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					onClick={produceBookingEvent}
+				>
+					Create Booking Event
+				</button>
+			</div>
+		</div>
 	)
 }
 

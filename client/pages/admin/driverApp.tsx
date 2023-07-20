@@ -34,7 +34,7 @@ const taxiLocatorEvent = {
 	availabilityStatus: true,
 }
 
-const DriverApp = ({}) => {
+const DriverApp = ({ addMsg }: { addMsg: Function }) => {
 	const [bookingStream, setBookingStream] = useState(false)
 	const toggleBookingStream = () => setBookingStream(!bookingStream)
 
@@ -47,7 +47,7 @@ const DriverApp = ({}) => {
 
 		client.connect({}, () => {
 			client.subscribe('/topic/bookingEvent', (message) => {
-				JSON.parse(message.body)
+				addMsg({ stream: 'booking', message: JSON.parse(message.body) })
 			})
 		})
 
@@ -56,37 +56,47 @@ const DriverApp = ({}) => {
 		}
 	}, [bookingStream])
 
-    // Dispatch stream producer: Approving a ride request
+	// Dispatch stream producer: Approving a ride request
 	function produceDispatchEvent() {
 		produceKafkaDispatchEvent(JSON.stringify(dispatchEvent))
 	}
 
-    // Location event producer: Sending taxi location
+	// Location event producer: Sending taxi location
 	function produceLocationEvent() {
 		produceKafkaTaxiLocatorEvent(JSON.stringify(taxiLocatorEvent))
 	}
 
 	return (
-		<>
-			<button
-				className='rounded-sm bg-zinc-600 p-4 text-white'
-				onClick={toggleBookingStream}
-			>
-				Toggle Booking Stream
-			</button>
-			<button
-				className='rounded-sm bg-zinc-600 p-4 text-white'
-				onClick={produceDispatchEvent}
-			>
-				Create Dispatch Event
-			</button>
-			<button
-				className='rounded-sm bg-zinc-600 p-4 text-white'
-				onClick={produceLocationEvent}
-			>
-				Create Location Event
-			</button>
-		</>
+		<div className='flex w-44 flex-col rounded-sm border border-zinc-400 bg-zinc-50'>
+			<div className='ml-auto mr-auto flex w-full items-center justify-center bg-zinc-600'>
+				<h1 className='!text-white'>Driver</h1>
+			</div>
+			<div className='flex flex-col space-y-1 p-3'>
+				<label className='my-1 ml-auto mr-auto'>Consumer</label>
+				<button
+					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					onClick={toggleBookingStream}
+				>
+					Toggle Booking Stream
+				</button>
+			</div>
+
+			<div className='flex flex-col space-y-1 p-3'>
+				<label className='my-1 ml-auto mr-auto'>Producers</label>
+				<button
+					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					onClick={produceDispatchEvent}
+				>
+					Create Dispatch Event
+				</button>
+				<button
+					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					onClick={produceLocationEvent}
+				>
+					Create Location Event
+				</button>
+			</div>
+		</div>
 	)
 }
 
