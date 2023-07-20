@@ -74,10 +74,10 @@ const DriverApp = ({ addMsg }: { addMsg: Function }) => {
 			<div className='flex flex-col space-y-1 p-3'>
 				<label className='my-1 ml-auto mr-auto'>Consumer</label>
 				<button
-					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					className={`rounded-sm  px-2 py-1 text-xs text-white ${bookingStream ? 'bg-red-600' : 'bg-green-600'}`}
 					onClick={toggleBookingStream}
 				>
-					Toggle Booking Stream
+					{bookingStream ? '(Off)' : '(On)'} Booking Stream
 				</button>
 			</div>
 

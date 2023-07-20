@@ -99,16 +99,16 @@ const UserApp = ({ addMsg }: { addMsg: Function }) => {
 			<div className='flex flex-col space-y-1 p-3'>
 				<label className='my-1 ml-auto mr-auto'>Consumers</label>
 				<button
-					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					className={`rounded-sm  px-2 py-1 text-xs text-white ${dispatchStream ? 'bg-red-600' : 'bg-green-600'}`}
 					onClick={toggleDispatchStream}
 				>
-					Toggle Dispatch Stream
+					{dispatchStream ? '(Off)' : '(On)'} Dispatch Stream
 				</button>
 				<button
-					className='rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
+					className={`rounded-sm  px-2 py-1 text-xs text-white ${locationStream ? 'bg-red-600' : 'bg-green-600'}`}
 					onClick={toggleLocationStream}
 				>
-					Toggle Locator Stream
+					{locationStream ? '(Off)' : '(On)'} Locator Stream
 				</button>
 			</div>
 

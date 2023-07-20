@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import UserApp from './userApp'
 import DriverApp from './driverApp'
 import { useState } from 'react'
@@ -9,23 +8,32 @@ const AdminMainPage = () => {
 
 	const addMessage = (newMsg: message) =>
 		setMessages((messages) => [...messages, newMsg])
+	const clearMessages = () => setMessages([])
 
 	return (
-		<div className='flex max-w-screen-md flex-col justify-center space-y-5 p-4 !overflow-y-hidden h-screen'>
-			<div className='ml-auto mr-auto flex space-x-5 h-2/5'>
+		<div className='flex h-screen max-w-screen-md flex-col justify-center space-y-5 !overflow-y-hidden p-4'>
+			<div className='ml-auto mr-auto flex h-2/5 space-x-5'>
 				<UserApp addMsg={(newMsg: message) => addMessage(newMsg)} />
 				<DriverApp addMsg={(newMsg: message) => addMessage(newMsg)} />
 			</div>
 			<hr />
-			<div className='space-y-3 h-3/5'>
-				<h1>Stream Logs</h1>
-				<div className='flex flex-col space-y-1 overflow-y-auto h-4/5'>
-					{messages.map((msg: message, index) => (
-						<div className='text-xs' key={index}>
-							{msg.stream}
-							<br />
-							{JSON.stringify(msg.message)}
-						</div>
+			<div className='h-3/5 space-y-3'>
+				<div className='flex items-center space-x-5'>
+					<h1>Stream Logs</h1>
+					<button onClick={clearMessages} className='bg-zinc-200 p-1 text-xs'>
+						Clear
+					</button>
+				</div>
+				<div className='flex h-4/5 flex-col space-y-1 overflow-y-auto'>
+					{messages.toReversed().map((msg: message, index) => (
+						<>
+							<div className='text-xs' key={index}>
+								{msg.stream}
+								<br />
+								{JSON.stringify(msg.message)}
+							</div>
+							<hr />
+						</>
 					))}
 				</div>
 			</div>
