@@ -1,8 +1,9 @@
 import { atom, selector } from "recoil";
+import { Driver } from "./types";
 
 export const driverAtom = atom({
   key: "driver-atom",
-  default: {},
+  default: {} as Driver,
   effects: [
     ({ onSet }) => {
       onSet((data) => {

@@ -1,17 +1,12 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import BottomNav from "@/components/bottomNav";
 import { HREF } from "@/constants";
-import { DispatchEvent } from "@/types";
+import { driverAtom } from "@/state";
+import { Driver } from "@/types";
 import { useRouter } from "next/router";
 import { Suspense } from "react";
 import { FaPhone, FaSignOutAlt, FaStar, FaUserCircle } from "react-icons/fa";
-
-const driver = {
-  driverID: 12,
-  driverName: "Driverkaya",
-  driverPhoneNumber: "12345678",
-  rating: 4.9,
-};
+import { useRecoilState, useRecoilValue } from "recoil";
 
 export default function Settings() {
   return (
@@ -26,8 +21,13 @@ export default function Settings() {
 }
 
 const SignOutButton = ({}) => {
+  const [, setDriver] = useRecoilState(driverAtom);
   const router = useRouter();
-  const SignOut = () => router.push(HREF.SIGNIN);
+  const SignOut = () => {
+    setDriver({} as Driver);
+    router.push(HREF.SIGNIN);
+  };
+
   return (
     <button
       className="text-red-100 flex items-center rounded-md border border-red-100 p-2 float-right"
@@ -40,6 +40,8 @@ const SignOutButton = ({}) => {
 };
 
 const DriverProfile = ({}) => {
+  const driver = useRecoilValue<Driver>(driverAtom);
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
       <div className="w-1/6">
@@ -52,7 +54,7 @@ const DriverProfile = ({}) => {
           <span className="text-gray-300">{" (@" + driver.driverID + ")"}</span>
         </p>
         <p className="flex items-center">
-          +65 {driver.driverPhoneNumber}{" "}
+          +65 {driver.phoneNumber}{" "}
           <FaPhone className="ml-2 text-green-400 text-sm" />
         </p>
       </div>

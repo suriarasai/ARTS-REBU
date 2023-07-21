@@ -42,3 +42,11 @@ export type DispatchEvent = {
   taxiColor: string;
   sno: number;
 };
+
+export type Driver = {
+  driverID: number;
+  driverName: string;
+  phoneNumber: number;
+  taxiID: number;
+  rating: number;
+};
