@@ -8,8 +8,8 @@ const Meta = () => (
 		<meta charSet='utf-8' />
 		<meta name='mobile-web-app-capable' content='yes' />
 		<meta name='apple-mobile-web-app-capable' content='yes' />
-		<meta name='apple-mobile-web-app-title' content='Rebu' />
-		<meta name='application-name' content='Rebu' />
+		<meta name='apple-mobile-web-app-title' content='Rebu Driver' />
+		<meta name='application-name' content='Rebu Driver' />
 		<meta name='description' content='SEA-based Taxi Hailing App' />
 		<meta
 			name='viewport'

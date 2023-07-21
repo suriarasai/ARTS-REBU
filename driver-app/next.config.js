@@ -5,7 +5,7 @@ const withPWA = require("next-pwa")({
 });
 
 module.exports = withPWA({
-  reactStrictMode: true,
+  reactStrictMode: false,
   webpack5: true,
   webpack: (config) => {
     config.resolve.fallback = { fs: false };

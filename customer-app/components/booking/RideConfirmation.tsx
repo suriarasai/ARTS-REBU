@@ -204,8 +204,8 @@ export const RideConfirmation = (data: any) => {
 						distance: options[clickedOption - 1].distance,
 						paymentMethod: 'Cash',
 						eta: data.duration,
-						pickUpLocation: data.origin.placeName,
-						dropLocation: data.destination.placeName,
+						pickUpLocation: data.origin,
+						dropLocation: data.destination,
 						status: 'requested'
 					})
 				)
