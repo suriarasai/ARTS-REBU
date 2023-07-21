@@ -23,9 +23,9 @@ h5 {
 }
 
 h1 {
-	@apply text-xl !important;
+	@apply text-xl text-gray-50 mb-6 !important;
 	font-family: 'Segoe UI' !important;
-	font-weight: 300 !important;
+	font-weight: 400 !important;
 }
 
 p {

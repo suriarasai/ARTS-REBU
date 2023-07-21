@@ -69,7 +69,7 @@ const links = [
     image: <FaChartLine className="h-5 w-5" />,
   }),
   navIcon({
-    label: "Settings",
+    label: "Profile",
     href: HREF.SETTINGS,
     image: <FaUser className="h-5 w-5" />,
   }),

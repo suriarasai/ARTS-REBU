@@ -1,0 +1,67 @@
+import { LoadingScreen } from "@/components/LoadingScreen";
+import BottomNav from "@/components/bottomNav";
+import { HREF } from "@/constants";
+import { DispatchEvent } from "@/types";
+import { useRouter } from "next/router";
+import { Suspense } from "react";
+import { FaPhone, FaSignOutAlt, FaStar, FaUserCircle } from "react-icons/fa";
+
+const driver = {
+  driverID: 12,
+  driverName: "Driverkaya",
+  driverPhoneNumber: "12345678",
+  rating: 4.9,
+};
+
+export default function Settings() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <main className="p-6 space-y-5">
+        <DriverProfile />
+        <SignOutButton />
+      </main>
+      <BottomNav />
+    </Suspense>
+  );
+}
+
+const SignOutButton = ({}) => {
+  const router = useRouter();
+  const SignOut = () => router.push(HREF.SIGNIN);
+  return (
+    <button
+      className="text-red-100 flex items-center rounded-md border border-red-100 p-2 float-right"
+      onClick={SignOut}
+    >
+      <FaSignOutAlt className="mr-2" />
+      Sign Out
+    </button>
+  );
+};
+
+const DriverProfile = ({}) => {
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
+      <div className="w-1/6">
+        <FaUserCircle className="text-green-400 text-4xl" />
+      </div>
+
+      <div className="w-4/6">
+        <p className="text-gray-700 text-xl font-normal">
+          {driver.driverName}{" "}
+          <span className="text-gray-300">{" (@" + driver.driverID + ")"}</span>
+        </p>
+        <p className="flex items-center">
+          +65 {driver.driverPhoneNumber}{" "}
+          <FaPhone className="ml-2 text-green-400 text-sm" />
+        </p>
+      </div>
+
+      <div className="w-1/6">
+        <div className="h-10 w-fit px-2 rounded-sm bg-green-800 text-white flex items-center justify-center">
+          <FaStar className="text-white mr-2" /> {driver.rating}
+        </div>
+      </div>
+    </div>
+  );
+};

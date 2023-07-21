@@ -19,8 +19,7 @@ public class Driver {
     private ObjectId _id;
     private Integer driverID;
     private String driverName;
-    private Integer driverNumber;
-    private Integer sno;
+    private Integer phoneNumber;
     private Double rating;
 
     public Driver(Integer driverID) {
@@ -29,8 +28,7 @@ public class Driver {
 
     public void setDriver(Driver data) {
         this.driverName = data.driverName;
-        this.driverNumber = data.driverNumber;
-        this.sno = data.sno;
+        this.phoneNumber = data.phoneNumber;
     }
 
     public void setRating(Double rating) {

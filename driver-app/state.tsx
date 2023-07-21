@@ -18,3 +18,22 @@ export const driverSelector = selector({
     return get(driverAtom);
   },
 });
+
+export const dispatchAtom = atom({
+  key: "dispatch-atom",
+  default: {},
+  effects: [
+    ({ onSet }) => {
+      onSet((data) => {
+        console.log("Updated Dispatch Data (state.tsx): ", data);
+      });
+    },
+  ],
+});
+
+export const dispatchSelector = selector({
+  key: "dispatch-modifier",
+  get: ({ get }) => {
+    return get(dispatchAtom);
+  },
+});
