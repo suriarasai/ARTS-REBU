@@ -41,7 +41,7 @@ const AdminMainPage = () => {
 	const router = useRouter()
 	const [bookingEvents, setBookingEvents] = useState<bookingEvent[]>([])
 
-	const addBooking = (newEvent: bookingEvent, randInt?: boolean) => {
+	const addBooking = (newEvent: bookingEvent, randInt: boolean = false) => {
 		if (randInt) newEvent.customerID = Math.floor(Math.random() * 1000)
 		setBookingEvents((bookingEvents) => [...bookingEvents, newEvent])
 	}
@@ -61,7 +61,7 @@ const AdminMainPage = () => {
 
 		client.connect({}, () => {
 			client.subscribe('/topic/bookingEvent', (newEvent) => {
-				addBooking(JSON.parse(newEvent.body), true)
+				addBooking(JSON.parse(newEvent.body), false)
 			})
 		})
 
