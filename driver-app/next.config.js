@@ -1,13 +1,15 @@
-const withPWA = require('next-pwa')({
-	dest: 'public',
-})
-
-const runtimeCaching = require('next-pwa/cache')
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  disable: process.env.NODE_ENV === "development",
+});
 
 module.exports = withPWA({
-	reactStrictMode: false,
-	pwa: {
-		dest: 'public',
-		runtimeCaching,
-	},
-})
+  reactStrictMode: true,
+  webpack5: true,
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false };
+    return config;
+  },
+  output: "standalone",
+});

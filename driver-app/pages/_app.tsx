@@ -1,20 +1,16 @@
 // Main app component that defines the theme and context for the pages
 
 import type { AppProps } from "next/app";
-import Meta from "./meta";
+import Meta from "@/components/meta";
 import "@/styles/globals.css";
+import { RecoilRoot } from "recoil";
 
 const App = ({ Component, pageProps }: AppProps) => {
-  /*
-		Component	: the page/component to be rendered
-		pageProps	: the props of each page/component
-	*/
-
   return (
-    <>
+    <RecoilRoot>
       <Meta />
       <Component {...pageProps} />
-    </>
+    </RecoilRoot>
   );
 };
 

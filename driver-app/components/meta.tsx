@@ -8,23 +8,9 @@ const Meta = () => (
 		<meta charSet='utf-8' />
 		<meta name='mobile-web-app-capable' content='yes' />
 		<meta name='apple-mobile-web-app-capable' content='yes' />
-		<meta
-			name='apple-mobile-web-app-status-bar-style'
-			content='black-translucent'
-		/>
 		<meta name='apple-mobile-web-app-title' content='Rebu' />
 		<meta name='application-name' content='Rebu' />
 		<meta name='description' content='SEA-based Taxi Hailing App' />
-		<meta
-			name='theme-color'
-			content='#fafafa'
-			media='(prefers-color-scheme: light)'
-		/>
-		<meta
-			name='theme-color'
-			content='#18181b'
-			media='(prefers-color-scheme: dark)'
-		/>
 		<meta
 			name='viewport'
 			content='width=device-width, initial-scale=1, user-scalable=0, viewport-fit=cover'
