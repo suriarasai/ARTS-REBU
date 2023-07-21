@@ -206,6 +206,7 @@ export const RideConfirmation = (data: any) => {
 						eta: data.duration,
 						pickUpLocation: data.origin.placeName,
 						dropLocation: data.destination.placeName,
+						status: 'requested'
 					})
 				)
 			}

@@ -41,9 +41,18 @@ const AdminMainPage = () => {
 	const router = useRouter()
 	const [bookingEvents, setBookingEvents] = useState<bookingEvent[]>([])
 
-	const addBooking = (newEvent: bookingEvent) =>
+	const addBooking = (newEvent: bookingEvent, randInt?: boolean) => {
+		if (randInt) newEvent.customerID = Math.floor(Math.random() * 1000)
 		setBookingEvents((bookingEvents) => [...bookingEvents, newEvent])
+	}
 	const clearBookingEvents = () => setBookingEvents([])
+
+	const removeBooking = (key: number) => {
+		setBookingEvents((bookingEvents) =>
+			bookingEvents.filter((item) => item.customerID !== key)
+		)
+		console.log(key)
+	}
 
 	// Booking stream consumer: Looking for rides to match with
 	useEffect(() => {
@@ -52,7 +61,7 @@ const AdminMainPage = () => {
 
 		client.connect({}, () => {
 			client.subscribe('/topic/bookingEvent', (newEvent) => {
-				addBooking(JSON.parse(newEvent.body))
+				addBooking(JSON.parse(newEvent.body), true)
 			})
 		})
 
@@ -73,7 +82,7 @@ const AdminMainPage = () => {
 	return (
 		<div className='max-w-screen-md p-4'>
 			<button
-				className='rounded-sm bg-green-600 px-2 py-1 mr-2 text-xs text-white'
+				className='mr-2 rounded-sm bg-green-600 px-2 py-1 text-xs text-white'
 				onClick={produceBookingEvent}
 			>
 				Create Booking Event
@@ -84,11 +93,16 @@ const AdminMainPage = () => {
 			>
 				Clear Events
 			</button>
+
 			{bookingEvents.map(
-				(booking, index) => (
-					<BookingEntry booking={booking} key={index} />
-				),
-				[]
+				(booking, index) =>
+					booking.status === 'requested' && (
+						<BookingEntry
+							booking={booking}
+							removeBooking={removeBooking}
+							key={index}
+						/>
+					)
 			)}
 		</div>
 	)
@@ -116,11 +130,27 @@ function produceDispatchEvent(booking: bookingEvent) {
 	)
 }
 
-const BookingEntry = ({ booking }: { booking: bookingEvent }) => {
+const BookingEntry = ({
+	booking,
+	removeBooking,
+}: {
+	booking: bookingEvent
+	removeBooking: Function
+}) => {
+	function handleApproval() {
+		produceDispatchEvent(booking)
+		removeBooking(booking.customerID)
+	}
+
 	return (
-		<div className='flex my-1'>
+		<div className='my-1 flex'>
 			{booking.customerID}
-			<button className='bg-green-200 p-1 text-xs ml-4' onClick={() => produceDispatchEvent(booking)}>Approve</button>
+			<button
+				className='ml-4 bg-green-200 p-1 text-xs'
+				onClick={handleApproval}
+			>
+				Approve
+			</button>
 		</div>
 	)
 }
