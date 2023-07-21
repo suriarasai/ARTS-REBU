@@ -7,7 +7,7 @@ import BottomNav from '@/components/ui/bottom-nav'
 
 interface Props {
 	title?: string
-	children: React.ReactNode
+	children?: React.ReactNode
 	className?: string
 }
 
