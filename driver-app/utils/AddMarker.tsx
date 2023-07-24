@@ -2,11 +2,11 @@ import { Location } from "@/types";
 
 export default function AddMarker(
   map: google.maps.Map,
-  place: Location,
+  place: google.maps.LatLng,
   image: any
 ) {
   return new google.maps.Marker({
-    position: { lat: place.lat as number, lng: place.lng as number },
+    position: { lat: place.lat(), lng: place.lng() },
     map: map,
     icon: {
       url: image,

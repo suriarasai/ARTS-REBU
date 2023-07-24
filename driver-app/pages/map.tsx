@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { LoadingScreen } from "@/components/LoadingScreen";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { GoogleMap, LoadScriptNext } from "@react-google-maps/api";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -14,13 +14,21 @@ import {
 import Styles from "@/public/resources/maps.json";
 import AddMarker from "@/utils/AddMarker";
 import { BackButton } from "@/components/BackButton";
+import { computeDirections } from "../utils/computeDirections";
 
-const markers: any = {
+export const markers: any = {
   initialLocation: null,
   taxiLocation: null,
   customerLocation: null,
   destinationLocation: null,
 };
+
+export const routes: any = {
+  pickup: null,
+  dropoff: null,
+};
+
+const libraries = ["places", "geometry"];
 
 export default function Map() {
   // States
@@ -28,16 +36,18 @@ export default function Map() {
   const taxi = useRecoilValue(taxiAtom);
   const booking = useRecoilValue(bookingAtom);
   const [dispatch, setDispatchEvent] = useRecoilState(dispatchAtom);
-  const [locationEvent, setLocationEvent] = useRecoilState(locationAtom);
+  const [location, setLocationEvent] = useRecoilState(locationAtom);
   const [screen, setScreen] = useRecoilState(screenAtom);
+  const [mapRef, setMapRef] = useState<google.maps.Map>();
 
   // On map load... set location to current location
   const loadMap = useCallback(function callback(map: google.maps.Map) {
+    setMapRef(map);
     navigator.geolocation.getCurrentPosition((position) => {
-      const initialLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      };
+      const initialLocation = new google.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude
+      );
 
       markers.initialLocation = AddMarker(
         map,
@@ -50,8 +60,8 @@ export default function Map() {
         driverID: driver.driverID,
         taxiNumber: taxi.taxiNumber,
         currentPosition: {
-          lat: initialLocation.lat,
-          lng: initialLocation.lng,
+          lat: initialLocation.lat(),
+          lng: initialLocation.lng(),
         },
         availabilityStatus: true,
       });
@@ -64,6 +74,19 @@ export default function Map() {
   // On receiving a new booking request...
   useEffect(() => {
     console.log("Booking useEffect");
+    setDispatchEvent({
+      ...dispatch,
+      pickUpLocation: {
+        lat: 1.297761,
+        lng: 103.772688,
+      },
+      dropLocation: {
+        lat: 1.304604,
+        lng: 103.768289,
+      },
+      customerName: "Water bottle",
+      customerPhoneNumber: 12345678,
+    });
   }, [booking]);
 
   // On approving a new booking request...
@@ -79,7 +102,7 @@ export default function Map() {
             process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
           }
           loadingElement={<LoadingScreen />}
-          libraries={["places", "geometry"]}
+          libraries={libraries as any}
         >
           <div className="relative h-screen w-screen">
             <GoogleMap
@@ -97,7 +120,7 @@ export default function Map() {
             />
 
             {screen === "" ? null : screen === "start" ? (
-              <StartTripUI />
+              <StartTripUI map={mapRef as google.maps.Map} />
             ) : screen === "pickup" ? (
               <PickUpUI />
             ) : screen === "dropoff" ? (
@@ -114,13 +137,25 @@ export default function Map() {
   );
 }
 
-const StartTripUI = () => {
-  // UI: Button to confirm
-  // Directions to user
-  // Directions from user to destination
-  // Taxi Movement
-  // Location Events
-  return null;
+const StartTripUI = ({ map }: { map: google.maps.Map }) => {
+  const location = useRecoilValue(locationAtom);
+  const dispatch = useRecoilValue(dispatchAtom);
+  const [, setScreen] = useRecoilState(screenAtom);
+
+  computeDirections(map, location, dispatch);
+  const startTrip = () => setScreen("pickup");
+
+  return (
+    <div className="absolute bottom-0 w-3/4 text-center left-0 right-0 justify-center mr-auto ml-auto mb-4 shadow-md p-4 bg-white rounded-lg">
+      <h1 className="!text-black w-full !mb-3">準備はできたか?</h1>
+      <button
+        className="bg-green-600 flex justify-center py-2 text-white w-full rounded-md"
+        onClick={startTrip}
+      >
+        はじめましょう
+      </button>
+    </div>
+  );
 };
 
 const PickUpUI = () => {
