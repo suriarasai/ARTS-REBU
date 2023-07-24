@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { GoogleMap, LoadScriptNext } from '@react-google-maps/api'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Locate } from '@/components/booking/Locate'

@@ -1,9 +1,11 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import BottomNav from "@/components/bottomNav";
 import { produceKafkaDispatchEvent } from "@/server";
-import { BookingEvent } from "@/types";
+import { driverAtom, taxiAtom } from "@/state";
+import { BookingEvent, Driver, Taxi } from "@/types";
 import { Suspense, useEffect, useState } from "react";
 import { FaCheckCircle, FaCompass, FaFlag } from "react-icons/fa";
+import { useRecoilValue } from "recoil";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -22,8 +24,8 @@ export default function Trips() {
     });
 
     return () => {
-			client.disconnect(() => console.log('Disconnected from server'))
-		}
+      client.disconnect(() => console.log("Disconnected from server"));
+    };
   }, []);
 
   const addBooking = (newEvent: BookingEvent) => {
@@ -58,9 +60,11 @@ const RideRequest = ({
   trip: BookingEvent;
   remove: Function;
 }) => {
+  const taxi = useRecoilValue(taxiAtom);
+  const driver = useRecoilValue(driverAtom);
   const onApprove = () => {
     remove(trip.customerID);
-    produceDispatchEvent(trip);
+    produceDispatchEvent(trip, taxi, driver);
   };
 
   return (
@@ -110,23 +114,29 @@ const CircleLabel = ({ label }: { label: string }) => {
 };
 
 // Dispatch stream producer: Approving a ride request
-function produceDispatchEvent(booking: BookingEvent) {
+function produceDispatchEvent(
+  booking: BookingEvent,
+  taxi: Taxi,
+  driver: Driver
+) {
   produceKafkaDispatchEvent(
     JSON.stringify({
       customerID: booking.customerID,
       customerName: booking.customerName,
       customerPhoneNumber: booking.phoneNumber,
+      pickUpLocation: booking.pickUpLocation,
+      dropLocation: booking.dropLocation,
       status: "dispatched",
-      tmdtid: 1,
-      taxiNumber: "SG 123456",
-      taxiPassengerCapacity: 4,
-      taxiMakeModel: "Honda Civic",
-      taxiColor: "Grey",
-      driverID: 1,
-      driverName: "Mr Taxi Driver",
-      driverPhoneNumber: 12345678,
-      sno: 1,
-      rating: 4.92,
+      tmdtid: taxi.tmdtid,
+      taxiNumber: taxi.taxiNumber,
+      taxiPassengerCapacity: taxi.taxiFeature.taxiPassengerCapacity,
+      taxiMakeModel: taxi.taxiFeature.taxiMakeModel,
+      taxiColor: taxi.taxiFeature.taxiColor,
+      driverID: driver.driverID,
+      driverName: driver.driverName,
+      driverPhoneNumber: driver.phoneNumber,
+      sno: taxi.sno,
+      rating: driver.rating,
     })
   );
 }

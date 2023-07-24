@@ -1,14 +1,15 @@
-import { driverAtom } from "@/state";
+import { driverAtom, taxiAtom } from "@/state";
 import { FaAngleRight } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { HREF } from "@/constants";
-import { getDriver } from "@/server";
-import { Driver } from "@/types";
+import { getDriver, getTaxi } from "@/server";
+import { Driver, Taxi } from "@/types";
 
 export const DriverIDInput = ({}) => {
   const [, setDriver] = useRecoilState(driverAtom);
+  const [, setTaxi] = useRecoilState(taxiAtom);
   const router = useRouter();
   const {
     register: register,
@@ -19,18 +20,25 @@ export const DriverIDInput = ({}) => {
   const onSubmit = handleSubmit((data) => {
     // Fetch driver data from the driverID
     // If the driver does not exist, trigger an error
-    getDriver(data.driverID, (data: Driver) => {
-      if (data) {
-        setDriver(data);
-        router.push(HREF.TRIPS);
-      } else {
-        setError("driverID", {
-          type: "custom",
-          message: "Driver does not exist",
-        });
-      }
-    });
+    getDriver(data.driverID, (driver: Driver) => onDriverInfo(driver));
   });
+
+  function onDriverInfo(driver: Driver) {
+    if (driver) {
+      setDriver(driver);
+      getTaxi(driver.driverID, (taxi: Taxi) => onTaxiInfo(taxi));
+    } else {
+      setError("driverID", {
+        type: "custom",
+        message: "Driver does not exist",
+      });
+    }
+  }
+
+  function onTaxiInfo(taxi: Taxi) {
+    setTaxi(taxi)
+    router.push(HREF.TRIPS);
+  }
 
   return (
     <>
