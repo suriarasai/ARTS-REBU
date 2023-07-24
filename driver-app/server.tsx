@@ -32,3 +32,4 @@ export const getTaxi = async (driverID: number, _callback: Function) => {
     _callback(null);
   }
 };
+

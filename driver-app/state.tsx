@@ -1,5 +1,11 @@
 import { atom, selector } from "recoil";
-import { BookingEvent, DispatchEvent, Driver, LocationEvent, Taxi } from "./types";
+import {
+  BookingEvent,
+  DispatchEvent,
+  Driver,
+  LocationEvent,
+  Taxi,
+} from "./types";
 
 export const driverAtom = atom({
   key: "driver-atom",
@@ -98,7 +104,7 @@ export const locationSelector = selector({
 
 export const screenAtom = atom({
   key: "screen-atom",
-  default: '' as string,
+  default: "" as string,
   effects: [
     ({ onSet }) => {
       onSet((data) => {
@@ -112,5 +118,27 @@ export const screenSelector = selector({
   key: "screen-modifier",
   get: ({ get }) => {
     return get(screenAtom);
+  },
+});
+
+export const routesAtom = atom({
+  key: "routes-atom",
+  default: {
+    pickup: null,
+    dropoff: null,
+  },
+  effects: [
+    ({ onSet }) => {
+      onSet((data) => {
+        console.log("Updated Routes State (state.tsx): ", data);
+      });
+    },
+  ],
+});
+
+export const routesSelector = selector({
+  key: "routes-modifier",
+  get: ({ get }) => {
+    return get(routesAtom);
   },
 });

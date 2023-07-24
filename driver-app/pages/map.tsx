@@ -8,13 +8,14 @@ import {
   dispatchAtom,
   driverAtom,
   locationAtom,
+  routesAtom,
   screenAtom,
   taxiAtom,
 } from "@/state";
 import Styles from "@/public/resources/maps.json";
 import AddMarker from "@/utils/AddMarker";
 import { BackButton } from "@/components/BackButton";
-import { computeDirections } from "../utils/computeDirections";
+import SetDirections from "../utils/computeDirections";
 
 export const markers: any = {
   initialLocation: null,
@@ -23,12 +24,9 @@ export const markers: any = {
   destinationLocation: null,
 };
 
-export const routes: any = {
-  pickup: null,
-  dropoff: null,
-};
-
 const libraries = ["places", "geometry"];
+let pickupRoute: any;
+let dropRoute: any;
 
 export default function Map() {
   // States
@@ -39,6 +37,8 @@ export default function Map() {
   const [location, setLocationEvent] = useRecoilState(locationAtom);
   const [screen, setScreen] = useRecoilState(screenAtom);
   const [mapRef, setMapRef] = useState<google.maps.Map>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [routes, setRoutes] = useRecoilState(routesAtom);
 
   // On map load... set location to current location
   const loadMap = useCallback(function callback(map: google.maps.Map) {
@@ -60,19 +60,50 @@ export default function Map() {
         driverID: driver.driverID,
         taxiNumber: taxi.taxiNumber,
         currentPosition: {
-          lat: initialLocation.lat(),
-          lng: initialLocation.lng(),
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
         },
         availabilityStatus: true,
       });
 
       map.panTo(initialLocation);
       map.setZoom(18);
+
+      setIsLoading(false);
     });
   }, []);
 
+  const createRoute = (type: string, polyline: any) => {
+    setRoutes((routes) => ({
+      ...routes,
+      [type]: polyline.routes[0].overview_path,
+    }));
+  };
+
+  useEffect(() => {
+    if (routes.dropoff && routes.pickup) {
+      dropRoute = new google.maps.Polyline({
+        path: routes.dropoff,
+        strokeColor: "#bbf7d0",
+        strokeOpacity: 1.0,
+        strokeWeight: 4.0,
+      });
+      dropRoute.setMap(mapRef);
+
+      pickupRoute = new google.maps.Polyline({
+        path: routes.pickup,
+        strokeColor: "#16a34a",
+        strokeOpacity: 1.0,
+        strokeWeight: 4.0,
+      });
+      pickupRoute.setMap(mapRef);
+    }
+  }, [routes]);
+
   // On receiving a new booking request...
   useEffect(() => {
+    if (isLoading) return;
+
     console.log("Booking useEffect");
     setDispatchEvent({
       ...dispatch,
@@ -87,12 +118,46 @@ export default function Map() {
       customerName: "Water bottle",
       customerPhoneNumber: 12345678,
     });
-  }, [booking]);
+    setScreen("start");
+  }, [booking, isLoading]);
+
+  useEffect(() => {
+    if (screen === "start") {
+      const start = new google.maps.LatLng({
+        lat: location.currentPosition.lat as number,
+        lng: location.currentPosition.lng as number,
+      });
+
+      const pickup = new google.maps.LatLng({
+        lat: dispatch.pickUpLocation.lat as number,
+        lng: dispatch.pickUpLocation.lng as number,
+      });
+
+      const dropoff = new google.maps.LatLng({
+        lat: dispatch.dropLocation.lat as number,
+        lng: dispatch.dropLocation.lng as number,
+      });
+
+      SetDirections(start, pickup, createRoute, "pickup");
+      SetDirections(pickup, dropoff, createRoute, "dropoff");
+
+      markers.pickup = AddMarker(
+        mapRef as google.maps.Map,
+        pickup,
+        "https://www.svgrepo.com/show/375861/pin2.svg"
+      );
+      markers.dropoff = AddMarker(
+        mapRef as google.maps.Map,
+        dropoff,
+        "https://www.svgrepo.com/show/375810/flag.svg"
+      );
+    }
+  }, [screen]);
 
   // On approving a new booking request...
-  useEffect(() => {
-    setScreen("start");
-  }, [dispatch]);
+  // useEffect(() => {
+
+  // }, [dispatch]);
 
   return (
     <>
@@ -138,31 +203,78 @@ export default function Map() {
 }
 
 const StartTripUI = ({ map }: { map: google.maps.Map }) => {
-  const location = useRecoilValue(locationAtom);
-  const dispatch = useRecoilValue(dispatchAtom);
   const [, setScreen] = useRecoilState(screenAtom);
 
-  computeDirections(map, location, dispatch);
   const startTrip = () => setScreen("pickup");
 
   return (
-    <div className="absolute bottom-0 w-3/4 text-center left-0 right-0 justify-center mr-auto ml-auto mb-4 shadow-md p-4 bg-white rounded-lg">
-      <h1 className="!text-black w-full !mb-3">準備はできたか?</h1>
+    <div className="absolute bottom-0 w-3/4 left-0 right-0 justify-center mr-auto ml-auto mb-4 shadow-md p-4 bg-zinc-700 rounded-lg">
+      <label className="w-full !mb-3">Ready to go?</label>
       <button
-        className="bg-green-600 flex justify-center py-2 text-white w-full rounded-md"
+        className="bg-green-400 flex justify-center py-2 text-white w-full rounded-md"
         onClick={startTrip}
       >
-        はじめましょう
+        Begin Route
       </button>
     </div>
   );
 };
 
+// Marker disappearing... is it because it's not a state var...
+function moveTaxiMarker(
+  marker: google.maps.Marker,
+  polyline: any,
+  iter: number,
+  timer: number,
+  stepsPerMinute = 1000,
+  _callback: Function
+) {
+  if (polyline.length - 1 >= iter) {
+    marker.setPosition(new google.maps.LatLng(
+      polyline[iter].lat as number,
+      polyline[iter].lng as number
+    ));
+
+    window.setTimeout(function () {
+      moveTaxiMarker(
+        marker,
+        polyline,
+        iter + 1,
+        timer,
+        stepsPerMinute,
+        _callback
+      );
+    }, timer);
+  } else {
+    // the taxi has 'arrived'
+    _callback();
+  }
+}
+
 const PickUpUI = () => {
+  const routes = useRecoilValue(routesAtom);
   // UI: Button to confirm
   // Taxi Movement
   // Erase Marker
-  return null;
+  // console.log("polyline", (routes.dropoff as any).routes[0].overview_path);
+  // console.log(routes.pickup)
+  moveTaxiMarker(markers.initialLocation, routes.pickup!, 0, 1000, 60, () => {});
+  const confirmPickup = () => {
+    // console.log(routes);
+    console.log(markers.initialLocation.getPosition().lat(), markers.initialLocation.getPosition().lng())
+  };
+
+  return (
+    <div className="absolute bottom-0 w-3/4 left-0 right-0 justify-center mr-auto ml-auto mb-4 shadow-md p-4 bg-zinc-700 rounded-lg">
+      <label className="w-full !mb-3">En route to pickup location</label>
+      <button
+        className="bg-green-400 flex justify-center py-2 text-white w-full rounded-md"
+        onClick={confirmPickup}
+      >
+        Confirm Pickup
+      </button>
+    </div>
+  );
 };
 
 const DropOffUI = () => {
