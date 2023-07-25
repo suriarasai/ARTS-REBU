@@ -1,11 +1,13 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import BottomNav from "@/components/bottomNav";
+import { HREF } from "@/constants";
 import { produceKafkaDispatchEvent } from "@/server";
-import { driverAtom, taxiAtom } from "@/state";
+import { bookingAtom, driverAtom, taxiAtom } from "@/state";
 import { BookingEvent, Driver, Taxi } from "@/types";
+import { useRouter } from "next/router";
 import { Suspense, useEffect, useState } from "react";
 import { FaCheckCircle, FaCompass, FaFlag } from "react-icons/fa";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -60,11 +62,15 @@ const RideRequest = ({
   trip: BookingEvent;
   remove: Function;
 }) => {
+  const router = useRouter();
   const taxi = useRecoilValue(taxiAtom);
   const driver = useRecoilValue(driverAtom);
+  const [, setBooking] = useRecoilState(bookingAtom);
   const onApprove = () => {
     remove(trip.customerID);
+    setBooking(trip)
     produceDispatchEvent(trip, taxi, driver);
+    router.push(HREF.MAP);
   };
 
   return (

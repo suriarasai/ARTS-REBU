@@ -13,7 +13,7 @@ import {
   taxiAtom,
 } from "@/state";
 import Styles from "@/public/resources/maps.json";
-import AddMarker from "@/utils/AddMarker";
+import AddMarker from "@/utils/addMarker";
 import { BackButton } from "@/components/BackButton";
 import SetDirections from "@/utils/computeDirections";
 import { rescaleMap } from "@/utils/rescaleMap";
@@ -114,19 +114,19 @@ export default function Map() {
     if (isLoading) return;
 
     console.log("Booking useEffect");
-    setDispatchEvent({
-      ...dispatch,
-      pickUpLocation: {
-        lat: 1.297761,
-        lng: 103.772688,
-      },
-      dropLocation: {
-        lat: 1.304604,
-        lng: 103.768289,
-      },
-      customerName: "Water bottle",
-      customerPhoneNumber: 12345678,
-    });
+    // setDispatchEvent({
+    //   ...dispatch,
+    //   pickUpLocation: {
+    //     lat: 1.297761,
+    //     lng: 103.772688,
+    //   },
+    //   dropLocation: {
+    //     lat: 1.304604,
+    //     lng: 103.768289,
+    //   },
+    //   customerName: "Water bottle",
+    //   customerPhoneNumber: 12345678,
+    // });
     setScreen("start");
   }, [booking, isLoading]);
 
@@ -138,13 +138,13 @@ export default function Map() {
       });
 
       const pickup = new google.maps.LatLng({
-        lat: dispatch.pickUpLocation.lat as number,
-        lng: dispatch.pickUpLocation.lng as number,
+        lat: booking.pickUpLocation.lat as number,
+        lng: booking.pickUpLocation.lng as number,
       });
 
       const dropoff = new google.maps.LatLng({
-        lat: dispatch.dropLocation.lat as number,
-        lng: dispatch.dropLocation.lng as number,
+        lat: booking.dropLocation.lat as number,
+        lng: booking.dropLocation.lng as number,
       });
 
       SetDirections(start, pickup, createRoute, "pickup");
