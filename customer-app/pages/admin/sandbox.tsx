@@ -7,11 +7,12 @@ import { useRouter } from 'next/router'
 const SandBox = () => {
 	const [messages, setMessages] = useState<message[]>([])
 	const [customerID, setCustomerID] = useState('1')
+	const router = useRouter()
 
 	const addMessage = (newMsg: message) =>
 		setMessages((messages) => [...messages, newMsg])
 	const clearMessages = () => setMessages([])
-	const returnToSignIn = () => useRouter().push('/')
+	const returnToSignIn = () => router.push('/')
 
 	return (
 		<div className='flex h-screen max-w-screen-md flex-col justify-center space-y-5 !overflow-y-hidden p-4'>
@@ -48,7 +49,7 @@ const SandBox = () => {
 					</button>
 				</div>
 				<div className='flex h-4/5 flex-col space-y-1 overflow-y-auto'>
-					{messages.toReversed().map((msg: message, index) => (
+					{messages.length > 0 && messages.toReversed().map((msg: message, index) => (
 						<>
 							<div className='text-xs' key={index}>
 								{msg.stream}
