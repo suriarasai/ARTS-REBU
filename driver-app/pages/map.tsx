@@ -16,7 +16,9 @@ import Styles from "@/public/resources/maps.json";
 import AddMarker from "@/utils/AddMarker";
 import { BackButton } from "@/components/BackButton";
 import SetDirections from "@/utils/computeDirections";
-import { MoveTaxiMarker } from "@/utils/moveTaxiMarker";
+import { rescaleMap } from "@/utils/rescaleMap";
+import { StartTrip } from "@/components/StartTrip";
+import { Trip } from "@/components/Trip";
 
 export const markers: any = {
   taxiLocation: null,
@@ -25,8 +27,8 @@ export const markers: any = {
 };
 
 const libraries = ["places", "geometry"];
-let pickupRoute: any;
-let dropRoute: any;
+export let pickupRoute: any;
+export let dropRoute: any;
 
 export default function Map() {
   // States
@@ -70,6 +72,11 @@ export default function Map() {
       map.setZoom(18);
 
       setIsLoading(false);
+
+      return () => {
+        setRoutes({ pickup: null, dropoff: null });
+        setMapRef(undefined);
+      };
     });
   }, []);
 
@@ -81,7 +88,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    if (routes.dropoff && routes.pickup) {
+    if (routes.dropoff && routes.pickup && mapRef) {
       dropRoute = new google.maps.Polyline({
         path: routes.dropoff,
         strokeColor: "#bbf7d0",
@@ -97,6 +104,8 @@ export default function Map() {
         strokeWeight: 4.0,
       });
       pickupRoute.setMap(mapRef);
+
+      rescaleMap(mapRef as google.maps.Map, routes.dropoff);
     }
   }, [routes]);
 
@@ -151,6 +160,10 @@ export default function Map() {
         dropoff,
         "https://www.svgrepo.com/show/375810/flag.svg"
       );
+    } else if (screen === "pickup") {
+      rescaleMap(mapRef as google.maps.Map, routes.pickup!);
+    } else if (screen === "dropoff") {
+      rescaleMap(mapRef as google.maps.Map, routes.dropoff!);
     }
   }, [screen]);
 
@@ -197,62 +210,3 @@ export default function Map() {
     </Suspense>
   );
 }
-
-const StartTrip = () => {
-  const [, setScreen] = useRecoilState(screenAtom);
-  const startTrip = () => setScreen("pickup");
-
-  return (
-    <div className="absolute bottom-0 w-3/4 left-0 right-0 justify-center mr-auto ml-auto mb-4 shadow-md p-4 bg-zinc-700 rounded-lg">
-      <label className="w-full !mb-3">Ready to go?</label>
-      <button
-        className="bg-green-400 flex justify-center py-2 text-white w-full rounded-md"
-        onClick={startTrip}
-      >
-        Begin Route
-      </button>
-    </div>
-  );
-};
-
-const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
-  const routes = useRecoilValue(routesAtom);
-  const [arrived, setArrived] = useState(false);
-  const [, setScreen] = useRecoilState(screenAtom);
-
-  useEffect(() => {
-    MoveTaxiMarker(routes[type], 0, () => setArrived(true));
-  }, [type]);
-
-  const confirmArrival = () => {
-    if (type === "pickup") {
-      pickupRoute.setMap(null);
-      pickupRoute = null;
-      dropRoute.setOptions({ strokeColor: "#16a34a" });
-      setScreen("dropoff");
-    } else if (type === "dropoff") {
-      dropRoute.setMap(null);
-      dropRoute = null;
-      markers.dropoff.setMap(null);
-      markers.dropoff = null;
-      markers.pickup.setMap(null);
-      markers.pickup = null;
-      setScreen("");
-    }
-  };
-
-  return (
-    <div className="absolute bottom-0 w-3/4 left-0 right-0 justify-center mr-auto ml-auto mb-4 shadow-md p-4 bg-zinc-700 rounded-lg">
-      <label className="w-full !mb-3">En route to {type} location</label>
-      <button
-        className={`flex justify-center py-2 text-white w-full rounded-md ${
-          arrived ? "bg-green-400" : "bg-zinc-400"
-        }`}
-        onClick={confirmArrival}
-        disabled={!arrived}
-      >
-        Confirm {type}
-      </button>
-    </div>
-  );
-};
