@@ -27,7 +27,7 @@ export function MoveTaxiMarker(
 
     window.setTimeout(function () {
       MoveTaxiMarker(polyline, iter + 1, driver, taxi, _callback);
-    }, 125);
+    }, 250);
   } else {
     // the taxi has 'arrived'
     _callback();

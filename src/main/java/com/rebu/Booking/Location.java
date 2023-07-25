@@ -22,14 +22,14 @@ public class Location {
     private String placeID;
     private Float lat;
     private Float lng;
-    private Integer postcode;
+    private String postcode;
     private String address;
     private String placeName;
 
     public Location() {
     }
 
-    public void SetLocation(String placeID, Float lat, Float lng, Integer postcode, String address,
+    public void SetLocation(String placeID, Float lat, Float lng, String postcode, String address,
             String placeName) {
         this.placeID = placeID;
         this.lat = lat;

@@ -37,7 +37,7 @@ export function getAddress(place: any, clickEvent = false) {
 		lng: clickEvent
 			? place.geometry.location.lng
 			: place.geometry.location.lng(),
-		postcode: Number(Postcode),
+		postcode: Postcode,
 		placeID: place.place_id,
 	}
 }

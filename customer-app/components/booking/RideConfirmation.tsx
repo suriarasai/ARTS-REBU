@@ -47,6 +47,7 @@ import {
 import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
+import computeFare from '@/utils/computeFare'
 
 export let taxiRouteDisplay: any
 let matchedTaxi: any
@@ -71,6 +72,7 @@ export const RideConfirmation = (data: any) => {
 
 	const collapseMenu = () => setCollapsed(!collapsed)
 
+	// Render routes from taxis to pickup location
 	useEffect(() => {
 		drawTaxiRoute(
 			data.taxis,
@@ -82,6 +84,7 @@ export const RideConfirmation = (data: any) => {
 		)
 	}, [data.taxis])
 
+	// Identify default payment method
 	useEffect(() => {
 		GetPaymentMethod(
 			user.customerID!,
@@ -101,22 +104,25 @@ export const RideConfirmation = (data: any) => {
 		const client = Stomp.over(socket)
 
 		client.connect({}, () => {
-			client.subscribe('/user/' + user.customerID + '/queue/dispatchEvent', (message) => {
-				const res = JSON.parse(message.body)
-				setBooking({
-					...booking,
-					tmdtid: res.tmdtid,
-					taxiNumber: res.taxiNumber,
-					taxiMakeModel: res.taxiMakeModel,
-					taxiColor: res.taxiColor,
-					driverID: res.driverID,
-					driverName: res.driverName,
-					driverPhoneNumber: res.driverPhoneNumber,
-					rating: res.rating,
-					sno: res.sno,
-				})
-				handleMatched(res)
-			})
+			client.subscribe(
+				'/user/' + user.customerID + '/queue/dispatchEvent',
+				(message) => {
+					const res = JSON.parse(message.body)
+					setBooking({
+						...booking,
+						tmdtid: res.tmdtid,
+						taxiNumber: res.taxiNumber,
+						taxiMakeModel: res.taxiMakeModel,
+						taxiColor: res.taxiColor,
+						driverID: res.driverID,
+						driverName: res.driverName,
+						driverPhoneNumber: res.driverPhoneNumber,
+						rating: res.rating,
+						sno: res.sno,
+					})
+					handleMatched(res)
+				}
+			)
 		})
 
 		return () => {
@@ -124,6 +130,7 @@ export const RideConfirmation = (data: any) => {
 		}
 	}, [stopStream])
 
+	// Generating ride options
 	function initializeOptions(ETA: any) {
 		if (!ETA[2]) return
 
@@ -132,7 +139,12 @@ export const RideConfirmation = (data: any) => {
 				id: 1,
 				taxiType: 'Rebu Regular',
 				taxiPassengerCapacity: 4,
-				fare: (3.9 + data.distance / 500).toFixed(2),
+				fare: computeFare(
+					'regular',
+					data.destination.postcode.toString(),
+					data.distance,
+					+new Date()
+				),
 				dropTime: null,
 				pickUpTime: null,
 				taxiETA: Math.round(ETA[1] / 60),
@@ -145,7 +157,12 @@ export const RideConfirmation = (data: any) => {
 				id: 2,
 				taxiType: 'RebuPlus',
 				taxiPassengerCapacity: 2,
-				fare: (4.1 + data.distance / 400).toFixed(2),
+				fare: computeFare(
+					'plus',
+					data.destination.postcode.toString(),
+					data.distance,
+					+new Date()
+				),
 				dropTime: null,
 				pickUpTime: null,
 				taxiETA: Math.round(ETA[2] / 60),
@@ -157,12 +174,14 @@ export const RideConfirmation = (data: any) => {
 		])
 	}
 
+	// Render a particular route upon selecting a taxi
 	useEffect(() => {
 		if (clickedOption) {
 			taxiRouteDisplay.setDirections(routes[clickedOption])
 		}
 	}, [clickedOption])
 
+	// Confirming a taxi selection
 	function handleConfirmation(e: any) {
 		e.preventDefault()
 		setScreen('waiting')
@@ -207,23 +226,53 @@ export const RideConfirmation = (data: any) => {
 						eta: data.duration,
 						pickUpLocation: data.origin,
 						dropLocation: data.destination,
-						status: 'requested'
+						status: 'requested',
 					})
 				)
 			}
-		) // API to create booking
+		)
 	}
 
+	useEffect(() => {
+		if (!(screen === 'confirmed' || screen === 'liveTrip')) return
+
+		const socket = new SockJS('http://localhost:8080/ws')
+		const client = Stomp.over(socket)
+
+		const tempMarker = new google.maps.Marker({
+			position: { lat: 1.291862, lng: 103.776291 },
+			map: data.map,
+			icon: {
+				url: 'https://www.svgrepo.com/show/375861/pin2.svg',
+				scaledSize: new google.maps.Size(30, 30),
+			},
+		})
+
+		client.connect({}, () => {
+			client.subscribe('/topic/taxiLocatorEvent', (message) => {
+				tempMarker.setPosition(new google.maps.LatLng(JSON.parse(message.body).currentPosition))
+				console.log(JSON.parse(message.body))
+			})
+		})
+
+		return () => {
+			client.disconnect(() => console.log('Disconnected from server'))
+		}
+	}, [screen])
+
+	// Upon getting matched with a driver
 	function handleMatched(event: any) {
 		matchedBooking(booking.bookingID, event.driverID, event.sno) // API for matching
 
-		setScreen('confirmed') // TODO: Invocation not immediate; wait for API
+		setScreen('confirmed')
 		setStopStream(true)
 		const taxiRoute = taxiRouteDisplay.directions.routes[0].overview_path
 		const polyline = expandArray(taxiRoute, 10)
 		const stepsPerMinute = Math.round(
 			(polyline.length - 1) / ((taxiETA as any)[clickedOption] / 60) + 1
 		)
+
+		setMarkerVisibility(data.taxis)
 
 		matchedTaxi = new google.maps.Marker({
 			position: {
@@ -236,8 +285,6 @@ export const RideConfirmation = (data: any) => {
 				scaledSize: new google.maps.Size(30, 30),
 			},
 		})
-
-		setMarkerVisibility(data.taxis)
 
 		moveToStep(
 			matchedTaxi,
@@ -252,6 +299,7 @@ export const RideConfirmation = (data: any) => {
 		)
 	}
 
+	// Upon taxi arrival to pickup location
 	function handleTaxiArrived() {
 		setBooking((booking: bookingEvent) => ({
 			...booking,
@@ -271,6 +319,7 @@ export const RideConfirmation = (data: any) => {
 		moveToStep(matchedTaxi, polyline as any, 0, 10, handleCompleted)
 	}
 
+	// Proximity notifications
 	useEffect(() => {
 		if (screen !== 'confirmed') return
 
@@ -281,10 +330,12 @@ export const RideConfirmation = (data: any) => {
 		}
 	}, [taxiETA])
 
+	// Selecting a payment method
 	useEffect(() => {
 		booking.bookingID && setPaymentMethod(booking.bookingID, selectedCard)
 	}, [selectedCard])
 
+	// Upon cancelling a trip
 	function handleCancelled(matchedStatus: boolean) {
 		if (matchedStatus) {
 			cancelBooking(booking.bookingID) // API for trip cancellation
@@ -296,6 +347,7 @@ export const RideConfirmation = (data: any) => {
 		data.onCancel()
 	}
 
+	// Upon completing a trip
 	function handleCompleted() {
 		completeBooking(booking.bookingID) // API for trip completion
 		console.log('Trip fini')
@@ -303,6 +355,7 @@ export const RideConfirmation = (data: any) => {
 		setNotification(null)
 	}
 
+	// Upon user acknowledgement of a completed trip
 	function handleCompletedCleanup() {
 		erasePolyline()
 		matchedTaxi.setMap(null)
@@ -310,6 +363,7 @@ export const RideConfirmation = (data: any) => {
 		data.onCancel()
 	}
 
+	// Upon choosing another taxi option
 	function handleChooseAnotherOption() {
 		erasePolyline()
 		setClickedOption(null)

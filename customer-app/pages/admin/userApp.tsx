@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { produceKafkaBookingEvent } from '@/server'
 import { useEffect, useState } from 'react'
 import SockJS from 'sockjs-client'

@@ -14,6 +14,7 @@ export const driverAtom = atom({
     ({ onSet }) => {
       onSet((data) => {
         console.log("Updated Driver Data (state.tsx): ", data);
+        localStorage.setItem('driver', JSON.stringify(data))
       });
     },
   ],
@@ -33,6 +34,7 @@ export const taxiAtom = atom({
     ({ onSet }) => {
       onSet((data) => {
         console.log("Updated Taxi Data (state.tsx): ", data);
+        localStorage.setItem('taxi', JSON.stringify(data))
       });
     },
   ],
@@ -52,6 +54,7 @@ export const dispatchAtom = atom({
     ({ onSet }) => {
       onSet((data) => {
         console.log("Updated Dispatch Data (state.tsx): ", data);
+        localStorage.setItem('dispatch', JSON.stringify(data))
       });
     },
   ],
@@ -71,6 +74,7 @@ export const bookingAtom = atom({
     ({ onSet }) => {
       onSet((data) => {
         console.log("Updated Booking Data (state.tsx): ", data);
+        localStorage.setItem('booking', JSON.stringify(data))
       });
     },
   ],
@@ -109,6 +113,7 @@ export const screenAtom = atom({
     ({ onSet }) => {
       onSet((data) => {
         console.log("Updated Screen State (state.tsx): ", data);
+        localStorage.setItem('screen', JSON.stringify(data))
       });
     },
   ],
@@ -131,6 +136,7 @@ export const routesAtom = atom({
     ({ onSet }) => {
       onSet((data) => {
         console.log("Updated Routes State (state.tsx): ", data);
+        localStorage.setItem('routes', JSON.stringify(data))
       });
     },
   ],

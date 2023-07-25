@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 import { bookingAtom, bookingEvent, selectedCardAtom } from '@/utils/state'
 import { useEffect, useState } from 'react'
@@ -64,7 +65,7 @@ export const PaymentInformation = ({
 
 export const TripInformation = (props: {
 	placeName: string
-	postcode: number
+	postcode: string
 	tripETA: number
 	taxiETA: number
 }) => {

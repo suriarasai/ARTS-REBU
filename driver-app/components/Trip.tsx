@@ -1,9 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { driverAtom, routesAtom, screenAtom, taxiAtom } from "@/state";
+import {
+  bookingAtom,
+  driverAtom,
+  routesAtom,
+  screenAtom,
+  taxiAtom,
+} from "@/state";
 import { MoveTaxiMarker } from "@/utils/moveTaxiMarker";
 import { pickupRoute, dropRoute, markers } from "@/pages/map";
+import { BookingEvent } from "@/types";
 
 export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
   const routes = useRecoilValue(routesAtom);
@@ -11,6 +18,7 @@ export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
   const [, setScreen] = useRecoilState(screenAtom);
   const driver = useRecoilValue(driverAtom);
   const taxi = useRecoilValue(taxiAtom);
+  const [, setBooking] = useRecoilState(bookingAtom);
 
   useEffect(() => {
     MoveTaxiMarker(routes[type], 0, driver, taxi, () => setArrived(true));
@@ -28,6 +36,7 @@ export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
       markers.pickup.setMap(null);
       markers.pickup = null;
       setScreen("");
+      setBooking({} as BookingEvent)
     }
     setArrived(false);
   };

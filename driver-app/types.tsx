@@ -76,7 +76,7 @@ export interface Location {
   placeID?: string;
   lat?: number;
   lng?: number;
-  postcode?: number;
+  postcode?: string;
   address?: string;
   placeName?: string;
 }

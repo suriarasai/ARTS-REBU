@@ -35,12 +35,12 @@ const bookingStub = {
 	status: 'dispatched',
 	pickUpLocation: {
 		placeName: 'NUS-ISS',
-		postcode: 123456,
+		postcode: '123456',
 		address: '25 Heng Keng Mui Dr.',
 	},
 	dropLocation: {
 		placeName: 'NUS High School of Mathematics and Science',
-		postcode: 128406,
+		postcode: '128406',
 		address: '40 Clementi 1 Rd.',
 	},
 }

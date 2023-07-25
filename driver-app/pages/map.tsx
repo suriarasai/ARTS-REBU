@@ -32,10 +32,9 @@ export let dropRoute: any;
 
 export default function Map() {
   // States
-  const driver = useRecoilValue(driverAtom);
-  const taxi = useRecoilValue(taxiAtom);
+  const [driver, setDriver] = useRecoilState(driverAtom);
+  const [taxi, setTaxi] = useRecoilState(taxiAtom);
   const booking = useRecoilValue(bookingAtom);
-  const [dispatch, setDispatchEvent] = useRecoilState(dispatchAtom);
   const [location, setLocationEvent] = useRecoilState(locationAtom);
   const [screen, setScreen] = useRecoilState(screenAtom);
   const [mapRef, setMapRef] = useState<google.maps.Map>();
@@ -72,12 +71,22 @@ export default function Map() {
       map.setZoom(18);
 
       setIsLoading(false);
-
-      return () => {
-        setRoutes({ pickup: null, dropoff: null });
-        setMapRef(undefined);
-      };
     });
+  }, []);
+
+  // Retrieving cached states
+  useEffect(() => {
+    if (!driver.driverID) {
+      setDriver(JSON.parse(localStorage.getItem("driver") as string));
+    }
+    if (!taxi.tmdtid) {
+      setTaxi(JSON.parse(localStorage.getItem("taxi") as string));
+    }
+
+    return () => {
+      setRoutes({ pickup: null, dropoff: null });
+      setMapRef(undefined);
+    };
   }, []);
 
   const createRoute = (type: string, polyline: any) => {
@@ -111,23 +120,9 @@ export default function Map() {
 
   // On receiving a new booking request...
   useEffect(() => {
-    if (isLoading) return;
-
     console.log("Booking useEffect");
-    // setDispatchEvent({
-    //   ...dispatch,
-    //   pickUpLocation: {
-    //     lat: 1.297761,
-    //     lng: 103.772688,
-    //   },
-    //   dropLocation: {
-    //     lat: 1.304604,
-    //     lng: 103.768289,
-    //   },
-    //   customerName: "Water bottle",
-    //   customerPhoneNumber: 12345678,
-    // });
-    setScreen("start");
+    if (isLoading) return;
+    if (booking.pickUpLocation) setScreen("start");
   }, [booking, isLoading]);
 
   useEffect(() => {
@@ -173,40 +168,38 @@ export default function Map() {
   // }, [dispatch]);
 
   return (
-    <Suspense fallback={<LoadingScreen />}>
-      <LoadScriptNext
-        googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
-        loadingElement={<LoadingScreen />}
-        libraries={libraries as any}
-      >
-        <div className="relative h-screen w-screen">
-          <GoogleMap
-            zoom={15}
-            mapContainerStyle={{ width: "100%", height: "100%" }}
-            options={{
-              zoomControl: false,
-              streetViewControl: false,
-              mapTypeControl: false,
-              fullscreenControl: false,
-              minZoom: 3,
-              styles: Styles,
-            }}
-            onLoad={loadMap}
-          />
+    <LoadScriptNext
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
+      loadingElement={<LoadingScreen />}
+      libraries={libraries as any}
+    >
+      <div className="relative h-screen w-screen">
+        <GoogleMap
+          zoom={15}
+          mapContainerStyle={{ width: "100%", height: "100%" }}
+          options={{
+            zoomControl: false,
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            minZoom: 3,
+            styles: Styles,
+          }}
+          onLoad={loadMap}
+        />
 
-          {screen === "" ? null : screen === "start" ? (
-            <StartTrip />
-          ) : screen === "pickup" ? (
-            <Trip type="pickup" />
-          ) : screen === "dropoff" ? (
-            <Trip type="dropoff" />
-          ) : (
-            "Error: Screen not found"
-          )}
+        {screen === "" ? null : screen === "start" ? (
+          <StartTrip />
+        ) : screen === "pickup" ? (
+          <Trip type="pickup" />
+        ) : screen === "dropoff" ? (
+          <Trip type="dropoff" />
+        ) : (
+          "Error: Screen not found"
+        )}
 
-          <BackButton />
-        </div>
-      </LoadScriptNext>
-    </Suspense>
+        <BackButton />
+      </div>
+    </LoadScriptNext>
   );
 }

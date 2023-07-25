@@ -25,6 +25,7 @@ const SignOutButton = ({}) => {
   const router = useRouter();
   const SignOut = () => {
     setDriver({} as Driver);
+    localStorage.clear();
     router.push(HREF.SIGNIN);
   };
 
