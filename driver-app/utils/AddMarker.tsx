@@ -1,5 +1,3 @@
-import { Location } from "@/types";
-
 export default function AddMarker(
   map: google.maps.Map,
   place: google.maps.LatLng,
