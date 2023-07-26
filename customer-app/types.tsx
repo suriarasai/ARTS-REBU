@@ -40,8 +40,8 @@ interface PaymentMethod {
 
 export interface Location {
 	placeID?: string
-	lat?: number
-	lng?: number
+	lat: number
+	lng: number
 	postcode?: string
 	address?: string
 	placeName?: string

@@ -1,6 +1,6 @@
 import Styles from '@/styles/maps.json'
 
-function noPoi(visible: boolean) {
+function noPoi(hide: boolean) {
 	/* Google Maps custom styling to hide/show points of interest
 	 * Used by: togglePoiButton, Booking
 	 *
@@ -13,7 +13,7 @@ function noPoi(visible: boolean) {
 			elementType: 'labels',
 			stylers: [
 				{
-					visibility: visible ? 'on' : 'off',
+					visibility: hide ? 'off' : 'on',
 				},
 			],
 		},
@@ -40,7 +40,7 @@ function noPoi(visible: boolean) {
 
 export default function mapStyles(map: google.maps.Map, poi: boolean) {
 	map.setOptions({
-		styles: noPoi(!poi),
+		styles: noPoi(poi),
 		zoomControl: false,
 		streetViewControl: false,
 		mapTypeControl: false,

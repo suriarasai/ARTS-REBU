@@ -115,6 +115,32 @@ export const originSelector = selector({
 	},
 })
 
+export const userLocationAtom = atom({
+	key: 'userLocation-atom',
+	default: {
+		placeID: null,
+		lat: null,
+		lng: null,
+		postcode: null,
+		address: null,
+		placeName: null,
+	},
+	effects: [
+		({ onSet }) => {
+			onSet((data) => {
+				console.log('Updated user location (state.tsx): ', data)
+			})
+		},
+	],
+})
+
+export const userLocationSelector = selector({
+	key: 'userLocation-modifier',
+	get: ({ get }) => {
+		return get(userLocationAtom)
+	},
+})
+
 export const searchTypeAtom = atom({
 	key: 'searchType-atom',
 	default: 0,
@@ -220,6 +246,18 @@ export const selectedCardSelector = selector({
 	key: 'selectedCard-modifier',
 	get: ({ get }) => {
 		return get(selectedCardAtom)
+	},
+})
+
+export const routesAtom = atom({
+	key: 'routes-atom',
+	default: {},
+})
+
+export const routesSelector = selector({
+	key: 'routes-modifier',
+	get: ({ get }) => {
+		return get(routesAtom)
 	},
 })
 

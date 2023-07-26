@@ -22,7 +22,6 @@ export async function produceKafkaTaxiLocatorEvent(message: string) {
 	})
 }
 
-
 // Account Settings: Updates user information
 export const UpdateUser = async (data: User | any, customerID: number) => {
 	const response = await api.post('/api/v1/Customer/updateUser', {
@@ -254,23 +253,20 @@ export const completeBooking = async (bookingID: number) => {
 	return response
 }
 
-export async function CoordinateToAddress(
-	coordinates: Array<number>,
+export function CoordinateToAddress(
+	coordinates: google.maps.LatLng,
 	setLocation: Function
 ) {
-	await fetch(
-		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	fetch(
+		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat()},${coordinates.lng()}&key=${
+			process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+		}`
 	)
-		.then(function (response) {
-			return response.json()
+		.then((response) => response.json())
+		.then((data) => {
+			setLocation(getAddress(data.results[0], true))
 		})
-		.then(function (data) {
-			try {
-				setLocation(getAddress(data.results[0], true))
-			} catch (e) {
-				// Some state function to run a popup error...
-			}
-		})
+		.catch((e) => console.error('Reverse geocoding failed', e))
 }
 
 // Loads the nearest N taxis onto the map

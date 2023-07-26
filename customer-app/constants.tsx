@@ -5,7 +5,7 @@ export enum HREF {
 	REWARDS = '/rewardPoints',
 	LOCATIONS = '/savedPlaces',
 	HISTORY = '/activity',
-	BOOKING = '/booking',
+	BOOKING = '/map',
 	HOME = '/home',
 	SIGN_IN = '/',
 	NOTIFICATIONS = '/notifications',
@@ -13,7 +13,16 @@ export enum HREF {
 	MESSAGES = '/messages',
 	RATINGS = '/ratings',
 	PAYMENT = '/managePayment',
-	BOOKINGUI = '/admin/booking'
+	BOOKINGUI = '/admin/booking',
+}
+
+export enum MARKERS {
+	USERLOCATION = 'https://www.svgrepo.com/show/115216/pointer-inside-a-circle.svg',
+	HOME = 'https://www.svgrepo.com/show/375801/door.svg',
+	WORK = 'https://www.svgrepo.com/show/375762/briefcase.svg',
+	SAVED = 'https://www.svgrepo.com/show/375878/ribbon.svg',
+	ORIGIN = 'https://www.svgrepo.com/show/375834/location.svg',
+	DESTINATION = 'https://www.svgrepo.com/show/375810/flag.svg'
 }
 
 // SVG Strings
@@ -98,7 +107,7 @@ export enum Input {
 export enum polylineTrafficColors {
 	NORMAL = '#22c55e',
 	SLOW = '#fcd34d',
-	TRAFFIC_JAM = '#ef4444'
+	TRAFFIC_JAM = '#ef4444',
 }
 export interface message {
 	stream: 'booking' | 'dispatch' | 'taxiLocator'

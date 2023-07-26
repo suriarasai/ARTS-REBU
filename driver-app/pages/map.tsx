@@ -5,7 +5,6 @@ import { GoogleMap, LoadScriptNext } from "@react-google-maps/api";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   bookingAtom,
-  dispatchAtom,
   driverAtom,
   locationAtom,
   routesAtom,
