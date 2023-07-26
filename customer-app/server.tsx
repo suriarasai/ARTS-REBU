@@ -255,7 +255,8 @@ export const completeBooking = async (bookingID: number) => {
 
 export function CoordinateToAddress(
 	coordinates: google.maps.LatLng,
-	setLocation: Function
+	setLocation: Function,
+	setText?: Function
 ) {
 	fetch(
 		`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat()},${coordinates.lng()}&key=${
@@ -264,7 +265,9 @@ export function CoordinateToAddress(
 	)
 		.then((response) => response.json())
 		.then((data) => {
-			setLocation(getAddress(data.results[0], true))
+			const extractedAddress = getAddress(data.results[0], true)
+			setLocation(extractedAddress)
+			setText && setText(extractedAddress.placeName)
 		})
 		.catch((e) => console.error('Reverse geocoding failed', e))
 }

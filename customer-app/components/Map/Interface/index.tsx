@@ -3,8 +3,10 @@ import { CoordinateToAddress } from '@/server'
 import { Location } from '@/types'
 import mapStyles from '@/components/Map/utils/poi'
 import {
+	destInputAtom,
 	destinationAtom,
 	originAtom,
+	originInputAtom,
 	poiAtom,
 	searchTypeAtom,
 	userLocationAtom,
@@ -19,6 +21,8 @@ export function MapInterface({ setMap }: { setMap: Function }) {
 	const [searchType] = useRecoilState<number>(searchTypeAtom)
 	const [, setOrigin] = useRecoilState<Location>(originAtom)
 	const [, setDest] = useRecoilState<Location>(destinationAtom)
+	const [, setOriginInput] = useRecoilState<string>(originInputAtom)
+	const [, setDestInput] = useRecoilState<string>(destInputAtom)
 	const [, setUserLocation] = useRecoilState<Location>(userLocationAtom)
 	const poi = useRecoilValue<boolean>(poiAtom)
 
@@ -45,9 +49,9 @@ export function MapInterface({ setMap }: { setMap: Function }) {
 	// Location Input: Set location by map click
 	function handleMapClick(e: google.maps.MapMouseEvent) {
 		if (searchType === 3) {
-			CoordinateToAddress(e.latLng, setOrigin)
+			CoordinateToAddress(e.latLng, setOrigin, setOriginInput)
 		} else if (searchType === 4) {
-			CoordinateToAddress(e.latLng, setDest)
+			CoordinateToAddress(e.latLng, setDest, setDestInput)
 		}
 	}
 

@@ -225,6 +225,30 @@ export const validInputSelector = selector({
 	},
 })
 
+export const destInputAtom = atom({
+	key: 'destInput-atom',
+	default: '',
+})
+
+export const destInputSelector = selector({
+	key: 'destInput-modifier',
+	get: ({ get }) => {
+		return get(destInputAtom)
+	},
+})
+
+export const originInputAtom = atom({
+	key: 'originInput-atom',
+	default: '',
+})
+
+export const originInputSelector = selector({
+	key: 'originInput-modifier',
+	get: ({ get }) => {
+		return get(originInputAtom)
+	},
+})
+
 export const taxiETAAtom = atom({
 	key: 'taxiETA-atom',
 	default: { 1: null, 2: null },
