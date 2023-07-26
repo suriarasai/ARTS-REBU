@@ -1,30 +1,26 @@
 import { MARKERS } from '@/constants'
 import { CoordinateToAddress } from '@/server'
 import { Location } from '@/types'
-import mapStyles from '@/utils/noPoi'
+import mapStyles from '@/components/Map/utils/poi'
 import {
 	destinationAtom,
 	originAtom,
+	poiAtom,
 	searchTypeAtom,
 	userLocationAtom,
 } from '@/utils/state'
 import { GoogleMap } from '@react-google-maps/api'
 import { useCallback } from 'react'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { markers } from '../../../pages/map'
 import { mark } from '../utils/markers'
 
-export function MapInterface({
-	setMap,
-	poi,
-}: {
-	setMap: Function
-	poi: boolean
-}) {
+export function MapInterface({ setMap }: { setMap: Function }) {
 	const [searchType] = useRecoilState<number>(searchTypeAtom)
 	const [, setOrigin] = useRecoilState<Location>(originAtom)
 	const [, setDest] = useRecoilState<Location>(destinationAtom)
 	const [, setUserLocation] = useRecoilState<Location>(userLocationAtom)
+	const poi = useRecoilValue<boolean>(poiAtom)
 
 	// Map onLoad: Styling, Pan to curent location, Location marker
 	const loadMap = useCallback(function callback(map: google.maps.Map) {

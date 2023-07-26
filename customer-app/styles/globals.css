@@ -194,7 +194,7 @@ select[id='payment'] {
 }
 
 .location-search-header {
-	@apply sticky top-0 z-10 ml-auto mr-auto flex max-w-screen-md flex-wrap rounded-b-3xl bg-white p-2 shadow-md;
+	@apply absolute top-0 z-10 ml-auto mr-auto flex max-w-screen-md flex-wrap rounded-b-3xl bg-white p-2 shadow-md;
 }
 
 .sidenav-link {

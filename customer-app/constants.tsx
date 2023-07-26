@@ -22,7 +22,8 @@ export enum MARKERS {
 	WORK = 'https://www.svgrepo.com/show/375762/briefcase.svg',
 	SAVED = 'https://www.svgrepo.com/show/375878/ribbon.svg',
 	ORIGIN = 'https://www.svgrepo.com/show/375834/location.svg',
-	DESTINATION = 'https://www.svgrepo.com/show/375810/flag.svg'
+	DESTINATION = 'https://www.svgrepo.com/show/375810/flag.svg',
+	STAND = 'https://www.svgrepo.com/show/375861/pin2.svg',
 }
 
 // SVG Strings

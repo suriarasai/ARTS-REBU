@@ -213,6 +213,18 @@ export const screenSelector = selector({
 	},
 })
 
+export const validInputAtom = atom({
+	key: 'validInput-atom',
+	default: false,
+})
+
+export const validInputSelector = selector({
+	key: 'validInput-modifier',
+	get: ({ get }) => {
+		return get(validInputAtom)
+	},
+})
+
 export const taxiETAAtom = atom({
 	key: 'taxiETA-atom',
 	default: { 1: null, 2: null },
@@ -246,6 +258,18 @@ export const selectedCardSelector = selector({
 	key: 'selectedCard-modifier',
 	get: ({ get }) => {
 		return get(selectedCardAtom)
+	},
+})
+
+export const poiAtom = atom({
+	key: 'poi-atom',
+	default: true,
+})
+
+export const poiSelector = selector({
+	key: 'poi-modifier',
+	get: ({ get }) => {
+		return get(poiAtom)
 	},
 })
 
