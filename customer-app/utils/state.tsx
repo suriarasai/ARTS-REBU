@@ -251,7 +251,7 @@ export const originInputSelector = selector({
 
 export const taxiETAAtom = atom({
 	key: 'taxiETA-atom',
-	default: { 1: null, 2: null },
+	default: { regular: null, plus: null },
 })
 
 export const taxiETASelector = selector({
