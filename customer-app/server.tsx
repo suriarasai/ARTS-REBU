@@ -339,11 +339,8 @@ async function PlaceIDToAddress(id: string, setLocation: Function) {
 }
 
 export const getDirections = (
-	map: google.maps.Map,
 	origin: Location,
 	destination: Location,
-	setRoute: Function,
-	setPolyline: Function,
 	callback: Function
 ) => {
 	axios
@@ -388,8 +385,6 @@ export const getDirections = (
 			}
 		)
 		.then((response) => {
-			setRoute(response.data.routes[0])
-			renderDirections(map, response.data.routes[0], setPolyline)
-			callback()
+			callback(response.data.routes[0])
 		})
 }

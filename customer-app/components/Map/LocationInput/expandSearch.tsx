@@ -22,7 +22,7 @@ export function ExpandSearch() {
 
 	return (
 		<div
-			className={`absolute left-0 top-0 h-full w-full space-y-2 bg-zinc-100 ${
+			className={`absolute left-0 top-0 h-full w-full space-y-2 bg-zinc-800 ${
 				dest.lat ? 'pt-48' : 'pt-32'
 			}`}
 		>
@@ -62,15 +62,17 @@ function FavouriteLocation({ type }) {
 
 	return (
 		<div
-			className='flex w-1/2 flex-wrap justify-center bg-white p-3'
+			className='flex w-1/2 flex-wrap items-center justify-center bg-zinc-600 p-3'
 			onClick={handleClick}
 		>
-			<div className='mr-5 text-2xl text-green-500'>
+			<div className='mr-5 text-2xl text-green-200'>
 				{type === 'home' ? <FaHouseUser /> : <FaSuitcase />}
 			</div>
 			<div className='pr-5'>
-				<b className='text-sm'>{type[0].toUpperCase() + type.slice(1)}</b>
-				<h5>{user[type] ? user[type].placeName : 'Set Location'}</h5>
+				<b className='text-sm text-zinc-100'>{type[0].toUpperCase() + type.slice(1)}</b>
+				<h5 className='text-zinc-50'>
+					{user[type] ? user[type].placeName : 'Set Location'}
+				</h5>
 			</div>
 		</div>
 	)
@@ -83,11 +85,11 @@ function SetLocationOnMap() {
 
 	return (
 		<div
-			className='mt-2 flex flex-wrap bg-white p-3 px-5'
+			className='mt-2 flex flex-wrap bg-zinc-600 p-3 px-5'
 			onClick={handleClick}
 		>
-			<FaSearchLocation className='mr-6 text-xl text-green-500' />
-			<b className='text-sm'>{'Set Location on Map'}</b>
+			<FaSearchLocation className='mr-6 text-xl text-green-200' />
+			<b className='text-sm text-zinc-100'>{'Set Location on Map'}</b>
 		</div>
 	)
 }
@@ -111,14 +113,14 @@ function SavedLocations() {
 		setSearchType(0)
 	}
 	return (
-		<div className='flex flex-wrap bg-white p-5'>
-			<FaStar className='mr-6 text-xl text-green-500' />
-			<b className='mb-4 text-sm'>Saved Locations</b>
+		<div className='flex flex-wrap bg-zinc-600 p-5'>
+			<FaStar className='mr-6 text-xl text-green-200' />
+			<b className='mb-4 text-sm text-zinc-100'>Saved Locations</b>
 
 			{user.savedLocations && user.savedLocations.length > 0 ? (
 				user.savedLocations?.map((item: Location, index: number) => (
 					<div
-						className='mb-3 ml-11 w-full'
+						className='mb-3 ml-11 w-full text-zinc-50'
 						key={index}
 						onClick={() => handleClick(item)}
 					>

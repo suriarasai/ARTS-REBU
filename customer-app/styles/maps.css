@@ -13,15 +13,19 @@
 }
 
 .pac-matched {
-	@apply text-green-800;
+	@apply text-green-200;
 }
 
 .pac-container {
-	@apply border-none bg-white mt-1 shadow-md rounded-b-lg !important;
+	@apply border-none bg-zinc-700  text-zinc-100 mt-1 shadow-md rounded-b-lg !important;
 }
 
 .pac-item {
-	@apply border-none py-3;
+	@apply border-none py-3 hover:bg-zinc-600;
+}
+
+.pac-item-query {
+	@apply  text-zinc-100;
 }
 
 .map-control-button {

@@ -3,8 +3,10 @@ import { MARKERS } from '@/constants'
 import { Location, User } from '@/types'
 import {
 	bookingAtom,
+	destInputAtom,
 	destinationAtom,
 	originAtom,
+	originInputAtom,
 	screenAtom,
 	searchTypeAtom,
 	selectedCardAtom,
@@ -13,7 +15,7 @@ import {
 	userLocationAtom,
 	validInputAtom,
 } from '@/utils/state'
-import { LoadScriptNext } from '@react-google-maps/api'
+import { GoogleMap, LoadScriptNext } from '@react-google-maps/api'
 import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { mark, placeLocationMarkers } from '@/components/Map/utils/markers'
@@ -31,10 +33,15 @@ import {
 	FaTimesCircle,
 } from 'react-icons/fa'
 import computeFare from '@/utils/computeFare'
-import { GetPaymentMethod, produceKafkaBookingEvent } from '@/server'
+import {
+	GetPaymentMethod,
+	getDirections,
+	produceKafkaBookingEvent,
+} from '@/server'
 import SelectPaymentMethod from '@/components/payment/SelectPaymentMethod'
 import Image from 'next/image'
 import setMarkerVisibility from '@/utils/setMarkerVisibility'
+import { renderDirections } from '@/utils/renderDirections'
 
 export const markers = {
 	origin: null,
@@ -55,7 +62,6 @@ export default function Map() {
 	const userLocation = useRecoilValue(userLocationAtom)
 	const [map, setMap] = useState<google.maps.Map>(null as google.maps.Map)
 	const [isValidInput] = useRecoilState(validInputAtom)
-	const searchType = useRecoilValue(searchTypeAtom)
 
 	// Hooks
 	const initMap = (newMap) => setMap(newMap)
@@ -80,7 +86,10 @@ export default function Map() {
 		if (!map) return
 
 		// If the user clears their origin location, default to their current location
-		if (!origin.lat) {
+		if (!origin.address) {
+			markers.origin?.setMap(null)
+			markers.origin = null
+
 			setMarkerVisibility(markers.stands)
 			loadNearbyTaxiStands(map, userLocation)
 			return
@@ -99,6 +108,12 @@ export default function Map() {
 	// Re-place destination marker on change
 	useEffect(() => {
 		if (!map) return
+
+		if (!dest.address) {
+			markers.dest?.setMap(null)
+			markers.dest = null
+			return
+		}
 
 		if (markers.dest) {
 			markers.dest.setPosition(new google.maps.LatLng(dest.lat, dest.lng))
@@ -119,7 +134,7 @@ export default function Map() {
 				{/* <Header /> */}
 
 				{isValidInput ? (
-					<Trip />
+					<Trip map={map} />
 				) : (
 					<>
 						<LocationInputs />
@@ -129,6 +144,21 @@ export default function Map() {
 			</div>
 		</LoadScriptNext>
 	)
+}
+
+function toggleMarkers(map = null) {
+	setMarkerVisibility(markers.stands, map)
+	setMarkerVisibility(markers.saved, map)
+	markers.home?.setMap(map)
+	markers.work?.setMap(map)
+	markers.user.setMap(map)
+
+	if (map) {
+		markers.origin?.setMap(null)
+		markers.origin = null
+		markers.dest.setMap(null)
+		markers.dest = null
+	}
 }
 
 export function Header() {
@@ -144,27 +174,27 @@ export function Header() {
 	)
 }
 
-export function Trip() {
-	const [, setOrigin] = useRecoilState(originAtom)
-	const [, setDest] = useRecoilState(destinationAtom)
+export function Trip({ map }) {
+	const [origin, setOrigin] = useRecoilState(originAtom)
+	const userLocation = useRecoilValue(userLocationAtom)
+	const [dest, setDest] = useRecoilState(destinationAtom)
+	const [polyline, setPolyline] = useState()
 
 	useEffect(() => {
-		// setOrigin({
-		// 	placeID: 'abc',
-		// 	postcode: '119615',
-		// 	lat: 1.292187,
-		// 	lng: 103.7740251,
-		// 	address: '25 Heng Mui Keng Terrace',
-		// 	placeName: 'NUS ISS',
-		// })
-		// setDest({
-		// 	placeID: 'abc',
-		// 	postcode: '119275',
-		// 	lat: 1.2966509,
-		// 	lng: 103.7706514,
-		// 	address: '12 Kent Ridge Cres',
-		// 	placeName: 'NUS Central Library',
-		// })
+		// Place the origin marker to the user's location if no origin was input
+		!origin.address && setOriginToUserLocation(map, userLocation)
+
+		// onLoad: Compute and render nearby taxis, Haversine, 10KM tolerance
+		// -- Simulation: Start querying from the past in real-time
+
+		// onLoad: Compute and render routes
+		getDirections(origin.address ? origin : userLocation, dest, (res) => {
+			renderDirections(map, res, setPolyline)
+		})
+
+		// onLoad: Hide/show the appropriate markers
+		toggleMarkers()
+
 		setScreen('select')
 	}, [])
 
@@ -177,7 +207,7 @@ export function Trip() {
 
 	return (
 		<>
-			<CancelTripButton />
+			<CancelTripButton map={map} polyline={polyline} />
 			{screen === 'select' && <RouteDetails />}
 
 			<div className='w-screen-md-max absolute bottom-0 left-0 right-0 ml-auto mr-auto w-5/6 rounded-t-lg bg-gray-700 shadow-sm'>
@@ -190,6 +220,16 @@ export function Trip() {
 			</div>
 		</>
 	)
+}
+
+function setOriginToUserLocation(map: google.maps.Map, userLocation: Location) {
+	if (markers.origin) {
+		markers.origin.setPosition(
+			new google.maps.LatLng(userLocation.lat, userLocation.lng)
+		)
+	} else {
+		markers.origin = mark(map, userLocation, MARKERS.ORIGIN, true)
+	}
 }
 
 function RouteDetails() {
@@ -236,11 +276,32 @@ function TripScreens() {
 	)
 }
 
-function CancelTripButton() {
+function CancelTripButton({ map, polyline = null }) {
 	const [, setIsValidInput] = useRecoilState(validInputAtom)
+	const [, setOrigin] = useRecoilState<Location>(originAtom)
+	const [, setDest] = useRecoilState<Location>(destinationAtom)
+	const [, setOriginInput] = useRecoilState(originInputAtom)
+	const [, setDestInput] = useRecoilState(destInputAtom)
+	const userLocation = useRecoilValue(userLocationAtom)
 
 	const handleTripCancellation = () => {
+		toggleMarkers(map)
+
 		setIsValidInput(false)
+		polyline && setMarkerVisibility(polyline)
+
+		const clearLocation: Location = {
+			placeID: null,
+			lat: null,
+			lng: null,
+			address: null,
+			placeName: null,
+		}
+		setOrigin(clearLocation)
+		setDest(clearLocation)
+		setOriginInput('')
+		setDestInput('')
+		map.panTo(new google.maps.LatLng(userLocation.lat, userLocation.lng))
 	}
 
 	return (
@@ -254,7 +315,7 @@ function CancelTripButton() {
 }
 
 function TaxiSelection() {
-	const user = useRecoilValue(userAtom)
+	const user = useRecoilValue<User>(userAtom)
 	const origin = useRecoilValue(originAtom)
 	const dest = useRecoilValue(destinationAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
@@ -271,39 +332,37 @@ function TaxiSelection() {
 	let distance = 1000
 	let eta
 
-	const options = {
-		regular: {
-			taxiType: 'regular',
-			taxiPassengerCapacity: 4,
-			fare: computeFare(
-				'regular',
-				dest.postcode.toString(),
-				distance,
-				+new Date()
-			),
-			taxiETA: Math.round(taxiETA.regular / 60),
-			icon: <FaCarAlt />,
-			desc: 'Find the closest car',
-		},
-		plus: {
-			taxiType: 'plus',
-			taxiPassengerCapacity: 7,
-			fare: computeFare(
-				'plus',
-				dest.postcode.toString(),
-				distance,
-				+new Date()
-			),
-			taxiETA: Math.round(taxiETA.plus / 60),
-			icon: <FaCar />,
-			desc: 'Better cars',
-		},
-	}
+	const [options, setOptions] = useState(null)
 
 	useEffect(() => {
-		// onLoad: Compute and render nearby taxis
-		// onLoad: Compute and render routes
-		// onLoad: Hide/show the appropriate markers
+		setOptions({
+			regular: {
+				taxiType: 'regular',
+				taxiPassengerCapacity: 4,
+				fare: computeFare(
+					'regular',
+					dest.postcode.toString(),
+					distance,
+					+new Date()
+				),
+				taxiETA: Math.round(taxiETA.regular / 60),
+				icon: <FaCarAlt />,
+				desc: 'Find the closest car',
+			},
+			plus: {
+				taxiType: 'plus',
+				taxiPassengerCapacity: 7,
+				fare: computeFare(
+					'plus',
+					dest.postcode.toString(),
+					distance,
+					+new Date()
+				),
+				taxiETA: Math.round(taxiETA.plus / 60),
+				icon: <FaCar />,
+				desc: 'Better cars',
+			},
+		})
 
 		// Finding the default payment method
 		GetPaymentMethod(
@@ -315,6 +374,10 @@ function TaxiSelection() {
 				})
 		)
 	}, [])
+
+	if (!options) {
+		return <LoadingScreen />
+	}
 
 	// onSubmit: Create and send the bookingEvent
 	const onTripConfirmation = () => {
