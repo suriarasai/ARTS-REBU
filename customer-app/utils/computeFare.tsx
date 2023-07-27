@@ -4,6 +4,7 @@ export default function computeFare(
 	distance: number,
 	pickUpTime: number
 ) {
+
 	// Hours since the start of the day
 	let startOfDay = new Date()
 	startOfDay.setHours(0, 0, 0, 0)

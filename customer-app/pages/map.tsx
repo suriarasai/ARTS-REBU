@@ -11,6 +11,7 @@ import {
 	searchTypeAtom,
 	selectedCardAtom,
 	taxiETAAtom,
+	tripStatsAtom,
 	userAtom,
 	userLocationAtom,
 	validInputAtom,
@@ -174,21 +175,38 @@ export function Header() {
 	)
 }
 
+function distKM(lat1, lon1, lat2, lon2) {
+	var a = Math,
+		r = ((lat2 - lat1) * a.PI) / 180,
+		c = ((lon2 - lon1) * a.PI) / 180,
+		e =
+			a.sin(r / 2) * a.sin(r / 2) +
+			a.cos((lat1 * a.PI) / 180) *
+				a.cos((lat2 * a.PI) / 180) *
+				a.sin(c / 2) *
+				a.sin(c / 2)
+	return 2 * a.atan2(a.sqrt(e), a.sqrt(1 - e)) * 6371
+}
+
 export function Trip({ map }) {
 	const [origin, setOrigin] = useRecoilState(originAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
 	const [dest, setDest] = useRecoilState(destinationAtom)
 	const [polyline, setPolyline] = useState()
+	const [, setTripStats] = useRecoilState(tripStatsAtom)
 
 	useEffect(() => {
 		// Place the origin marker to the user's location if no origin was input
 		!origin.address && setOriginToUserLocation(map, userLocation)
 
-		// onLoad: Compute and render nearby taxis, Haversine, 10KM tolerance
-		// -- Simulation: Start querying from the past in real-time
+		// onLoad: Send location and request to TBS to locate nearby taxis
 
 		// onLoad: Compute and render routes
 		getDirections(origin.address ? origin : userLocation, dest, (res) => {
+			setTripStats({
+				distance: res.distanceMeters,
+				duration: Number(res.duration.match(/\d+/)[0]),
+			})
 			renderDirections(map, res, setPolyline)
 		})
 
@@ -282,6 +300,7 @@ function CancelTripButton({ map, polyline = null }) {
 	const [, setDest] = useRecoilState<Location>(destinationAtom)
 	const [, setOriginInput] = useRecoilState(originInputAtom)
 	const [, setDestInput] = useRecoilState(destInputAtom)
+	const [, setTripStats] = useRecoilState(tripStatsAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
 
 	const handleTripCancellation = () => {
@@ -301,6 +320,7 @@ function CancelTripButton({ map, polyline = null }) {
 		setDest(clearLocation)
 		setOriginInput('')
 		setDestInput('')
+		setTripStats({ distance: null, duration: null })
 		map.panTo(new google.maps.LatLng(userLocation.lat, userLocation.lng))
 	}
 
@@ -328,13 +348,24 @@ function TaxiSelection() {
 	const handleShowPaymentMethod = () => setSelectPaymentMethod(true)
 	const handleChangeSelection = () =>
 		setSelectedTaxi(selectedTaxi === 'regular' ? 'plus' : 'regular')
-
-	let distance = 1000
-	let eta
-
+	const tripStats = useRecoilValue(tripStatsAtom)
 	const [options, setOptions] = useState(null)
 
 	useEffect(() => {
+		// Finding the default payment method
+		GetPaymentMethod(
+			user.customerID!,
+			(data: any) =>
+				data?.length > 0 &&
+				data.map((item: any) => {
+					item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
+				})
+		)
+	}, [])
+
+	useEffect(() => {
+		if (!tripStats.distance) return
+
 		setOptions({
 			regular: {
 				taxiType: 'regular',
@@ -342,7 +373,7 @@ function TaxiSelection() {
 				fare: computeFare(
 					'regular',
 					dest.postcode.toString(),
-					distance,
+					tripStats.distance,
 					+new Date()
 				),
 				taxiETA: Math.round(taxiETA.regular / 60),
@@ -355,7 +386,7 @@ function TaxiSelection() {
 				fare: computeFare(
 					'plus',
 					dest.postcode.toString(),
-					distance,
+					tripStats.distance,
 					+new Date()
 				),
 				taxiETA: Math.round(taxiETA.plus / 60),
@@ -363,19 +394,9 @@ function TaxiSelection() {
 				desc: 'Better cars',
 			},
 		})
+	}, [tripStats])
 
-		// Finding the default payment method
-		GetPaymentMethod(
-			user.customerID!,
-			(data: any) =>
-				data?.length > 0 &&
-				data.map((item: any) => {
-					item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
-				})
-		)
-	}, [])
-
-	if (!options) {
+	if (!options || !tripStats.distance) {
 		return <LoadingScreen />
 	}
 
@@ -390,9 +411,9 @@ function TaxiSelection() {
 			taxiType: options[selectedTaxi].taxiType,
 			fareType: 'metered',
 			fare: options[selectedTaxi].fare,
-			distance: distance,
+			distance: tripStats.distance,
 			paymentMethod: selectedCard,
-			eta: eta,
+			eta: tripStats.duration,
 			pickUpLocation: origin.address ? origin : userLocation,
 			dropLocation: dest,
 			status: 'requested',

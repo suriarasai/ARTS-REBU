@@ -309,6 +309,17 @@ export const routesSelector = selector({
 	},
 })
 
+export const tripStatsAtom = atom({
+	key: 'tripStats-atom',
+	default: {} as any,
+})
+
+export const tripStatsSelector = selector({
+	key: 'tripStats-modifier',
+	get: ({ get }) => {
+		return get(tripStatsAtom)
+	},
+})
 const temp = {
 	customerID: null,
 	customerName: null,
