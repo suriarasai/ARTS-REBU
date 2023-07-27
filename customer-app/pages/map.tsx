@@ -5,6 +5,7 @@ import {
 	destinationAtom,
 	originAtom,
 	screenAtom,
+	searchTypeAtom,
 	tripStatsAtom,
 	userAtom,
 	userLocationAtom,
@@ -149,6 +150,7 @@ export function Trip({ map }) {
 	const [dest, setDest] = useRecoilState(destinationAtom)
 	const [polyline, setPolyline] = useState()
 	const [, setTripStats] = useRecoilState(tripStatsAtom)
+	const [, setSearchType] = useRecoilState(searchTypeAtom)
 
 	useEffect(() => {
 		// Place the origin marker to the user's location if no origin was input
@@ -178,6 +180,7 @@ export function Trip({ map }) {
 		toggleMarkers()
 
 		setScreen('select')
+		setSearchType(0)
 	}, [])
 
 	// Global State: Screen
