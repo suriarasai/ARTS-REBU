@@ -1,8 +1,7 @@
-import { poiAtom } from '@/utils/state';
-import { FaMapMarkedAlt, FaLocationArrow } from 'react-icons/fa';
-import { useRecoilState } from 'recoil';
-import mapStyles from '../utils/poi';
-
+import { poiAtom } from '@/utils/state'
+import { FaMapMarkedAlt, FaLocationArrow } from 'react-icons/fa'
+import { useRecoilState } from 'recoil'
+import mapStyles from '../utils/poi'
 
 export function TogglePOI({ map }) {
 	const [poi, setPoi] = useRecoilState<boolean>(poiAtom)
@@ -14,7 +13,7 @@ export function TogglePOI({ map }) {
 
 	return (
 		<div className='map-control-button' onClick={handleClick}>
-			<FaMapMarkedAlt className='text-xl text-white' />
+			<FaMapMarkedAlt className='text-xl text-gray-700' />
 		</div>
 	)
 }
@@ -31,7 +30,7 @@ export function PanToCurrentLocation({ map }) {
 
 	return (
 		<div className='map-control-button' onClick={handleClick}>
-			<FaLocationArrow className='text-xl text-white' />
+			<FaLocationArrow className='text-xl text-gray-700' />
 		</div>
 	)
 }

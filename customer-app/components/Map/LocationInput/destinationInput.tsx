@@ -57,14 +57,14 @@ export function DestinationInput() {
 			>
 				<input
 					type='text'
-					className='border-none bg-white px-3 py-3 pl-10 leading-tight shadow-none'
+					className='border-none bg-gray-700 hover:bg-gray-500 focus:bg-gray-500 text-green-100 px-3 py-3 pl-10 leading-tight shadow-none'
 					placeholder='Where to?'
 					value={destInput}
 					onChange={handleChange}
 					onClick={() => setSearchType(2)}
 				/>
 			</Autocomplete>
-			<FaCircle className='absolute -mt-7 ml-3 text-xs text-green-600' />
+			<FaCircle className='absolute -mt-7 ml-3 text-xs text-green-400' />
 		</div>
 	)
 }

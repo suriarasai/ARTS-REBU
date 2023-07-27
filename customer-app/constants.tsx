@@ -16,6 +16,8 @@ export enum HREF {
 	BOOKINGUI = '/admin/booking',
 }
 
+
+
 export enum MARKERS {
 	USERLOCATION = 'https://www.svgrepo.com/show/115216/pointer-inside-a-circle.svg',
 	HOME = 'https://www.svgrepo.com/show/375801/door.svg',

@@ -25,7 +25,7 @@ export function LocationInputs() {
 function SearchMenu() {
 	const dest = useRecoilValue(destinationAtom)
 	return (
-		<div className='absolute left-0 right-0 top-0 z-50 ml-auto mr-auto flex w-full max-w-screen-md flex-wrap rounded-b-3xl bg-white p-2 shadow-md'>
+		<div className='absolute left-0 right-0 top-0 z-50 ml-auto mr-auto flex w-full max-w-screen-md flex-wrap rounded-b-3xl bg-gray-700 p-2 shadow-md'>
 			<div className='w-1/12'>
 				<BackButton />
 			</div>
@@ -36,7 +36,7 @@ function SearchMenu() {
 				<DestinationInput />
 			</div>
 
-			<div className='mt-16 flex w-1/12 justify-center text-3xl text-green-600'>
+			<div className='mt-16 flex w-1/12 justify-center text-3xl text-green-300'>
 				<FaPlusCircle onClick={() => {}} />
 			</div>
 
@@ -52,8 +52,8 @@ function ConfirmInputsButton() {
 
 	return (
 		<div className='flex w-full justify-center px-6 py-3'>
-			<button className='directions-button' onClick={handleClick}>
-				<p className='font-normal'>Calculate Routes</p>
+			<button className='h-11 w-full rounded-lg !bg-gray-600 px-4 py-2 text-green-100' onClick={handleClick}>
+				<p className=''>Calculate Routes</p>
 			</button>
 		</div>
 	)
@@ -73,7 +73,7 @@ function BackButton() {
 
 	return (
 		<button
-			className='p-2 text-2xl font-medium text-green-600'
+			className='p-2 text-2xl font-medium text-green-400'
 			onClick={handleClick}
 		>
 			<FaRegArrowAltCircleLeft />
