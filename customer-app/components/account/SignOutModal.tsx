@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { useRecoilState } from 'recoil';
-import { userAtom } from '@/utils/state';
+import { userAtom } from '@/state';
 
 export const SignOutModal = () => {
 	const router = useRouter();

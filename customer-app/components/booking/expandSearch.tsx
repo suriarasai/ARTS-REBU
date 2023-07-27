@@ -8,7 +8,7 @@ import {
 } from 'react-icons/fa'
 import { Button, HREF, Message } from '@/constants'
 import { useRecoilValue } from 'recoil'
-import { searchTypeAtom, userSelector } from '@/utils/state'
+import { searchTypeAtom, userSelector } from '@/state'
 import { useRecoilState } from 'recoil'
 import { Location, User } from '@/types'
 

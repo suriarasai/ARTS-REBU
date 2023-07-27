@@ -3,7 +3,7 @@ import {
 	searchTypeAtom,
 	userAtom,
 	validInputAtom,
-} from '@/utils/state'
+} from '@/state'
 import { useRouter } from 'next/router'
 import { FaPlusCircle, FaRegArrowAltCircleLeft } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'

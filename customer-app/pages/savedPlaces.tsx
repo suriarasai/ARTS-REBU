@@ -10,9 +10,9 @@ import {
 	FaSuitcase,
 } from 'react-icons/fa'
 import { Input, Message, Title } from '@/constants'
-import { getAddress } from '@/utils/getAddress'
+import { getAddress } from "@/components/Map/utils/calculations"
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 import { Location, User } from '@/types'
 
 const SavedPlaces = () => {

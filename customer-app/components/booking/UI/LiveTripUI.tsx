@@ -1,6 +1,6 @@
 import { Location, option } from '@/types'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
-import { selectedCardAtom } from '@/utils/state'
+import { selectedCardAtom } from '@/state'
 import {
 	FaDollarSign,
 	FaSearchLocation,

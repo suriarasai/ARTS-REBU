@@ -1,6 +1,6 @@
 import { addRating } from '@/server'
 import { Rating } from '@/types'
-import { userSelector } from '@/utils/state'
+import { userSelector } from '@/state'
 import { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 

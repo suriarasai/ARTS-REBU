@@ -6,7 +6,7 @@ import {
 	bookingEvent,
 	clickedOptionAtom,
 	screenAtom,
-} from '@/utils/state'
+} from '@/state'
 import { useEffect, useState } from 'react'
 import { FaAngleDown, FaArrowLeft, FaCreditCard } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'

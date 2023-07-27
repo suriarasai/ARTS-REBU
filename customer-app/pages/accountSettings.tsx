@@ -9,7 +9,7 @@ import { User } from '@/types'
 import { UpdateUser } from '@/server'
 import { Button, HREF, Title } from '@/constants'
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 
 const AccountSettings = () => {
 	const router = useRouter()

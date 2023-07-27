@@ -31,10 +31,10 @@ import { LiveTripUI } from './UI/LiveTripUI'
 import { WaitingUI } from './UI/MatchingUI'
 import { RouteConfirmation } from './UI/ConfirmationUI'
 import { ShowOption } from './UI/ConfirmationUI'
-import setMarkerVisibility from '@/utils/setMarkerVisibility'
+import setMarkerVisibility from "../Map/utils/markers"
 import Receipt from './UI/Receipt'
 import Rating from './Rating'
-import SelectPaymentMethod from '../payment/SelectPaymentMethod'
+import SelectPaymentMethod from '../Map/TripScreens/Selection/payment'
 import {
 	bookingAtom,
 	bookingEvent,
@@ -43,11 +43,11 @@ import {
 	selectedCardAtom,
 	taxiETAAtom,
 	userAtom,
-} from '@/utils/state'
+} from '@/state'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
-import computeFare from '@/utils/computeFare'
+import computeFare from "../Map/utils/calculations"
 
 export let taxiRouteDisplay: any
 let matchedTaxi: any

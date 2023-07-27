@@ -1,5 +1,5 @@
-import { getAddress } from '@/utils/getAddress'
-import { originAtom, searchTypeAtom } from '@/utils/state'
+import { getAddress } from "../Map/utils/calculations"
+import { originAtom, searchTypeAtom } from '@/state'
 import { Autocomplete } from '@react-google-maps/api'
 import { useState } from 'react'
 import { FaCircle } from 'react-icons/fa'

@@ -7,7 +7,7 @@ import '@/styles/globals.css'
 import '@/styles/maps.css'
 import { useEffect } from 'react'
 import { RecoilRoot, useRecoilValue } from 'recoil'
-import { userSelector } from '@/utils/state'
+import { userSelector } from '@/state'
 
 const App = ({ Component, pageProps }: AppProps) => {
 	/*

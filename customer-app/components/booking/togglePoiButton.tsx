@@ -1,6 +1,6 @@
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import mapStyles from '@/components/Map/utils/poi'
-import setMarkerVisibility from '@/utils/setMarkerVisibility'
+import setMarkerVisibility from "../Map/utils/markers"
 import { loadNearbyTaxiStops } from './loadNearbyTaxiStops'
 import { Location } from '@/types'
 

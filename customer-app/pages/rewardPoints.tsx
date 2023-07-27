@@ -3,7 +3,7 @@ import Page from '@/components/ui/page'
 import Section from '@/components/ui/section'
 import { rewardPoints } from '@/types'
 import { Rewards, Title } from '@/constants'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 import { useRecoilState } from 'recoil'
 
 const RewardPoints = () => {

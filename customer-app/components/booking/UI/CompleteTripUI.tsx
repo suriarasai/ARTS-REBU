@@ -1,5 +1,5 @@
 import { Location, option } from '@/types'
-import { bookingAtom, bookingEvent } from '@/utils/state'
+import { bookingAtom, bookingEvent } from '@/state'
 import { FaCrosshairs, FaFlag, FaStar } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'
 

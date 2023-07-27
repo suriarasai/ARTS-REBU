@@ -1,5 +1,5 @@
 import { produceKafkaBookingEvent, produceKafkaDispatchEvent } from '@/server'
-import { bookingEvent } from '@/utils/state'
+import { bookingEvent } from '@/state'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import SockJS from 'sockjs-client'

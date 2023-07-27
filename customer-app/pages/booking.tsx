@@ -7,7 +7,7 @@ import { RideConfirmation } from '@/components/booking/RideConfirmation'
 import TogglePOI from '@/components/booking/togglePoiButton'
 import { CoordinateToAddress, getDirections } from '@/server'
 import { LocationSearch } from '../components/booking/LocationSearch'
-import setMarkerVisibility from '@/utils/setMarkerVisibility'
+import setMarkerVisibility from "@/components/Map/utils/markers"
 import mapStyles from '@/components/Map/utils/poi'
 import { loadTaxis } from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
@@ -19,7 +19,7 @@ import {
 	originAtom,
 	searchTypeAtom,
 	userAtom,
-} from '@/utils/state'
+} from '@/state'
 import { Location, User } from '@/types'
 
 let marks: any = {

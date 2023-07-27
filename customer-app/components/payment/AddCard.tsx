@@ -11,7 +11,7 @@ import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { AddPaymentMethod } from '@/server'
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 
 export const AddCard = ({
 	customerID,

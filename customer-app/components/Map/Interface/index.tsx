@@ -10,7 +10,7 @@ import {
 	poiAtom,
 	searchTypeAtom,
 	userLocationAtom,
-} from '@/utils/state'
+} from '@/state'
 import { GoogleMap } from '@react-google-maps/api'
 import { useCallback } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'

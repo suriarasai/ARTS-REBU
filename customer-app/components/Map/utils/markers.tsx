@@ -1,7 +1,7 @@
 import { markers } from '@/pages/map'
 import { MARKERS } from '@/constants'
 import { Location, User } from '@/types'
-import taxiStops from '@/resources/taxi-stops'
+import taxiStops from '@/public/resources/taxi-stops'
 
 export function mark(
 	map: google.maps.Map,
@@ -68,5 +68,33 @@ export function loadNearbyTaxiStands(map, pos: Location) {
 			},
 		})
 		markers.stands.push(newTaxi)
+	}
+}
+
+export function toggleMarkers(map = null) {
+	setMarkerVisibility(markers.stands, map)
+	setMarkerVisibility(markers.saved, map)
+	markers.home?.setMap(map)
+	markers.work?.setMap(map)
+	markers.user.setMap(map)
+
+	if (map) {
+		markers.origin?.setMap(null)
+		markers.origin = null
+		markers.dest.setMap(null)
+		markers.dest = null
+	}
+}
+
+export default function setMarkerVisibility(
+	marker: Array<google.maps.Marker>,
+	map: google.maps.Map | null = null
+) {
+	/*
+	 * Hides the initial taxis that were rendered to show the nearest N taxis
+	 * Used by: Booking
+	 */
+	for (let i = 0; i < marker.length; i++) {
+		marker[i].setMap(map)
 	}
 }

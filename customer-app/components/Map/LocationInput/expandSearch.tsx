@@ -7,7 +7,7 @@ import {
 	destinationAtom,
 	originInputAtom,
 	destInputAtom,
-} from '@/utils/state'
+} from '@/state'
 import { useRouter } from 'next/router'
 import {
 	FaHouseUser,

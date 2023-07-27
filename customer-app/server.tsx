@@ -1,8 +1,8 @@
 import api from '@/api/axiosConfig'
 import { Location, Rating, User, option } from './types'
-import { getAddress } from './utils/getAddress'
+import { getAddress } from "./components/Map/utils/calculations"
 import axios from 'axios'
-import { renderDirections } from './utils/renderDirections'
+import { renderDirections } from './components/Map/utils/viewport'
 
 export async function produceKafkaBookingEvent(message: string) {
 	api.post('/api/v1/Kafka/bookingEvent', {

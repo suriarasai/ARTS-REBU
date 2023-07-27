@@ -8,7 +8,7 @@ import { HREF, Title } from '@/constants'
 import { FaAngleRight, FaBookmark, FaCreditCard, FaGifts } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
-import { userSelector } from '@/utils/state'
+import { userSelector } from '@/state'
 
 const NavButton = ({ label, href, className, icon }: navButtonProps) => {
 	const router = useRouter()

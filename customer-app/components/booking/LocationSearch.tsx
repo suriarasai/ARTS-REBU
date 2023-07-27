@@ -2,7 +2,7 @@ import { FaPlusCircle } from 'react-icons/fa'
 import { BackButton } from '@/components/booking/backButton'
 import { InputCurrentLocation } from './InputCurrentLocation'
 import { InputDestinationLocation } from './InputDestinationLocation'
-import { searchTypeAtom } from '@/utils/state'
+import { searchTypeAtom } from '@/state'
 import { useRecoilState } from 'recoil'
 
 export const LocationSearch = ({

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { EmailForm } from '@/components/account/EmailForm'
 import { HREF } from '@/constants'
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 
 // Sign in via Email
 export const EmailSignIn = ({ setForm }: any) => {

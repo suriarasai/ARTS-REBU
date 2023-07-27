@@ -8,7 +8,7 @@ import api from '@/api/axiosConfig'
 import { FaAngleRight } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 import { useState } from 'react'
 
 export const MobileNumber = ({ newUser = true, populateData = {} }: any) => {

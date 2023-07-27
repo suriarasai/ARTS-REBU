@@ -13,7 +13,7 @@ import { User } from '@/types'
 import { RegisterUser } from '@/server'
 import { HREF } from '@/constants'
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 import { FaArrowRight } from 'react-icons/fa'
 import { useState } from 'react'
 

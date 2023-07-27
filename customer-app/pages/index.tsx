@@ -9,7 +9,7 @@ import { EmailSignIn } from '../components/account/EmailSignIn'
 import { FaEnvelopeOpen, FaKey } from 'react-icons/fa'
 import { MainScreenVisual } from '@/components/ui/MainScreenVisual'
 import { useRecoilState } from 'recoil'
-import { userAtom } from '@/utils/state'
+import { userAtom } from '@/state'
 
 // Main component
 const SignIn = () => {

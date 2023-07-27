@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
-import { bookingAtom, bookingEvent, selectedCardAtom } from '@/utils/state'
+import { bookingAtom, bookingEvent, selectedCardAtom } from '@/state'
 import { useEffect, useState } from 'react'
 import { FaAngleDown, FaClock, FaCoins, FaFlag, FaUser } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'

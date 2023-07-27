@@ -4,7 +4,7 @@ import { MobileNumber } from '@/components/account/MobileNumber'
 import { icon } from '@/constants'
 import { FaUser } from 'react-icons/fa'
 import { EmailForm } from './EmailForm'
-import { userSelector } from '@/utils/state'
+import { userSelector } from '@/state'
 import { useRecoilValue } from 'recoil'
 
 // Main component

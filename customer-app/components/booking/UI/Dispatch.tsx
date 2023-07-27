@@ -1,4 +1,4 @@
-import { bookingAtom, bookingEvent } from '@/utils/state'
+import { bookingAtom, bookingEvent } from '@/state'
 import { FaFlag, FaRoad, FaThumbtack, FaUser } from 'react-icons/fa'
 import { useRecoilValue } from 'recoil'
 

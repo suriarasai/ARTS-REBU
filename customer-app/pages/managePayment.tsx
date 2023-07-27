@@ -14,7 +14,7 @@ import {
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { AddCard } from '../components/payment/AddCard'
 import { formatCreditCardNumber } from '../utils/formatCreditCardNumber'
-import { userSelector } from '@/utils/state'
+import { userSelector } from '@/state'
 import { useRecoilValue } from 'recoil'
 
 const PaymentOptions = ({}) => {

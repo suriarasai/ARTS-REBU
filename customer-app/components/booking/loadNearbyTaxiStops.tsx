@@ -1,4 +1,4 @@
-import taxiStops from '@/resources/taxi-stops'
+import taxiStops from '@/public/resources/taxi-stops'
 
 export function loadNearbyTaxiStops(
 	map: google.maps.Map,

@@ -1,5 +1,5 @@
 import { Location, option, optionsInterface } from '@/types'
-import { clickedOptionAtom } from '@/utils/state'
+import { clickedOptionAtom } from '@/state'
 import { FaCrosshairs, FaFontAwesomeFlag } from 'react-icons/fa'
 import { useRecoilState } from 'recoil'
 

@@ -1,12 +1,29 @@
+import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { GetPaymentMethod } from '@/server'
-import { useEffect, useState } from 'react'
-import { FaCheck, FaCreditCard, FaMoneyBill } from 'react-icons/fa'
-import { LoadingScreen } from '../ui/LoadingScreen'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
-import { selectedCardAtom, userSelector } from '@/utils/state'
+import { selectedCardAtom, userSelector } from '@/state'
+import { useState, useEffect } from 'react'
+import { FaMoneyBill, FaAngleDown, FaCheck, FaCreditCard } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
-const SelectPaymentMethod = ({ set }: { set: Function }) => {
+export function PaymentOptions({ handleShowPaymentMethod }) {
+	const selectedCard = useRecoilValue(selectedCardAtom)
+
+	return (
+		<>
+			<FaMoneyBill className='mr-2 text-lg text-green-100' />
+			{selectedCard !== 'Cash'
+				? '**** ' + selectedCard.toString().substring(12)
+				: selectedCard}
+			<FaAngleDown
+				className='text-lg text-green-100'
+				onClick={handleShowPaymentMethod}
+			/>
+		</>
+	)
+}
+
+export const SelectPaymentMethod = ({ set }: { set: Function }) => {
 	const [cards, setCards] = useState([])
 	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
 	const user = useRecoilValue(userSelector)
@@ -69,7 +86,7 @@ const Card = ({
 }) => {
 	return (
 		<div
-			className={`flex items-center text-zinc-50 rounded-md px-5 py-3 ${
+			className={`flex items-center rounded-md px-5 py-3 text-zinc-50 ${
 				selected === cardNumber
 					? 'border-2 border-green-200'
 					: 'border-b border-gray-700'
@@ -88,5 +105,3 @@ const Card = ({
 		</div>
 	)
 }
-
-export default SelectPaymentMethod
