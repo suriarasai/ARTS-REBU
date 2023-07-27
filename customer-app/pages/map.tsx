@@ -206,7 +206,16 @@ export function Trip({ map }) {
 			setTripStats({
 				distance: res.distanceMeters,
 				duration: Number(res.duration.match(/\d+/)[0]),
+				route: google.maps.geometry.encoding.decodePath(
+					res.polyline.encodedPolyline
+				),
 			})
+			rescaleMap(
+				map,
+				google.maps.geometry.encoding.decodePath(
+					res.polyline.encodedPolyline
+				) as []
+			)
 			renderDirections(map, res, setPolyline)
 		})
 
@@ -332,6 +341,15 @@ function CancelTripButton({ map, polyline = null }) {
 			<FaTimesCircle className='text-3xl text-red-400' />
 		</button>
 	)
+}
+
+function rescaleMap(map: google.maps.Map, polyline: []) {
+	let bounds = new google.maps.LatLngBounds()
+	for (let i = 0; i < polyline.length; i++) {
+		bounds.extend(polyline[i])
+	}
+	map.fitBounds(bounds)
+	// map.setZoom(16)
 }
 
 function TaxiSelection() {
