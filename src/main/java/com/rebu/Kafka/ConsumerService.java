@@ -10,6 +10,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.rebu.Kafka.Models.ChatEvent;
+import com.rebu.Kafka.Models.DispatchEvent;
+import com.rebu.Kafka.Models.TaxiLocatorEvent;
 
 @Service
 public class ConsumerService {
@@ -35,5 +38,14 @@ public class ConsumerService {
     public void taxiLocatorConsumer(String receivedMessage) {
         System.out.println("Taxi Location: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
         this.template.convertAndSend("/topic/taxiLocatorEvent", receivedMessage);
+    }
+
+    @KafkaListener(topics = "chatEvent", groupId = "rebu")
+    public void chatConsumer(String receivedMessage) {
+        Gson gson = new Gson();
+        ChatEvent event = gson.fromJson(receivedMessage, ChatEvent.class);
+        System.out.println("Chat Event: " + event + " @ " + Instant.now().toEpochMilli());
+
+        this.template.convertAndSendToUser(event.getRecipientID(), "/queue/chatEvent", receivedMessage);
     }
 }

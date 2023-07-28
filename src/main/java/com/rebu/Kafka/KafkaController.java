@@ -33,4 +33,9 @@ public class KafkaController {
     public void getTaxiLocatorEvent(@RequestBody Map<String, String> payload) {
         producer.taxiLocatorProducer(payload.get("message"));
     }
+
+    @PostMapping("/chatEvent")
+    public void getChatEvent(@RequestBody Map<String, String> payload) {
+        producer.chatProducer(payload.get("message"));
+    }
 }

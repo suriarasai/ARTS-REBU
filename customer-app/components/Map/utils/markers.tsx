@@ -83,6 +83,8 @@ export function toggleMarkers(map = null) {
 		markers.origin = null
 		markers.dest.setMap(null)
 		markers.dest = null
+		markers.taxi?.setMap(null)
+		markers.taxi = null
 	}
 }
 

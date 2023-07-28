@@ -11,6 +11,9 @@ import {
 import { MoveTaxiMarker } from "@/utils/moveTaxiMarker";
 import { pickupRoute, dropRoute, markers } from "@/pages/map";
 import { BookingEvent } from "@/types";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { produceKafkaChatEvent } from "@/server";
 
 export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
   const routes = useRecoilValue(routesAtom);
@@ -18,25 +21,59 @@ export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
   const [, setScreen] = useRecoilState(screenAtom);
   const driver = useRecoilValue(driverAtom);
   const taxi = useRecoilValue(taxiAtom);
-  const [, setBooking] = useRecoilState(bookingAtom);
+  const [booking, setBooking] = useRecoilState(bookingAtom);
 
   useEffect(() => {
     MoveTaxiMarker(routes[type], 0, driver, taxi, () => setArrived(true));
   }, [type]);
 
+  useEffect(() => {
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client = Stomp.over(socket);
+    let res;
+
+    client.connect({}, () => {
+      client.subscribe(
+        "/user/d" + driver.driverID + "/queue/chatEvent",
+        (message) => {
+          res = JSON.parse(message.body);
+          if (res.type === 'cancelTrip') {
+            console.log("User cancelled trip")
+          }
+        }
+      );
+    });
+
+    return () => {
+      client.disconnect(() => console.log("Disconnected from server"));
+    };
+  }, []);
+
   const confirmArrival = () => {
     if (type === "pickup") {
+      produceKafkaChatEvent(
+        JSON.stringify({
+          recipientID: "c" + booking.customerID,
+          type: "arrivedToUser",
+        })
+      );
       pickupRoute.setMap(null);
       dropRoute.setOptions({ strokeColor: "#16a34a" });
       setScreen("dropoff");
     } else if (type === "dropoff") {
+      produceKafkaChatEvent(
+        JSON.stringify({
+          recipientID: "c" + booking.customerID,
+          type: "arrivedToDestination",
+        })
+      );
       dropRoute.setMap(null);
       markers.dropoff.setMap(null);
       markers.dropoff = null;
       markers.pickup.setMap(null);
       markers.pickup = null;
       setScreen("");
-      setBooking({} as BookingEvent)
+      setBooking({} as BookingEvent);
     }
     setArrived(false);
   };

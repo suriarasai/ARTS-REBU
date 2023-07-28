@@ -18,7 +18,9 @@ export enum HREF {
 
 export enum NOTIF {
 	ARRIVINGSOON = 'Your ride is arriving soon - please get ready and enjoy the trip!',
-	ARRIVED = 'The wait is over! Please make your way to the taxi',
+	ARRIVEDTOUSER = 'The wait is over! Please make your way to the taxi',
+	WAITING = 'Waiting on driver to start moving...',
+	ARRIVEDTODEST = 'You have now arrived at your destination. Thank you for riding with Rebu',
 }
 
 export enum MARKERS {

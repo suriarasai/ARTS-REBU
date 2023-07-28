@@ -1,6 +1,8 @@
 import {
+	bookingAtom,
 	destInputAtom,
 	destinationAtom,
+	dispatchAtom,
 	originAtom,
 	originInputAtom,
 	poiAtom,
@@ -13,8 +15,9 @@ import { FaMapMarkedAlt, FaLocationArrow, FaTimesCircle } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import mapStyles from '../utils/poi'
 import { toggleMarkers } from '../utils/markers'
-import { Location } from '@/types'
+import { DispatchEvent, Location, bookingEvent } from '@/types'
 import setMarkerVisibility from '../utils/markers'
+import { cancelBooking, produceKafkaChatEvent } from '@/server'
 
 export function TogglePOI({ map }) {
 	const [poi, setPoi] = useRecoilState<boolean>(poiAtom)
@@ -58,6 +61,8 @@ export function CancelTripButton({ map, polyline = null }) {
 	const [, setTripStats] = useRecoilState(tripStatsAtom)
 	const [, setScreen] = useRecoilState(screenAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
+	const [dispatch, setDispatch] = useRecoilState(dispatchAtom)
+	const [booking, setBooking] = useRecoilState(bookingAtom)
 
 	const handleTripCancellation = () => {
 		toggleMarkers(map)
@@ -79,6 +84,18 @@ export function CancelTripButton({ map, polyline = null }) {
 		setDestInput('')
 		setTripStats({ distance: null, duration: null })
 		map.panTo(new google.maps.LatLng(userLocation.lat, userLocation.lng))
+
+		if (dispatch.driverID) {
+			produceKafkaChatEvent(
+				JSON.stringify({
+					recipientID: 'd' + dispatch.driverID,
+					type: 'cancelTrip',
+				})
+			)
+			setDispatch({} as DispatchEvent)
+			cancelBooking(booking.bookingID)
+			setBooking({} as bookingEvent)
+		}
 	}
 
 	return (

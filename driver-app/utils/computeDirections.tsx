@@ -10,12 +10,13 @@ export default function SetDirections(
       origin: start,
       destination: end,
       travelMode: google.maps.TravelMode.DRIVING,
-    },function(result, status) {
-      if (status == 'OK') {
-        createRoute(type, result)
+    },
+    function (result, status) {
+      if (status == "OK") {
+        createRoute(type, result);
       }
-    }  
+    }
   );
   // console.log("Test", directionsService)
-  return null
+  return null;
 }

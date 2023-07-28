@@ -1,4 +1,5 @@
-import { Matching, Dispatch, Arrival } from '@/pages/map'
+import { Dispatch, Arrival } from '@/pages/map'
+import { Matching } from './Matching'
 
 import { screenAtom } from '@/state'
 import { useRecoilValue } from 'recoil'

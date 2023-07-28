@@ -23,4 +23,8 @@ public class ProducerService {
     public void taxiLocatorProducer(String message) {
         kafkaTemplate.send("taxiLocatorEvent", message);
     }
+
+    public void chatProducer(String message) {
+        kafkaTemplate.send("chatEvent", message);
+    }
 }

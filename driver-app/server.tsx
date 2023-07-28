@@ -6,6 +6,12 @@ export async function produceKafkaDispatchEvent(message: string) {
   });
 }
 
+export async function produceKafkaChatEvent(message: string) {
+  api.post("/api/v1/Kafka/chatEvent", {
+    message: message,
+  });
+}
+
 export async function produceKafkaTaxiLocatorEvent(message: string) {
   api.post("/api/v1/Kafka/taxiLocatorEvent", {
     message: message,

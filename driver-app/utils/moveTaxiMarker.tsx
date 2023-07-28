@@ -21,7 +21,7 @@ export function MoveTaxiMarker(
           lat: polyline[iter].lat(),
           lng: polyline[iter].lng(),
         },
-        availabilityStatus: true,
+        availabilityStatus: false,
       })
     );
 

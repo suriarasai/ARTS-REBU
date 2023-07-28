@@ -4,5 +4,4 @@ export function rescaleMap(map: google.maps.Map, polyline: []) {
 		bounds.extend(polyline[i])
 	}
 	map.fitBounds(bounds)
-	map.setZoom(map.getZoom()! - 1)
 }

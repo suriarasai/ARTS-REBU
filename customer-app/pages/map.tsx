@@ -2,12 +2,14 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { MARKERS, NOTIF } from '@/constants'
 import { Location, User } from '@/types'
 import {
+	bookingAtom,
 	destinationAtom,
 	dispatchAtom,
 	notificationAtom,
 	originAtom,
 	screenAtom,
 	searchTypeAtom,
+	statusAtom,
 	taxiLocationAtom,
 	tripStatsAtom,
 	userAtom,
@@ -22,7 +24,12 @@ import { MapInterface } from '@/components/Map/Interface'
 import { MapControls } from '@/components/Map/Controls'
 import { loadNearbyTaxiStands } from '@/components/Map/utils/markers'
 import { LocationInputs } from '@/components/Map/LocationInput'
-import { getDirections } from '@/server'
+import {
+	completeBooking,
+	getDirections,
+	produceKafkaChatEvent,
+	taxiArrived,
+} from '@/server'
 import setMarkerVisibility from '@/components/Map/utils/markers'
 import { renderDirections } from '@/components/Map/utils/viewport'
 import { CancelTripButton } from '@/components/Map/Controls/buttons'
@@ -31,7 +38,6 @@ import { RouteDetails } from '@/components/Map/TripScreens/Selection/routeDetail
 import { setOriginToUserLocation } from '@/components/Map/utils/calculations'
 import { toggleMarkers } from '@/components/Map/utils/markers'
 import { TripScreens } from '@/components/Map/TripScreens'
-import { FaSearch } from 'react-icons/fa'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import { Popup } from '@/components/ui/Popup'
@@ -211,6 +217,7 @@ export function Trip({ map }) {
 				<CancelTripButton map={map} polyline={polyline} />
 			)}
 			{screen === 'select' && <RouteDetails />}
+			<ProximityNotifications />
 
 			<div className='w-screen-md-max absolute bottom-0 left-0 right-0 ml-auto mr-auto w-5/6 rounded-t-lg bg-gray-700 shadow-sm'>
 				<hr
@@ -224,42 +231,6 @@ export function Trip({ map }) {
 	)
 }
 
-export function Matching() {
-	const [, setDispatch] = useRecoilState(dispatchAtom)
-	const [, setScreen] = useRecoilState(screenAtom)
-	const nextScreen = () => setScreen('dispatch')
-	const user = useRecoilValue(userAtom)
-
-	useEffect(() => {
-		const socket = new SockJS('http://localhost:8080/ws')
-		const client = Stomp.over(socket)
-
-		client.connect({}, () => {
-			client.subscribe(
-				'/user/' + user.customerID + '/queue/dispatchEvent',
-				(message) => {
-					setDispatch(JSON.parse(message.body))
-					setScreen('dispatch')
-				}
-			)
-		})
-
-		return () => {
-			client.disconnect(() => console.log('Disconnected from server'))
-		}
-	}, [])
-
-	return (
-		<div className='flex flex-col items-center justify-center'>
-			<FaSearch className='my-5 text-3xl text-green-300' onClick={nextScreen} />
-			<h1 className='my-5 font-medium text-zinc-100'>
-				Looking for a driver...
-			</h1>
-			<h5 className='mb-5 text-zinc-100'>This may take some time</h5>
-		</div>
-	)
-}
-
 export function Dispatch({ map }) {
 	// Onload: Listener for locator event, simulated movement, ETA countdown
 	const [, setScreen] = useRecoilState(screenAtom)
@@ -267,13 +238,23 @@ export function Dispatch({ map }) {
 
 	const [taxiETA, setTaxiETA] = useState()
 	const [tripETA, setTripETA] = useState()
+	const [status, setStatus] = useRecoilState(statusAtom)
 	const [arrived, setArrived] = useState(false)
 	const [showRatingForm, setShowRatingForm] = useState(false)
+	const origin = useRecoilValue(originAtom)
+	const userLocation = useRecoilValue(userLocationAtom)
+	const [, setNotification] = useRecoilState(notificationAtom)
+	let taxiRoute = null
+	const dispatch = useRecoilValue(dispatchAtom)
+	const booking = useRecoilValue(bookingAtom)
 
 	useEffect(() => {
+		setStatus('dispatched')
+		const userPos = origin.address ? origin : userLocation
 		const socket = new SockJS('http://localhost:8080/ws')
 		const client = Stomp.over(socket)
 		let pos
+		let res
 
 		client.connect({}, () => {
 			client.subscribe('/topic/taxiLocatorEvent', (message) => {
@@ -282,26 +263,65 @@ export function Dispatch({ map }) {
 					markers.taxi.setPosition(new google.maps.LatLng(pos.lat, pos.lng))
 				} else {
 					markers.taxi = mark(map, pos, MARKERS.TAXI, false)
+					const directionsService = new google.maps.DirectionsService()
+					directionsService.route(
+						{
+							origin: new google.maps.LatLng(pos.lat, pos.lng),
+							destination: new google.maps.LatLng(userPos.lat, userPos.lng),
+							travelMode: google.maps.TravelMode.DRIVING,
+						},
+						function (result, status) {
+							if (status == 'OK') {
+								taxiRoute = new google.maps.Polyline({
+									path: result.routes[0].overview_path,
+									strokeColor: '#16a34a',
+									strokeOpacity: 1.0,
+									strokeWeight: 4.0,
+								})
+								taxiRoute.setMap(map)
+							}
+						}
+					)
 				}
 			})
+			client.subscribe(
+				'/user/c' + dispatch.customerID + '/queue/chatEvent',
+				(message) => {
+					res = JSON.parse(message.body)
+
+					if (res.type === 'arrivedToUser') {
+						setArrived(true)
+						taxiArrived(booking.bookingID)
+						console.log('Taxi arrived to User')
+						setNotification('arrivedToUser')
+					} else if (res.type === 'arrivedToDestination') {
+						setScreen('arrival')
+						setStatus('completed')
+						completeBooking(booking.bookingID)
+						console.log('Taxi arrived to Destination')
+						setNotification('arrivedToDestination')
+					}
+				}
+			)
 		})
 
 		return () => {
 			client.disconnect(() => console.log('Disconnected from server'))
+			taxiRoute?.setMap(null)
+			taxiRoute = null
+			setNotification('')
 		}
 	}, [])
 
 	return (
 		<>
 			{/* <ETA /> */}
-
-			<ProximityNotifications />
 			{showRatingForm ? (
 				<Rating closeModal={() => setShowRatingForm(false)} />
 			) : (
 				<>
 					<DriverInformation />
-					<RateTrip setShowRatingForm={setShowRatingForm} />
+					{arrived && <RateTrip setShowRatingForm={setShowRatingForm} />}
 					<RouteInformation />
 					<TripInformation />
 				</>
@@ -327,10 +347,14 @@ function ProximityNotifications() {
 
 	return (
 		<>
-			{notification === 'arrivingSoon' ? (
+			{notification === 'waiting' ? (
+				<Popup msg={NOTIF.WAITING} />
+			) : notification === 'arrivingSoon' ? (
 				<Popup msg={NOTIF.ARRIVINGSOON} />
-			) : notification === 'arrived' ? (
-				<Popup msg={NOTIF.ARRIVED} />
+			) : notification === 'arrivedToUser' ? (
+				<Popup msg={NOTIF.ARRIVEDTOUSER} />
+			) : notification === 'arrivedToDestination' ? (
+				<Popup msg={NOTIF.ARRIVEDTODEST} />
 			) : null}
 		</>
 	)

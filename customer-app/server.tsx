@@ -22,6 +22,12 @@ export async function produceKafkaTaxiLocatorEvent(message: string) {
 	})
 }
 
+export async function produceKafkaChatEvent(message: string) {
+	api.post('/api/v1/Kafka/chatEvent', {
+		message: message,
+	})
+}
+
 // Account Settings: Updates user information
 export const UpdateUser = async (data: User | any, customerID: number) => {
 	const response = await api.post('/api/v1/Customer/updateUser', {
