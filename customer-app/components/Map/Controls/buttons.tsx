@@ -4,6 +4,7 @@ import {
 	originAtom,
 	originInputAtom,
 	poiAtom,
+	screenAtom,
 	tripStatsAtom,
 	userLocationAtom,
 	validInputAtom,
@@ -13,7 +14,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import mapStyles from '../utils/poi'
 import { toggleMarkers } from '../utils/markers'
 import { Location } from '@/types'
-import setMarkerVisibility from "../utils/markers"
+import setMarkerVisibility from '../utils/markers'
 
 export function TogglePOI({ map }) {
 	const [poi, setPoi] = useRecoilState<boolean>(poiAtom)
@@ -55,12 +56,11 @@ export function CancelTripButton({ map, polyline = null }) {
 	const [, setOriginInput] = useRecoilState(originInputAtom)
 	const [, setDestInput] = useRecoilState(destInputAtom)
 	const [, setTripStats] = useRecoilState(tripStatsAtom)
+	const [, setScreen] = useRecoilState(screenAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
 
 	const handleTripCancellation = () => {
 		toggleMarkers(map)
-
-		setIsValidInput(false)
 		polyline && setMarkerVisibility(polyline)
 
 		const clearLocation: Location = {
@@ -70,8 +70,11 @@ export function CancelTripButton({ map, polyline = null }) {
 			address: null,
 			placeName: null,
 		}
+
 		setOrigin(clearLocation)
 		setDest(clearLocation)
+		setScreen('')
+		setIsValidInput(false)
 		setOriginInput('')
 		setDestInput('')
 		setTripStats({ distance: null, duration: null })

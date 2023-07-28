@@ -8,7 +8,8 @@ import { Popup } from '@/components/ui/Popup'
 import { PDFExport } from '@progress/kendo-react-pdf'
 import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
 import { useRecoilValue } from 'recoil'
-import { bookingEvent, userSelector } from '@/state'
+import { userSelector } from '@/state'
+import { bookingEvent } from '@/types'
 
 const ref: any = createRef()
 

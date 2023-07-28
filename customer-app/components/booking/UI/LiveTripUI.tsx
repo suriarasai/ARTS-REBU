@@ -72,12 +72,12 @@ export const LiveTripUI = ({
 			</div>
 			<div className='inline-flex w-full'>
 				<button
-					className='w-1/2 border-r border-zinc-300 px-4 py-2 py-3 text-red-600 hover:text-red-800'
+					className='w-1/2 border-r border-zinc-300 px-4 py-3 text-red-600 hover:text-red-800'
 					onClick={() => onCancel(true)}
 				>
 					Cancel
 				</button>
-				<button className='flex w-1/2 items-center justify-center px-4 py-2 py-3 text-green-500 hover:text-green-800'>
+				<button className='flex w-1/2 items-center justify-center px-4 py-3 text-green-500 hover:text-green-800'>
 					<FaShieldAlt className='mr-3' /> Safety
 				</button>
 			</div>

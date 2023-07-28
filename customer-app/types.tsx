@@ -30,6 +30,25 @@ export type User = {
 	temp?: any
 }
 
+export type DispatchEvent = {
+	customerID: number
+	customerName: string
+	customerPhoneNumber: number
+	pickUpLocation: Location
+	dropLocation: Location
+	status: string
+	tmdtid: number
+	taxiNumber: string
+	taxiPassengerCapacity: number
+	taxiMakeModel: string
+	taxiColor: string
+	driverID: number
+	driverName: string
+	driverPhoneNumber: number
+	sno: number
+	rating: number
+}
+
 interface PaymentMethod {
 	cardHolder: string
 	cardNumber: number
@@ -86,7 +105,7 @@ export interface optionsInterface {
 export interface option {
 	id: number
 	arrival: string
-	taxiETA: number,
+	taxiETA: number
 	taxiType: string
 	dropTime: number
 	pickUpTime: number
@@ -170,4 +189,61 @@ export interface navButtonProps {
 export interface PlacesAutocompleteServiceSuggestion {
 	id: string
 	label: string
+}
+
+// 1. On page load >>> pickUpLocation, customerID, customerName, phoneNumber
+// 2. On location input >>> pickUpLocation, dropLocation
+// 3. On taxi selection >>> taxiPassengerCapacity, taxiType, fareType, fare, eta, distance, paymentMethod, bookingID, status
+// 4. On dispatch >>> tmdtid, taxiNumber, taxiMakeModel, driverID, driverName, driverPhoneNumber, status
+// 5. On pickup >>> pickUpTime
+// 6. On arrival >>> dropTime, status
+export interface bookingEvent {
+	// From bookingEvent
+	customerID?: number
+	messageSubmittedTime?: string | number
+	messageReceivedTime?: string | number
+	customerName?: string
+	phoneNumber?: number
+	pickUpLocation?: {
+		placeID: string
+		lat: number
+		lng: number
+		postcode: string
+		address: string
+		placeName: string
+	}
+	taxiPassengerCapacity?: number
+	pickUpTime?: number
+	dropLocation?: {
+		placeID: string
+		lat: number
+		lng: number
+		postcode: string
+		address: string
+		placeName: string
+	}
+	taxiType?: string
+	fareType?: string
+	fare?: number
+	eta?: number
+
+	// Appended from dispatch event
+	tmdtid?: number
+	taxiNumber?: string
+	taxiMakeModel?: string
+	driverID?: number
+	driverName?: string
+	driverPhoneNumber?: number
+
+	// Addition fields (dispatch)
+	taxiColor?: string
+	sno?: number // I think this is the query ID? Or was it tmdtid...
+
+	// Additional fields (not in the current stream data model)
+	distance?: number // in meters
+	paymentMethod?: string // 'Cash' or [card number]
+	status?: string // 'requested', 'dispatched', 'cancelled', 'completed'
+	dropTime?: number // in miliseconds from epoch
+	bookingID?: number
+	rating?: number
 }

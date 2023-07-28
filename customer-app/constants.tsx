@@ -16,7 +16,10 @@ export enum HREF {
 	BOOKINGUI = '/admin/booking',
 }
 
-
+export enum NOTIF {
+	ARRIVINGSOON = 'Your ride is arriving soon - please get ready and enjoy the trip!',
+	ARRIVED = 'The wait is over! Please make your way to the taxi',
+}
 
 export enum MARKERS {
 	USERLOCATION = 'https://www.svgrepo.com/show/115216/pointer-inside-a-circle.svg',
@@ -26,6 +29,7 @@ export enum MARKERS {
 	ORIGIN = 'https://www.svgrepo.com/show/375834/location.svg',
 	DESTINATION = 'https://www.svgrepo.com/show/375810/flag.svg',
 	STAND = 'https://www.svgrepo.com/show/375861/pin2.svg',
+	TAXI = 'https://www.svgrepo.com/show/375911/taxi.svg',
 }
 
 // SVG Strings

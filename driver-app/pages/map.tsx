@@ -113,6 +113,7 @@ export default function Map() {
       });
       pickupRoute.setMap(mapRef);
 
+      console.log("routes dropff 1", routes.pickup);
       rescaleMap(mapRef as google.maps.Map, routes.dropoff);
     }
   }, [routes]);
@@ -154,10 +155,12 @@ export default function Map() {
         dropoff,
         "https://www.svgrepo.com/show/375810/flag.svg"
       );
-    } else if (screen === "pickup") {
-      rescaleMap(mapRef as google.maps.Map, routes.pickup!);
-    } else if (screen === "dropoff") {
-      rescaleMap(mapRef as google.maps.Map, routes.dropoff!);
+    } else if (screen === "pickup" && routes.pickup) {
+      console.log("routes pickup 2", routes.pickup);
+      routes.pickup && rescaleMap(mapRef as google.maps.Map, routes.pickup!);
+    } else if (screen === "dropoff" && routes.dropoff) {
+      console.log("routes dropoff 3", routes.dropoff);
+      routes.dropoff && rescaleMap(mapRef as google.maps.Map, routes.dropoff!);
     }
   }, [screen]);
 
@@ -187,7 +190,7 @@ export default function Map() {
           onLoad={loadMap}
         />
 
-        {screen === "" ? null : screen === "start" ? (
+        {screen === "" || !routes.dropoff ? null : screen === "start" ? (
           <StartTrip />
         ) : screen === "pickup" ? (
           <Trip type="pickup" />

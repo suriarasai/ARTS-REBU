@@ -1,13 +1,26 @@
-import SelectPaymentMethod from './payment';
-import { LoadingScreen } from "@/components/ui/LoadingScreen";
-import { TaxiSelectionUI } from './options';
-import { GetPaymentMethod, produceKafkaBookingEvent } from "@/server";
-import { User } from "@/types";
-import computeFare from "../../utils/calculations";
-import { bookingAtom, destinationAtom, originAtom, selectedCardAtom, taxiETAAtom, tripStatsAtom, userAtom, userLocationAtom } from "@/state";
-import { useEffect, useState } from "react";
-import { FaCar, FaCarAlt } from "react-icons/fa";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { SelectPaymentMethod } from './payment'
+import { TaxiSelectionUI } from './options'
+import {
+	GetPaymentMethod,
+	createBooking,
+	produceKafkaBookingEvent,
+} from '@/server'
+import { User } from '@/types'
+import computeFare from '../../utils/calculations'
+import {
+	bookingAtom,
+	destinationAtom,
+	originAtom,
+	selectedCardAtom,
+	taxiETAAtom,
+	tripStatsAtom,
+	userAtom,
+	userLocationAtom,
+} from '@/state'
+import { useEffect, useState } from 'react'
+import { FaCar, FaCarAlt } from 'react-icons/fa'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
 
 export function TaxiSelection() {
 	const user = useRecoilValue<User>(userAtom)
@@ -21,7 +34,8 @@ export function TaxiSelection() {
 	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
 	const [selectPaymentMethod, setSelectPaymentMethod] = useState(false)
 	const handleShowPaymentMethod = () => setSelectPaymentMethod(true)
-	const handleChangeSelection = () => setSelectedTaxi(selectedTaxi === 'regular' ? 'plus' : 'regular')
+	const handleChangeSelection = () =>
+		setSelectedTaxi(selectedTaxi === 'regular' ? 'plus' : 'regular')
 	const tripStats = useRecoilValue(tripStatsAtom)
 	const [options, setOptions] = useState(null)
 
@@ -29,7 +43,8 @@ export function TaxiSelection() {
 		// Finding the default payment method
 		GetPaymentMethod(
 			user.customerID!,
-			(data: any) => data?.length > 0 &&
+			(data: any) =>
+				data?.length > 0 &&
 				data.map((item: any) => {
 					item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
 				})
@@ -70,13 +85,12 @@ export function TaxiSelection() {
 	}, [tripStats])
 
 	if (!options || !tripStats.distance) {
-		return <LoadingScreen />
+		return <PulseLoadingVisual />
 	}
 
 	// onSubmit: Create and send the bookingEvent
 	const onTripConfirmation = () => {
 		const bookingEvent = {
-			// bookingID: bookingID,
 			customerID: user.customerID,
 			messageSubmittedTime: +new Date(),
 			customerName: user.customerName,
@@ -89,12 +103,14 @@ export function TaxiSelection() {
 			eta: tripStats.duration,
 			pickUpLocation: origin.address ? origin : userLocation,
 			dropLocation: dest,
-			status: 'requested',
-			pickUpTime: null,
-			dropTime: null,
 		}
-		setBooking(bookingEvent)
-		produceKafkaBookingEvent(JSON.stringify(bookingEvent))
+		createBooking(bookingEvent, (bookingID: number) => {
+			const updatedBooking = { ...bookingEvent, bookingID: bookingID }
+			setBooking(updatedBooking)
+			produceKafkaBookingEvent(JSON.stringify(updatedBooking))
+			console.log('bookingID: ', bookingID)
+		})
+		console.log(bookingEvent)
 	}
 
 	return (
@@ -106,7 +122,9 @@ export function TaxiSelection() {
 					options={options}
 					selectedTaxi={selectedTaxi}
 					handleChangeSelection={handleChangeSelection}
-					handleShowPaymentMethod={handleShowPaymentMethod} />
+					handleShowPaymentMethod={handleShowPaymentMethod}
+					onConfirm={onTripConfirmation}
+				/>
 			)}
 		</div>
 	)

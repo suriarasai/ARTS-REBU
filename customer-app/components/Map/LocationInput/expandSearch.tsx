@@ -22,7 +22,7 @@ export function ExpandSearch() {
 
 	return (
 		<div
-			className={`absolute left-0 top-0 h-full w-full space-y-2 bg-zinc-800 ${
+			className={`absolute z-20 left-0 top-0 h-full w-full space-y-2 bg-zinc-800 ${
 				dest.lat ? 'pt-48' : 'pt-32'
 			}`}
 		>

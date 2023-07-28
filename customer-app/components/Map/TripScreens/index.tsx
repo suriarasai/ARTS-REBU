@@ -1,10 +1,10 @@
-import { Matching, Dispatch, LiveTrip, Arrival } from '@/pages/map'
+import { Matching, Dispatch, Arrival } from '@/pages/map'
 
 import { screenAtom } from '@/state'
 import { useRecoilValue } from 'recoil'
 import { TaxiSelection } from './Selection'
 
-export function TripScreens() {
+export function TripScreens({map}) {
 	const screen = useRecoilValue(screenAtom)
 	return (
 		<>
@@ -13,9 +13,7 @@ export function TripScreens() {
 			) : screen === 'match' ? (
 				<Matching />
 			) : screen === 'dispatch' ? (
-				<Dispatch />
-			) : screen === 'trip' ? (
-				<LiveTrip />
+				<Dispatch map={map} />
 			) : screen === 'arrival' ? (
 				<Arrival />
 			) : null}

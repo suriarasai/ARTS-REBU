@@ -1,6 +1,6 @@
 import api from '@/api/axiosConfig'
 import { Location, Rating, User, option } from './types'
-import { getAddress } from "./components/Map/utils/calculations"
+import { getAddress } from './components/Map/utils/calculations'
 import axios from 'axios'
 import { renderDirections } from './components/Map/utils/viewport'
 
@@ -189,30 +189,8 @@ export const getTaxi = async (sno: number, setTaxiInformation: Function) => {
 }
 
 // Creates a new booking with the 'requested' status
-export const createBooking = async (
-	user: User,
-	option: option,
-	origin: Location,
-	destination: Location,
-	setStopStream: React.Dispatch<React.SetStateAction<boolean>>,
-	_callback: Function
-) => {
-	const response = await api.post('/api/v1/Booking/createBooking', {
-		customerID: user.customerID,
-		messageSubmittedTime: +new Date(),
-		customerName: user.customerName,
-		phoneNumber: user.phoneNumber,
-		taxiType: option.taxiType,
-		fareType: 'metered',
-		fare: option.fare,
-		distance: option.distance,
-		paymentMethod: 'Cash',
-		eta: option.duration,
-		pickUpLocation: origin,
-		dropLocation: destination,
-	})
-
-	setStopStream(false)
+export const createBooking = async (data, _callback: Function) => {
+	const response = await api.post('/api/v1/Booking/createBooking', data)
 	_callback(response.data.bookingID)
 	return response.data
 }

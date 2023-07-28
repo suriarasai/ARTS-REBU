@@ -31,23 +31,23 @@ import { LiveTripUI } from './UI/LiveTripUI'
 import { WaitingUI } from './UI/MatchingUI'
 import { RouteConfirmation } from './UI/ConfirmationUI'
 import { ShowOption } from './UI/ConfirmationUI'
-import setMarkerVisibility from "../Map/utils/markers"
+import setMarkerVisibility from '../Map/utils/markers'
 import Receipt from './UI/Receipt'
 import Rating from './Rating'
-import SelectPaymentMethod from '../Map/TripScreens/Selection/payment'
+import { SelectPaymentMethod } from '../Map/TripScreens/Selection/payment'
 import {
 	bookingAtom,
-	bookingEvent,
 	clickedOptionAtom,
 	screenAtom,
 	selectedCardAtom,
 	taxiETAAtom,
 	userAtom,
 } from '@/state'
+import { bookingEvent } from '@/types'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
-import computeFare from "../Map/utils/calculations"
+import computeFare from '../Map/utils/calculations'
 
 export let taxiRouteDisplay: any
 let matchedTaxi: any
@@ -250,7 +250,9 @@ export const RideConfirmation = (data: any) => {
 
 		client.connect({}, () => {
 			client.subscribe('/topic/taxiLocatorEvent', (message) => {
-				tempMarker.setPosition(new google.maps.LatLng(JSON.parse(message.body).currentPosition))
+				tempMarker.setPosition(
+					new google.maps.LatLng(JSON.parse(message.body).currentPosition)
+				)
 				console.log(JSON.parse(message.body))
 			})
 		})
@@ -380,16 +382,10 @@ export const RideConfirmation = (data: any) => {
 				</button>
 			)}
 			{notification === 'arrivingSoon' && (
-				<Popup
-					clear={setNotification}
-					msg='Your ride is arriving soon - please get ready and enjoy the trip!'
-				/>
+				<Popup msg='Your ride is arriving soon - please get ready and enjoy the trip!' />
 			)}
 			{notification === 'arrived' && (
-				<Popup
-					clear={setNotification}
-					msg='The wait is over! Please make your way to the taxi'
-				/>
+				<Popup msg='The wait is over! Please make your way to the taxi' />
 			)}
 			<div className='absolute bottom-0 z-50 w-screen rounded-lg border bg-white md:pb-4 lg:w-6/12 lg:pb-4'>
 				{AccordionHeader(

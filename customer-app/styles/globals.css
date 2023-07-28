@@ -219,7 +219,7 @@ select[id='payment'] {
 }
 
 .star {
-	@apply mx-2 mb-5 h-10 w-10 text-zinc-200 hover:text-green-500;
+	@apply mx-2 mb-5 h-10 w-10 text-zinc-200 hover:text-green-100;
 }
 
 /* use reverse flexbox to take advantage of flex-direction: reverse */
@@ -243,7 +243,7 @@ select[id='payment'] {
 	font-family: Arial;
 	font-size: 30px;
 	transition: 0.2s ease;
-	color: green;
+	@apply text-green-300;
 }
 
 .star-rating label:active::before {

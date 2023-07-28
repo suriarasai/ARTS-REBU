@@ -8,9 +8,14 @@ export function TaxiSelectionUI({
 	selectedTaxi,
 	handleChangeSelection,
 	handleShowPaymentMethod,
+	onConfirm,
 }) {
 	const [, setScreen] = useRecoilState(screenAtom)
-	const handleNextScreen = () => setScreen('match')
+
+	const handleConfirm = () => {
+		setScreen('match')
+		onConfirm()
+	}
 
 	return (
 		<>
@@ -31,7 +36,7 @@ export function TaxiSelectionUI({
 				<PaymentOptions handleShowPaymentMethod={handleShowPaymentMethod} />
 				<button
 					className='!ml-auto w-fit rounded-md bg-green-200 p-1.5 text-gray-700'
-					onClick={handleNextScreen}
+					onClick={handleConfirm}
 				>
 					Confirm
 				</button>

@@ -1,11 +1,14 @@
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
-import { MARKERS } from '@/constants'
+import { MARKERS, NOTIF } from '@/constants'
 import { Location, User } from '@/types'
 import {
 	destinationAtom,
+	dispatchAtom,
+	notificationAtom,
 	originAtom,
 	screenAtom,
 	searchTypeAtom,
+	taxiLocationAtom,
 	tripStatsAtom,
 	userAtom,
 	userLocationAtom,
@@ -28,12 +31,24 @@ import { RouteDetails } from '@/components/Map/TripScreens/Selection/routeDetail
 import { setOriginToUserLocation } from '@/components/Map/utils/calculations'
 import { toggleMarkers } from '@/components/Map/utils/markers'
 import { TripScreens } from '@/components/Map/TripScreens'
+import { FaSearch } from 'react-icons/fa'
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
+import { Popup } from '@/components/ui/Popup'
+import Rating from '@/components/booking/Rating'
+import {
+	DriverInformation,
+	RouteInformation,
+	TripInformation,
+} from '@/components/Map/TripScreens/Dispatch/tripInformation'
+import { RateTrip } from '@/components/Map/TripScreens/Dispatch/tripInformation'
 
 export const markers = {
 	origin: null,
 	dest: null,
 	user: null,
 	home: null,
+	taxi: null,
 	work: null,
 	saved: [],
 	stands: [],
@@ -203,51 +218,120 @@ export function Trip({ map }) {
 					onClick={handleCollapse}
 				/>
 
-				{!collapse && <TripScreens />}
+				{!collapse && <TripScreens map={map} />}
 			</div>
 		</>
 	)
 }
 
 export function Matching() {
-	// Onload: Listener for dispatch event, save dispatch event (previous comp mustn't use)
+	const [, setDispatch] = useRecoilState(dispatchAtom)
 	const [, setScreen] = useRecoilState(screenAtom)
 	const nextScreen = () => setScreen('dispatch')
+	const user = useRecoilValue(userAtom)
+
+	useEffect(() => {
+		const socket = new SockJS('http://localhost:8080/ws')
+		const client = Stomp.over(socket)
+
+		client.connect({}, () => {
+			client.subscribe(
+				'/user/' + user.customerID + '/queue/dispatchEvent',
+				(message) => {
+					setDispatch(JSON.parse(message.body))
+					setScreen('dispatch')
+				}
+			)
+		})
+
+		return () => {
+			client.disconnect(() => console.log('Disconnected from server'))
+		}
+	}, [])
 
 	return (
-		<>
-			{/* Waiting Visual */}
-			{/* Cancel */}
-		</>
+		<div className='flex flex-col items-center justify-center'>
+			<FaSearch className='my-5 text-3xl text-green-300' onClick={nextScreen} />
+			<h1 className='my-5 font-medium text-zinc-100'>
+				Looking for a driver...
+			</h1>
+			<h5 className='mb-5 text-zinc-100'>This may take some time</h5>
+		</div>
 	)
 }
 
-export function Dispatch() {
+export function Dispatch({ map }) {
 	// Onload: Listener for locator event, simulated movement, ETA countdown
 	const [, setScreen] = useRecoilState(screenAtom)
-	const nextScreen = () => setScreen('trip')
+	const [location, setLocation] = useRecoilState(taxiLocationAtom)
+
+	const [taxiETA, setTaxiETA] = useState()
+	const [tripETA, setTripETA] = useState()
+	const [arrived, setArrived] = useState(false)
+	const [showRatingForm, setShowRatingForm] = useState(false)
+
+	useEffect(() => {
+		const socket = new SockJS('http://localhost:8080/ws')
+		const client = Stomp.over(socket)
+		let pos
+
+		client.connect({}, () => {
+			client.subscribe('/topic/taxiLocatorEvent', (message) => {
+				pos = JSON.parse(message.body).currentPosition
+				if (markers.taxi) {
+					markers.taxi.setPosition(new google.maps.LatLng(pos.lat, pos.lng))
+				} else {
+					markers.taxi = mark(map, pos, MARKERS.TAXI, false)
+				}
+			})
+		})
+
+		return () => {
+			client.disconnect(() => console.log('Disconnected from server'))
+		}
+	}, [])
 
 	return (
 		<>
-			{/* ETA */}
-			{/* Driver Information */}
-			{/* Trip Information */}
-			{/* Cancel */}
-			{/* Proximity Notifications */}
+			{/* <ETA /> */}
+
+			<ProximityNotifications />
+			{showRatingForm ? (
+				<Rating closeModal={() => setShowRatingForm(false)} />
+			) : (
+				<>
+					<DriverInformation />
+					<RateTrip setShowRatingForm={setShowRatingForm} />
+					<RouteInformation />
+					<TripInformation />
+				</>
+			)}
 		</>
 	)
 }
 
-export function LiveTrip() {
-	const [, setScreen] = useRecoilState(screenAtom)
-	const nextScreen = () => setScreen('arrival')
+function ETA() {
+	return (
+		<div className='absolute left-0 right-0 top-0 ml-auto mr-auto flex w-1/2 items-center rounded-b-md bg-gray-700 p-2'>
+			<p className='pl-4 text-zinc-100'>Taxi is arriving in </p>
+			<div className='!ml-auto h-12 w-12 items-center justify-center rounded-md bg-green-200 p-2 text-center text-gray-700'>
+				<b>8</b>
+				<p className='-mt-1 text-xs font-normal text-zinc-400'>min</p>
+			</div>
+		</div>
+	)
+}
+
+function ProximityNotifications() {
+	const notification = useRecoilValue(notificationAtom)
 
 	return (
 		<>
-			{/* ETA */}
-			{/* Driver Information */}
-			{/* Trip Information */}
-			{/* Rate */}
+			{notification === 'arrivingSoon' ? (
+				<Popup msg={NOTIF.ARRIVINGSOON} />
+			) : notification === 'arrived' ? (
+				<Popup msg={NOTIF.ARRIVED} />
+			) : null}
 		</>
 	)
 }
@@ -255,7 +339,11 @@ export function LiveTrip() {
 export function Arrival() {
 	return (
 		<>
+			{/* Driver Information */}
+			{/* Trip Information */}
+
 			{/* Rate */}
+
 			{/* Receipt */}
 			{/* Return */}
 		</>

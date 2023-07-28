@@ -3,8 +3,9 @@ import { Rating } from '@/types'
 import { userSelector } from '@/state'
 import { useState } from 'react'
 import { useRecoilValue } from 'recoil'
+import { FaArrowLeft } from 'react-icons/fa'
 
-const Rating = ({ closeModal }: { closeModal: Function }) => {
+const Rating = ({ closeModal }: { closeModal: any }) => {
 	const user = useRecoilValue(userSelector)
 	const [stars, setStars] = useState<number | null>(null)
 	const [feedback, setFeedback] = useState<string | null>(null)
@@ -28,11 +29,17 @@ const Rating = ({ closeModal }: { closeModal: Function }) => {
 	}
 
 	return (
-		<div className='ml-auto mr-auto mt-5 flex flex-col items-center justify-center bg-white'>
-			<p className='mb-3 ml-auto mr-auto mt-5 font-medium text-zinc-500'>
+		<div className='ml-auto mr-auto mt-5 flex flex-col items-center justify-center bg-gray-700'>
+			<button
+				className='absolute left-0 top-0 ml-5 mt-12 flex items-center justify-center p-1 text-2xl text-green-300'
+				onClick={closeModal}
+			>
+				<FaArrowLeft />
+			</button>
+			<p className='mb-3 ml-auto mr-auto mt-5 font-medium text-zinc-200'>
 				Rate your experience
 			</p>
-			<div className='star-rating mb-8'>
+			<div className='star-rating mb-5'>
 				<Star label='a' value={5} setClicked={setStars} />
 				<Star label='b' value={4} setClicked={setStars} />
 				<Star label='c' value={3} setClicked={setStars} />
@@ -40,7 +47,7 @@ const Rating = ({ closeModal }: { closeModal: Function }) => {
 				<Star label='e' value={1} setClicked={setStars} />
 			</div>
 
-			<p className='mb-3 ml-auto mr-auto font-medium text-zinc-500'>
+			<p className='mb-3 ml-auto mr-auto font-medium text-zinc-200'>
 				Things that could be better
 			</p>
 
@@ -80,14 +87,14 @@ const Rating = ({ closeModal }: { closeModal: Function }) => {
 			<textarea
 				cols={40}
 				rows={3}
-				className='focus:outline-0.5 ml-auto mr-auto w-3/4 rounded-lg p-3 shadow-sm outline-green-500'
+				className='ml-auto mr-auto w-3/4 rounded-lg bg-gray-600 p-3 text-zinc-100 shadow-sm focus:border-2 focus:border-green-300 focus:outline-none'
 				placeholder='Leave a message'
 				value={feedback as any}
 				onChange={(e) => setFeedback(e.target.value)}
 			/>
 
 			<button
-				className='mt-7 h-12 w-full bg-green-300 px-4 py-2 text-white shadow-sm'
+				className='mt-7 h-12 w-full bg-green-300 px-4 py-2 text-gray-700 shadow-sm'
 				onClick={handleSubmit}
 			>
 				Relay my thoughts!
@@ -118,10 +125,15 @@ const Star = ({
 	)
 }
 
-const Field = ({ label, id, setField, field }: {
-	label: string,
-	id: string,
-	setField: React.Dispatch<React.SetStateAction<any>>,
+const Field = ({
+	label,
+	id,
+	setField,
+	field,
+}: {
+	label: string
+	id: string
+	setField: React.Dispatch<React.SetStateAction<any>>
 	field: any
 }) => {
 	function handleClick() {
@@ -132,8 +144,8 @@ const Field = ({ label, id, setField, field }: {
 		<div
 			className={`m-1.5 w-fit rounded-full border px-3 py-1 ${
 				field[id]
-					? 'border-2 border-green-500 text-green-500'
-					: 'border-1 border-zinc-300 text-zinc-300'
+					? 'border-2 border-green-300 text-green-300'
+					: 'border-1 border-zinc-200 text-zinc-200'
 			}`}
 			onClick={handleClick}
 		>

@@ -6,7 +6,7 @@ export function rescaleMap(map: google.maps.Map, polyline: []) {
 		bounds.extend(polyline[i])
 	}
 	map.fitBounds(bounds)
-	// map.setZoom(16)
+	map.setZoom(map.getZoom() - 1)
 }
 
 export const renderDirections = async (
