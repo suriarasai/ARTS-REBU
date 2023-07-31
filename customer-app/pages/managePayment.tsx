@@ -13,7 +13,7 @@ import {
 } from '@/server'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { AddCard } from '../components/payment/AddCard'
-import { formatCreditCardNumber } from '../utils/formatCreditCardNumber'
+import { formatCreditCardNumber } from '../components/payment/formatCreditCardNumber'
 import { userSelector } from '@/state'
 import { useRecoilValue } from 'recoil'
 

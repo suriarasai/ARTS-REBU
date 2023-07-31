@@ -30,10 +30,9 @@ import { LocationInputs } from '@/components/Map/LocationInput'
 import {
 	completeBooking,
 	getDirections,
-	produceKafkaChatEvent,
 	taxiArrived,
 } from '@/server'
-import setMarkerVisibility from '@/components/Map/utils/markers'
+import { setMarkerVisibility } from '@/components/Map/utils/markers'
 import { renderDirections } from '@/components/Map/utils/viewport'
 import { CancelTripButton } from '@/components/Map/Controls/buttons'
 import { rescaleMap } from '@/components/Map/utils/viewport'

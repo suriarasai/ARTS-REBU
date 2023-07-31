@@ -1,6 +1,6 @@
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { GetPaymentMethod } from '@/server'
-import { formatCreditCardNumber } from '@/utils/formatCreditCardNumber'
+import { formatCreditCardNumber } from '@/components/payment/formatCreditCardNumber'
 import { selectedCardAtom, userSelector } from '@/state'
 import { useState, useEffect } from 'react'
 import { FaMoneyBill, FaAngleDown, FaCheck, FaCreditCard } from 'react-icons/fa'

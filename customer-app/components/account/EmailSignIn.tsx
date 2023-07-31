@@ -54,8 +54,6 @@ export const EmailSignIn = ({ setForm }: any) => {
 					signInError={signInError}
 				/>
 
-				{/* <TermsOfService /> */}
-
 				<div className='ml-auto mr-auto mt-3'>
 					<button type='submit' className='rect-button w-36 rounded-md shadow-md'>
 						Sign In

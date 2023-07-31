@@ -11,13 +11,19 @@ import {
 	userLocationAtom,
 	validInputAtom,
 } from '@/state'
-import { FaMapMarkedAlt, FaLocationArrow, FaTimesCircle } from 'react-icons/fa'
+import {
+	FaLocationArrow,
+	FaTimesCircle,
+	FaRegArrowAltCircleLeft,
+	FaMapMarkedAlt,
+} from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import mapStyles from '../utils/poi'
 import { toggleMarkers } from '../utils/markers'
 import { DispatchEvent, Location, bookingEvent } from '@/types'
-import setMarkerVisibility from '../utils/markers'
+import { setMarkerVisibility } from '../utils/markers'
 import { cancelBooking, produceKafkaChatEvent } from '@/server'
+import { useRouter } from 'next/router'
+import mapStyles from '../utils/poi'
 
 export function TogglePOI({ map }) {
 	const [poi, setPoi] = useRecoilState<boolean>(poiAtom)
@@ -122,5 +128,24 @@ export function CancelTripButton({
 				</button>
 			)}
 		</>
+	)
+}
+export const BackButton = ({
+	searchType,
+	setSearchType,
+}: {
+	searchType: number
+	setSearchType: React.Dispatch<React.SetStateAction<number>>
+}) => {
+	const router = useRouter()
+	return (
+		<button
+			className='p-2 text-2xl font-medium text-green-600'
+			onClick={() =>
+				searchType !== 0 ? setSearchType(0) : router.push('/home')
+			}
+		>
+			<FaRegArrowAltCircleLeft />
+		</button>
 	)
 }
