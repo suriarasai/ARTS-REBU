@@ -61,6 +61,7 @@ export const markers = {
 }
 
 const libraries = ['places', 'geometry']
+let taxiRoute = null
 
 export default function Map() {
 	const [user, setUser] = useRecoilState<User>(userAtom)
@@ -244,7 +245,6 @@ export function Dispatch({ map }) {
 	const origin = useRecoilValue(originAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
 	const [, setNotification] = useRecoilState(notificationAtom)
-	let taxiRoute = null
 	const dispatch = useRecoilValue(dispatchAtom)
 	const booking = useRecoilValue(bookingAtom)
 
@@ -263,25 +263,7 @@ export function Dispatch({ map }) {
 					markers.taxi.setPosition(new google.maps.LatLng(pos.lat, pos.lng))
 				} else {
 					markers.taxi = mark(map, pos, MARKERS.TAXI, false)
-					const directionsService = new google.maps.DirectionsService()
-					directionsService.route(
-						{
-							origin: new google.maps.LatLng(pos.lat, pos.lng),
-							destination: new google.maps.LatLng(userPos.lat, userPos.lng),
-							travelMode: google.maps.TravelMode.DRIVING,
-						},
-						function (result, status) {
-							if (status == 'OK') {
-								taxiRoute = new google.maps.Polyline({
-									path: result.routes[0].overview_path,
-									strokeColor: '#16a34a',
-									strokeOpacity: 1.0,
-									strokeWeight: 4.0,
-								})
-								taxiRoute.setMap(map)
-							}
-						}
-					)
+					drawTaxiRoute(map, pos, userPos)
 				}
 			})
 			client.subscribe(
@@ -291,15 +273,17 @@ export function Dispatch({ map }) {
 
 					if (res.type === 'arrivedToUser') {
 						setArrived(true)
+						taxiRoute?.setMap(null)
+						taxiRoute = null
 						taxiArrived(booking.bookingID)
 						console.log('Taxi arrived to User')
 						setNotification('arrivedToUser')
 					} else if (res.type === 'arrivedToDestination') {
-						setScreen('arrival')
 						setStatus('completed')
 						completeBooking(booking.bookingID)
 						console.log('Taxi arrived to Destination')
 						setNotification('arrivedToDestination')
+						setScreen('arrival')
 					}
 				}
 			)
@@ -315,7 +299,6 @@ export function Dispatch({ map }) {
 
 	return (
 		<>
-			{/* <ETA /> */}
 			{showRatingForm ? (
 				<Rating closeModal={() => setShowRatingForm(false)} />
 			) : (
@@ -327,6 +310,28 @@ export function Dispatch({ map }) {
 				</>
 			)}
 		</>
+	)
+}
+
+function drawTaxiRoute(map, origin, dest) {
+	const directionsService = new google.maps.DirectionsService()
+	directionsService.route(
+		{
+			origin: new google.maps.LatLng(origin.lat, origin.lng),
+			destination: new google.maps.LatLng(dest.lat, dest.lng),
+			travelMode: google.maps.TravelMode.DRIVING,
+		},
+		function (result, status) {
+			if (status == 'OK') {
+				taxiRoute = new google.maps.Polyline({
+					path: result.routes[0].overview_path,
+					strokeColor: '#16a34a',
+					strokeOpacity: 1.0,
+					strokeWeight: 4.0,
+				})
+				taxiRoute.setMap(map)
+			}
+		}
 	)
 }
 

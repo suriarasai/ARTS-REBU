@@ -1,7 +1,10 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import BottomNav from "@/components/bottomNav";
 import { HREF } from "@/constants";
-import { produceKafkaDispatchEvent } from "@/server";
+import {
+  produceKafkaDispatchEvent,
+  produceKafkaTaxiLocatorEvent,
+} from "@/server";
 import { bookingAtom, driverAtom, taxiAtom } from "@/state";
 import { BookingEvent, Driver, Taxi } from "@/types";
 import { useRouter } from "next/router";
@@ -68,8 +71,10 @@ const RideRequest = ({
   const [, setBooking] = useRecoilState(bookingAtom);
   const onApprove = () => {
     remove(trip.customerID);
-    setBooking(trip)
+    setBooking(trip);
     produceDispatchEvent(trip, taxi, driver);
+    pingCurrentLocation(taxi.tmdtid, driver.driverID, taxi.taxiNumber);
+
     router.push(HREF.MAP);
   };
 
@@ -145,4 +150,25 @@ function produceDispatchEvent(
       rating: driver.rating,
     })
   );
+}
+
+function pingCurrentLocation(
+  tmdtid: number,
+  driverID: number,
+  taxiNumber: string
+) {
+  navigator.geolocation.getCurrentPosition((position) => {
+    produceKafkaTaxiLocatorEvent(
+      JSON.stringify({
+        tmdtid: tmdtid,
+        driverID: driverID,
+        taxiNumber: taxiNumber,
+        currentPosition: {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        },
+        availabilityStatus: false,
+      })
+    );
+  });
 }
