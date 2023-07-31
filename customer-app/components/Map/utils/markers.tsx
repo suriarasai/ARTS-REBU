@@ -88,7 +88,7 @@ export function toggleMarkers(map = null) {
 	}
 }
 
-export default function setMarkerVisibility(
+export function setMarkerVisibility(
 	marker: Array<google.maps.Marker>,
 	map: google.maps.Map | null = null
 ) {

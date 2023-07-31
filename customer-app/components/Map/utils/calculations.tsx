@@ -22,7 +22,6 @@ export default function computeFare(
 	distance: number,
 	pickUpTime: number
 ) {
-
 	// Hours since the start of the day
 	let startOfDay = new Date()
 	startOfDay.setHours(0, 0, 0, 0)
@@ -42,11 +41,11 @@ export default function computeFare(
 
 	const meteredFare = Math.max(
 		bookingFee +
-		baseFee +
-		meteredFee +
-		peakFee +
-		tempSurchageFee +
-		(locationFee ? locationFee : 0),
+			baseFee +
+			meteredFee +
+			peakFee +
+			tempSurchageFee +
+			(locationFee ? locationFee : 0),
 		plus ? 7 : 5
 	)
 
@@ -120,3 +119,17 @@ export function getAddress(place: any, clickEvent = false) {
 	}
 }
 
+function distKM(lat1, lon1, lat2, lon2) {
+	var a = Math
+	var r = ((lat2 - lat1) * a.PI) / 180
+	var c = ((lon2 - lon1) * a.PI) / 180
+
+	var e =
+		a.sin(r / 2) * a.sin(r / 2) +
+		a.cos((lat1 * a.PI) / 180) *
+			a.cos((lat2 * a.PI) / 180) *
+			a.sin(c / 2) *
+			a.sin(c / 2)
+
+	return 2 * a.atan2(a.sqrt(e), a.sqrt(1 - e)) * 6371
+}
