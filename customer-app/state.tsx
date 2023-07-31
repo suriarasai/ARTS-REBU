@@ -321,6 +321,30 @@ export const taxiETASelector = selector({
 	},
 })
 
+export const etaCounterAtom = atom({
+	key: 'etaCounter-atom',
+	default: 0,
+})
+
+export const etaCounterSelector = selector({
+	key: 'etaCounter-modifier',
+	get: ({ get }) => {
+		return get(etaCounterAtom)
+	},
+})
+
+export const arrivalAtom = atom({
+	key: 'arrival-atom',
+	default: false,
+})
+
+export const arrivalSelector = selector({
+	key: 'arrival-modifier',
+	get: ({ get }) => {
+		return get(arrivalAtom)
+	},
+})
+
 export const clickedOptionAtom = atom({
 	key: 'clickedOption-atom',
 	default: null as number | null,

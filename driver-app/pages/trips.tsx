@@ -1,18 +1,16 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import BottomNav from "@/components/bottomNav";
 import { HREF } from "@/constants";
-import {
-  produceKafkaDispatchEvent,
-  produceKafkaTaxiLocatorEvent,
-} from "@/server";
 import { bookingAtom, driverAtom, taxiAtom } from "@/state";
-import { BookingEvent, Driver, Taxi } from "@/types";
+import { BookingEvent } from "@/types";
 import { useRouter } from "next/router";
 import { Suspense, useEffect, useState } from "react";
 import { FaCheckCircle, FaCompass, FaFlag } from "react-icons/fa";
 import { useRecoilState, useRecoilValue } from "recoil";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import { pingCurrentLocation } from "../utils/pingCurrentLocation";
+import { produceDispatchEvent } from "../utils/produceDispatchEvent";
 
 export default function Trips() {
   const [trips, setTrips] = useState<BookingEvent[]>([]);
@@ -124,51 +122,4 @@ const CircleLabel = ({ label }: { label: string }) => {
   );
 };
 
-// Dispatch stream producer: Approving a ride request
-function produceDispatchEvent(
-  booking: BookingEvent,
-  taxi: Taxi,
-  driver: Driver
-) {
-  produceKafkaDispatchEvent(
-    JSON.stringify({
-      customerID: booking.customerID,
-      customerName: booking.customerName,
-      customerPhoneNumber: booking.phoneNumber,
-      pickUpLocation: booking.pickUpLocation,
-      dropLocation: booking.dropLocation,
-      status: "dispatched",
-      tmdtid: taxi.tmdtid,
-      taxiNumber: taxi.taxiNumber,
-      taxiPassengerCapacity: taxi.taxiFeature.taxiPassengerCapacity,
-      taxiMakeModel: taxi.taxiFeature.taxiMakeModel,
-      taxiColor: taxi.taxiFeature.taxiColor,
-      driverID: driver.driverID,
-      driverName: driver.driverName,
-      driverPhoneNumber: driver.phoneNumber,
-      sno: taxi.sno,
-      rating: driver.rating,
-    })
-  );
-}
 
-function pingCurrentLocation(
-  tmdtid: number,
-  driverID: number,
-  taxiNumber: string
-) {
-  navigator.geolocation.getCurrentPosition((position) => {
-    produceKafkaTaxiLocatorEvent(
-      JSON.stringify({
-        tmdtid: tmdtid,
-        driverID: driverID,
-        taxiNumber: taxiNumber,
-        currentPosition: {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        },
-        availabilityStatus: false,
-      })
-    );
-  });
-}

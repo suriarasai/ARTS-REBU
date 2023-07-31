@@ -1,4 +1,4 @@
-import { produceKafkaTaxiLocatorEvent } from "@/server";
+import { produceKafkaChatEvent, produceKafkaTaxiLocatorEvent } from "@/server";
 import { markers } from "../pages/map";
 import { Driver, Taxi } from "@/types";
 

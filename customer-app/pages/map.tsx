@@ -2,14 +2,17 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { MARKERS, NOTIF } from '@/constants'
 import { Location, User } from '@/types'
 import {
+	arrivalAtom,
 	bookingAtom,
 	destinationAtom,
 	dispatchAtom,
+	etaCounterAtom,
 	notificationAtom,
 	originAtom,
 	screenAtom,
 	searchTypeAtom,
 	statusAtom,
+	taxiETAAtom,
 	taxiLocationAtom,
 	tripStatsAtom,
 	userAtom,
@@ -173,6 +176,8 @@ export function Trip({ map }) {
 	const [polyline, setPolyline] = useState()
 	const [, setTripStats] = useRecoilState(tripStatsAtom)
 	const [, setSearchType] = useRecoilState(searchTypeAtom)
+	const booking = useRecoilValue(bookingAtom)
+	const arrived = useRecoilValue(arrivalAtom)
 
 	useEffect(() => {
 		// Place the origin marker to the user's location if no origin was input
@@ -219,6 +224,7 @@ export function Trip({ map }) {
 			)}
 			{screen === 'select' && <RouteDetails />}
 			<ProximityNotifications />
+			{screen === 'dispatch' && !arrived && <ETA type={booking.taxiType} />}
 
 			<div className='w-screen-md-max absolute bottom-0 left-0 right-0 ml-auto mr-auto w-5/6 rounded-t-lg bg-gray-700 shadow-sm'>
 				<hr
@@ -237,33 +243,41 @@ export function Dispatch({ map }) {
 	const [, setScreen] = useRecoilState(screenAtom)
 	const [location, setLocation] = useRecoilState(taxiLocationAtom)
 
-	const [taxiETA, setTaxiETA] = useState()
+	const [taxiETA, setTaxiETA] = useRecoilState(taxiETAAtom)
 	const [tripETA, setTripETA] = useState()
 	const [status, setStatus] = useRecoilState(statusAtom)
-	const [arrived, setArrived] = useState(false)
+	const [arrived, setArrived] = useRecoilState(arrivalAtom)
 	const [showRatingForm, setShowRatingForm] = useState(false)
 	const origin = useRecoilValue(originAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
 	const [, setNotification] = useRecoilState(notificationAtom)
 	const dispatch = useRecoilValue(dispatchAtom)
 	const booking = useRecoilValue(bookingAtom)
+	const [counter, setCounter] = useState(0)
+	const [etaCounter, setETACounter] = useRecoilState(etaCounterAtom)
+	const setETA = (newETA) =>
+		setTaxiETA({ ...taxiETA, [booking.taxiType]: newETA })
 
 	useEffect(() => {
 		setStatus('dispatched')
 		const userPos = origin.address ? origin : userLocation
 		const socket = new SockJS('http://localhost:8080/ws')
 		const client = Stomp.over(socket)
-		let pos
-		let res
+		let pos // taxi position
+		let res // response from the chat websocket
 
 		client.connect({}, () => {
 			client.subscribe('/topic/taxiLocatorEvent', (message) => {
 				pos = JSON.parse(message.body).currentPosition
+				setCounter((counter) => counter + 1)
 				if (markers.taxi) {
 					markers.taxi.setPosition(new google.maps.LatLng(pos.lat, pos.lng))
 				} else {
 					markers.taxi = mark(map, pos, MARKERS.TAXI, false)
-					drawTaxiRoute(map, pos, userPos)
+					drawTaxiRoute(map, pos, userPos, (eta) => {
+						setETA(eta)
+						setETACounter(eta)
+					})
 				}
 			})
 			client.subscribe(
@@ -277,7 +291,6 @@ export function Dispatch({ map }) {
 						taxiRoute = null
 						taxiArrived(booking.bookingID)
 						console.log('Taxi arrived to User')
-						setNotification('arrivedToUser')
 					} else if (res.type === 'arrivedToDestination') {
 						setStatus('completed')
 						completeBooking(booking.bookingID)
@@ -297,6 +310,25 @@ export function Dispatch({ map }) {
 		}
 	}, [])
 
+	useEffect(() => {
+		if (taxiRoute && !arrived) {
+			setETACounter(
+				Math.round(
+					taxiETA[booking.taxiType] *
+						(1 - counter / taxiRoute.getPath().getLength())
+				)
+			)
+		}
+	}, [counter])
+
+	useEffect(() => {
+		if (etaCounter === 2) {
+			setNotification('arrivingSoon')
+		} else if (etaCounter === 0) {
+			setNotification('arrivedToUser')
+		}
+	}, [etaCounter])
+
 	return (
 		<>
 			{showRatingForm ? (
@@ -313,7 +345,7 @@ export function Dispatch({ map }) {
 	)
 }
 
-function drawTaxiRoute(map, origin, dest) {
+function drawTaxiRoute(map, origin, dest, setETA) {
 	const directionsService = new google.maps.DirectionsService()
 	directionsService.route(
 		{
@@ -330,17 +362,20 @@ function drawTaxiRoute(map, origin, dest) {
 					strokeWeight: 4.0,
 				})
 				taxiRoute.setMap(map)
+				setETA(Math.round(result.routes[0].legs[0].duration.value / 60))
 			}
 		}
 	)
 }
 
-function ETA() {
+function ETA({ type }) {
+	const etaCounter = useRecoilValue(etaCounterAtom)
+
 	return (
 		<div className='absolute left-0 right-0 top-0 ml-auto mr-auto flex w-1/2 items-center rounded-b-md bg-gray-700 p-2'>
 			<p className='pl-4 text-zinc-100'>Taxi is arriving in </p>
 			<div className='!ml-auto h-12 w-12 items-center justify-center rounded-md bg-green-200 p-2 text-center text-gray-700'>
-				<b>8</b>
+				<b>{etaCounter}</b>
 				<p className='-mt-1 text-xs font-normal text-zinc-400'>min</p>
 			</div>
 		</div>
