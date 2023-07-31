@@ -14,7 +14,7 @@ import {
 } from 'react-icons/fa'
 import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
 import { getBookingsByCustomerID } from '@/server'
-import Receipt from '@/components/booking/UI/Receipt'
+import Receipt from '@/components/Map/TripScreens/Arrival/Receipt'
 import { userSelector } from '@/state'
 import { useRecoilValue } from 'recoil'
 

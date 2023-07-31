@@ -1,4 +1,5 @@
-import { dispatchAtom, screenAtom, userAtom } from '@/state'
+import { matchedBooking } from '@/server'
+import { bookingAtom, dispatchAtom, screenAtom, userAtom } from '@/state'
 import { useEffect } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -10,6 +11,7 @@ export function Matching() {
 	const [, setScreen] = useRecoilState(screenAtom)
 	const nextScreen = () => setScreen('dispatch')
 	const user = useRecoilValue(userAtom)
+	const booking = useRecoilValue(bookingAtom)
 
 	useEffect(() => {
 		const socket = new SockJS('http://localhost:8080/ws')
@@ -19,7 +21,10 @@ export function Matching() {
 			client.subscribe(
 				'/user/' + user.customerID + '/queue/dispatchEvent',
 				(message) => {
-					setDispatch(JSON.parse(message.body))
+					const res = JSON.parse(message.body)
+					setDispatch(res)
+					console.log("BOOKING", booking.bookingID, res.driverID, res.sno)
+					matchedBooking(booking.bookingID, res.driverID, res.sno)
 					setScreen('dispatch')
 				}
 			)

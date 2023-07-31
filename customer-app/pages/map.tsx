@@ -51,6 +51,8 @@ import {
 	TripInformation,
 } from '@/components/Map/TripScreens/Dispatch/tripInformation'
 import { RateTrip } from '@/components/Map/TripScreens/Dispatch/tripInformation'
+import { FaFileAlt, FaThumbsUp } from 'react-icons/fa'
+import Receipt from '@/components/Map/TripScreens/Arrival/Receipt'
 
 export const markers = {
 	origin: null,
@@ -157,15 +159,17 @@ export default function Map() {
 }
 
 function distKM(lat1, lon1, lat2, lon2) {
-	var a = Math,
-		r = ((lat2 - lat1) * a.PI) / 180,
-		c = ((lon2 - lon1) * a.PI) / 180,
-		e =
-			a.sin(r / 2) * a.sin(r / 2) +
-			a.cos((lat1 * a.PI) / 180) *
-				a.cos((lat2 * a.PI) / 180) *
-				a.sin(c / 2) *
-				a.sin(c / 2)
+	var a = Math
+	var r = ((lat2 - lat1) * a.PI) / 180
+	var c = ((lon2 - lon1) * a.PI) / 180
+
+	var e =
+		a.sin(r / 2) * a.sin(r / 2) +
+		a.cos((lat1 * a.PI) / 180) *
+			a.cos((lat2 * a.PI) / 180) *
+			a.sin(c / 2) *
+			a.sin(c / 2)
+
 	return 2 * a.atan2(a.sqrt(e), a.sqrt(1 - e)) * 6371
 }
 
@@ -211,7 +215,7 @@ export function Trip({ map }) {
 	}, [])
 
 	// Global State: Screen
-	// 'select' | 'match' | 'dispatch' | 'trip' | 'arrival' | ''
+	// 'select' | 'match' | 'dispatch' | 'arrival' | ''
 	const [screen, setScreen] = useRecoilState<string>(screenAtom)
 	const [collapse, setCollapse] = useState(false)
 
@@ -219,20 +223,27 @@ export function Trip({ map }) {
 
 	return (
 		<>
-			{!['trip', 'arrival'].includes(screen) && (
+			{!['receipt', 'arrival'].includes(screen) && (
 				<CancelTripButton map={map} polyline={polyline} />
 			)}
 			{screen === 'select' && <RouteDetails />}
 			<ProximityNotifications />
 			{screen === 'dispatch' && !arrived && <ETA type={booking.taxiType} />}
+			{screen === 'receipt' && (
+				<Receipt
+					bookingID={booking.bookingID}
+					setScreen={() => setScreen('arrival')}
+				/>
+			)}
 
 			<div className='w-screen-md-max absolute bottom-0 left-0 right-0 ml-auto mr-auto w-5/6 rounded-t-lg bg-gray-700 shadow-sm'>
 				<hr
 					className='my-1.5 ml-auto mr-auto w-40 rounded-full border-2 border-zinc-400'
 					onClick={handleCollapse}
 				/>
-
-				{!collapse && <TripScreens map={map} />}
+				<div className={collapse ? 'hidden' : ''}>
+					<TripScreens map={map} />
+				</div>
 			</div>
 		</>
 	)
@@ -269,7 +280,7 @@ export function Dispatch({ map }) {
 		client.connect({}, () => {
 			client.subscribe('/topic/taxiLocatorEvent', (message) => {
 				pos = JSON.parse(message.body).currentPosition
-				setCounter((counter) => counter + 1)
+				!arrived && setCounter((counter) => counter + 1)
 				if (markers.taxi) {
 					markers.taxi.setPosition(new google.maps.LatLng(pos.lat, pos.lng))
 				} else {
@@ -322,10 +333,12 @@ export function Dispatch({ map }) {
 	}, [counter])
 
 	useEffect(() => {
-		if (etaCounter === 2) {
-			setNotification('arrivingSoon')
-		} else if (etaCounter === 0) {
-			setNotification('arrivedToUser')
+		if (taxiRoute && !arrived) {
+			if (etaCounter === 2) {
+				setNotification('arrivingSoon')
+			} else if (etaCounter === 0) {
+				setNotification('arrivedToUser')
+			}
 		}
 	}, [etaCounter])
 
@@ -401,15 +414,47 @@ function ProximityNotifications() {
 }
 
 export function Arrival() {
+	const [showRatingForm, setShowRatingForm] = useState(false)
+
 	return (
 		<>
-			{/* Driver Information */}
-			{/* Trip Information */}
-
-			{/* Rate */}
-
-			{/* Receipt */}
-			{/* Return */}
+			{showRatingForm ? (
+				<Rating closeModal={() => setShowRatingForm(false)} />
+			) : (
+				<>
+					<label className='mb-0 border-b border-zinc-400 p-4 text-zinc-100'>
+						You have arrived
+					</label>
+					<RouteInformation />
+					<ArrivalController setShowRatingForm={setShowRatingForm} />
+				</>
+			)}
 		</>
+	)
+}
+
+function ArrivalController({ setShowRatingForm }) {
+	const [, setScreen] = useRecoilState(screenAtom)
+	return (
+		<div className='flex items-center space-x-3 p-4 px-6 text-sm'>
+			<button
+				className='w-10/12 rounded-md bg-green-200 p-2'
+				onClick={() => {}}
+			>
+				Finish
+			</button>
+			<button
+				className='flex h-10 w-10 items-center justify-center rounded-full bg-green-200 p-2'
+				onClick={() => setScreen('receipt')}
+			>
+				<FaFileAlt />
+			</button>
+			<button
+				className='flex h-10 w-10 items-center justify-center rounded-full bg-green-200 p-2'
+				onClick={() => setShowRatingForm(true)}
+			>
+				<FaThumbsUp />
+			</button>
+		</div>
 	)
 }

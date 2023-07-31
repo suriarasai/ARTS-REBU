@@ -11,6 +11,7 @@ import {
 	bookingAtom,
 	destinationAtom,
 	originAtom,
+	screenAtom,
 	selectedCardAtom,
 	taxiETAAtom,
 	tripStatsAtom,
@@ -27,7 +28,7 @@ export function TaxiSelection() {
 	const origin = useRecoilValue(originAtom)
 	const dest = useRecoilValue(destinationAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
-	const [, setBooking] = useRecoilState(bookingAtom)
+	const [booking, setBooking] = useRecoilState(bookingAtom)
 	const [taxiETA, setTaxiETA] = useRecoilState(taxiETAAtom)
 
 	const [selectedTaxi, setSelectedTaxi] = useState<string>('regular')
@@ -38,6 +39,7 @@ export function TaxiSelection() {
 		setSelectedTaxi(selectedTaxi === 'regular' ? 'plus' : 'regular')
 	const tripStats = useRecoilValue(tripStatsAtom)
 	const [options, setOptions] = useState(null)
+	const [, setScreen] = useRecoilState(screenAtom)
 
 	useEffect(() => {
 		// Finding the default payment method
@@ -109,6 +111,7 @@ export function TaxiSelection() {
 			setBooking(updatedBooking)
 			produceKafkaBookingEvent(JSON.stringify(updatedBooking))
 			console.log('bookingID: ', bookingID)
+			setScreen('match')
 		})
 		console.log(bookingEvent)
 	}

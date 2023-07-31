@@ -10,12 +10,7 @@ export function TaxiSelectionUI({
 	handleShowPaymentMethod,
 	onConfirm,
 }) {
-	const [, setScreen] = useRecoilState(screenAtom)
-
-	const handleConfirm = () => {
-		setScreen('match')
-		onConfirm()
-	}
+	const handleConfirm = () => onConfirm()
 
 	return (
 		<>

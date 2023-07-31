@@ -12,10 +12,12 @@ import { bookingEvent } from '@/types'
 import { useEffect, useState } from 'react'
 import {
 	FaComment,
+	FaFileAlt,
 	FaFlag,
 	FaPhone,
 	FaRoad,
 	FaStar,
+	FaThumbsUp,
 	FaThumbtack,
 	FaUser,
 } from 'react-icons/fa'
@@ -23,6 +25,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import Rating from '../Rating'
+import { RouteInformation, TripInformation } from '@/components/Map/TripScreens/Dispatch/tripInformation'
 
 export default function Dispatch() {
 	// Onload: Listener for locator event, simulated movement, ETA countdown
@@ -82,133 +85,37 @@ export default function Dispatch() {
 
 			<div className='w-screen-md-max absolute bottom-0 left-0 right-0 ml-auto mr-auto w-5/6 rounded-t-lg bg-gray-700 shadow-sm'>
 				<hr className='my-1.5 ml-auto mr-auto w-40 rounded-full border-2 border-zinc-400' />
-				<ProximityNotifications />
-				{showRatingForm ? (
-					<Rating closeModal={() => setShowRatingForm(false)} />
-				) : (
-					<>
-						<DriverInformation />
-						<RateTrip setShowRatingForm={setShowRatingForm} />
-						<RouteInformation />
-						<TripInformation />
-					</>
-				)}
+				<label className='text-zinc-100 p-4 mb-0 border-b border-zinc-400'>You have arrived</label>
+				<RouteInformation />
+				<TripInformation />
+				<ArrivalController />
 			</div>
 		</>
 	)
 }
 
-function ETA() {
+function ArrivalController() {
+	const [, setScreen] = useRecoilState(screenAtom)
 	return (
-		<div className='absolute left-0 right-0 top-0 ml-auto mr-auto flex w-1/2 rounded-b-md items-center bg-gray-700 p-2'>
-			<p className='text-zinc-100 pl-4'>Taxi is arriving in </p>
-			<div className='!ml-auto h-12 w-12 rounded-md bg-green-200 p-2 items-center justify-center text-center text-gray-700'>
-				<b>8</b>
-				<p className='text-zinc-400 text-xs -mt-1 font-normal'>min</p>
-			</div>
-		</div>
-	)
-}
-
-function RateTrip({ setShowRatingForm }) {
-	return (
-		<div className='flex items-center border-b border-zinc-400 p-4 px-6 text-sm text-zinc-100'>
-			<FaStar className='mr-3 text-green-200' />
-			Enjoying your trip?{' '}
-			<span
-				className='ml-1 text-green-200'
-				onClick={() => setShowRatingForm(true)}
+		<div className='flex items-center p-4 px-6 text-sm space-x-3'>
+			<button
+				className='w-10/12 rounded-md p-2 bg-green-200'
+				onClick={() => {}}
 			>
-				Add a rating
-			</span>
-		</div>
-	)
-}
-
-function ProximityNotifications() {
-	const notification = useRecoilValue(notificationAtom)
-
-	return (
-		<>
-			{notification === 'arrivingSoon' ? (
-				<Popup msg={NOTIF.ARRIVINGSOON} />
-			) : notification === 'arrived' ? (
-				<Popup msg={NOTIF.ARRIVED} />
-			) : null}
-		</>
-	)
-}
-
-function DriverInformation() {
-	const dispatch = useRecoilValue(dispatchAtom)
-
-	return (
-		<div className='border-b border-zinc-400'>
-			<div className='flex space-x-3 px-6 py-4'>
-				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-200'>
-					<FaUser />
-				</div>
-				<div className='text-zinc-100'>
-					{dispatch.driverName}
-					<h5 className='!text-zinc-300'>
-						{dispatch.taxiColor} {dispatch.taxiMakeModel}
-					</h5>
-				</div>
-				<div className='!ml-auto flex items-center space-x-3 text-green-200'>
-					<div className='mr-3 rounded-md bg-green-200 px-2 py-1 text-gray-700'>
-						<p className='!font-semibold'>{dispatch.taxiNumber}</p>
-					</div>
-					<FaComment />
-					<FaPhone />
-				</div>
-			</div>
-		</div>
-	)
-}
-
-function RouteInformation() {
-	const booking = useRecoilValue(bookingAtom)
-
-	return (
-		<div className='space-y-3 border-b border-zinc-400 p-4 px-6'>
-			<div className='flex items-center text-sm text-zinc-100'>
-				<FaThumbtack className='mr-3 text-green-200' />
-				{booking.pickUpLocation!.placeName}
-			</div>
-			<hr className='border-zinc-400' />
-			<div className='flex items-center text-sm text-zinc-100'>
-				<FaFlag className='mr-3 text-green-200' />
-				{booking.dropLocation!.placeName}
-			</div>
-		</div>
-	)
-}
-
-function TripInformation() {
-	const tripStatistics = useRecoilValue(tripStatsAtom)
-	const booking = useRecoilValue<bookingEvent>(bookingAtom)
-
-	return (
-		<div className='flex items-center space-x-5 p-4'>
-			<FaRoad className='flex-1 text-3xl text-green-200' />
-			<div className='flex flex-1 flex-col space-y-2'>
-				<h5 className='ml-auto mr-auto !text-zinc-300'>DISTANCE</h5>
-				<b className='ml-auto mr-auto text-zinc-100'>
-					{(tripStatistics.distance! / 1000).toFixed(1)} km
-				</b>
-			</div>
-			<div className='flex flex-1 flex-col space-y-2'>
-				<h5 className='ml-auto mr-auto !text-zinc-300'>ARRIVAL</h5>
-				<b className='ml-auto mr-auto text-zinc-100'>
-					{new Date(booking.pickUpTime + tripStatistics.duration * 1000)
-						.toLocaleTimeString('en-US')
-						.replace(/(.*)\D\d+/, '$1')}
-				</b>
-			</div>
-			<div className='flex flex-1 flex-col space-y-2'>
-				<h5 className='ml-auto mr-auto !text-zinc-300'>FARE</h5>
-				<b className='ml-auto mr-auto text-zinc-100'>${booking.fare}</b>
-			</div>
+				Finish
+			</button>
+			<button
+				className='flex h-10 w-10 items-center justify-center rounded-full bg-green-200 p-2'
+				onClick={() => setScreen('receipt')}
+			>
+				<FaFileAlt />
+			</button>
+			<button
+				className='flex h-10 w-10 items-center justify-center rounded-full bg-green-200 p-2'
+				onClick={() => setScreen('review')}
+			>
+				<FaThumbsUp />
+			</button>
 		</div>
 	)
 }

@@ -63,11 +63,7 @@ const Receipt = ({
 	}
 
 	return (
-		<div className='flex flex-col pt-12'>
-			{popup === 'downloaded' && (
-				<Popup clear={setPopup} msg={`Invoice emailed to ${user.email}`} />
-			)}
-
+		<div className='flex flex-col pt-12 h-screen w-screen p-4 bg-zinc-100 text-sm'>
 			<PDFExport paperSize='A4' margin='0.5cm' ref={ref}>
 				<Image className='mb-8' src={RebuLogo} width={100} alt='Rebu Logo' />
 
@@ -84,7 +80,7 @@ const Receipt = ({
 				<hr className='my-4 border-2 border-zinc-100' />
 
 				<label>Payment Detail</label>
-				<FareBreakdown fare={bookingInformation.fare as number} />
+				<FareBreakdown fare={bookingInformation.fare} />
 
 				<hr className='my-4 border-2 border-zinc-100' />
 

@@ -32,7 +32,7 @@ import { WaitingUI } from './UI/MatchingUI'
 import { RouteConfirmation } from './UI/ConfirmationUI'
 import { ShowOption } from './UI/ConfirmationUI'
 import setMarkerVisibility from '../Map/utils/markers'
-import Receipt from './UI/Receipt'
+import Receipt from '../Map/TripScreens/Arrival/Receipt'
 import Rating from './Rating'
 import { SelectPaymentMethod } from '../Map/TripScreens/Selection/payment'
 import {
