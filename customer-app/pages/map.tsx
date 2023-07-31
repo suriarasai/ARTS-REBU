@@ -174,9 +174,9 @@ function distKM(lat1, lon1, lat2, lon2) {
 }
 
 export function Trip({ map }) {
-	const [origin, setOrigin] = useRecoilState(originAtom)
+	const origin = useRecoilValue(originAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
-	const [dest, setDest] = useRecoilState(destinationAtom)
+	const dest = useRecoilValue(destinationAtom)
 	const [polyline, setPolyline] = useState()
 	const [, setTripStats] = useRecoilState(tripStatsAtom)
 	const [, setSearchType] = useRecoilState(searchTypeAtom)
@@ -242,7 +242,7 @@ export function Trip({ map }) {
 					onClick={handleCollapse}
 				/>
 				<div className={collapse ? 'hidden' : ''}>
-					<TripScreens map={map} />
+					<TripScreens map={map} polyline={polyline} />
 				</div>
 			</div>
 		</>
@@ -413,7 +413,7 @@ function ProximityNotifications() {
 	)
 }
 
-export function Arrival() {
+export function Arrival({ map, polyline }) {
 	const [showRatingForm, setShowRatingForm] = useState(false)
 
 	return (
@@ -426,23 +426,22 @@ export function Arrival() {
 						You have arrived
 					</label>
 					<RouteInformation />
-					<ArrivalController setShowRatingForm={setShowRatingForm} />
+					<ArrivalController
+						setShowRatingForm={setShowRatingForm}
+						map={map}
+						polyline={polyline}
+					/>
 				</>
 			)}
 		</>
 	)
 }
 
-function ArrivalController({ setShowRatingForm }) {
+function ArrivalController({ setShowRatingForm, map, polyline }) {
 	const [, setScreen] = useRecoilState(screenAtom)
 	return (
 		<div className='flex items-center space-x-3 p-4 px-6 text-sm'>
-			<button
-				className='w-10/12 rounded-md bg-green-200 p-2'
-				onClick={() => {}}
-			>
-				Finish
-			</button>
+			<CancelTripButton map={map} completeTrip={true} polyline={polyline} />
 			<button
 				className='flex h-10 w-10 items-center justify-center rounded-full bg-green-200 p-2'
 				onClick={() => setScreen('receipt')}

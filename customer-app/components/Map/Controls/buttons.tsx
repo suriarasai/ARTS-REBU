@@ -52,7 +52,11 @@ export function PanToCurrentLocation({ map }) {
 	)
 }
 
-export function CancelTripButton({ map, polyline = null }) {
+export function CancelTripButton({
+	map,
+	completeTrip = false,
+	polyline = null,
+}) {
 	const [, setIsValidInput] = useRecoilState(validInputAtom)
 	const [, setOrigin] = useRecoilState<Location>(originAtom)
 	const [, setDest] = useRecoilState<Location>(destinationAtom)
@@ -86,24 +90,37 @@ export function CancelTripButton({ map, polyline = null }) {
 		map.panTo(new google.maps.LatLng(userLocation.lat, userLocation.lng))
 
 		if (dispatch.driverID) {
-			produceKafkaChatEvent(
-				JSON.stringify({
-					recipientID: 'd' + dispatch.driverID,
-					type: 'cancelTrip',
-				})
-			)
 			setDispatch({} as DispatchEvent)
-			cancelBooking(booking.bookingID)
 			setBooking({} as bookingEvent)
+			if (!booking.dropTime) {
+				cancelBooking(booking.bookingID)
+				produceKafkaChatEvent(
+					JSON.stringify({
+						recipientID: 'd' + dispatch.driverID,
+						type: 'cancelTrip',
+					})
+				)
+			}
 		}
 	}
 
 	return (
-		<button
-			className='absolute left-0 top-0 ml-8 rounded-b-2xl bg-gray-700 p-3 shadow-md'
-			onClick={handleTripCancellation}
-		>
-			<FaTimesCircle className='text-3xl text-red-400' />
-		</button>
+		<>
+			{completeTrip ? (
+				<button
+					className='w-10/12 rounded-md bg-green-200 p-2'
+					onClick={handleTripCancellation}
+				>
+					Finish
+				</button>
+			) : (
+				<button
+					className='absolute left-0 top-0 ml-8 rounded-b-2xl bg-gray-700 p-3 shadow-md'
+					onClick={handleTripCancellation}
+				>
+					<FaTimesCircle className='text-3xl text-red-400' />
+				</button>
+			)}
+		</>
 	)
 }

@@ -63,7 +63,7 @@ const Receipt = ({
 	}
 
 	return (
-		<div className='flex flex-col pt-12 h-screen w-screen p-4 bg-zinc-100 text-sm'>
+		<div className='absolute top-0 left-0 z-50 flex flex-col pt-12 h-screen w-screen p-4 bg-zinc-100 text-sm'>
 			<PDFExport paperSize='A4' margin='0.5cm' ref={ref}>
 				<Image className='mb-8' src={RebuLogo} width={100} alt='Rebu Logo' />
 

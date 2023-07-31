@@ -5,7 +5,7 @@ import { screenAtom } from '@/state'
 import { useRecoilValue } from 'recoil'
 import { TaxiSelection } from './Selection'
 
-export function TripScreens({map}) {
+export function TripScreens({ map, polyline }) {
 	const screen = useRecoilValue(screenAtom)
 	return (
 		<>
@@ -16,7 +16,7 @@ export function TripScreens({map}) {
 			) : screen === 'dispatch' ? (
 				<Dispatch map={map} />
 			) : screen === 'arrival' ? (
-				<Arrival />
+				<Arrival map={map} polyline={polyline} />
 			) : null}
 		</>
 	)
