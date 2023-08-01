@@ -7,7 +7,7 @@ import { HREF } from "@/constants";
 import { getDriver, getTaxi } from "@/server";
 import { Driver, Taxi } from "@/types";
 
-export const DriverIDInput = ({}) => {
+export const DriverIDInput = ({ t }: any) => {
   const [, setDriver] = useRecoilState(driverAtom);
   const [, setTaxi] = useRecoilState(taxiAtom);
   const router = useRouter();
@@ -30,19 +30,19 @@ export const DriverIDInput = ({}) => {
     } else {
       setError("driverID", {
         type: "custom",
-        message: "Driver does not exist",
+        message: t.noDriver,
       });
     }
   }
 
   function onTaxiInfo(taxi: Taxi) {
-    setTaxi(taxi)
+    setTaxi(taxi);
     router.push(HREF.TRIPS);
   }
 
   return (
     <>
-      <label className="mt-12">Driver ID</label>
+      <label className="mt-12">{t.driverID}</label>
       <form className="-mx-3 mb-2 flex flex-wrap" onSubmit={onSubmit}>
         <div className="w-4/5 pb-3">
           <input
@@ -54,7 +54,7 @@ export const DriverIDInput = ({}) => {
             })}
             defaultValue=""
             className="white-input h-10 !rounded-l-lg"
-            placeholder="Enter driver ID"
+            placeholder={t.enterDriverID}
           />
         </div>
         <button
@@ -65,7 +65,7 @@ export const DriverIDInput = ({}) => {
         </button>
       </form>
       {errors.driverID && (
-        <p className="text-red-200 text-xs -mt-6">Driver ID not found</p>
+        <p className="text-red-200 text-xs -mt-6">{t.noDriver}</p>
       )}
     </>
   );

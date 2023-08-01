@@ -4,8 +4,31 @@ import { useRouter } from "next/router";
 import { FaCalendar, FaChartLine, FaCompass, FaUser } from "react-icons/fa";
 import { HREF } from "../constants";
 
-const BottomNav = () => {
+const BottomNav = ({ t }: any) => {
   const router = useRouter(); // For navigation
+
+  const links = [
+    navIcon({
+      label: t.route,
+      href: HREF.MAP,
+      image: <FaCompass className="h-5 w-5" />,
+    }),
+    navIcon({
+      label: t.trips,
+      href: HREF.TRIPS,
+      image: <FaCalendar className="h-5 w-5" />,
+    }),
+    navIcon({
+      label: t.stats,
+      href: HREF.STATS,
+      image: <FaChartLine className="h-5 w-5" />,
+    }),
+    navIcon({
+      label: t.profile,
+      href: HREF.SETTINGS,
+      image: <FaUser className="h-5 w-5" />,
+    }),
+  ];
 
   return (
     <nav className="bottom-nav">
@@ -51,26 +74,3 @@ const navIcon = ({ label, href, image }: navIconProps) => {
     icon: image,
   };
 };
-
-const links = [
-  navIcon({
-    label: "Route",
-    href: HREF.MAP,
-    image: <FaCompass className="h-5 w-5" />,
-  }),
-  navIcon({
-    label: "Trips",
-    href: HREF.TRIPS,
-    image: <FaCalendar className="h-5 w-5" />,
-  }),
-  navIcon({
-    label: "Stats",
-    href: HREF.STATS,
-    image: <FaChartLine className="h-5 w-5" />,
-  }),
-  navIcon({
-    label: "Profile",
-    href: HREF.SETTINGS,
-    image: <FaUser className="h-5 w-5" />,
-  }),
-];

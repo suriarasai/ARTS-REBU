@@ -1,11 +1,13 @@
-import RebuLogo from '@/public/images/rebu-driver-logo.png';
+import en from '@/public/images/rebu-logo-en.png'
+import zh from '@/public/images/rebu-logo-zh.png'
+import jp from '@/public/images/rebu-logo-jp.png'
 import Image from 'next/image';
 
-export const MainScreenVisual = ({size = 300}) => (
+export const MainScreenVisual = ({lang = 'en', size = 200}) => (
 	<div className='h-6/12'>
 		<Image
 			className='ml-auto mr-auto'
-			src={RebuLogo}
+			src={lang === 'en' ? en : lang === 'zh' ? zh : jp}
 			width={size}
 			height={size}
 			alt='Logo' />

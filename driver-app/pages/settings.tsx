@@ -8,19 +8,27 @@ import { Suspense } from "react";
 import { FaPhone, FaSignOutAlt, FaStar, FaUserCircle } from "react-icons/fa";
 import { useRecoilState, useRecoilValue } from "recoil";
 
+import en from "@/locales/en";
+import zh from "@/locales/zh";
+import jp from "@/locales/jp";
+
 export default function Settings() {
+  const router = useRouter();
+  const { locale } = router;
+  const lang = locale === "en" ? en : locale === "zh" ? zh : jp;
+
   return (
     <Suspense fallback={<LoadingScreen />}>
       <main className="p-6 space-y-5">
-        <DriverProfile />
-        <SignOutButton />
+        <DriverProfile t={lang} />
+        <SignOutButton t={lang} />
       </main>
-      <BottomNav />
+      <BottomNav t={lang} />
     </Suspense>
   );
 }
 
-const SignOutButton = ({}) => {
+const SignOutButton = ({ t }: any) => {
   const [, setDriver] = useRecoilState(driverAtom);
   const router = useRouter();
   const SignOut = () => {
@@ -35,12 +43,12 @@ const SignOutButton = ({}) => {
       onClick={SignOut}
     >
       <FaSignOutAlt className="mr-2" />
-      Sign Out
+      {t.signOut}
     </button>
   );
 };
 
-const DriverProfile = ({}) => {
+const DriverProfile = ({ t }: any) => {
   const driver = useRecoilValue<Driver>(driverAtom);
 
   return (

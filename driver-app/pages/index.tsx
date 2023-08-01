@@ -1,25 +1,31 @@
 import { MainScreenVisual } from "@/components/MainScreenVisual";
 import { DriverIDInput } from "../components/DriverIDInput";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { LoadingScreen } from "@/components/LoadingScreen";
-import { FaGlobe } from "react-icons/fa";
+import { useRouter } from "next/router";
+
+import en from "@/locales/en";
+import zh from "@/locales/zh";
+import jp from "@/locales/jp";
+import {
+  Internationalization,
+  LanguageSelection,
+} from "../components/Internationalization";
 
 export default function SignIn() {
+  const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
+  const { locale } = router;
+  const lang = locale === "en" ? en : locale === "zh" ? zh : jp;
+
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <main className="ml-auto mr-auto h-screen max-w-screen-md px-12 pb-16 pt-40 sm:pb-0">
-        <MainScreenVisual />
-        <DriverIDInput />
-        <Internationalization />
+      <main className="ml-auto mr-auto h-screen max-w-screen-md px-12 pb-16 pt-32 sm:pb-0">
+        <MainScreenVisual lang={locale} />
+        <DriverIDInput t={lang} />
+        <Internationalization showModal={setShowModal} t={lang} />
+        {showModal && <LanguageSelection showModal={setShowModal} />}
       </main>
     </Suspense>
   );
 }
-
-const Internationalization = () => {
-  return (
-    <button className="absolute bottom-0 right-0 m-6 h-8 w-8 flex items-center justify-center rounded-sm shadow-md bg-green-300">
-      <FaGlobe className="text-xl" />
-    </button>
-  );
-};

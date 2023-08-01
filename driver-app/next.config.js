@@ -12,4 +12,8 @@ module.exports = withPWA({
     return config;
   },
   output: "standalone",
+  i18n: {
+    locales: ["en", "zh", "jp"],
+    defaultLocale: "en",
+  },
 });

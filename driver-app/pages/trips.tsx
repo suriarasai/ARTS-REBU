@@ -12,7 +12,15 @@ import Stomp from "stompjs";
 import { pingCurrentLocation } from "../utils/pingCurrentLocation";
 import { produceDispatchEvent } from "../utils/produceDispatchEvent";
 
+import en from "@/locales/en";
+import zh from "@/locales/zh";
+import jp from "@/locales/jp";
+
 export default function Trips() {
+  const router = useRouter();
+  const { locale } = router;
+  const lang = locale === "en" ? en : locale === "zh" ? zh : jp;
+
   const [trips, setTrips] = useState<BookingEvent[]>([]);
 
   // Booking stream consumer: Looking for rides to match with
@@ -42,16 +50,16 @@ export default function Trips() {
   return (
     <Suspense fallback={<LoadingScreen />}>
       <main className="space-y-3 p-6 pt-12">
-        <h1>Ride Requests</h1>
+        <h1>{lang.rideRequests}</h1>
         {trips.length > 0 ? (
           trips.map((trip, index) => (
             <RideRequest trip={trip} remove={removeBooking} key={index} />
           ))
         ) : (
-          <p className="!text-white italic">Waiting for trips...</p>
+          <p className="!text-white italic">{lang.waitingForTrips}</p>
         )}
       </main>
-      <BottomNav />
+      <BottomNav t={lang} />
     </Suspense>
   );
 }

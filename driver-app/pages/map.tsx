@@ -19,6 +19,11 @@ import { rescaleMap } from "@/utils/rescaleMap";
 import { StartTrip } from "@/components/StartTrip";
 import { Trip } from "@/components/Trip";
 
+import en from "@/locales/en";
+import zh from "@/locales/zh";
+import jp from "@/locales/jp";
+import { useRouter } from "next/router";
+
 export const markers: any = {
   taxiLocation: null,
   pickup: null,
@@ -30,6 +35,10 @@ export let pickupRoute: any;
 export let dropRoute: any;
 
 export default function Map() {
+  const router = useRouter();
+  const { locale } = router;
+  const lang = locale === "en" ? en : locale === "zh" ? zh : jp;
+
   // States
   const [driver, setDriver] = useRecoilState(driverAtom);
   const [taxi, setTaxi] = useRecoilState(taxiAtom);
@@ -164,16 +173,12 @@ export default function Map() {
     }
   }, [screen]);
 
-  // On approving a new booking request...
-  // useEffect(() => {
-
-  // }, [dispatch]);
-
   return (
     <LoadScriptNext
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
       loadingElement={<LoadingScreen />}
       libraries={libraries as any}
+      language={locale}
     >
       <div className="relative h-screen w-screen">
         <GoogleMap
@@ -191,16 +196,16 @@ export default function Map() {
         />
 
         {screen === "" || !routes.dropoff ? null : screen === "start" ? (
-          <StartTrip />
+          <StartTrip t={lang} />
         ) : screen === "pickup" ? (
-          <Trip type="pickup" />
+          <Trip type="pickup" t={lang} />
         ) : screen === "dropoff" ? (
-          <Trip type="dropoff" />
+          <Trip type="dropoff" t={lang} />
         ) : (
           "Error: Screen not found"
         )}
 
-        <BackButton />
+        <BackButton t={lang} />
       </div>
     </LoadScriptNext>
   );

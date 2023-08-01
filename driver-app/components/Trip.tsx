@@ -15,7 +15,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { produceKafkaChatEvent } from "@/server";
 
-export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
+export const Trip = ({ type, t }: { type: "dropoff" | "pickup"; t: any }) => {
   const routes = useRecoilValue(routesAtom);
   const [arrived, setArrived] = useState(false);
   const [, setScreen] = useRecoilState(screenAtom);
@@ -37,8 +37,8 @@ export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
         "/user/d" + driver.driverID + "/queue/chatEvent",
         (message) => {
           res = JSON.parse(message.body);
-          if (res.type === 'cancelTrip') {
-            console.log("User cancelled trip")
+          if (res.type === "cancelTrip") {
+            console.log("User cancelled trip");
           }
         }
       );
@@ -80,7 +80,9 @@ export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
 
   return (
     <div className="absolute bottom-0 w-3/4 left-0 right-0 justify-center mr-auto ml-auto mb-4 shadow-md p-4 bg-zinc-700 rounded-lg">
-      <label className="w-full !mb-3">En route to {type} location</label>
+      <label className="w-full !mb-3">
+        {type === "pickup" ? t.pickup : t.dropoff}
+      </label>
       <button
         className={`flex justify-center py-2 text-white w-full rounded-md ${
           arrived ? "bg-green-400" : "bg-zinc-400"
@@ -88,7 +90,7 @@ export const Trip = ({ type }: { type: "dropoff" | "pickup" }) => {
         onClick={confirmArrival}
         disabled={!arrived}
       >
-        Confirm {type}
+        {t.confirm + " " + type}
       </button>
     </div>
   );
