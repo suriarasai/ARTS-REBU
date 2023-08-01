@@ -16,4 +16,6 @@ export default {
   beginRoute: "Begin Route",
   pickUp: "En route to pickup location",
   dropoff: "En route to dropoff location",
+  confirmPickup: "Confirm pickup",
+  confirmDropoff: "Confirm dropoff"
 };

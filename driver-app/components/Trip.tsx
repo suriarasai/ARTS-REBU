@@ -90,7 +90,7 @@ export const Trip = ({ type, t }: { type: "dropoff" | "pickup"; t: any }) => {
         onClick={confirmArrival}
         disabled={!arrived}
       >
-        {t.confirm + " " + type}
+        {type === 'pickup' ? t.confirmPickup : t.confirmDropoff}
       </button>
     </div>
   );

@@ -49,7 +49,7 @@ export function LanguageSelection({ showModal, t }: any) {
             } rounded-lg p-2`}
             onClick={() => setLocale("jp")}
           >
-            日本 (jp)
+            日本语 (jp)
           </div>
         </div>
         <button

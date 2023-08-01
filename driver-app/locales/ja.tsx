@@ -15,5 +15,8 @@ export default {
   readyToGo: "準備はできていますか？",
   beginRoute: "ルートを開始する",
   pickup: "ピックアップ場所に向かう途中",
-  dropoff: "降車場所に向かう途中"
+  dropoff: "降車場所に向かう途中",
+  confirmPickup: "ピックアップを確認する",
+  confirmDropoff: "降車の確認"
+
 };

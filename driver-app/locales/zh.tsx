@@ -15,5 +15,7 @@ export default {
   readyToGo: "准备好出发？",
   beginRoute: "开始路线",
   pickup: "前往上车地点的途中",
-  dropoff: "前往下车地点的途中"
+  dropoff: "前往下车地点的途中",
+  confirmPickup: "确认接机",
+  confirmDropoff: "确认下车",
 };
