@@ -21,7 +21,7 @@ import { Trip } from "@/components/Trip";
 
 import en from "@/locales/en";
 import zh from "@/locales/zh";
-import jp from "@/locales/jp";
+import ja from "@/locales/ja";
 import { useRouter } from "next/router";
 
 export const markers: any = {
@@ -37,7 +37,7 @@ export let dropRoute: any;
 export default function Map() {
   const router = useRouter();
   const { locale } = router;
-  const lang = locale === "en" ? en : locale === "zh" ? zh : jp;
+  const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
 
   // States
   const [driver, setDriver] = useRecoilState(driverAtom);

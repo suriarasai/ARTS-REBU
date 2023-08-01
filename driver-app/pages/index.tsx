@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 import en from "@/locales/en";
 import zh from "@/locales/zh";
-import jp from "@/locales/jp";
+import ja from "@/locales/ja";
 import {
   Internationalization,
   LanguageSelection,
@@ -16,7 +16,7 @@ export default function SignIn() {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const { locale } = router;
-  const lang = locale === "en" ? en : locale === "zh" ? zh : jp;
+  const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
 
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -24,7 +24,7 @@ export default function SignIn() {
         <MainScreenVisual lang={locale} />
         <DriverIDInput t={lang} />
         <Internationalization showModal={setShowModal} t={lang} />
-        {showModal && <LanguageSelection showModal={setShowModal} />}
+        {showModal && <LanguageSelection showModal={setShowModal} t={lang} />}
       </main>
     </Suspense>
   );

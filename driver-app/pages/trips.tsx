@@ -14,12 +14,12 @@ import { produceDispatchEvent } from "../utils/produceDispatchEvent";
 
 import en from "@/locales/en";
 import zh from "@/locales/zh";
-import jp from "@/locales/jp";
+import ja from "@/locales/ja";
 
 export default function Trips() {
   const router = useRouter();
   const { locale } = router;
-  const lang = locale === "en" ? en : locale === "zh" ? zh : jp;
+  const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
 
   const [trips, setTrips] = useState<BookingEvent[]>([]);
 

@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import en from '@/locales/en'
 import zh from '@/locales/zh'
-import jp from '@/locales/jp'
+import jp from '@/locales/ja'
 
 const Locale = ({ children }: { children: React.ReactNode }) => (
   <>
