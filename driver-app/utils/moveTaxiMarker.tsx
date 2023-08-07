@@ -2,6 +2,8 @@ import { produceKafkaChatEvent, produceKafkaTaxiLocatorEvent } from "@/server";
 import { markers } from "../pages/map";
 import { Driver, Taxi } from "@/types";
 
+export let taxiMovementTimer: any;
+
 export function MoveTaxiMarker(
   polyline: any,
   iter: number,
@@ -25,7 +27,7 @@ export function MoveTaxiMarker(
       })
     );
 
-    window.setTimeout(function () {
+    taxiMovementTimer = setTimeout(function () {
       MoveTaxiMarker(polyline, iter + 1, driver, taxi, _callback);
     }, 250);
   } else {

@@ -8,7 +8,7 @@ import {
   screenAtom,
   taxiAtom,
 } from "@/state";
-import { MoveTaxiMarker } from "@/utils/moveTaxiMarker";
+import { MoveTaxiMarker, taxiMovementTimer } from "@/utils/moveTaxiMarker";
 import { pickupRoute, dropRoute, markers } from "@/pages/map";
 import { BookingEvent } from "@/types";
 import SockJS from "sockjs-client";
@@ -39,6 +39,16 @@ export const Trip = ({ type, t }: { type: "dropoff" | "pickup"; t: any }) => {
           res = JSON.parse(message.body);
           if (res.type === "cancelTrip") {
             console.log("User cancelled trip");
+            setBooking({} as BookingEvent);
+            dropRoute.setMap(null);
+            pickupRoute.setMap(null);
+            markers.dropoff.setMap(null);
+            markers.dropoff = null;
+            markers.pickup.setMap(null);
+            markers.pickup = null;
+            setScreen("");
+            clearTimeout(taxiMovementTimer)
+            // TODO: Popup for notifying the driver of customer-side cancellation
           }
         }
       );
@@ -90,7 +100,7 @@ export const Trip = ({ type, t }: { type: "dropoff" | "pickup"; t: any }) => {
         onClick={confirmArrival}
         disabled={!arrived}
       >
-        {type === 'pickup' ? t.confirmPickup : t.confirmDropoff}
+        {type === "pickup" ? t.confirmPickup : t.confirmDropoff}
       </button>
     </div>
   );

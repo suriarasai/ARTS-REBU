@@ -1,8 +1,10 @@
 import {
+	arrivalAtom,
 	bookingAtom,
 	destInputAtom,
 	destinationAtom,
 	dispatchAtom,
+	etaCounterAtom,
 	originAtom,
 	originInputAtom,
 	poiAtom,
@@ -70,6 +72,8 @@ export function CancelTripButton({
 	const [, setDestInput] = useRecoilState(destInputAtom)
 	const [, setTripStats] = useRecoilState(tripStatsAtom)
 	const [, setScreen] = useRecoilState(screenAtom)
+	const [, setETA] = useRecoilState(etaCounterAtom)
+	const [, setArrived] = useRecoilState(arrivalAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
 	const [dispatch, setDispatch] = useRecoilState(dispatchAtom)
 	const [booking, setBooking] = useRecoilState(bookingAtom)
@@ -92,6 +96,8 @@ export function CancelTripButton({
 		setIsValidInput(false)
 		setOriginInput('')
 		setDestInput('')
+		setETA('-')
+		setArrived(false)
 		setTripStats({ distance: null, duration: null })
 		map.panTo(new google.maps.LatLng(userLocation.lat, userLocation.lng))
 

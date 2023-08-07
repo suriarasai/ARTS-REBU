@@ -323,7 +323,7 @@ export const taxiETASelector = selector({
 
 export const etaCounterAtom = atom({
 	key: 'etaCounter-atom',
-	default: 0,
+	default: '-' as number | string,
 })
 
 export const etaCounterSelector = selector({
