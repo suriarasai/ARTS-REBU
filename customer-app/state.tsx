@@ -1,5 +1,5 @@
 import { DispatchEvent, User } from '@/types'
-import { atom, selector } from 'recoil'
+import { atom } from 'recoil'
 import { bookingEvent } from './types'
 
 export const userAtom = atom({
@@ -15,13 +15,6 @@ export const userAtom = atom({
 	],
 })
 
-export const userSelector = selector({
-	key: 'user-modifier',
-	get: ({ get }) => {
-		return get(userAtom)
-	},
-})
-
 export const bookingAtom = atom({
 	key: 'booking-atom',
 	default: {} as bookingEvent,
@@ -33,13 +26,6 @@ export const bookingAtom = atom({
 			})
 		},
 	],
-})
-
-export const bookingSelector = selector({
-	key: 'booking-modifier',
-	get: ({ get }) => {
-		return get(bookingAtom)
-	},
 })
 
 export const dispatchAtom = atom({
@@ -55,13 +41,6 @@ export const dispatchAtom = atom({
 	],
 })
 
-export const dispatchSelector = selector({
-	key: 'dispatch-modifier',
-	get: ({ get }) => {
-		return get(dispatchAtom)
-	},
-})
-
 export const statusAtom = atom({
 	key: 'status-atom',
 	default: '',
@@ -73,13 +52,6 @@ export const statusAtom = atom({
 			})
 		},
 	],
-})
-
-export const statusSelector = selector({
-	key: 'status-modifier',
-	get: ({ get }) => {
-		return get(statusAtom)
-	},
 })
 
 export const notificationAtom = atom({
@@ -95,13 +67,6 @@ export const notificationAtom = atom({
 	],
 })
 
-export const notificationSelector = selector({
-	key: 'notification-modifier',
-	get: ({ get }) => {
-		return get(notificationAtom)
-	},
-})
-
 export const taxiLocationAtom = atom({
 	key: 'taxiLocation-atom',
 	default: '',
@@ -112,13 +77,6 @@ export const taxiLocationAtom = atom({
 			})
 		},
 	],
-})
-
-export const taxiLocationSelector = selector({
-	key: 'taxiLocation-modifier',
-	get: ({ get }) => {
-		return get(taxiLocationAtom)
-	},
 })
 
 export const destinationAtom = atom({
@@ -141,13 +99,6 @@ export const destinationAtom = atom({
 	],
 })
 
-export const destinationSelector = selector({
-	key: 'destination-modifier',
-	get: ({ get }) => {
-		return get(destinationAtom)
-	},
-})
-
 export const originAtom = atom({
 	key: 'origin-atom',
 	default: {
@@ -166,13 +117,6 @@ export const originAtom = atom({
 			})
 		},
 	],
-})
-
-export const originSelector = selector({
-	key: 'origin-modifier',
-	get: ({ get }) => {
-		return get(originAtom)
-	},
 })
 
 export const userLocationAtom = atom({
@@ -194,13 +138,6 @@ export const userLocationAtom = atom({
 	],
 })
 
-export const userLocationSelector = selector({
-	key: 'userLocation-modifier',
-	get: ({ get }) => {
-		return get(userLocationAtom)
-	},
-})
-
 export const searchTypeAtom = atom({
 	key: 'searchType-atom',
 	default: 0,
@@ -212,13 +149,6 @@ export const searchTypeAtom = atom({
 			})
 		},
 	],
-})
-
-export const searchTypeSelector = selector({
-	key: 'searchType-modifier',
-	get: ({ get }) => {
-		return get(searchTypeAtom)
-	},
 })
 
 export const taxiAtom = atom({
@@ -234,13 +164,6 @@ export const taxiAtom = atom({
 	],
 })
 
-export const taxiSelector = selector({
-	key: 'taxi-modifier',
-	get: ({ get }) => {
-		return get(taxiAtom)
-	},
-})
-
 export const driverAtom = atom({
 	key: 'driver-atom',
 	default: null,
@@ -254,23 +177,9 @@ export const driverAtom = atom({
 	],
 })
 
-export const driverSelector = selector({
-	key: 'driver-modifier',
-	get: ({ get }) => {
-		return get(driverAtom)
-	},
-})
-
 export const screenAtom = atom({
 	key: 'screen-atom',
 	default: '',
-})
-
-export const screenSelector = selector({
-	key: 'screen-modifier',
-	get: ({ get }) => {
-		return get(screenAtom)
-	},
 })
 
 export const validInputAtom = atom({
@@ -278,23 +187,9 @@ export const validInputAtom = atom({
 	default: false,
 })
 
-export const validInputSelector = selector({
-	key: 'validInput-modifier',
-	get: ({ get }) => {
-		return get(validInputAtom)
-	},
-})
-
 export const destInputAtom = atom({
 	key: 'destInput-atom',
 	default: '',
-})
-
-export const destInputSelector = selector({
-	key: 'destInput-modifier',
-	get: ({ get }) => {
-		return get(destInputAtom)
-	},
 })
 
 export const originInputAtom = atom({
@@ -302,23 +197,9 @@ export const originInputAtom = atom({
 	default: '',
 })
 
-export const originInputSelector = selector({
-	key: 'originInput-modifier',
-	get: ({ get }) => {
-		return get(originInputAtom)
-	},
-})
-
 export const taxiETAAtom = atom({
 	key: 'taxiETA-atom',
 	default: { regular: null, plus: null },
-})
-
-export const taxiETASelector = selector({
-	key: 'taxiETA-modifier',
-	get: ({ get }) => {
-		return get(taxiETAAtom)
-	},
 })
 
 export const etaCounterAtom = atom({
@@ -326,23 +207,9 @@ export const etaCounterAtom = atom({
 	default: '-' as number | string,
 })
 
-export const etaCounterSelector = selector({
-	key: 'etaCounter-modifier',
-	get: ({ get }) => {
-		return get(etaCounterAtom)
-	},
-})
-
 export const arrivalAtom = atom({
 	key: 'arrival-atom',
 	default: false,
-})
-
-export const arrivalSelector = selector({
-	key: 'arrival-modifier',
-	get: ({ get }) => {
-		return get(arrivalAtom)
-	},
 })
 
 export const clickedOptionAtom = atom({
@@ -350,23 +217,9 @@ export const clickedOptionAtom = atom({
 	default: null as number | null,
 })
 
-export const clickedOptionSelector = selector({
-	key: 'clickedOption-modifier',
-	get: ({ get }) => {
-		return get(clickedOptionAtom)
-	},
-})
-
 export const selectedCardAtom = atom({
 	key: 'selectedCard-atom',
 	default: 'Cash',
-})
-
-export const selectedCardSelector = selector({
-	key: 'selectedCard-modifier',
-	get: ({ get }) => {
-		return get(selectedCardAtom)
-	},
 })
 
 export const poiAtom = atom({
@@ -374,52 +227,12 @@ export const poiAtom = atom({
 	default: true,
 })
 
-export const poiSelector = selector({
-	key: 'poi-modifier',
-	get: ({ get }) => {
-		return get(poiAtom)
-	},
-})
-
 export const routesAtom = atom({
 	key: 'routes-atom',
 	default: {},
-})
-
-export const routesSelector = selector({
-	key: 'routes-modifier',
-	get: ({ get }) => {
-		return get(routesAtom)
-	},
 })
 
 export const tripStatsAtom = atom({
 	key: 'tripStats-atom',
 	default: {} as any,
 })
-
-export const tripStatsSelector = selector({
-	key: 'tripStats-modifier',
-	get: ({ get }) => {
-		return get(tripStatsAtom)
-	},
-})
-const temp = {
-	customerID: null,
-	customerName: null,
-	customerPhoneNumber: null, // Renamed to phoneNumber for consistency with bookingEvent
-	pickupDate: null, // Excluded - can be computed from pickUpTime (in miliseconds from epoch)
-	pickupTime: null,
-	pickupLocation: null,
-	eta: null,
-	tripFare: null, // Renamed to fare for consistency with bookingEvent
-	dropLocation: null,
-	tmdtid: null,
-	taxiNumber: null,
-	taxiType: null, // This might need to be moved to the bookingEvent as users typically select this prior to matching
-	taxiPassengerCapacity: null, // This might need to be moved to the bookingEvent as users typically select this prior to matching
-	taxiMakeModel: null,
-	driverID: null,
-	driverName: null,
-	driverPhoneNumber: null,
-}

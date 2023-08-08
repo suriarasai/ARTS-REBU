@@ -26,6 +26,7 @@ import { setMarkerVisibility } from '../utils/markers'
 import { cancelBooking, produceKafkaChatEvent } from '@/server'
 import { useRouter } from 'next/router'
 import mapStyles from '../utils/poi'
+import { markers } from '@/pages/map'
 
 export function TogglePOI({ map }) {
 	const [poi, setPoi] = useRecoilState<boolean>(poiAtom)
@@ -98,6 +99,7 @@ export function CancelTripButton({
 		setDestInput('')
 		setETA('-')
 		setArrived(false)
+		setMarkerVisibility(markers.nearbyTaxis)
 		setTripStats({ distance: null, duration: null })
 		map.panTo(new google.maps.LatLng(userLocation.lat, userLocation.lng))
 

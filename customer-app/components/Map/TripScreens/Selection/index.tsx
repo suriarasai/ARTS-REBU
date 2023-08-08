@@ -22,8 +22,10 @@ import { useEffect, useState } from 'react'
 import { FaCar, FaCarAlt } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
+import { computeNearbyTaxis } from '../../utils/markers'
+import { markers } from '@/pages/map'
 
-export function TaxiSelection() {
+export function TaxiSelection({ map }) {
 	const user = useRecoilValue<User>(userAtom)
 	const origin = useRecoilValue(originAtom)
 	const dest = useRecoilValue(destinationAtom)
@@ -51,6 +53,26 @@ export function TaxiSelection() {
 					item.defaultPaymentMethod && setSelectedCard(item.cardNumber)
 				})
 		)
+
+		computeNearbyTaxis(origin.address ? origin : userLocation, (distances) => {
+			let newTaxi
+			let nearbyTaxiMarkers = []
+
+			// Saving the marker to the state variable
+			for (let i = 0; i < 6; i++) {
+				newTaxi = new google.maps.Marker({
+					map: map,
+					title: distances[i].index.toString(),
+					position: new google.maps.LatLng(distances[i].lat, distances[i].lng),
+					icon: {
+						url: 'https://www.svgrepo.com/show/375911/taxi.svg',
+						scaledSize: new google.maps.Size(30, 30),
+					},
+				})
+				nearbyTaxiMarkers.push(newTaxi)
+			}
+			markers.nearbyTaxis = nearbyTaxiMarkers
+		})
 	}, [])
 
 	useEffect(() => {

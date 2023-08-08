@@ -31,7 +31,7 @@ export function TripScreens({ map, polyline }) {
 	return (
 		<>
 			{screen === 'select' ? (
-				<TaxiSelection />
+				<TaxiSelection map={map} />
 			) : screen === 'match' ? (
 				<Matching />
 			) : screen === 'dispatch' ? (

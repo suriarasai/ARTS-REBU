@@ -28,6 +28,7 @@ export const markers = {
 	work: null,
 	saved: [],
 	stands: [],
+	nearbyTaxis: []
 }
 
 const libraries = ['places', 'geometry']
@@ -77,6 +78,7 @@ export default function Map() {
 		} else {
 			markers.origin = mark(map, origin, MARKERS.ORIGIN)
 		}
+		
 		map.panTo(new google.maps.LatLng(origin.lat, origin.lng))
 		setMarkerVisibility(markers.stands)
 		loadNearbyTaxiStands(map, origin)

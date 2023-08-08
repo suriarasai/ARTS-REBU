@@ -5,6 +5,8 @@ import { FaSearch } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
+import { setMarkerVisibility } from '../../utils/markers'
+import { markers } from '@/pages/map'
 
 export function Matching() {
 	const [, setDispatch] = useRecoilState(dispatchAtom)
@@ -23,6 +25,7 @@ export function Matching() {
 				(message) => {
 					const res = JSON.parse(message.body)
 					setDispatch(res)
+					setMarkerVisibility(markers.nearbyTaxis)
 					console.log("BOOKING", booking.bookingID, res.driverID, res.sno)
 					matchedBooking(booking.bookingID, res.driverID, res.sno)
 					setScreen('dispatch')
