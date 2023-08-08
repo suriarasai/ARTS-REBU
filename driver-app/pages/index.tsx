@@ -1,6 +1,6 @@
 import { MainScreenVisual } from "@/components/MainScreenVisual";
 import { DriverIDInput } from "../components/DriverIDInput";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { useRouter } from "next/router";
 

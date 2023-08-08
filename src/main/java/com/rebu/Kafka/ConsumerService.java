@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.rebu.Kafka.Models.ChatEvent;
 import com.rebu.Kafka.Models.DispatchEvent;
-import com.rebu.Kafka.Models.TaxiLocatorEvent;
 
 @Service
 public class ConsumerService {

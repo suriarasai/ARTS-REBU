@@ -18,11 +18,15 @@ import SetDirections from "@/utils/computeDirections";
 import { rescaleMap } from "@/utils/rescaleMap";
 import { StartTrip } from "@/components/StartTrip";
 import { Trip } from "@/components/Trip";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
 import en from "@/locales/en";
 import zh from "@/locales/zh";
 import ja from "@/locales/ja";
 import { useRouter } from "next/router";
+import { BookingEvent } from "@/types";
+import { taxiMovementTimer } from "@/utils/moveTaxiMarker";
 
 export const markers: any = {
   taxiLocation: null,
@@ -42,7 +46,7 @@ export default function Map() {
   // States
   const [driver, setDriver] = useRecoilState(driverAtom);
   const [taxi, setTaxi] = useRecoilState(taxiAtom);
-  const booking = useRecoilValue(bookingAtom);
+  const [booking, setBooking] = useRecoilState(bookingAtom);
   const [location, setLocationEvent] = useRecoilState(locationAtom);
   const [screen, setScreen] = useRecoilState(screenAtom);
   const [mapRef, setMapRef] = useState<google.maps.Map>();
@@ -133,6 +137,42 @@ export default function Map() {
     if (isLoading) return;
     if (booking.pickUpLocation) setScreen("start");
   }, [booking, isLoading]);
+
+  
+  useEffect(() => {
+    if (!booking) return
+
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client = Stomp.over(socket);
+    let res;
+
+    client.connect({}, () => {
+      client.subscribe(
+        "/user/d" + driver.driverID + "/queue/chatEvent",
+        (message: any) => {
+          res = JSON.parse(message.body);
+          if (res.type === "cancelTrip") {
+            console.log("User cancelled trip");
+            setBooking({} as BookingEvent);
+            dropRoute?.setMap(null);
+            pickupRoute?.setMap(null);
+            markers.dropoff?.setMap(null);
+            markers.dropoff = null;
+            markers.pickup?.setMap(null);
+            markers.pickup = null;
+            setRoutes({pickup: null, dropoff: null})
+            clearTimeout(taxiMovementTimer)
+            setScreen("");
+            // TODO: Popup for notifying the driver of customer-side cancellation
+          }
+        }
+      );
+    });
+
+    return () => {
+      client.disconnect(() => console.log("Disconnected from server"));
+    };
+  }, [booking]);
 
   useEffect(() => {
     if (screen === "start") {

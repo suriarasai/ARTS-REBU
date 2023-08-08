@@ -1,12 +1,12 @@
 import { addRating } from '@/server'
 import { Rating } from '@/types'
-import { userSelector } from '@/state'
 import { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { FaArrowLeft } from 'react-icons/fa'
+import { userAtom } from '@/state'
 
 const Rating = ({ closeModal }: { closeModal: any }) => {
-	const user = useRecoilValue(userSelector)
+	const user = useRecoilValue(userAtom)
 	const [stars, setStars] = useState<number | null>(null)
 	const [feedback, setFeedback] = useState<string | null>(null)
 	const [improve, setImprove] = useState({

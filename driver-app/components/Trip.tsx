@@ -8,15 +8,13 @@ import {
   screenAtom,
   taxiAtom,
 } from "@/state";
-import { MoveTaxiMarker, taxiMovementTimer } from "@/utils/moveTaxiMarker";
+import { MoveTaxiMarker } from "@/utils/moveTaxiMarker";
 import { pickupRoute, dropRoute, markers } from "@/pages/map";
 import { BookingEvent } from "@/types";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 import { produceKafkaChatEvent } from "@/server";
 
 export const Trip = ({ type, t }: { type: "dropoff" | "pickup"; t: any }) => {
-  const routes = useRecoilValue(routesAtom);
+  const [routes, setRoutes] = useRecoilState(routesAtom);
   const [arrived, setArrived] = useState(false);
   const [, setScreen] = useRecoilState(screenAtom);
   const driver = useRecoilValue(driverAtom);
@@ -26,38 +24,6 @@ export const Trip = ({ type, t }: { type: "dropoff" | "pickup"; t: any }) => {
   useEffect(() => {
     MoveTaxiMarker(routes[type], 0, driver, taxi, () => setArrived(true));
   }, [type]);
-
-  useEffect(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
-    const client = Stomp.over(socket);
-    let res;
-
-    client.connect({}, () => {
-      client.subscribe(
-        "/user/d" + driver.driverID + "/queue/chatEvent",
-        (message) => {
-          res = JSON.parse(message.body);
-          if (res.type === "cancelTrip") {
-            console.log("User cancelled trip");
-            setBooking({} as BookingEvent);
-            dropRoute.setMap(null);
-            pickupRoute.setMap(null);
-            markers.dropoff.setMap(null);
-            markers.dropoff = null;
-            markers.pickup.setMap(null);
-            markers.pickup = null;
-            setScreen("");
-            clearTimeout(taxiMovementTimer)
-            // TODO: Popup for notifying the driver of customer-side cancellation
-          }
-        }
-      );
-    });
-
-    return () => {
-      client.disconnect(() => console.log("Disconnected from server"));
-    };
-  }, []);
 
   const confirmArrival = () => {
     if (type === "pickup") {
@@ -82,8 +48,9 @@ export const Trip = ({ type, t }: { type: "dropoff" | "pickup"; t: any }) => {
       markers.dropoff = null;
       markers.pickup.setMap(null);
       markers.pickup = null;
-      setScreen("");
+      setRoutes({pickup: null, dropoff: null})
       setBooking({} as BookingEvent);
+      setScreen("");
     }
     setArrived(false);
   };

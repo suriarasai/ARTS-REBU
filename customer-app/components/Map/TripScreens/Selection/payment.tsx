@@ -1,7 +1,7 @@
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { GetPaymentMethod } from '@/server'
 import { formatCreditCardNumber } from '@/components/payment/formatCreditCardNumber'
-import { selectedCardAtom, userSelector } from '@/state'
+import { selectedCardAtom, userAtom } from '@/state'
 import { useState, useEffect } from 'react'
 import { FaMoneyBill, FaAngleDown, FaCheck, FaCreditCard } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -26,7 +26,7 @@ export function PaymentOptions({ handleShowPaymentMethod }) {
 export const SelectPaymentMethod = ({ set }: { set: Function }) => {
 	const [cards, setCards] = useState([])
 	const [selectedCard, setSelectedCard] = useRecoilState(selectedCardAtom)
-	const user = useRecoilValue(userSelector)
+	const user = useRecoilValue(userAtom)
 	const [tempCard, setTempCard] = useState(selectedCard)
 
 	useEffect(() => {
