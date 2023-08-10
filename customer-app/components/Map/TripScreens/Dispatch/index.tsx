@@ -1,10 +1,4 @@
 import Rating from '@/components/Map/TripScreens/Arrival/Rating'
-import {
-	DriverInformation,
-	RouteInformation,
-	TripInformation,
-} from '@/components/Map/TripScreens/Dispatch/TripInformation'
-import { RateTrip } from '@/components/Map/TripScreens/Dispatch/TripInformation'
 import { mark } from '@/components/Map/utils/markers'
 import { MARKERS } from '@/constants'
 import { markers } from '@/pages/map'
@@ -26,6 +20,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import { expandArray, moveTaxiMarker, taxiMovementTimer } from '../../utils/calculations'
+import { DriverInformation, RateTrip, RouteInformation, TripInformation } from './tripInformation'
 
 let taxiRoute
 

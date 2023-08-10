@@ -1,6 +1,6 @@
 import { CancelTripButton } from "@/components/Map/Controls/buttons";
 import Rating from "@/components/Map/TripScreens/Arrival/Rating";
-import { RouteInformation } from "@/components/Map/TripScreens/Dispatch/TripInformation";
+import { RouteInformation } from "@/components/Map/TripScreens/Dispatch/tripInformation";
 import { screenAtom } from "@/state";
 import { useState } from "react";
 import { FaFileAlt, FaThumbsUp } from "react-icons/fa";
