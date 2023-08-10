@@ -14,12 +14,12 @@ import {
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { AddCard } from '../components/payment/AddCard'
 import { formatCreditCardNumber } from '../components/payment/formatCreditCardNumber'
-import { userSelector } from '@/state'
+import { userAtom } from '@/state'
 import { useRecoilValue } from 'recoil'
 
 const PaymentOptions = ({}) => {
 	const [screen, setScreen] = useState<string>('main')
-	const user = useRecoilValue(userSelector)
+	const user = useRecoilValue(userAtom)
 	const [cards, setCards] = useState([])
 
 	useEffect(() => {
@@ -82,7 +82,7 @@ const PaymentOptions = ({}) => {
 }
 
 const Card = (props: any) => {
-	const user = useRecoilValue(userSelector)
+	const user = useRecoilValue(userAtom)
 	const { card, setCards, cards } = props
 	const [showCardOptions, setShowCardOptions] = useState(false)
 	const dropdownRef = useRef(null)

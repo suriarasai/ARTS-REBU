@@ -4,7 +4,7 @@ import { MobileNumber } from '@/components/account/MobileNumber'
 import { icon } from '@/constants'
 import { FaUser } from 'react-icons/fa'
 import { EmailForm } from './EmailForm'
-import { userSelector } from '@/state'
+import { userAtom } from '@/state'
 import { useRecoilValue } from 'recoil'
 
 // Main component
@@ -21,7 +21,7 @@ const AccountInformation = ({
 		populateData	: populating form data for when the user wants to update their information
 	*/
 
-	const user = useRecoilValue(userSelector)
+	const user = useRecoilValue(userAtom)
 
 	const ageArray = Array.from({ length: 82 }).map((_, i) => i + 18)
 

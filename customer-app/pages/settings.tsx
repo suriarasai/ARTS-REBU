@@ -8,7 +8,7 @@ import { HREF, Title } from '@/constants'
 import { FaAngleRight, FaBookmark, FaCreditCard, FaGifts } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
-import { userSelector } from '@/state'
+import { userAtom } from '@/state'
 
 const NavButton = ({ label, href, className, icon }: navButtonProps) => {
 	const router = useRouter()
@@ -38,7 +38,7 @@ function splitName(name: string): Array<string> {
 }
 
 const Settings = () => {
-	const user = useRecoilValue(userSelector) as User
+	const user = useRecoilValue(userAtom) as User
 	const router = useRouter()
 
 	return (

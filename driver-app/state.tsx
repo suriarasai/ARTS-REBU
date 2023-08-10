@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { atom } from "recoil";
 import {
   BookingEvent,
   DispatchEvent,
@@ -20,13 +20,6 @@ export const driverAtom = atom({
   ],
 });
 
-export const driverSelector = selector({
-  key: "driver-modifier",
-  get: ({ get }) => {
-    return get(driverAtom);
-  },
-});
-
 export const taxiAtom = atom({
   key: "taxi-atom",
   default: {} as Taxi,
@@ -38,13 +31,6 @@ export const taxiAtom = atom({
       });
     },
   ],
-});
-
-export const taxiSelector = selector({
-  key: "taxi-modifier",
-  get: ({ get }) => {
-    return get(driverAtom);
-  },
 });
 
 export const dispatchAtom = atom({
@@ -60,13 +46,6 @@ export const dispatchAtom = atom({
   ],
 });
 
-export const dispatchSelector = selector({
-  key: "dispatch-modifier",
-  get: ({ get }) => {
-    return get(dispatchAtom);
-  },
-});
-
 export const bookingAtom = atom({
   key: "booking-atom",
   default: {} as BookingEvent,
@@ -78,13 +57,6 @@ export const bookingAtom = atom({
       });
     },
   ],
-});
-
-export const bookingSelector = selector({
-  key: "booking-modifier",
-  get: ({ get }) => {
-    return get(bookingAtom);
-  },
 });
 
 export const locationAtom = atom({
@@ -99,13 +71,6 @@ export const locationAtom = atom({
   ],
 });
 
-export const locationSelector = selector({
-  key: "location-modifier",
-  get: ({ get }) => {
-    return get(locationAtom);
-  },
-});
-
 export const screenAtom = atom({
   key: "screen-atom",
   default: "" as string,
@@ -117,13 +82,6 @@ export const screenAtom = atom({
       });
     },
   ],
-});
-
-export const screenSelector = selector({
-  key: "screen-modifier",
-  get: ({ get }) => {
-    return get(screenAtom);
-  },
 });
 
 export const routesAtom = atom({
@@ -140,11 +98,4 @@ export const routesAtom = atom({
       });
     },
   ],
-});
-
-export const routesSelector = selector({
-  key: "routes-modifier",
-  get: ({ get }) => {
-    return get(routesAtom);
-  },
 });

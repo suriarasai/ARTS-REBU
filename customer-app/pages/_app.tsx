@@ -5,9 +5,7 @@ import { ThemeProvider } from 'next-themes'
 import Meta from '@/components/ui/meta'
 import '@/styles/globals.css'
 import '@/styles/maps.css'
-import { useEffect } from 'react'
-import { RecoilRoot, useRecoilValue } from 'recoil'
-import { userSelector } from '@/state'
+import { RecoilRoot } from 'recoil'
 
 const App = ({ Component, pageProps }: AppProps) => {
 	/*

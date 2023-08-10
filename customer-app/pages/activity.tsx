@@ -15,7 +15,7 @@ import {
 import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
 import { getBookingsByCustomerID } from '@/server'
 import Receipt from '@/components/Map/TripScreens/Arrival/Receipt'
-import { userSelector } from '@/state'
+import { userAtom } from '@/state'
 import { useRecoilValue } from 'recoil'
 
 const DateFilter = (
@@ -27,7 +27,7 @@ const DateFilter = (
 )
 
 const Activity = () => {
-	const user = useRecoilValue(userSelector)
+	const user = useRecoilValue(userAtom)
 
 	// On-click styling for the tabbers
 	const [activeTab, setActiveTab] = useState<string>('Upcoming')
