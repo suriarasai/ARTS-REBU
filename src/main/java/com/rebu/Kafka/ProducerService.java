@@ -31,19 +31,3 @@ public class ProducerService {
     }
 
 }
-
-// {
-//     features: [
-//         {
-//             geometry: {
-//                 coordinates: [
-//                     {
-
-//                     }
-//                 ]
-//             }
-//         }
-//     ]
-// }
-
-// event.features[0].geometry.coordinates

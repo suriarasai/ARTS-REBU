@@ -2,6 +2,7 @@ import { SelectPaymentMethod } from './payment'
 import { TaxiSelectionUI } from './options'
 import {
 	GetPaymentMethod,
+	computeNearbyTaxis,
 	createBooking,
 	produceKafkaBookingEvent,
 } from '@/server'
@@ -22,7 +23,6 @@ import { useEffect, useState } from 'react'
 import { FaCar, FaCarAlt } from 'react-icons/fa'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { PulseLoadingVisual } from '@/components/ui/PulseLoadingVisual'
-import { computeNearbyTaxis } from '../../utils/markers'
 import { markers } from '@/pages/map'
 
 export function TaxiSelection({ map }) {
@@ -54,16 +54,16 @@ export function TaxiSelection({ map }) {
 				})
 		)
 
-		computeNearbyTaxis(origin.address ? origin : userLocation, (distances) => {
+		computeNearbyTaxis(origin.address ? origin : userLocation, (res) => {
 			let newTaxi
 			let nearbyTaxiMarkers = []
 
 			// Saving the marker to the state variable
-			for (let i = 0; i < 6; i++) {
+			for (let i = 0; i < res.length; i++) {
 				newTaxi = new google.maps.Marker({
 					map: map,
-					title: distances[i].index.toString(),
-					position: new google.maps.LatLng(distances[i].lat, distances[i].lng),
+					title: res[i].driverID.toString(),
+					position: new google.maps.LatLng(res[i].lat, res[i].lng),
 					icon: {
 						url: 'https://www.svgrepo.com/show/375911/taxi.svg',
 						scaledSize: new google.maps.Size(30, 30),

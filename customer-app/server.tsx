@@ -372,3 +372,12 @@ export const getDirections = (
 			callback(response.data.routes[0])
 		})
 }
+
+export async function computeNearbyTaxis(coord: Location, _callback) {
+	const response = await api.post('/api/v1/Kafka/findNearestTaxis', {
+		lat: coord.lat,
+		lng: coord.lng,
+	})
+	console.log(response.data)
+	_callback(response.data)
+}

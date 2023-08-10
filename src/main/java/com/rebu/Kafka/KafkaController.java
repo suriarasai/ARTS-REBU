@@ -69,7 +69,7 @@ public class KafkaController {
 
         for (List<Double> taxi : taxis) {
             distance = Math.pow(taxi.get(0) - user.getLng(), 2) + Math.pow(taxi.get(1) - user.getLat(), 2);
-            driverList.add(new Driver(distance, index, taxi.get(1), taxi.get(0)));
+            driverList.add(new Driver(distance, index, taxi.get(0), taxi.get(1)));
             index++;
         }
 

@@ -96,37 +96,3 @@ export function setMarkerVisibility(
 		marker[i].setMap(map)
 	}
 }
-
-export function computeNearbyTaxis(
-	coord: Location,
-	_callback
-) {
-	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {
-			const coordinates = data.features[0].geometry.coordinates
-
-			const distances: Array<{
-				distance: number
-				lng: number
-				lat: number
-				index: number
-			}> = []
-
-			// Calculating the Euclidean distance
-			coordinates.forEach(([a, b]: number[], index: number) =>
-				distances.push({
-					distance: Math.pow(a - coord.lng, 2) + Math.pow(b - coord.lat, 2),
-					lng: a,
-					lat: b,
-					index: index + 1,
-				})
-			)
-
-			// Sorting the distances in ascending order
-			distances.sort((a, b) => a.distance - b.distance)
-			_callback(distances)
-		})
-}
