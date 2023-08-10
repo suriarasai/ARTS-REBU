@@ -3,12 +3,10 @@
 package com.rebu.Kafka;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ProducerService {
@@ -30,13 +28,6 @@ public class ProducerService {
 
     public void chatProducer(String message) {
         kafkaTemplate.send("chatEvent", message);
-    }
-
-    public void findNearestTaxis (String message) {
-        String uri = "https://api.data.gov.sg/v1/transport/taxi-availability";
-        RestTemplate restTemplate = new RestTemplate();
-        String result = restTemplate.getForObject(uri, String.class);
-        System.out.println(result);
     }
 
 }
