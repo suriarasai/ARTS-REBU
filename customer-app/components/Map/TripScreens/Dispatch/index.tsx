@@ -25,7 +25,7 @@ import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
-import { expandArray } from '../../utils/calculations'
+import { expandArray, moveTaxiMarker, taxiMovementTimer } from '../../utils/calculations'
 
 let taxiRoute
 
@@ -59,19 +59,11 @@ export function Dispatch({ map }) {
 			client.subscribe('/topic/taxiLocatorEvent', (message) => {
 				pos = JSON.parse(message.body).currentPosition
 				!arrived && setCounter((counter) => counter + 1)
+				clearTimeout(taxiMovementTimer)
 
 				if (markers.taxi) {
 					interpolatedArray = expandArray(pos, prevPos, 10)
-					for (let i = 0; i < interpolatedArray.length; i++) {
-						setTimeout(function () {
-							markers.taxi.setPosition(
-								new google.maps.LatLng(
-									interpolatedArray[i].lat,
-									interpolatedArray[i].lng
-								)
-							)
-						}, 250 / interpolatedArray.length)
-					}
+					moveTaxiMarker(interpolatedArray, 0)
 				} else {
 					markers.taxi = mark(map, pos, MARKERS.TAXI, false)
 					drawTaxiRoute(map, pos, userPos, (eta) => {
@@ -108,6 +100,7 @@ export function Dispatch({ map }) {
 			taxiRoute?.setMap(null)
 			taxiRoute = null
 			setNotification('')
+			clearTimeout(taxiMovementTimer)
 		}
 	}, [])
 
