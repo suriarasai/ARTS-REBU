@@ -91,11 +91,11 @@ export function Dispatch({ map }) {
 		})
 
 		return () => {
+			clearTimeout(taxiMovementTimer)
 			client.disconnect(() => console.log('Disconnected from server'))
 			taxiRoute?.setMap(null)
 			taxiRoute = null
 			setNotification('')
-			clearTimeout(taxiMovementTimer)
 		}
 	}, [])
 

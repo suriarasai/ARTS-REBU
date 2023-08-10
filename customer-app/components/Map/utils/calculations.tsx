@@ -159,8 +159,8 @@ export function expandArray(pos, prevPos, steps: number) {
 export let taxiMovementTimer
 
 export function moveTaxiMarker(polyline, iter) {
-	setTimeout(function () {
-	taxiMovementTimer = markers.taxi.setPosition(
+	taxiMovementTimer = setTimeout(function () {
+		markers.taxi.setPosition(
 			new google.maps.LatLng(polyline[iter].lat, polyline[iter].lng)
 		)
 		if (iter < polyline.length - 1) {
