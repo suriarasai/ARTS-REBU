@@ -72,7 +72,7 @@ export function CancelTripButton({
 	const [, setOriginInput] = useRecoilState(originInputAtom)
 	const [, setDestInput] = useRecoilState(destInputAtom)
 	const [, setTripStats] = useRecoilState(tripStatsAtom)
-	const [, setScreen] = useRecoilState(screenAtom)
+	const [screen, setScreen] = useRecoilState(screenAtom)
 	const [, setETA] = useRecoilState(etaCounterAtom)
 	const [, setArrived] = useRecoilState(arrivalAtom)
 	const userLocation = useRecoilValue(userLocationAtom)
@@ -91,6 +91,20 @@ export function CancelTripButton({
 			placeName: null,
 		}
 
+		if (dispatch.driverID) {
+			setDispatch({} as DispatchEvent)
+			setBooking({} as bookingEvent)
+			if (!(screen === 'arrival')) {
+				cancelBooking(booking.bookingID)
+				produceKafkaChatEvent(
+					JSON.stringify({
+						recipientID: 'd' + dispatch.driverID,
+						type: 'cancelTrip',
+					})
+				)
+			}
+		}
+
 		setOrigin(clearLocation)
 		setDest(clearLocation)
 		setScreen('')
@@ -102,20 +116,6 @@ export function CancelTripButton({
 		setMarkerVisibility(markers.nearbyTaxis)
 		setTripStats({ distance: null, duration: null })
 		map.panTo(new google.maps.LatLng(userLocation.lat, userLocation.lng))
-
-		if (dispatch.driverID) {
-			setDispatch({} as DispatchEvent)
-			setBooking({} as bookingEvent)
-			if (!booking.dropTime) {
-				cancelBooking(booking.bookingID)
-				produceKafkaChatEvent(
-					JSON.stringify({
-						recipientID: 'd' + dispatch.driverID,
-						type: 'cancelTrip',
-					})
-				)
-			}
-		}
 	}
 
 	return (
