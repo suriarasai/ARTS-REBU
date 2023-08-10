@@ -133,3 +133,25 @@ function distKM(lat1, lon1, lat2, lon2) {
 
 	return 2 * a.atan2(a.sqrt(e), a.sqrt(1 - e)) * 6371
 }
+
+export function expandArray(pos, prevPos, steps: number) {
+	/* Adds points to an array by interpolating the coordinates between 2 points
+	 *
+	 * @param coords	: the polyline returned by Google Maps (DirectionService API)
+	 * @param steps		: how many points to interpolate between every 2 points
+	 */
+	let arr = [] // array to store new data points
+
+	const latInc = (pos.lat - prevPos.lat) / steps
+	const lngInc = (pos.lng - prevPos.lng) / steps
+
+	// Iterating through every 'step'
+	for (let j = 0; j < steps; j++) {
+		arr.push({
+			lat: prevPos.lat + (j + 1) * latInc,
+			lng: prevPos.lng + (j + 1) * lngInc,
+		})
+	}
+
+	return arr
+}

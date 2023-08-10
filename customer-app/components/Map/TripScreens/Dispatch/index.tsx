@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
+import { expandArray } from '../../utils/calculations'
 
 let taxiRoute
 
@@ -50,14 +51,27 @@ export function Dispatch({ map }) {
 		const socket = new SockJS('http://localhost:8080/ws')
 		const client = Stomp.over(socket)
 		let pos // taxi position
+		let prevPos // previous taxi position
 		let res // response from the chat websocket
+		let interpolatedArray // expanded array between pos and prevPos for smoother marker movement
 
 		client.connect({}, () => {
 			client.subscribe('/topic/taxiLocatorEvent', (message) => {
 				pos = JSON.parse(message.body).currentPosition
 				!arrived && setCounter((counter) => counter + 1)
+
 				if (markers.taxi) {
-					markers.taxi.setPosition(new google.maps.LatLng(pos.lat, pos.lng))
+					interpolatedArray = expandArray(pos, prevPos, 10)
+					for (let i = 0; i < interpolatedArray.length; i++) {
+						setTimeout(function () {
+							markers.taxi.setPosition(
+								new google.maps.LatLng(
+									interpolatedArray[i].lat,
+									interpolatedArray[i].lng
+								)
+							)
+						}, 250 / interpolatedArray.length)
+					}
 				} else {
 					markers.taxi = mark(map, pos, MARKERS.TAXI, false)
 					drawTaxiRoute(map, pos, userPos, (eta) => {
@@ -65,6 +79,7 @@ export function Dispatch({ map }) {
 						setETACounter(eta)
 					})
 				}
+				prevPos = pos
 			})
 			client.subscribe(
 				'/user/c' + dispatch.customerID + '/queue/chatEvent',
@@ -155,4 +170,3 @@ export function drawTaxiRoute(map, origin, dest, setETA) {
 		}
 	)
 }
-
