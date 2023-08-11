@@ -22,7 +22,7 @@ export function ExpandSearch() {
 
 	return (
 		<div
-			className={`transparent-dark z-20 absolute left-0 top-0 h-full w-full space-y-2 ${
+			className={`transparent-dark absolute left-0 top-0 z-20 h-full w-full space-y-2 overflow-y-hidden ${
 				dest.lat ? 'pt-48' : 'pt-32'
 			}`}
 		>
@@ -117,24 +117,27 @@ function SavedLocations() {
 		setSearchType(0)
 	}
 	return (
-		<div className='flex flex-wrap bg-zinc-600 p-5'>
-			<FaStar className='mr-6 text-xl text-green-200' />
-			<b className='mb-4 text-sm text-zinc-100'>Saved Locations</b>
-
-			{user.savedLocations && user.savedLocations.length > 0 ? (
-				user.savedLocations?.map((item: Location, index: number) => (
-					<div
-						className='mb-3 ml-11 w-full text-zinc-50'
-						key={index}
-						onClick={() => handleClick(item)}
-					>
-						<p className='font-normal'>{item.placeName}</p>
-						<h5>Singapore {item.postcode}</h5>
-					</div>
-				))
-			) : (
-				<p className='ml-11 w-full'>No saved locations</p>
-			)}
+		<div className='bg-zinc-600 p-5'>
+			<div className='flex flex-wrap'>
+				<FaStar className='mr-6 text-xl text-green-200' />
+				<b className='mb-4 text-sm text-zinc-100'>Saved Locations</b>
+			</div>
+			<div className='overflow-x-hidden h-72 overflow-y-auto'>
+				{user.savedLocations && user.savedLocations.length > 0 ? (
+					user.savedLocations?.map((item: Location, index: number) => (
+						<div
+							className='mb-3 ml-11 w-full text-zinc-50'
+							key={index}
+							onClick={() => handleClick(item)}
+						>
+							<p className='font-normal'>{item.placeName}</p>
+							<h5>Singapore {item.postcode}</h5>
+						</div>
+					))
+				) : (
+					<p className='ml-11 w-full'>No saved locations</p>
+				)}
+			</div>
 		</div>
 	)
 }
