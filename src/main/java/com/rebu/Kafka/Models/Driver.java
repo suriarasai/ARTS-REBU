@@ -6,10 +6,10 @@ import lombok.Data;
 public class Driver implements Comparable<Driver> {
     Double distance;
     Integer driverID;
-    Double lng;
-    Double lat;
+    Float lng;
+    Float lat;
 
-    public Driver(Double distance, Integer driverID, Double lng, Double lat) {
+    public Driver(Double distance, Integer driverID, Float lng, Float lat) {
         this.distance = distance;
         this.driverID = driverID;
         this.lng = lng;

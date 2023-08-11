@@ -21,7 +21,7 @@ export function Matching() {
 
 		client.connect({}, () => {
 			client.subscribe(
-				'/user/' + user.customerID + '/queue/dispatchEvent',
+				'/user/c' + user.customerID + '/queue/dispatchEvent',
 				(message) => {
 					const res = JSON.parse(message.body)
 					setDispatch(res)

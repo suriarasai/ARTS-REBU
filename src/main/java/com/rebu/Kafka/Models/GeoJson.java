@@ -32,7 +32,7 @@ public class GeoJson {
     @Data
     public class Geometry {
         String type;
-        List<List<Double>> coordinates;
+        List<List<Float>> coordinates;
     }
 
     @Data

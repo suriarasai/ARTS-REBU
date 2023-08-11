@@ -3,6 +3,7 @@
 package com.rebu.Kafka;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -10,8 +11,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.rebu.Kafka.Models.BookingEvent;
 import com.rebu.Kafka.Models.ChatEvent;
 import com.rebu.Kafka.Models.DispatchEvent;
+import com.rebu.Kafka.Models.Driver;
+import com.rebu.Kafka.Models.UserLocation;
 
 @Service
 public class ConsumerService {
@@ -19,10 +23,24 @@ public class ConsumerService {
     @Autowired
     private SimpMessagingTemplate template;
 
+    @Autowired
+    ProducerService producer;
+
     @KafkaListener(topics = "bookingEvent", groupId = "rebu")
     public void bookingConsumer(String receivedMessage) {
         System.out.println("Booking Event: " + receivedMessage + " @ " + Instant.now().toEpochMilli());
-        this.template.convertAndSend("/topic/bookingEvent", receivedMessage);
+
+        Gson gson = new Gson();
+        BookingEvent event = gson.fromJson(receivedMessage, BookingEvent.class);
+
+        List<Driver> drivers = producer.findNearestTaxis(new UserLocation(event.getPickUpLocation()));
+
+        for (Driver driver : drivers) {
+            this.template.convertAndSendToUser("d" + driver.getDriverID().toString(), "/queue/bookingEvent",
+                    receivedMessage);
+        }
+
+        System.out.println(drivers);
     }
 
     @KafkaListener(topics = "dispatchEvent", groupId = "rebu")
@@ -30,7 +48,8 @@ public class ConsumerService {
         Gson gson = new Gson();
         DispatchEvent event = gson.fromJson(receivedMessage, DispatchEvent.class);
         System.out.println("Dispatch Event: " + event + " @ " + Instant.now().toEpochMilli());
-        this.template.convertAndSendToUser(event.getCustomerID().toString(), "/queue/dispatchEvent", receivedMessage);
+        this.template.convertAndSendToUser("c" + event.getCustomerID().toString(), "/queue/dispatchEvent",
+                receivedMessage);
     }
 
     @KafkaListener(topics = "taxiLocatorEvent", groupId = "rebu")

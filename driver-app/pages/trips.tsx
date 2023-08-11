@@ -22,6 +22,7 @@ export default function Trips() {
   const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
 
   const [trips, setTrips] = useState<BookingEvent[]>([]);
+  const driver = useRecoilValue(driverAtom);
 
   // Booking stream consumer: Looking for rides to match with
   useEffect(() => {
@@ -29,9 +30,12 @@ export default function Trips() {
     const client = Stomp.over(socket);
 
     client.connect({}, () => {
-      client.subscribe("/topic/bookingEvent", (newEvent) => {
-        addBooking(JSON.parse(newEvent.body));
-      });
+      client.subscribe(
+        "/user/d" + driver.driverID + "/queue/bookingEvent",
+        (newEvent) => {
+          addBooking(JSON.parse(newEvent.body));
+        }
+      );
     });
 
     return () => {
@@ -129,5 +133,3 @@ const CircleLabel = ({ label }: { label: string }) => {
     </div>
   );
 };
-
-

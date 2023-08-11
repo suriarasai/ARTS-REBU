@@ -378,6 +378,5 @@ export async function computeNearbyTaxis(coord: Location, _callback) {
 		lat: coord.lat,
 		lng: coord.lng,
 	})
-	console.log(response.data)
 	_callback(response.data)
 }
