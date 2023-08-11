@@ -22,16 +22,18 @@ export function ExpandSearch() {
 
 	return (
 		<div
-			className={`absolute z-20 left-0 top-0 h-full w-full space-y-2 bg-zinc-800 ${
+			className={`transparent-dark z-20 absolute left-0 top-0 h-full w-full space-y-2 ${
 				dest.lat ? 'pt-48' : 'pt-32'
 			}`}
 		>
-			<div className='flex'>
-				<FavouriteLocation type='home' />
-				<FavouriteLocation type='work' />
+			<div className='responsive'>
+				<div className='flex'>
+					<FavouriteLocation type='home' />
+					<FavouriteLocation type='work' />
+				</div>
+				<SetLocationOnMap />
+				<SavedLocations />
 			</div>
-			<SetLocationOnMap />
-			<SavedLocations />
 		</div>
 	)
 }
@@ -69,7 +71,9 @@ function FavouriteLocation({ type }) {
 				{type === 'home' ? <FaHouseUser /> : <FaSuitcase />}
 			</div>
 			<div className='pr-5'>
-				<b className='text-sm text-zinc-100'>{type[0].toUpperCase() + type.slice(1)}</b>
+				<b className='text-sm text-zinc-100'>
+					{type[0].toUpperCase() + type.slice(1)}
+				</b>
 				<h5 className='text-zinc-50'>
 					{user[type] ? user[type].placeName : 'Set Location'}
 				</h5>

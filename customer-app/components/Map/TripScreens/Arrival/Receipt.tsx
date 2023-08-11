@@ -6,9 +6,7 @@ import { FaDownload, FaPrint, FaShare } from 'react-icons/fa'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { PDFExport } from '@progress/kendo-react-pdf'
 import { formatCreditCardNumber } from '@/components/payment/formatCreditCardNumber'
-import { useRecoilValue } from 'recoil'
 import { bookingEvent } from '@/types'
-import { userAtom } from '@/state'
 
 const ref: any = createRef()
 
@@ -61,36 +59,38 @@ const Receipt = ({
 	}
 
 	return (
-		<div className='absolute top-0 left-0 z-50 flex flex-col pt-12 h-screen w-screen p-4 bg-zinc-100 text-sm'>
-			<PDFExport paperSize='A4' margin='0.5cm' ref={ref}>
-				<Image className='mb-8' src={RebuLogo} width={100} alt='Rebu Logo' />
+		<div className='absolute left-0 top-0 z-50 h-screen w-screen bg-zinc-100 p-4'>
+			<div className='responsive flex flex-col pt-12 text-sm'>
+				<PDFExport paperSize='A4' margin='0.5cm' ref={ref}>
+					<Image className='mb-8' src={RebuLogo} width={100} alt='Rebu Logo' />
 
-				<label>Your booking</label>
-				<BookingInformation
-					bookingID={bookingID}
-					pickUpLocation={bookingInformation.pickUpLocation!}
-					dropLocation={bookingInformation.dropLocation!}
-					pickUpTime={bookingInformation.pickUpTime}
-					dropTime={bookingInformation.dropTime}
-					taxiNumber={taxiInformation.taxiNumber}
-				/>
+					<label>Your booking</label>
+					<BookingInformation
+						bookingID={bookingID}
+						pickUpLocation={bookingInformation.pickUpLocation!}
+						dropLocation={bookingInformation.dropLocation!}
+						pickUpTime={bookingInformation.pickUpTime}
+						dropTime={bookingInformation.dropTime}
+						taxiNumber={taxiInformation.taxiNumber}
+					/>
 
-				<hr className='my-4 border-2 border-zinc-100' />
+					<hr className='my-4 border-2 border-zinc-100' />
 
-				<label>Payment Detail</label>
-				<FareBreakdown fare={bookingInformation.fare} />
+					<label>Payment Detail</label>
+					<FareBreakdown fare={bookingInformation.fare} />
 
-				<hr className='my-4 border-2 border-zinc-100' />
+					<hr className='my-4 border-2 border-zinc-100' />
 
-				<label>Payment</label>
-				<PaymentInformation
-					fare={bookingInformation.fare}
-					dropTime={bookingInformation.dropTime}
-					paymentMethod={bookingInformation.paymentMethod}
-				/>
-			</PDFExport>
+					<label>Payment</label>
+					<PaymentInformation
+						fare={bookingInformation.fare}
+						dropTime={bookingInformation.dropTime}
+						paymentMethod={bookingInformation.paymentMethod}
+					/>
+				</PDFExport>
 
-			<MenuOptions setScreen={setScreen} setPopup={setPopup} />
+				<MenuOptions setScreen={setScreen} setPopup={setPopup} />
+			</div>
 		</div>
 	)
 }

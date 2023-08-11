@@ -215,7 +215,11 @@ select[id='payment'] {
 }
 
 .responsive {
-	@apply ml-auto mr-auto max-w-screen-md;
+	@apply ml-auto mr-auto max-w-screen-sm;
+}
+
+.transparent-dark {
+	background-color: rgba(0, 0, 0, 0.2);
 }
 
 .star {

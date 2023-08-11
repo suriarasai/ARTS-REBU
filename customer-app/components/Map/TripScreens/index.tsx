@@ -101,7 +101,7 @@ export function Trip({ map }) {
 				/>
 			)}
 
-			<div className='w-screen-md-max absolute bottom-0 left-0 right-0 ml-auto mr-auto w-5/6 rounded-t-lg bg-gray-700 shadow-sm'>
+			<div className='absolute bottom-0 left-0 right-0 responsive w-5/6 rounded-t-lg bg-gray-700 shadow-sm'>
 				<hr
 					className='my-1.5 ml-auto mr-auto w-40 rounded-full border-2 border-zinc-400'
 					onClick={handleCollapse}
