@@ -12,7 +12,7 @@ import {
   taxiAtom,
 } from "@/state";
 import Styles from "@/public/resources/maps.json";
-import AddMarker from "@/utils/addMarker";
+import AddMarker from "@/utils/AddMarker";
 import { BackButton } from "@/components/BackButton";
 import SetDirections from "@/utils/computeDirections";
 import { rescaleMap } from "@/utils/rescaleMap";

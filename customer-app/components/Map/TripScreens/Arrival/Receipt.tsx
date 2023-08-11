@@ -4,7 +4,6 @@ import RebuLogo from '@/public/images/rebu-logo.png'
 import Image from 'next/image'
 import { FaDownload, FaPrint, FaShare } from 'react-icons/fa'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
-import { Popup } from '@/components/ui/Popup'
 import { PDFExport } from '@progress/kendo-react-pdf'
 import { formatCreditCardNumber } from '@/components/payment/formatCreditCardNumber'
 import { useRecoilValue } from 'recoil'
@@ -24,11 +23,10 @@ const Receipt = ({
 	booking?: any
 	taxi?: any
 }) => {
-	const user = useRecoilValue(userAtom)
 	const [bookingInformation, setBookingInformation] =
 		useState<bookingEvent | null>(null)
 	const [taxiInformation, setTaxiInformation] = useState<any>(null)
-	const [popup, setPopup] = useState(null)
+	const [, setPopup] = useState(null)
 
 	useEffect(() => {
 		if (booking) {

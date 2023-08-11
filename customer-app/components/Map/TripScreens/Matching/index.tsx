@@ -7,13 +7,17 @@ import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import { setMarkerVisibility } from '../../utils/markers'
 import { markers } from '@/pages/map'
+import { mockDispatchEvent } from './mockDispatchEvent'
 
 export function Matching() {
 	const [, setDispatch] = useRecoilState(dispatchAtom)
 	const [, setScreen] = useRecoilState(screenAtom)
-	const nextScreen = () => setScreen('dispatch')
 	const user = useRecoilValue(userAtom)
 	const booking = useRecoilValue(bookingAtom)
+
+	const mockDriver = () => {
+		handleDispatchEvent(mockDispatchEvent(user, booking))
+	}
 
 	useEffect(() => {
 		const socket = new SockJS('http://localhost:8080/ws')
@@ -22,14 +26,7 @@ export function Matching() {
 		client.connect({}, () => {
 			client.subscribe(
 				'/user/c' + user.customerID + '/queue/dispatchEvent',
-				(message) => {
-					const res = JSON.parse(message.body)
-					setDispatch(res)
-					setMarkerVisibility(markers.nearbyTaxis)
-					console.log("BOOKING", booking.bookingID, res.driverID, res.sno)
-					matchedBooking(booking.bookingID, res.driverID, res.sno)
-					setScreen('dispatch')
-				}
+				(message) => handleDispatchEvent(JSON.parse(message.body))
 			)
 		})
 
@@ -38,9 +35,18 @@ export function Matching() {
 		}
 	}, [])
 
+	const handleDispatchEvent = (res) => {
+		setDispatch(res)
+		setMarkerVisibility(markers.nearbyTaxis)
+		console.log('BOOKING', booking.bookingID, res.driverID, res.sno)
+		matchedBooking(booking.bookingID, res.driverID, res.sno)
+		setScreen('dispatch')
+	}
+
 	return (
+		// Clickong on the FaSearch icon will create a mock driver object
 		<div className='flex flex-col items-center justify-center'>
-			<FaSearch className='my-5 text-3xl text-green-300' onClick={nextScreen} />
+			<FaSearch className='my-5 text-3xl text-green-300' onClick={mockDriver} />
 			<h1 className='my-5 font-medium text-zinc-100'>
 				Looking for a driver...
 			</h1>

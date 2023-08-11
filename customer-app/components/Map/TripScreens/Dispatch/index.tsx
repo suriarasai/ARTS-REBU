@@ -21,8 +21,9 @@ import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import { expandArray, moveTaxiMarker, taxiMovementTimer } from '../../utils/calculations'
 import { DriverInformation, RateTrip, RouteInformation, TripInformation } from './tripInformation'
+import MockDriver from '../../utils/mockedDriver'
 
-let taxiRoute
+export let taxiRoute
 
 export function Dispatch({ map }) {
 	const [, setScreen] = useRecoilState(screenAtom)
@@ -119,6 +120,8 @@ export function Dispatch({ map }) {
 			}
 		}
 	}, [etaCounter])
+
+	if (dispatch.tmdtid === 0) MockDriver()
 
 	return (
 		<>
