@@ -1,13 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from "react";
 import { GoogleMap, LoadScriptNext } from "@react-google-maps/api";
-import { useRecoilState, useRecoilValue } from "recoil";
 import Styles from "@/public/resources/maps.json";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import {
+  GridAlgorithm,
+  MarkerClusterer,
+  NoopAlgorithm,
+  SuperClusterAlgorithm,
+} from "@googlemaps/markerclusterer";
 
 let taxiMarkers: any = [];
+let markerCluster: any = null;
 
 const libraries = ["places", "geometry"];
 export let pickupRoute: any;
@@ -16,7 +19,9 @@ export let dropRoute: any;
 export default function Simulation() {
   const [mapRef, setMapRef] = useState<google.maps.Map>();
   const [isLoading, setIsLoading] = useState(true);
-  let renderTaxiTimer: any;
+  const useGrid = () => loadTaxis(new GridAlgorithm({}));
+  const useNoop = () => loadTaxis(null);
+  const useSuper = () => loadTaxis(new SuperClusterAlgorithm({}));
 
   // On map load... set location to current location
   const loadMap = useCallback(function callback(map: google.maps.Map) {
@@ -36,50 +41,53 @@ export default function Simulation() {
 
   useEffect(() => {
     if (isLoading) return;
-    rerenderTaxis(0);
-
-    return () => {
-      clearTimeout(renderTaxiTimer);
-    };
+    loadTaxis(new GridAlgorithm({}));
   }, [isLoading]);
 
-  function rerenderTaxis(iter: number) {
+  const loadTaxis = (algorithm: any) => {
     let newTaxi;
+    clearTaxis();
 
-    renderTaxiTimer = setTimeout(
-      function () {
-        fetch("https://api.data.gov.sg/v1/transport/taxi-availability")
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-            const coordinates = data.features[0].geometry.coordinates;
-            const markers = coordinates.map(
-              (coord: number[], index: number) =>
-                new google.maps.Marker({
-                  position: new google.maps.LatLng(coord[1], coord[0]),
-                  title: index.toString(),
-                  icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 3,
-                  },
-                  optimized: true,
-                })
-            );
-            var markerCluster = new MarkerClusterer({
-              map: mapRef,
-              markers: markers,
-            });
+    fetch("https://api.data.gov.sg/v1/transport/taxi-availability")
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        const coordinates = data.features[0].geometry.coordinates;
+        const markers = coordinates.map((coord: number[], index: number) => {
+          newTaxi = new google.maps.Marker({
+            position: new google.maps.LatLng(coord[1], coord[0]),
+            title: (index + 1).toString(),
+            map: !algorithm ? mapRef : null,
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 3,
+            },
+            optimized: true,
           });
+          taxiMarkers.push(newTaxi);
+          return newTaxi;
+        });
 
-        if (iter < 4) {
-          rerenderTaxis(iter + 1);
-          console.log("Taxis reloaded");
-        }
-      },
-      iter === 0 ? 0 : 30000
-    );
-  }
+        if (!algorithm) return;
+
+        markerCluster = new MarkerClusterer({
+          map: mapRef,
+          markers: markers,
+          algorithm: algorithm,
+        });
+      });
+  };
+
+  const clearTaxis = () => {
+    if (taxiMarkers.length !== 0) {
+      for (let i = 0; i < taxiMarkers.length; i++) {
+        taxiMarkers[i].setMap(null);
+      }
+      taxiMarkers = [];
+      markerCluster?.clearMarkers();
+    }
+  };
 
   return (
     <LoadScriptNext
@@ -100,6 +108,14 @@ export default function Simulation() {
           }}
           onLoad={loadMap}
         />
+        <div className="dropup absolute bottom-0 left-0 mb-5 ml-5">
+          <button>Cluster Algorithms</button>
+          <div className="dropup-content">
+            <a onClick={useNoop}>None</a>
+            <a onClick={useGrid}>Sparse</a>
+            <a onClick={useSuper}>Dense</a>
+          </div>
+        </div>
       </div>
     </LoadScriptNext>
   );
