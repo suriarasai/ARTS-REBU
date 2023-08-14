@@ -87,9 +87,6 @@ export default function Simulation() {
                   TaxiType: ${taxi.taxiType}
                 `);
                 infoWindow.open(mapRef, taxiMarkers[index]);
-
-                // DriverID, driverName, driverphone, rating
-                // taxino, sno, taxitype
               });
             });
           });

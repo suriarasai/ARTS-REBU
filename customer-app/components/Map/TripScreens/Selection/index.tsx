@@ -1,9 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { SelectPaymentMethod } from './payment'
 import { TaxiSelectionUI } from './options'
 import {
 	GetPaymentMethod,
 	computeNearbyTaxis,
 	createBooking,
+	getTaxi,
 	produceKafkaBookingEvent,
 } from '@/server'
 import { User } from '@/types'
@@ -55,28 +57,71 @@ export function TaxiSelection({ map }) {
 		)
 
 		computeNearbyTaxis(origin.address ? origin : userLocation, (res) => {
-			let newTaxi
-			let nearbyTaxiMarkers = []
-
-			// Saving the marker to the state variable
-			for (let i = 0; i < res.length; i++) {
-				newTaxi = new google.maps.Marker({
-					map: map,
-					title: res[i].driverID.toString(),
-					position: new google.maps.LatLng(res[i].lat, res[i].lng),
-					icon: {
-						url: 'https://www.svgrepo.com/show/375911/taxi.svg',
-						scaledSize: new google.maps.Size(30, 30),
-					},
-				})
-				nearbyTaxiMarkers.push(newTaxi)
+			const computeETA = (distance, count) => {
+				if (count === 0) return 0
+				return Math.sqrt(distance / count) * 111139 * 0.3
 			}
-			markers.nearbyTaxis = nearbyTaxiMarkers
+
+			processTaxis(res, (data) => {
+				setTaxiETA({
+					regular: computeETA(data.regDistance, data.regCount),
+					plus: computeETA(data.plusDistance, data.plusCount),
+				})
+			})
 		})
 	}, [])
 
+	const processTaxis = (res, _callback) => {
+		let newTaxi
+		let nearbyTaxiMarkers = []
+		let regularTaxiDistance = 0
+		let regularTaxiCount = 0
+		let plusTaxiDistance = 0
+		let plusTaxiCount = 0
+
+		// Saving the marker to the state variable
+		for (let i = 0; i < res.length; i++) {
+			newTaxi = new google.maps.Marker({
+				map: map,
+				title: res[i].driverID.toString(),
+				position: new google.maps.LatLng(res[i].lat, res[i].lng),
+				icon: {
+					url: 'https://www.svgrepo.com/show/375911/taxi.svg',
+					scaledSize: new google.maps.Size(30, 30),
+				},
+			})
+
+			getTaxi(res[i].driverID, (taxi) => {
+				if (taxi === '') {
+					console.log('Taxi not found')
+				} else {
+					if (taxi.taxiType === 'Plus') {
+						plusTaxiDistance += res[i].distance
+						plusTaxiCount++
+					} else if (taxi.taxiType === 'Regular') {
+						regularTaxiDistance += res[i].distance
+						regularTaxiCount++
+					}
+					if (i === res.length - 1) {
+						if (regularTaxiCount === 0) console.log('No regular taxis')
+						if (plusTaxiCount === 0) console.log('No plus taxis')
+						_callback({
+							regDistance: regularTaxiDistance,
+							regCount: regularTaxiCount,
+							plusDistance: plusTaxiDistance,
+							plusCount: plusTaxiCount,
+						})
+					}
+				}
+			})
+
+			nearbyTaxiMarkers.push(newTaxi)
+		}
+		markers.nearbyTaxis = nearbyTaxiMarkers
+	}
+
 	useEffect(() => {
-		if (!tripStats.distance) return
+		if (!tripStats.distance || !taxiETA.regular || !taxiETA.plus) return
 
 		setOptions({
 			regular: {
@@ -106,7 +151,7 @@ export function TaxiSelection({ map }) {
 				desc: 'Better cars',
 			},
 		})
-	}, [tripStats])
+	}, [tripStats, taxiETA])
 
 	if (!options || !tripStats.distance) {
 		return <PulseLoadingVisual />

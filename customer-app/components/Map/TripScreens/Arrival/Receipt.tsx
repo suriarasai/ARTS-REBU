@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { getBooking, getTaxi } from '@/server'
 import { createRef, useEffect, useState } from 'react'
 import RebuLogo from '@/public/images/rebu-logo.png'

@@ -1,6 +1,4 @@
-import { screenAtom } from '@/state'
 import Image from 'next/image'
-import { useRecoilState } from 'recoil'
 import { PaymentOptions } from './payment'
 
 export function TaxiSelectionUI({
@@ -41,17 +39,22 @@ export function TaxiSelectionUI({
 }
 
 function RegularTaxi({ options, handleChangeSelection, selectedTaxi }) {
+	const isAvail = options.taxiETA.toFixed(0) != 0
 	return (
 		<div
 			className={`relative w-1/2 rounded-md bg-gray-600 p-2 text-zinc-50 ${
-				selectedTaxi === 'regular' ? 'border-2 border-green-200' : ''
+				!isAvail
+					? 'border-2 border-red-200'
+					: selectedTaxi === 'regular'
+					? 'border-2 border-green-200'
+					: ''
 			}`}
 			onClick={handleChangeSelection}
 		>
 			<label className='text-zinc-50'>Regular</label>
 			{/* fare, eta, seats */}
 			<p>${options.fare}</p>
-			<p>{options.taxiETA + ' min'}</p>
+			<p>{isAvail ? options.taxiETA + ' min' : 'Not Available'}</p>
 			<p>1-{options.taxiPassengerCapacity} ppl</p>
 			<Image
 				src='https://www.svgrepo.com/show/112781/car-rounded-shape-side-view.svg'
