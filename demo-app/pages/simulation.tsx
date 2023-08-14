@@ -5,16 +5,14 @@ import Styles from "@/public/resources/maps.json";
 import {
   GridAlgorithm,
   MarkerClusterer,
-  NoopAlgorithm,
   SuperClusterAlgorithm,
 } from "@googlemaps/markerclusterer";
 
 let taxiMarkers: any = [];
 let markerCluster: any = null;
+let infoWindow: any = null;
 
 const libraries = ["places", "geometry"];
-export let pickupRoute: any;
-export let dropRoute: any;
 
 export default function Simulation() {
   const [mapRef, setMapRef] = useState<google.maps.Map>();
@@ -45,7 +43,7 @@ export default function Simulation() {
   }, [isLoading]);
 
   const loadTaxis = (algorithm: any) => {
-    let newTaxi;
+    let newTaxi: any;
     clearTaxis();
 
     fetch("https://api.data.gov.sg/v1/transport/taxi-availability")
@@ -65,7 +63,13 @@ export default function Simulation() {
             },
             optimized: true,
           });
+          infoWindow = new google.maps.InfoWindow();
           taxiMarkers.push(newTaxi);
+          taxiMarkers[index].addListener("mouseover", () => {
+            infoWindow.close()
+            infoWindow.setContent((index + 1).toString());
+            infoWindow.open(mapRef, taxiMarkers[index]);
+          });
           return newTaxi;
         });
 
