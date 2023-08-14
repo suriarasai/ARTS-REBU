@@ -7,6 +7,7 @@ import {
   MarkerClusterer,
   SuperClusterAlgorithm,
 } from "@googlemaps/markerclusterer";
+import { getDriver, getTaxi } from "@/server";
 
 let taxiMarkers: any = [];
 let markerCluster: any = null;
@@ -44,6 +45,7 @@ export default function Simulation() {
 
   const loadTaxis = (algorithm: any) => {
     let newTaxi: any;
+    let queryID: any;
     clearTaxis();
 
     fetch("https://api.data.gov.sg/v1/transport/taxi-availability")
@@ -66,9 +68,30 @@ export default function Simulation() {
           infoWindow = new google.maps.InfoWindow();
           taxiMarkers.push(newTaxi);
           taxiMarkers[index].addListener("mouseover", () => {
-            infoWindow.close()
-            infoWindow.setContent((index + 1).toString());
-            infoWindow.open(mapRef, taxiMarkers[index]);
+            infoWindow.close();
+
+            queryID = taxiMarkers[index].getTitle();
+
+            getTaxi(queryID, (taxi: any) => {
+              getDriver(queryID, (driver: any) => {
+                infoWindow.setContent(`
+                  <b>Driver</b><br />
+                  DriverID: ${driver.driverID} <br />
+                  DriverName: ${driver.driverName} <br />
+                  DriverPhone: ${driver.phoneNumber} <br />
+                  DriverRating: ${driver.rating} <br />
+                  <br /> <hr /> <br />
+                  <b>Taxi</b><br />
+                  SNO: ${taxi.sno} <br />
+                  TaxiNumber: ${taxi.taxiNumber} <br />
+                  TaxiType: ${taxi.taxiType}
+                `);
+                infoWindow.open(mapRef, taxiMarkers[index]);
+
+                // DriverID, driverName, driverphone, rating
+                // taxino, sno, taxitype
+              });
+            });
           });
           return newTaxi;
         });
