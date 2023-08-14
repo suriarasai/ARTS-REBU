@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.4.0",
     "@react-google-maps/api": "^2.19.2",
     "@types/node": "^20.4.5",
     "@types/react": "^18.2.17",

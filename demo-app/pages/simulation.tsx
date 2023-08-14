@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import Styles from "@/public/resources/maps.json";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 let taxiMarkers: any = [];
 
@@ -45,39 +46,39 @@ export default function Simulation() {
   function rerenderTaxis(iter: number) {
     let newTaxi;
 
-    renderTaxiTimer = setTimeout(function () {
-      if (taxiMarkers.length !== 0) {
-        taxiMarkers.forEach((marker: google.maps.Marker) => {
-          marker.setMap(null);
-        });
-        taxiMarkers = [];
-      }
-
-      fetch("https://api.data.gov.sg/v1/transport/taxi-availability")
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (data) {
-          const coordinates = data.features[0].geometry.coordinates.slice(0,200);
-          coordinates.forEach(([a, b]: number[], index: number) => {
-            newTaxi = new google.maps.Marker({
+    renderTaxiTimer = setTimeout(
+      function () {
+        fetch("https://api.data.gov.sg/v1/transport/taxi-availability")
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            const coordinates = data.features[0].geometry.coordinates;
+            const markers = coordinates.map(
+              (coord: number[], index: number) =>
+                new google.maps.Marker({
+                  position: new google.maps.LatLng(coord[1], coord[0]),
+                  title: index.toString(),
+                  icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 3,
+                  },
+                  optimized: true,
+                })
+            );
+            var markerCluster = new MarkerClusterer({
               map: mapRef,
-              title: index.toString(),
-              position: { lat: b, lng: a },
-              icon: {
-                url: "https://www.svgrepo.com/show/375911/taxi.svg",
-                scaledSize: new google.maps.Size(10, 10),
-              },
+              markers: markers,
             });
-            taxiMarkers.push(newTaxi);
           });
-        });
 
-      if (iter < 2) {
-        rerenderTaxis(iter + 1);
-        console.log("Taxis reloaded");
-      }
-    }, 30000);
+        if (iter < 4) {
+          rerenderTaxis(iter + 1);
+          console.log("Taxis reloaded");
+        }
+      },
+      iter === 0 ? 0 : 30000
+    );
   }
 
   return (
