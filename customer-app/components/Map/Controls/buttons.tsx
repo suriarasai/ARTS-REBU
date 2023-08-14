@@ -129,7 +129,7 @@ export function CancelTripButton({
 				</button>
 			) : (
 				<button
-					className='absolute left-0 top-0 ml-8 rounded-b-2xl bg-gray-700 p-3 shadow-md'
+					className='absolute left-0 top-0 ml-6 rounded-b-2xl bg-gray-700 p-3 shadow-md'
 					onClick={handleTripCancellation}
 				>
 					<FaTimesCircle className='text-3xl text-red-400' />

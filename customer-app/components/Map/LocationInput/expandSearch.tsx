@@ -89,7 +89,7 @@ function SetLocationOnMap() {
 
 	return (
 		<div
-			className='mt-2 flex flex-wrap bg-zinc-600 p-3 px-5'
+			className='my-2 flex flex-wrap bg-zinc-600 p-3 px-5'
 			onClick={handleClick}
 		>
 			<FaSearchLocation className='mr-6 text-xl text-green-200' />
