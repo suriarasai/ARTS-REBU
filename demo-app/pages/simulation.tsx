@@ -13,6 +13,7 @@ let taxiMarkers: any = [];
 let markerCluster: any = null;
 let infoWindow: any = null;
 let trafficLayer: any = null;
+let rectangle: any = null;
 
 const libraries = ["places", "geometry"];
 
@@ -20,13 +21,14 @@ export default function Simulation() {
   const [mapRef, setMapRef] = useState<google.maps.Map>();
   const [isLoading, setIsLoading] = useState(true);
   const [showTrafficLayer, setShowTrafficLayer] = useState(false);
+  const [showGeofence, setShowGeofence] = useState(false);
+  const useGrid = () => loadTaxis(new GridAlgorithm({}));
+  const useNoop = () => loadTaxis(null);
+  const useSuper = () => loadTaxis(new SuperClusterAlgorithm({}));
   const useTraffic = () => {
     trafficLayer.setMap(!showTrafficLayer ? mapRef! : null);
     setShowTrafficLayer(!showTrafficLayer);
   };
-  const useGrid = () => loadTaxis(new GridAlgorithm({}));
-  const useNoop = () => loadTaxis(null);
-  const useSuper = () => loadTaxis(new SuperClusterAlgorithm({}));
 
   // On map load... set location to current location
   const loadMap = useCallback(function callback(map: google.maps.Map) {
@@ -47,7 +49,20 @@ export default function Simulation() {
   useEffect(() => {
     if (isLoading) return;
     loadTaxis(new GridAlgorithm({}));
+
     trafficLayer = new google.maps.TrafficLayer();
+
+    const bounds = {
+      north: 1.3275,
+      south: 1.2982,
+      east: 103.8231,
+      west: 103.7914,
+    };
+    rectangle = new google.maps.Rectangle({
+      bounds: bounds,
+      editable: true,
+      draggable: true,
+    });
   }, [isLoading]);
 
   const loadTaxis = (algorithm: any) => {
@@ -120,6 +135,17 @@ export default function Simulation() {
     }
   };
 
+  const geofence = () => {
+    rectangle.setMap(!showGeofence ? mapRef! : null);
+    setShowGeofence(!showGeofence);
+
+    ["bounds_changed", "dragend"].forEach((eventName) => {
+      rectangle.addListener(eventName, () => {
+        console.log({ bounds: rectangle.getBounds()?.toJSON(), eventName });
+      });
+    });
+  };
+
   return (
     <LoadScriptNext
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
@@ -150,6 +176,7 @@ export default function Simulation() {
           </div>
           <button onClick={clearTaxis}>Hide Taxis</button>
           <button onClick={useTraffic}>Toggle Traffic</button>
+          <button onClick={geofence}>Geofencing</button>
         </div>
       </div>
     </LoadScriptNext>
