@@ -14,21 +14,20 @@ let markerCluster: any = null;
 let infoWindow: any = null;
 let trafficLayer: any = null;
 let rectangle: any = null;
+let heatmap: any = null;
 
-const libraries = ["places", "geometry"];
+const libraries = ["places", "geometry", "visualization"];
 
 export default function Simulation() {
   const [mapRef, setMapRef] = useState<google.maps.Map>();
   const [isLoading, setIsLoading] = useState(true);
-  const [showTrafficLayer, setShowTrafficLayer] = useState(false);
-  const [showGeofence, setShowGeofence] = useState(false);
+  const [taxiCoords, setTaxiCoords] = useState([]);
   const useGrid = () => loadTaxis(new GridAlgorithm({}));
   const useNoop = () => loadTaxis(null);
   const useSuper = () => loadTaxis(new SuperClusterAlgorithm({}));
-  const useTraffic = () => {
-    trafficLayer.setMap(!showTrafficLayer ? mapRef! : null);
-    setShowTrafficLayer(!showTrafficLayer);
-  };
+  const useTraffic = () => trafficLayer.setMap(trafficLayer.getMap() ? null : mapRef!);
+  const useGeofence = () => rectangle.setMap(rectangle.getMap() ? null : mapRef!);
+  const useHeatmap = () => heatmap.setMap(heatmap.getMap() ? null : mapRef!);
 
   // On map load... set location to current location
   const loadMap = useCallback(function callback(map: google.maps.Map) {
@@ -65,9 +64,20 @@ export default function Simulation() {
     });
   }, [isLoading]);
 
+  useEffect(() => {
+    if (taxiCoords.length === 0) return;
+
+    heatmap = new google.maps.visualization.HeatmapLayer({
+      data: taxiCoords,
+      map: null,
+    });
+  }, [taxiCoords]);
+
   const loadTaxis = (algorithm: any) => {
     let newTaxi: any;
     let queryID: any;
+    let taxiCoord: any;
+    let tempTaxiList: any = [];
     clearTaxis();
 
     fetch("https://api.data.gov.sg/v1/transport/taxi-availability")
@@ -77,8 +87,9 @@ export default function Simulation() {
       .then(function (data) {
         const coordinates = data.features[0].geometry.coordinates;
         const markers = coordinates.map((coord: number[], index: number) => {
+          taxiCoord = new google.maps.LatLng(coord[1], coord[0]);
           newTaxi = new google.maps.Marker({
-            position: new google.maps.LatLng(coord[1], coord[0]),
+            position: taxiCoord,
             title: (index + 1).toString(),
             map: !algorithm ? mapRef : null,
             icon: {
@@ -89,6 +100,7 @@ export default function Simulation() {
           });
           infoWindow = new google.maps.InfoWindow();
           taxiMarkers.push(newTaxi);
+          tempTaxiList.push(taxiCoord);
           taxiMarkers[index].addListener("mouseover", () => {
             infoWindow.close();
 
@@ -115,6 +127,8 @@ export default function Simulation() {
           return newTaxi;
         });
 
+        setTaxiCoords(tempTaxiList);
+
         if (!algorithm) return;
 
         markerCluster = new MarkerClusterer({
@@ -133,17 +147,6 @@ export default function Simulation() {
       taxiMarkers = [];
       markerCluster?.clearMarkers();
     }
-  };
-
-  const geofence = () => {
-    rectangle.setMap(!showGeofence ? mapRef! : null);
-    setShowGeofence(!showGeofence);
-
-    ["bounds_changed", "dragend"].forEach((eventName) => {
-      rectangle.addListener(eventName, () => {
-        console.log({ bounds: rectangle.getBounds()?.toJSON(), eventName });
-      });
-    });
   };
 
   return (
@@ -176,7 +179,8 @@ export default function Simulation() {
           </div>
           <button onClick={clearTaxis}>Hide Taxis</button>
           <button onClick={useTraffic}>Toggle Traffic</button>
-          <button onClick={geofence}>Geofencing</button>
+          <button onClick={useGeofence}>Geofencing</button>
+          <button onClick={useHeatmap}>Heatmap</button>
         </div>
       </div>
     </LoadScriptNext>
