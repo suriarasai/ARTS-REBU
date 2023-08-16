@@ -19,7 +19,7 @@ export default function FareCalculator() {
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
       libraries={libraries as any}
     >
-      <div className="flex bg-zinc-100 p-3 w-1/3 space-y-3 flex-col">
+      <div className="flex bg-zinc-100 absolute left-0 right-0 mr-auto ml-auto mt-24 border-2 border-green-500 p-8 rounded shadow-sm w-1/3 space-y-3 flex-col">
         <TaxiTypeDropdown />
         <PickupTimeDropdown />
         <OriginInput />
@@ -51,7 +51,7 @@ function TaxiTypeDropdown() {
 }
 
 function PickupTimeDropdown() {
-  const [pickUpTime, setPickUpTime] = useRecoilState(pickupTimeAtom)
+  const [pickUpTime, setPickUpTime] = useRecoilState(pickupTimeAtom);
   return (
     <>
       <select
@@ -120,7 +120,7 @@ function CalculateFareButton() {
   const origin = useRecoilValue(originInputAtom);
   const destination = useRecoilValue(destinationInputAtom);
   const taxiType = useRecoilValue(taxiTypeAtom);
-  const pickUpTime = useRecoilValue(pickupTimeAtom)
+  const pickUpTime = useRecoilValue(pickupTimeAtom);
   const [, setTripDetails] = useRecoilState(tripDetailsAtom);
 
   const handleClick = () => {

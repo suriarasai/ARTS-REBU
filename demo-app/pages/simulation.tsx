@@ -12,12 +12,18 @@ import { getDriver, getTaxi } from "@/server";
 let taxiMarkers: any = [];
 let markerCluster: any = null;
 let infoWindow: any = null;
+let trafficLayer: any = null;
 
 const libraries = ["places", "geometry"];
 
 export default function Simulation() {
   const [mapRef, setMapRef] = useState<google.maps.Map>();
   const [isLoading, setIsLoading] = useState(true);
+  const [showTrafficLayer, setShowTrafficLayer] = useState(false);
+  const useTraffic = () => {
+    trafficLayer.setMap(!showTrafficLayer ? mapRef! : null);
+    setShowTrafficLayer(!showTrafficLayer);
+  };
   const useGrid = () => loadTaxis(new GridAlgorithm({}));
   const useNoop = () => loadTaxis(null);
   const useSuper = () => loadTaxis(new SuperClusterAlgorithm({}));
@@ -41,6 +47,7 @@ export default function Simulation() {
   useEffect(() => {
     if (isLoading) return;
     loadTaxis(new GridAlgorithm({}));
+    trafficLayer = new google.maps.TrafficLayer();
   }, [isLoading]);
 
   const loadTaxis = (algorithm: any) => {
@@ -132,13 +139,17 @@ export default function Simulation() {
           }}
           onLoad={loadMap}
         />
-        <div className="dropup absolute bottom-0 left-0 mb-5 ml-5">
-          <button>Cluster Algorithms</button>
-          <div className="dropup-content">
-            <a onClick={useNoop}>None</a>
-            <a onClick={useGrid}>Sparse</a>
-            <a onClick={useSuper}>Dense</a>
+        <div className="flex space-x-5 absolute bottom-0 left-0 m-5">
+          <div className="dropup">
+            <button>Cluster Algorithms</button>
+            <div className="dropup-content">
+              <a onClick={useNoop}>None</a>
+              <a onClick={useGrid}>Sparse</a>
+              <a onClick={useSuper}>Dense</a>
+            </div>
           </div>
+          <button onClick={clearTaxis}>Hide Taxis</button>
+          <button onClick={useTraffic}>Toggle Traffic</button>
         </div>
       </div>
     </LoadScriptNext>
