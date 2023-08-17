@@ -19,8 +19,8 @@ export default function NavBar() {
         <button onClick={() => handleClick("Fare Calculator", "FARE")}>
           Fare Calculator
         </button>
-        <button onClick={() => handleClick("Simple App", "SIMPLEAPP")}>
-          Simple App
+        <button onClick={() => handleClick("Simple App", "MATCHING")}>
+          Matching
         </button>
         <button onClick={() => handleClick("Stream Logs", "STREAMLOGS")}>
           Stream Logs

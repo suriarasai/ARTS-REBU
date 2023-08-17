@@ -35,3 +35,12 @@ export const getDriver = async (id: number, _callback: Function) => {
   const response = await api.get("/api/v1/Driver/" + id);
   _callback(response.data);
 };
+
+export async function computeNearbyTaxis(coord: google.maps.LatLng, N: number, _callback: any) {
+	const response = await api.post('/api/v1/Kafka/findNearestTaxis', {
+		lat: coord.lat(),
+		lng: coord.lng(),
+    n: N
+	})
+	_callback(response.data)
+}

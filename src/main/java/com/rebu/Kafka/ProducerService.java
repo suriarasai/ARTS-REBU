@@ -49,7 +49,7 @@ public class ProducerService {
         GeoJson obj = gson.fromJson(result, GeoJson.class);
         List<List<Float>> taxis = obj.getFeatures().get(0).getGeometry().getCoordinates();
 
-        // Computing the closest N=8 taxis
+        // Computing the closest N taxis
         List<Driver> driverList = new ArrayList<Driver>();
         Double distance;
         Integer index = 1;
@@ -61,7 +61,7 @@ public class ProducerService {
         }
 
         Collections.sort(driverList);
-        return driverList.subList(0, 6);
+        return driverList.subList(0, user.getN());
     }
 
 }
