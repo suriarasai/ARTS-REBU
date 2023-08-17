@@ -16,14 +16,15 @@ export default function NavBar() {
       <p className="font-semibold">{activePage}</p>
       <div className="!ml-auto flex space-x-3">
         <button onClick={() => handleClick("Home", "HOME")}>Home</button>
-        <button onClick={() => handleClick("Fare Calculator", "FARE")}>
+        <button onClick={() => handleClick("Stream Logs", "STREAMLOGS")}>
+          Stream Logs
+        </button>
+        <button onClick={() => handleClick("Routes", "ROUTES")}>Routes</button>
+        <button onClick={() => handleClick("Fare", "FARE")}>
           Fare Calculator
         </button>
         <button onClick={() => handleClick("Simple App", "MATCHING")}>
           Matching
-        </button>
-        <button onClick={() => handleClick("Stream Logs", "STREAMLOGS")}>
-          Stream Logs
         </button>
         <button onClick={() => handleClick("Simulation", "SIMULATION")}>
           Simulation

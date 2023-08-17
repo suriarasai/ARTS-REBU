@@ -4,4 +4,5 @@ export enum HREF {
   HOME = "/",
   SIMULATION = "/simulation",
   STREAMLOGS = "/streamLogs",
+  ROUTES = "/routes"
 }
