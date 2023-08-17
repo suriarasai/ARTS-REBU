@@ -1,6 +1,7 @@
 export default function computeFare(
   type: string,
-  postcode: string,
+  postcodeFrom: string,
+  postcodeTo: string,
   distance: number,
   pickUpTime: string
 ) {
@@ -13,7 +14,9 @@ export default function computeFare(
   const baseFee = 2 + (peak ? 2 : plus ? 1 : 0);
   const meteredFee = ((0.25 + (plus ? 0.09 : 0)) * distance) / 0.4;
   const peakFee = meteredFee * (peak ? 0.25 : night ? 0.5 : 0);
-  const locationFee = locationSurchageMap[Number(postcode.substring(0, 2))];
+  const locationFee =
+    locationSurchageMap[Number(postcodeFrom.substring(0, 2))] +
+    locationSurchageMap[Number(postcodeTo.substring(0, 2))];
   const tempSurchageFee = (0.01 * distance) / 0.5;
 
   const meteredFare = Math.max(

@@ -129,6 +129,7 @@ export function TaxiSelection({ map }) {
 				taxiPassengerCapacity: 4,
 				fare: computeFare(
 					'regular',
+					origin.postcode.toString(),
 					dest.postcode.toString(),
 					tripStats.distance,
 					+new Date()
@@ -142,6 +143,7 @@ export function TaxiSelection({ map }) {
 				taxiPassengerCapacity: 7,
 				fare: computeFare(
 					'plus',
+					origin.postcode.toString(),
 					dest.postcode.toString(),
 					tripStats.distance,
 					+new Date()

@@ -127,6 +127,7 @@ function CalculateFareButton() {
     computeRoute(origin, destination, (distance: number, duration: number) => {
       const fare = computeFare(
         taxiType,
+        origin.postcode,
         destination.postcode,
         distance,
         pickUpTime

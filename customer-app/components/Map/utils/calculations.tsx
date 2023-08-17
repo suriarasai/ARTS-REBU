@@ -18,7 +18,8 @@ export function setOriginToUserLocation(
 
 export default function computeFare(
 	type: 'regular' | 'plus',
-	postcode: string,
+	postcodeFrom: string,
+	postcodeTo: string,
 	distance: number,
 	pickUpTime: number
 ) {
@@ -36,7 +37,9 @@ export default function computeFare(
 	const baseFee = 2 + (peak ? 2 : plus ? 1 : 0)
 	const meteredFee = ((0.25 + (plus ? 0.09 : 0)) * distance) / 400
 	const peakFee = meteredFee * (peak ? 0.25 : night ? 0.5 : 0)
-	const locationFee = locationSurchageMap[Number(postcode.substring(0, 2))]
+	const locationFee =
+		locationSurchageMap[Number(postcodeFrom.substring(0, 2))] +
+		locationSurchageMap[Number(postcodeTo.substring(0, 2))]
 	const tempSurchageFee = (0.01 * distance) / 500
 
 	const meteredFare = Math.max(
