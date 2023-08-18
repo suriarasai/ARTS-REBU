@@ -1,14 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Booking } from "@/components/streamLogs/Booking";
 import { useEffect, useState } from "react";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
-import AddressList from "@/public/resources/addresses.json"
+import AddressList from "@/public/resources/addresses.json";
+import LicenseList from "@/public/resources/licenses.json";
 
 let timeoutFunction: any;
 const fleetSize = 2500;
-let randNums = shuffle(
+let randCID = shuffle(
   Array(240)
+    .fill(1)
+    .map((_, i) => i + 1)
+);
+let randDID = shuffle(
+  Array(2500)
     .fill(1)
     .map((_, i) => i + 1)
 );
@@ -17,27 +21,7 @@ export default function StreamLogs() {
   const [toggleSim, setToggleSim] = useState(false);
   const [stopWatch, setStopwatch] = useState(0);
   const controlSim = () => setToggleSim(!toggleSim);
-  const [messages, setMessages] = useState<Booking[]>([]);
-
-  // Integration with real booking/dispatch data
-  // useEffect(() => {
-  //   const socket = new SockJS("http://localhost:8080/ws");
-  //   const client = Stomp.over(socket);
-  //   let res: any; // response from the chat websocket
-
-  //   client.connect({}, () => {
-  //     client.subscribe("/topic/admin", (message) => {
-  //       res = JSON.parse(JSON.parse(message.body).bookingEvent);
-
-  //       console.log(res);
-  //       setMessages((messages: any) => [...messages, res]);
-  //     });
-  //   });
-
-  //   return () => {
-  //     client.disconnect(() => console.log("Disconnected from server"));
-  //   };
-  // }, []);
+  const [events, setEvents] = useState<Booking[]>([]);
 
   useEffect(() => {
     if (!toggleSim) return;
@@ -51,16 +35,46 @@ export default function StreamLogs() {
 
   function iterator(iter: number) {
     timeoutFunction = setTimeout(function () {
-      
-
+      // Creating a new booking every second
       const booking = new Booking(
         iter,
-        randNums.next().value!,
+        randCID.next().value!,
         AddressList[Math.floor(Math.random() * AddressList.length)],
         AddressList[Math.floor(Math.random() * AddressList.length)]
       );
-      setMessages((messages) => [...messages, booking]);
 
+      // Updating list of bookings
+      setEvents((events) => [...events, booking]);
+
+      // Assigning dispatch events randomly
+      setEvents((events) => {
+        const requested = events.filter(
+          (event: Booking) => event.status === "requested"
+        );
+
+        const toDispatch =
+          requested[Math.floor(Math.random()) * requested.length];
+
+        const randBool = Math.random() < 0.5
+        
+        if (!toDispatch || randBool) return [...events]
+
+        toDispatch.dispatchBooking(
+          randDID.next().value!,
+          LicenseList[Math.floor(Math.random() * LicenseList.length)]
+        );
+
+        return [
+          ...events.filter(
+            (event: Booking) => event.bookingID !== toDispatch.bookingID
+          ),
+          toDispatch
+        ];
+      });
+
+      // Creating completion events randomly
+
+      // Moving to the next iteration
       setStopwatch((stopWatch) => stopWatch + 1);
       if (toggleSim) {
         iterator(iter + 1);
@@ -72,13 +86,13 @@ export default function StreamLogs() {
     <div className="bg-zinc-200 h-screen w-screen space-y-5">
       <div className="mt-20 bg-neutral-50 shadow-sm p-3 flex space-x-2 w-1/2 mr-auto ml-auto rounded-md">
         <div className="flex-1 text-center space-y-1">
-          <p className="text-xl">{messages.length}</p>
+          <p className="text-xl">{events.length}</p>
           <p className="text-xs font-bold">Total</p>
         </div>
         <div className="flex-1 text-center space-y-1">
           <p className="text-xl">
             {
-              messages.filter((message: any) => message.status === "dispatched")
+              events.filter((message: any) => message.status === "dispatched")
                 .length
             }
           </p>
@@ -87,7 +101,7 @@ export default function StreamLogs() {
         <div className="flex-1 text-center space-y-1">
           <p className="text-xl">
             {
-              messages.filter((message: any) => message.status === "requested")
+              events.filter((message: any) => message.status === "requested")
                 .length
             }
           </p>
@@ -96,7 +110,7 @@ export default function StreamLogs() {
         <div className="flex-1 text-center space-y-1">
           <p className="text-xl">
             {fleetSize -
-              messages.filter((message: any) => message.status === "dispatched")
+              events.filter((message: any) => message.status === "dispatched")
                 .length}
           </p>
           <p className="text-xs font-bold">Free Drivers</p>
@@ -118,8 +132,8 @@ export default function StreamLogs() {
             </tr>
           </thead>
           <tbody>
-            {messages.length >= 1 &&
-              messages.toReversed().map((message: any, index: number) => (
+            {events.length >= 1 &&
+              events.toReversed().map((message: any, index: number) => (
                 <tr key={index} className="center-table-contents">
                   <td>{message.bookingID}</td>
                   <td>{message.customerID}</td>
