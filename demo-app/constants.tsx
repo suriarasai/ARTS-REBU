@@ -3,6 +3,6 @@ export enum HREF {
   FARE = "/fareCalculator",
   HOME = "/",
   SIMULATION = "/simulation",
-  STREAMLOGS = "/streamLogs",
+  TRIPGENERATOR = "/tripGenerator",
   ROUTES = "/routes"
 }

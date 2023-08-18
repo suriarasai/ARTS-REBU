@@ -55,9 +55,9 @@ export default function StreamLogs() {
         const toDispatch =
           requested[Math.floor(Math.random()) * requested.length];
 
-        const randBool = Math.random() < 0.5
-        
-        if (!toDispatch || randBool) return [...events]
+        const randBool = Math.random() < 0.5;
+
+        if (!toDispatch || randBool) return [...events];
 
         toDispatch.dispatchBooking(
           randDID.next().value!,
@@ -68,11 +68,29 @@ export default function StreamLogs() {
           ...events.filter(
             (event: Booking) => event.bookingID !== toDispatch.bookingID
           ),
-          toDispatch
+          toDispatch,
         ];
       });
 
       // Creating completion events randomly
+      setEvents((events) => {
+        const dispatched = events.filter(
+          (event: Booking) => event.status === "dispatched"
+        );
+
+        const toComplete =
+          dispatched[Math.floor(Math.random()) * dispatched.length];
+
+        const randBool = Math.random() < 0.75;
+
+        if (!toComplete || randBool) return [...events];
+
+        return [
+          ...events.filter(
+            (event: Booking) => event.bookingID !== toComplete.bookingID
+          ),
+        ];
+      });
 
       // Moving to the next iteration
       setStopwatch((stopWatch) => stopWatch + 1);
