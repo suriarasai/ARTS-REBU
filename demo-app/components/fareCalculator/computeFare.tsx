@@ -17,12 +17,6 @@ export default function computeFare(
   const locationFee = valPostcode(postcodeFrom) + valPostcode(postcodeTo);
   const tempSurchageFee = (0.01 * distance) / 0.5;
 
-  console.log({
-    from: locationSurchageMap[Number(postcodeFrom.substring(0, 2))],
-    to: locationSurchageMap[Number(postcodeTo.substring(0, 2))],
-    location: locationFee,
-  });
-
   const meteredFare = Math.max(
     bookingFee +
       baseFee +
@@ -33,7 +27,6 @@ export default function computeFare(
     plus ? 7 : 5
   );
 
-  console.log("Fare: $", meteredFare.toFixed(2));
   return {
     booking: bookingFee.toFixed(2),
     base: baseFee.toFixed(2),
