@@ -349,7 +349,6 @@ export const getDirections = (
 				},
 				travelMode: 'DRIVE',
 				routingPreference: 'TRAFFIC_AWARE',
-				departureTime: '2023-10-15T15:01:23.045123456Z',
 				computeAlternativeRoutes: false,
 				extraComputations: ['TRAFFIC_ON_POLYLINE'],
 				routeModifiers: {

@@ -76,7 +76,7 @@ export default function Matching() {
           infoWindow.setContent(`
           (${taxi.lat}, ${taxi.lng})<br /><br />
           Distance: <b>${distance}</b> km.<br />
-          ETA: <b>${(Number(distance) * 0.3).toFixed(2)}</b> min.
+          ETA: <b>${(Number(distance) / 0.65).toFixed(2)}</b> min.
           `);
           infoWindow.open(map, nearbyTaxi);
         });
