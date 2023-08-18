@@ -75,7 +75,7 @@ function FavouriteLocation({ type }) {
 					{type[0].toUpperCase() + type.slice(1)}
 				</b>
 				<h5 className='text-zinc-50'>
-					{user[type] ? user[type].placeName : 'Set Location'}
+					{user[type].placeName ? user[type].placeName : 'Set Location'}
 				</h5>
 			</div>
 		</div>
@@ -135,7 +135,7 @@ function SavedLocations() {
 						</div>
 					))
 				) : (
-					<p className='ml-11 w-full'>No saved locations</p>
+					<p className='ml-11 w-full text-zinc-50'>No saved locations</p>
 				)}
 			</div>
 		</div>

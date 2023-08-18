@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.1);
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+::-webkit-scrollbar-thumb:active {
+  background: rgba(0, 0, 0, 0.9);
+}
+
 button {
   @apply bg-green-200 text-xs rounded-md shadow-sm py-2 px-4 text-zinc-700 font-semibold;
 }
@@ -32,7 +51,6 @@ select {
   @apply text-zinc-100;
 }
 
-
 /* Dropup content (Hidden by Default) */
 .dropup-content {
   display: none;
@@ -40,9 +58,9 @@ select {
   bottom: 33px;
   background-color: #f1f1f1;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
-  @apply rounded-md
+  @apply rounded-md;
 }
 
 /* Links inside the dropup */
@@ -54,7 +72,9 @@ select {
 }
 
 /* Change color of dropup links on hover */
-.dropup-content a:hover {background-color: #ddd}
+.dropup-content a:hover {
+  background-color: #ddd;
+}
 
 /* Show the dropup menu on hover */
 .dropup:hover .dropup-content {
@@ -63,5 +83,11 @@ select {
 
 /* Change the background color of the dropup button when the dropup content is shown */
 .dropup:hover .dropbtn {
-  background-color: #2980B9;
+  background-color: #2980b9;
+}
+
+.center-table-contents td {
+  @apply p-1;
+  text-align: center;
+  vertical-align: middle;
 }

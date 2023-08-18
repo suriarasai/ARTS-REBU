@@ -3,7 +3,9 @@
 package com.rebu.Kafka;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -33,12 +35,18 @@ public class ConsumerService {
         Gson gson = new Gson();
         BookingEvent event = gson.fromJson(receivedMessage, BookingEvent.class);
 
+        // Send to nearby drivers
         List<Driver> drivers = producer.findNearestTaxis(new UserLocation(event.getPickUpLocation()));
-
         for (Driver driver : drivers) {
             this.template.convertAndSendToUser("d" + driver.getDriverID().toString(), "/queue/bookingEvent",
                     receivedMessage);
         }
+
+        Map<String, String> retMsg = new HashMap<>();
+        retMsg.put("bookingEvent", receivedMessage);
+
+        // Send to admin app
+        this.template.convertAndSend("/topic/admin", retMsg);
 
         System.out.println(drivers);
     }
