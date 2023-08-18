@@ -19,13 +19,18 @@ export default function FareCalculator() {
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
       libraries={libraries as any}
     >
-      <div className="flex bg-zinc-100 absolute left-0 right-0 mr-auto ml-auto mt-24 border-2 border-green-500 p-8 rounded shadow-sm w-1/3 space-y-3 flex-col">
-        <TaxiTypeDropdown />
-        <PickupTimeDropdown />
-        <OriginInput />
-        <DestinationInput />
-        <CalculateFareButton />
-        <TripDetails />
+      <div className="flex space-x-5 absolute left-0 right-0 mr-auto ml-auto mt-32 w-1/2">
+        <div className="flex bg-zinc-100 border-2 border-green-500 p-8 rounded shadow-sm space-y-3 w-3/4 flex-col">
+          <TaxiTypeDropdown />
+          <PickupTimeDropdown />
+          <OriginInput />
+          <DestinationInput />
+          <CalculateFareButton />
+        </div>
+
+        <div className="bg-zinc-100 border-2 border-green-500 p-8 rounded shadow-sm w-1/3">
+          <TripDetails />
+        </div>
       </div>
     </LoadScriptNext>
   );
@@ -198,11 +203,22 @@ function computeRoute(
 
 function TripDetails() {
   const tripDetails = useRecoilValue(tripDetailsAtom);
+  console.log(tripDetails.fare);
   return (
     <>
-      <p>Fare: ${tripDetails.fare}</p>
+      <b className="text-xs font-bold mb-2">Overview</b>
+      <p>Fare: ${tripDetails.fare.total}</p>
       <p>Distance: {tripDetails.distance + " km"}</p>
       <p>Duration: {tripDetails.duration + " min"}</p>
+      <hr className="my-2 border-zinc-400" />
+      <b className="text-xs font-bold mb-2">Fare Breakdown</b>
+      <p>Booking: ${tripDetails.fare.booking}</p>
+      <p>Base: ${tripDetails.fare.base}</p>
+      <p>Metered: ${tripDetails.fare.metered}</p>
+      <p>Peak: ${tripDetails.fare.peak}</p>
+      <p>Location: ${tripDetails.fare.location}</p>
+      <p>Temp: ${tripDetails.fare.tempSurcharge}</p>
+      <p>Total: ${tripDetails.fare.total}</p>
     </>
   );
 }

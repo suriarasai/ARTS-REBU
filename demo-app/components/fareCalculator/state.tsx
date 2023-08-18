@@ -34,6 +34,14 @@ export const tripDetailsAtom = atom({
   default: {
     distance: 0,
     duration: 0,
-    fare: "0",
+    fare: {
+      booking: "0.00",
+      base: "0.00",
+      metered: "0.00",
+      peak: "0.00",
+      location: "0.00",
+      tempSurcharge: "0.00",
+      total: "0.00",
+    },
   },
 });

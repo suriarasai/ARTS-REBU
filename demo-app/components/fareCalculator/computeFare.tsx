@@ -14,10 +14,14 @@ export default function computeFare(
   const baseFee = 2 + (peak ? 2 : plus ? 1 : 0);
   const meteredFee = ((0.25 + (plus ? 0.09 : 0)) * distance) / 0.4;
   const peakFee = meteredFee * (peak ? 0.25 : night ? 0.5 : 0);
-  const locationFee =
-    locationSurchageMap[Number(postcodeFrom.substring(0, 2))] +
-    locationSurchageMap[Number(postcodeTo.substring(0, 2))];
+  const locationFee = valPostcode(postcodeFrom) + valPostcode(postcodeTo);
   const tempSurchageFee = (0.01 * distance) / 0.5;
+
+  console.log({
+    from: locationSurchageMap[Number(postcodeFrom.substring(0, 2))],
+    to: locationSurchageMap[Number(postcodeTo.substring(0, 2))],
+    location: locationFee,
+  });
 
   const meteredFare = Math.max(
     bookingFee +
@@ -30,8 +34,25 @@ export default function computeFare(
   );
 
   console.log("Fare: $", meteredFare.toFixed(2));
-  return meteredFare.toFixed(2);
+  return {
+    booking: bookingFee.toFixed(2),
+    base: baseFee.toFixed(2),
+    metered: meteredFee.toFixed(2),
+    peak: peakFee.toFixed(2),
+    location: locationFee.toFixed(2),
+    tempSurcharge: tempSurchageFee.toFixed(2),
+    total: meteredFare.toFixed(2),
+  };
 }
+
+const valPostcode = (postcode: string): number => {
+  const surcharge = locationSurchageMap[Number(postcode.substring(0, 2))];
+  if (surcharge === undefined) {
+    return 0;
+  } else {
+    return surcharge;
+  }
+};
 
 // First 2 digits of postcode denote the region
 // https://www.mingproperty.sg/singapore-district-code/
