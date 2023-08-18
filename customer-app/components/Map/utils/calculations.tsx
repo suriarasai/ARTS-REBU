@@ -37,9 +37,7 @@ export default function computeFare(
 	const baseFee = 2 + (peak ? 2 : plus ? 1 : 0)
 	const meteredFee = ((0.25 + (plus ? 0.09 : 0)) * distance) / 400
 	const peakFee = meteredFee * (peak ? 0.25 : night ? 0.5 : 0)
-	const locationFee =
-		locationSurchageMap[Number(postcodeFrom.substring(0, 2))] +
-		locationSurchageMap[Number(postcodeTo.substring(0, 2))]
+	const locationFee = valPostcode(postcodeFrom) + valPostcode(postcodeTo)
 	const tempSurchageFee = (0.01 * distance) / 500
 
 	const meteredFare = Math.max(
@@ -54,6 +52,15 @@ export default function computeFare(
 
 	console.log('Fare: $', meteredFare.toFixed(2))
 	return meteredFare.toFixed(2)
+}
+
+const valPostcode = (postcode: string): number => {
+	const surcharge = locationSurchageMap[Number(postcode.substring(0, 2))]
+	if (surcharge === undefined) {
+		return 0
+	} else {
+		return surcharge
+	}
 }
 
 // First 2 digits of postcode denote the region
