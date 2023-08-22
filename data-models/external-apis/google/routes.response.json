@@ -167,7 +167,7 @@
       "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline,routes.legs.polyline,routes.travelAdvisory,routes.legs.travelAdvisory"
     },
     "method": "post",
-    "url": "https://routes.googleapis.com/directions/v2:computeRoutes?key=AIzaSyD8PhKM0SQ2lCANItUcGouP4DCBLempcJ4",
+    "url": "https://routes.googleapis.com/directions/v2:computeRoutes?key=...",
     "data": "{\"origin\":{\"location\":{\"latLng\":{\"latitude\":1.2916562,\"longitude\":103.7761195}}},\"destination\":{\"location\":{\"latLng\":{\"latitude\":1.2837575,\"longitude\":103.8591065}}},\"travelMode\":\"DRIVE\",\"routingPreference\":\"TRAFFIC_AWARE\",\"computeAlternativeRoutes\":false,\"extraComputations\":[\"TRAFFIC_ON_POLYLINE\"],\"routeModifiers\":{\"avoidTolls\":false,\"avoidHighways\":false,\"avoidFerries\":false},\"languageCode\":\"en-US\",\"units\":\"IMPERIAL\"}"
   },
   "request": {}
