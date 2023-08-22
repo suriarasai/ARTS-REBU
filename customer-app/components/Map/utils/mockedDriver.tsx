@@ -76,7 +76,6 @@ const drawLine = (a, b, _callback) => {
 			travelMode: google.maps.TravelMode.DRIVING,
 		},
 		function (result, status) {
-			console.log(a, b)
 			if (status == 'OK') _callback(result.routes[0].overview_path)
 		}
 	)

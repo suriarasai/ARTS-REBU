@@ -1,8 +1,7 @@
 import api from '@/api/axiosConfig'
-import { Location, Rating, User, option } from './types'
+import { Location, Rating, User } from './types'
 import { getAddress } from './components/Map/utils/calculations'
 import axios from 'axios'
-import { renderDirections } from './components/Map/utils/viewport'
 
 export async function produceKafkaBookingEvent(message: string) {
 	api.post('/api/v1/Kafka/bookingEvent', {
@@ -254,72 +253,6 @@ export function CoordinateToAddress(
 			setText && setText(extractedAddress.placeName)
 		})
 		.catch((e) => console.error('Reverse geocoding failed', e))
-}
-
-// Loads the nearest N taxis onto the map
-// TODO: Return list of objects with sno, driverID values
-export const loadTaxis = (
-	map: google.maps.Map,
-	coord: number[],
-	N = 1,
-	setTaxis: Function
-) => {
-	fetch('https://api.data.gov.sg/v1/transport/taxi-availability')
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {
-			const coordinates = data.features[0].geometry.coordinates
-
-			const distances: Array<{
-				distance: number
-				lng: number
-				lat: number
-				index: number
-			}> = []
-
-			// Calculating the Euclidean distance
-			coordinates.forEach(([a, b]: number[], index: number) =>
-				distances.push({
-					distance: Math.pow(a - coord[0], 2) + Math.pow(b - coord[1], 2),
-					lng: a,
-					lat: b,
-					index: index + 1,
-				})
-			)
-
-			// Sorting the distances in ascending order
-			distances.sort((a, b) => a.distance - b.distance)
-
-			let newTaxi
-			let nearbyTaxiMarkers = []
-
-			// Saving the marker to the state variable
-			for (let i = 0; i < N; i++) {
-				newTaxi = new google.maps.Marker({
-					map: map,
-					title: distances[i].index.toString(),
-					position: { lat: distances[i].lat, lng: distances[i].lng },
-					icon: {
-						url: 'https://www.svgrepo.com/show/375911/taxi.svg',
-						scaledSize: new google.maps.Size(30, 30),
-					},
-				})
-				nearbyTaxiMarkers.push(newTaxi)
-			}
-			setTaxis(nearbyTaxiMarkers)
-		})
-}
-
-// (unused) API: Extracts data from Google Maps place_id
-async function PlaceIDToAddress(id: string, setLocation: Function) {
-	await fetch(
-		`https://maps.googleapis.com/maps/api/place/details/json?place_id=${id}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-	)
-		.then(function (response) {
-			return response.json()
-		})
-		.then(function (data) {})
 }
 
 export const getDirections = (

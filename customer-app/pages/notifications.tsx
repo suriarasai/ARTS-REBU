@@ -14,5 +14,4 @@ async function findNearestTaxis() {
 		lat: 1.2973069,
 		lng: 103.7884249,
 	})
-	console.log(response)
 }

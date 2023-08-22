@@ -44,7 +44,6 @@ const Receipt = ({
 				setTaxiInformation({ status: 'cancelled' })
 			} else {
 				getTaxi(bookingInformation.sno as number, setTaxiInformation)
-				console.log('status: Booking has a taxi number')
 				console.log(taxiInformation)
 
 				if (taxiInformation === null) {

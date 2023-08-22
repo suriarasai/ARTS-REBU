@@ -1,0 +1,174 @@
+{
+  "data": {
+    "routes": [
+      {
+        "legs": [
+          {
+            "polyline": {
+              "encodedPolyline": "{g{FwwkxRJ@Ci@r@N~@BVMVc@N}@Tm@z@mBNk@Dc@@k@EWOK]EMQAUDSNOtCcAN?pAa@b@|An@xAT`@LT`@Zr@l@NDNEd@Cr@@^Gj@{@t@_A~A_BlB{AtDkC~B}A|B}A|HwFpDyBfB{@bFqCh@c@t@}@l@cA^{@XeAdAgFnC{LbCuJpBuIvLuf@ZsAjAyDbBeE^oALy@HiABkABuCBgAZuC^cB~@}Cp@_Cd@{Aj@uBV{Aj@kHNgHFsAJq@XiAp@wAtDkGjC}Ep@cBv@mBvC{GbAoBx@mAv@mALQlBqDVq@Po@R{AFkBO_GOeIKgDM}@S{@e@}@S]yBcCa@_@aDmDqEqEuIiJaBeBKYcBoB_BwBYo@Mi@Gi@DwL@QHU?iBQ{KYeVQ{SFwCl@{I@q@Ak@MaA]qAuCyGSk@Y{AK_AE{ABcAZsB^sAp@yAdBaDrBmDhE_Iv@aBRk@VaAGe@PqBBm@GqAWmBBC]qAk@{AeB{C{AgCmAsCw@[g@?YFOLe@n@KF_BrC_A~AqCxF_BnCY`@eBxCgBxCcCfEa@v@_E{B{BmAs@a@gK}FoGmDyAw@w@H_@GOG"
+            },
+            "travelAdvisory": {
+              "speedReadingIntervals": [
+                {
+                  "startPolylinePointIndex": 0,
+                  "endPolylinePointIndex": 25,
+                  "speed": "NORMAL"
+                },
+                {
+                  "startPolylinePointIndex": 25,
+                  "endPolylinePointIndex": 27,
+                  "speed": "SLOW"
+                },
+                {
+                  "startPolylinePointIndex": 27,
+                  "endPolylinePointIndex": 39,
+                  "speed": "NORMAL"
+                },
+                {
+                  "startPolylinePointIndex": 39,
+                  "endPolylinePointIndex": 40,
+                  "speed": "SLOW"
+                },
+                {
+                  "startPolylinePointIndex": 40,
+                  "endPolylinePointIndex": 155,
+                  "speed": "NORMAL"
+                },
+                {
+                  "startPolylinePointIndex": 155,
+                  "endPolylinePointIndex": 156,
+                  "speed": "SLOW"
+                },
+                {
+                  "startPolylinePointIndex": 156,
+                  "endPolylinePointIndex": 160,
+                  "speed": "NORMAL"
+                },
+                {
+                  "startPolylinePointIndex": 160,
+                  "endPolylinePointIndex": 161,
+                  "speed": "SLOW"
+                },
+                {
+                  "startPolylinePointIndex": 161,
+                  "endPolylinePointIndex": 164,
+                  "speed": "NORMAL"
+                },
+                {
+                  "startPolylinePointIndex": 164,
+                  "endPolylinePointIndex": 165,
+                  "speed": "SLOW"
+                },
+                {
+                  "startPolylinePointIndex": 165,
+                  "endPolylinePointIndex": 172,
+                  "speed": "NORMAL"
+                }
+              ]
+            }
+          }
+        ],
+        "distanceMeters": 13274,
+        "duration": "967s",
+        "polyline": {
+          "encodedPolyline": "{g{FwwkxRJ@Ci@r@N~@BVMVc@N}@Tm@z@mBNk@Dc@@k@EWOK]EMQAUDSNOtCcAN?pAa@b@|An@xAT`@LT`@Zr@l@NDNEd@Cr@@^Gj@{@t@_A~A_BlB{AtDkC~B}A|B}A|HwFpDyBfB{@bFqCh@c@t@}@l@cA^{@XeAdAgFnC{LbCuJpBuIvLuf@ZsAjAyDbBeE^oALy@HiABkABuCBgAZuC^cB~@}Cp@_Cd@{Aj@uBV{Aj@kHNgHFsAJq@XiAp@wAtDkGjC}Ep@cBv@mBvC{GbAoBx@mAv@mALQlBqDVq@Po@R{AFkBO_GOeIKgDM}@S{@e@}@S]yBcCa@_@aDmDqEqEuIiJaBeBKYcBoB_BwBYo@Mi@Gi@DwL@QHU?iBQ{KYeVQ{SFwCl@{I@q@Ak@MaA]qAuCyGSk@Y{AK_AE{ABcAZsB^sAp@yAdBaDrBmDhE_Iv@aBRk@VaAGe@PqBBm@GqAWmBBC]qAk@{AeB{C{AgCmAsCw@[g@?YFOLe@n@KF_BrC_A~AqCxF_BnCY`@eBxCgBxCcCfEa@v@_E{B{BmAs@a@gK}FoGmDyAw@w@H_@GOG"
+        },
+        "travelAdvisory": {
+          "speedReadingIntervals": [
+            {
+              "startPolylinePointIndex": 0,
+              "endPolylinePointIndex": 25,
+              "speed": "NORMAL"
+            },
+            {
+              "startPolylinePointIndex": 25,
+              "endPolylinePointIndex": 27,
+              "speed": "SLOW"
+            },
+            {
+              "startPolylinePointIndex": 27,
+              "endPolylinePointIndex": 39,
+              "speed": "NORMAL"
+            },
+            {
+              "startPolylinePointIndex": 39,
+              "endPolylinePointIndex": 40,
+              "speed": "SLOW"
+            },
+            {
+              "startPolylinePointIndex": 40,
+              "endPolylinePointIndex": 155,
+              "speed": "NORMAL"
+            },
+            {
+              "startPolylinePointIndex": 155,
+              "endPolylinePointIndex": 156,
+              "speed": "SLOW"
+            },
+            {
+              "startPolylinePointIndex": 156,
+              "endPolylinePointIndex": 160,
+              "speed": "NORMAL"
+            },
+            {
+              "startPolylinePointIndex": 160,
+              "endPolylinePointIndex": 161,
+              "speed": "SLOW"
+            },
+            {
+              "startPolylinePointIndex": 161,
+              "endPolylinePointIndex": 164,
+              "speed": "NORMAL"
+            },
+            {
+              "startPolylinePointIndex": 164,
+              "endPolylinePointIndex": 165,
+              "speed": "SLOW"
+            },
+            {
+              "startPolylinePointIndex": 165,
+              "endPolylinePointIndex": 172,
+              "speed": "NORMAL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "status": 200,
+  "statusText": "",
+  "headers": {
+    "cache-control": "private",
+    "content-encoding": "gzip",
+    "content-length": "891",
+    "content-type": "application/json; charset=UTF-8",
+    "date": "Tue, 22 Aug 2023 07:45:55 GMT",
+    "server": "scaffolding on HTTPServer2",
+    "vary": "Origin, X-Origin, Referer"
+  },
+  "config": {
+    "transitional": {
+      "silentJSONParsing": true,
+      "forcedJSONParsing": true,
+      "clarifyTimeoutError": false
+    },
+    "adapter": ["xhr", "http"],
+    "transformRequest": [null],
+    "transformResponse": [null],
+    "timeout": 0,
+    "xsrfCookieName": "XSRF-TOKEN",
+    "xsrfHeaderName": "X-XSRF-TOKEN",
+    "maxContentLength": -1,
+    "maxBodyLength": -1,
+    "env": {},
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline,routes.legs.polyline,routes.travelAdvisory,routes.legs.travelAdvisory"
+    },
+    "method": "post",
+    "url": "https://routes.googleapis.com/directions/v2:computeRoutes?key=AIzaSyD8PhKM0SQ2lCANItUcGouP4DCBLempcJ4",
+    "data": "{\"origin\":{\"location\":{\"latLng\":{\"latitude\":1.2916562,\"longitude\":103.7761195}}},\"destination\":{\"location\":{\"latLng\":{\"latitude\":1.2837575,\"longitude\":103.8591065}}},\"travelMode\":\"DRIVE\",\"routingPreference\":\"TRAFFIC_AWARE\",\"computeAlternativeRoutes\":false,\"extraComputations\":[\"TRAFFIC_ON_POLYLINE\"],\"routeModifiers\":{\"avoidTolls\":false,\"avoidHighways\":false,\"avoidFerries\":false},\"languageCode\":\"en-US\",\"units\":\"IMPERIAL\"}"
+  },
+  "request": {}
+}

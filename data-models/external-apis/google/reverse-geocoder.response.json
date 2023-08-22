@@ -1,0 +1,264 @@
+{
+  "plus_code": {
+    "compound_code": "7QRG+J3F Singapore",
+    "global_code": "6PH57QRG+J3F"
+  },
+  "results": [
+    {
+      "address_components": [
+        { "long_name": "10", "short_name": "10", "types": ["street_number"] },
+        {
+          "long_name": "Heng Mui Keng Terrace",
+          "short_name": "Heng Mui Keng Terrace",
+          "types": ["route"]
+        },
+        {
+          "long_name": "Queenstown",
+          "short_name": "Queenstown",
+          "types": ["neighborhood", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "Singapore",
+          "types": ["locality", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "SG",
+          "types": ["country", "political"]
+        },
+        {
+          "long_name": "119617",
+          "short_name": "119617",
+          "types": ["postal_code"]
+        }
+      ],
+      "formatted_address": "10 Heng Mui Keng Terrace, Singapore 119617",
+      "geometry": {
+        "bounds": {
+          "northeast": { "lat": 1.2918774, "lng": 103.7751508 },
+          "southwest": { "lat": 1.2912907, "lng": 103.7747998 }
+        },
+        "location": { "lat": 1.2915974, "lng": 103.7749854 },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": { "lat": 1.292933030291502, "lng": 103.7763242802915 },
+          "southwest": { "lat": 1.290235069708498, "lng": 103.7736263197085 }
+        }
+      },
+      "place_id": "ChIJd44Th_8a2jERB8AY8UxwRgo",
+      "types": ["premise"]
+    },
+    {
+      "address_components": [
+        { "long_name": "10", "short_name": "10", "types": ["street_number"] },
+        {
+          "long_name": "Heng Mui Keng Terrace",
+          "short_name": "Heng Mui Keng Terrace",
+          "types": ["route"]
+        },
+        {
+          "long_name": "Queenstown",
+          "short_name": "Queenstown",
+          "types": ["neighborhood", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "Singapore",
+          "types": ["locality", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "SG",
+          "types": ["country", "political"]
+        },
+        {
+          "long_name": "119617",
+          "short_name": "119617",
+          "types": ["postal_code"]
+        }
+      ],
+      "formatted_address": "10 Heng Mui Keng Terrace, Singapore 119617",
+      "geometry": {
+        "location": { "lat": 1.2918213, "lng": 103.7747682 },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": { "lat": 1.293170280291502, "lng": 103.7761171802915 },
+          "southwest": { "lat": 1.290472319708498, "lng": 103.7734192197085 }
+        }
+      },
+      "place_id": "ChIJVYXNhv8a2jEROiZWY3fkc4g",
+      "plus_code": {
+        "compound_code": "7QRF+PW Singapore",
+        "global_code": "6PH57QRF+PW"
+      },
+      "types": ["establishment", "point_of_interest"]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "7QRG+J3",
+          "short_name": "7QRG+J3",
+          "types": ["plus_code"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "Singapore",
+          "types": ["locality", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "SG",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "7QRG+J3 Singapore",
+      "geometry": {
+        "bounds": {
+          "northeast": { "lat": 1.291625, "lng": 103.77525 },
+          "southwest": { "lat": 1.2915, "lng": 103.775125 }
+        },
+        "location": { "lat": 1.2915723, "lng": 103.7751668 },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": { "lat": 1.292911480291502, "lng": 103.7765364802915 },
+          "southwest": { "lat": 1.290213519708498, "lng": 103.7738385197085 }
+        }
+      },
+      "place_id": "GhIJRrZOt0eq9D8Rerw1VZzxWUA",
+      "plus_code": {
+        "compound_code": "7QRG+J3 Singapore",
+        "global_code": "6PH57QRG+J3"
+      },
+      "types": ["plus_code"]
+    },
+    {
+      "address_components": [
+        { "long_name": "20", "short_name": "20", "types": ["street_number"] },
+        {
+          "long_name": "Heng Mui Keng Terrace",
+          "short_name": "Heng Mui Keng Terrace",
+          "types": ["route"]
+        },
+        {
+          "long_name": "Queenstown",
+          "short_name": "Queenstown",
+          "types": ["neighborhood", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "Singapore",
+          "types": ["locality", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "SG",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "20 Heng Mui Keng Terrace, Singapore",
+      "geometry": {
+        "bounds": {
+          "northeast": { "lat": 1.291856, "lng": 103.7761115 },
+          "southwest": { "lat": 1.2916, "lng": 103.7752544 }
+        },
+        "location": { "lat": 1.2916826, "lng": 103.7756715 },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": { "lat": 1.293076980291502, "lng": 103.7770319302915 },
+          "southwest": { "lat": 1.290379019708498, "lng": 103.7743339697085 }
+        }
+      },
+      "place_id": "ChIJj0DIeFUa2jERzpprfpdctMM",
+      "types": ["route"]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Queenstown",
+          "short_name": "Queenstown",
+          "types": ["neighborhood", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "Singapore",
+          "types": ["locality", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "SG",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "Queenstown, Singapore",
+      "geometry": {
+        "bounds": {
+          "northeast": { "lat": 1.3187289, "lng": 103.8166261 },
+          "southwest": { "lat": 1.2550696, "lng": 103.7509299 }
+        },
+        "location": { "lat": 1.3012507, "lng": 103.7981323 },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": { "lat": 1.3187289, "lng": 103.8166261 },
+          "southwest": { "lat": 1.2550696, "lng": 103.7509299 }
+        }
+      },
+      "place_id": "ChIJFViwNFIa2jERsKTarqz3AAU",
+      "types": ["neighborhood", "political"]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Singapore",
+          "short_name": "Singapore",
+          "types": ["locality", "political"]
+        },
+        {
+          "long_name": "Singapore",
+          "short_name": "SG",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "Singapore",
+      "geometry": {
+        "bounds": {
+          "northeast": { "lat": 1.4708809, "lng": 104.0415799 },
+          "southwest": { "lat": 1.216611, "lng": 103.6065099 }
+        },
+        "location": { "lat": 1.3553794, "lng": 103.8677444 },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": { "lat": 1.4708809, "lng": 104.0415799 },
+          "southwest": { "lat": 1.216611, "lng": 103.6065099 }
+        }
+      },
+      "place_id": "ChIJyY4rtGcX2jERIKTarqz3AAQ",
+      "types": ["locality", "political"]
+    },
+    {
+      "address_components": [
+        {
+          "long_name": "Singapore",
+          "short_name": "SG",
+          "types": ["country", "political"]
+        }
+      ],
+      "formatted_address": "Singapore",
+      "geometry": {
+        "bounds": {
+          "northeast": { "lat": 1.4784001, "lng": 104.0945001 },
+          "southwest": { "lat": 1.1496, "lng": 103.594 }
+        },
+        "location": { "lat": 1.352083, "lng": 103.819836 },
+        "location_type": "APPROXIMATE",
+        "viewport": {
+          "northeast": { "lat": 1.4784001, "lng": 104.0945001 },
+          "southwest": { "lat": 1.1496, "lng": 103.594 }
+        }
+      },
+      "place_id": "ChIJdZOLiiMR2jERxPWrUs9peIg",
+      "types": ["country", "political"]
+    }
+  ],
+  "status": "OK"
+}

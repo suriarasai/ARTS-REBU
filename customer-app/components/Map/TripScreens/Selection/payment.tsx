@@ -43,7 +43,6 @@ export const SelectPaymentMethod = ({ set }: { set: Function }) => {
 
 	function handleSelectCard() {
 		setSelectedCard(tempCard)
-		console.log(tempCard)
 		set(false)
 	}
 

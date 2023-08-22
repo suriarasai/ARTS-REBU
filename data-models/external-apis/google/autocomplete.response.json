@@ -1,0 +1,316 @@
+{
+  "address_components": [
+    {
+      "long_name": "Institute of Systems Science",
+      "short_name": "Institute of Systems Science",
+      "types": ["premise"]
+    },
+    { "long_name": "25", "short_name": "25", "types": ["street_number"] },
+    {
+      "long_name": "Heng Mui Keng Terrace",
+      "short_name": "Heng Mui Keng Terrace",
+      "types": ["route"]
+    },
+    {
+      "long_name": "Queenstown",
+      "short_name": "Queenstown",
+      "types": ["neighborhood", "political"]
+    },
+    {
+      "long_name": "Singapore",
+      "short_name": "Singapore",
+      "types": ["locality", "political"]
+    },
+    {
+      "long_name": "Singapore",
+      "short_name": "SG",
+      "types": ["country", "political"]
+    },
+    { "long_name": "119615", "short_name": "119615", "types": ["postal_code"] }
+  ],
+  "adr_address": "<span class=\"street-address\">25 Heng Mui Keng Terrace</span>, Institute of Systems Science, <span class=\"country-name\">Singapore</span> <span class=\"postal-code\">119615</span>",
+  "business_status": "OPERATIONAL",
+  "current_opening_hours": {
+    "open_now": true,
+    "periods": [
+      {
+        "close": { "date": "2023-08-28", "day": 1, "time": "1700" },
+        "open": { "date": "2023-08-28", "day": 1, "time": "0900" }
+      },
+      {
+        "close": { "date": "2023-08-22", "day": 2, "time": "1700" },
+        "open": { "date": "2023-08-22", "day": 2, "time": "0900" }
+      },
+      {
+        "close": { "date": "2023-08-23", "day": 3, "time": "1700" },
+        "open": { "date": "2023-08-23", "day": 3, "time": "0900" }
+      },
+      {
+        "close": { "date": "2023-08-24", "day": 4, "time": "1700" },
+        "open": { "date": "2023-08-24", "day": 4, "time": "0900" }
+      },
+      {
+        "close": { "date": "2023-08-25", "day": 5, "time": "1700" },
+        "open": { "date": "2023-08-25", "day": 5, "time": "0900" }
+      }
+    ],
+    "weekday_text": [
+      "Monday: 9:00 AM – 5:00 PM",
+      "Tuesday: 9:00 AM – 5:00 PM",
+      "Wednesday: 9:00 AM – 5:00 PM",
+      "Thursday: 9:00 AM – 5:00 PM",
+      "Friday: 9:00 AM – 5:00 PM",
+      "Saturday: Closed",
+      "Sunday: Closed"
+    ]
+  },
+  "formatted_address": "25 Heng Mui Keng Terrace, Institute of Systems Science, Singapore 119615",
+  "formatted_phone_number": "6516 2093",
+  "geometry": {
+    "location": { "lat": 1.2921816, "lng": 103.7766 },
+    "viewport": {
+      "south": 1.290724319708498,
+      "west": 103.7753056197085,
+      "north": 1.293422280291502,
+      "east": 103.7780035802915
+    }
+  },
+  "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/school-71.png",
+  "icon_background_color": "#7B9EB0",
+  "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/school_pinlet",
+  "international_phone_number": "+65 6516 2093",
+  "name": "NUS-ISS",
+  "opening_hours": {
+    "open_now": true,
+    "periods": [
+      {
+        "close": {
+          "day": 1,
+          "time": "1700",
+          "hours": 17,
+          "minutes": 0,
+          "nextDate": 1693213200000
+        },
+        "open": {
+          "day": 1,
+          "time": "0900",
+          "hours": 9,
+          "minutes": 0,
+          "nextDate": 1693184400000
+        }
+      },
+      {
+        "close": {
+          "day": 2,
+          "time": "1700",
+          "hours": 17,
+          "minutes": 0,
+          "nextDate": 1692694800000
+        },
+        "open": {
+          "day": 2,
+          "time": "0900",
+          "hours": 9,
+          "minutes": 0,
+          "nextDate": 1693270800000
+        }
+      },
+      {
+        "close": {
+          "day": 3,
+          "time": "1700",
+          "hours": 17,
+          "minutes": 0,
+          "nextDate": 1692781200000
+        },
+        "open": {
+          "day": 3,
+          "time": "0900",
+          "hours": 9,
+          "minutes": 0,
+          "nextDate": 1692752400000
+        }
+      },
+      {
+        "close": {
+          "day": 4,
+          "time": "1700",
+          "hours": 17,
+          "minutes": 0,
+          "nextDate": 1692867600000
+        },
+        "open": {
+          "day": 4,
+          "time": "0900",
+          "hours": 9,
+          "minutes": 0,
+          "nextDate": 1692838800000
+        }
+      },
+      {
+        "close": {
+          "day": 5,
+          "time": "1700",
+          "hours": 17,
+          "minutes": 0,
+          "nextDate": 1692954000000
+        },
+        "open": {
+          "day": 5,
+          "time": "0900",
+          "hours": 9,
+          "minutes": 0,
+          "nextDate": 1692925200000
+        }
+      }
+    ],
+    "weekday_text": [
+      "Monday: 9:00 AM – 5:00 PM",
+      "Tuesday: 9:00 AM – 5:00 PM",
+      "Wednesday: 9:00 AM – 5:00 PM",
+      "Thursday: 9:00 AM – 5:00 PM",
+      "Friday: 9:00 AM – 5:00 PM",
+      "Saturday: Closed",
+      "Sunday: Closed"
+    ]
+  },
+  "photos": [
+    {
+      "height": 1152,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/100062569781693193585\">NUS-ISS</a>"
+      ],
+      "width": 2048
+    },
+    {
+      "height": 2115,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/100062569781693193585\">NUS-ISS</a>"
+      ],
+      "width": 3172
+    },
+    {
+      "height": 1362,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/100062569781693193585\">NUS-ISS</a>"
+      ],
+      "width": 2048
+    },
+    {
+      "height": 3024,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/117029146137833745595\">Abhijeet Gite (Abhi)</a>"
+      ],
+      "width": 4032
+    },
+    {
+      "height": 4032,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/114414268617032929314\">Clin Tan</a>"
+      ],
+      "width": 3024
+    },
+    {
+      "height": 509,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/114130896587559764756\">Mokkie Mok</a>"
+      ],
+      "width": 678
+    },
+    {
+      "height": 2592,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/108810879055659774811\">Murali Kumar</a>"
+      ],
+      "width": 4608
+    },
+    {
+      "height": 509,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/114130896587559764756\">Mokkie Mok</a>"
+      ],
+      "width": 678
+    },
+    {
+      "height": 3024,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/114153051390317987316\">Hemant K</a>"
+      ],
+      "width": 4032
+    },
+    {
+      "height": 2160,
+      "html_attributions": [
+        "<a href=\"https://maps.google.com/maps/contrib/103735247528927664931\">Xavier Tan</a>"
+      ],
+      "width": 3840
+    }
+  ],
+  "place_id": "ChIJ2QJCeFYa2jEREtrDRjksFsM",
+  "plus_code": {
+    "compound_code": "7QRG+VJ Singapore",
+    "global_code": "6PH57QRG+VJ"
+  },
+  "rating": 4.5,
+  "reference": "ChIJ2QJCeFYa2jEREtrDRjksFsM",
+  "reviews": [
+    {
+      "author_name": "Arcturus Elyssa",
+      "author_url": "https://www.google.com/maps/contrib/100954276281721751102/reviews",
+      "language": "en",
+      "profile_photo_url": "https://lh3.googleusercontent.com/a-/AD_cMMQkhSP1b4ndoIBepSaPjqzfxv4GXlupquVqgdqZBvRQXNI=s128-c0x00000000-cc-rp-mo-ba5",
+      "rating": 5,
+      "relative_time_description": "11 months ago",
+      "text": "Nice place for courses, I enjoy the atmosphere and facilities here. Just a little troublesome to come into campus due to how large NUS is, but parking is reasonable.",
+      "time": 1663059984
+    },
+    {
+      "author_name": "Koo Matthew",
+      "author_url": "https://www.google.com/maps/contrib/114839184514269642331/reviews",
+      "language": "en",
+      "profile_photo_url": "https://lh3.googleusercontent.com/a-/AD_cMMS20dL2cV4Qrh6iFuJxEeoRJGjqq7VpGgzLO3CIe7tdXdM=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "relative_time_description": "2 years ago",
+      "text": "Attended a course there by Sam via virtual classes.\nI must say he is one of the best adults trainer I came across. Coming from a non IT background I expected a very challenging experience, but Sam’s lecturing style and pace made the course very enjoyable. His dedication and sensitivity for participants to learn bridged this gap. His vast knowledge and experience allow us to relate theories back to our workplace scenarios. He took great patient to explain and simplify things for us.\nAt the same time guiding other advanced learners making sure every one learns well.\nIt is a great pleasure to be in his class, super friendly and motivating and he inspired me to continue this journey on data science.",
+      "time": 1620029813
+    },
+    {
+      "author_name": "Yvonne Yeo",
+      "author_url": "https://www.google.com/maps/contrib/110996962795675333416/reviews",
+      "language": "en",
+      "profile_photo_url": "https://lh3.googleusercontent.com/a-/AD_cMMSxUaOJbq_-mfxIcGfH5TbJGgnuwzsQlrtbbSEOkR5eB-Q=s128-c0x00000000-cc-rp-mo-ba4",
+      "rating": 3,
+      "relative_time_description": "6 years ago",
+      "text": "Remote location ... need to walk abt 10 mins to a cafe for lunch",
+      "time": 1502875197
+    },
+    {
+      "author_name": "Roosevelt Llewelyn Rolle",
+      "author_url": "https://www.google.com/maps/contrib/112227720588186086739/reviews",
+      "language": "en",
+      "profile_photo_url": "https://lh3.googleusercontent.com/a-/AD_cMMQOkmAp4mT74uKkQ9QnRa27CdUryEG95S6F4img8LfSsbU=s128-c0x00000000-cc-rp-mo",
+      "rating": 4,
+      "relative_time_description": "a year ago",
+      "text": "I enjoyed Singapore, NUS is advance teaching/training.",
+      "time": 1632537261
+    },
+    {
+      "author_name": "Prateek Singhal",
+      "author_url": "https://www.google.com/maps/contrib/106151147107475044038/reviews",
+      "language": "en",
+      "profile_photo_url": "https://lh3.googleusercontent.com/a-/AD_cMMQsrnbbQrq_Nr0UhtWdoqYTji5KaB1arMH5PQyANzznsew=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "relative_time_description": "8 years ago",
+      "text": "It is specialized department of National University of Singapore, which gives really good industry oriented courses. I am NUS-ISS graduate, I secured my dream job.\nJoin it if you have potential to work hard and achieve your dream. If you just want to relax, this is not for you.\nThanks NUS-ISS for providing me direction and desired skills.",
+      "time": 1437033587
+    }
+  ],
+  "types": ["point_of_interest", "establishment"],
+  "url": "https://maps.google.com/?cid=14057471911395580434",
+  "user_ratings_total": 56,
+  "utc_offset": 480,
+  "vicinity": "25 Heng Mui Keng Terrace, Institute of Systems Science, Singapore",
+  "website": "http://www.iss.nus.edu.sg/",
+  "html_attributions": [],
+  "utc_offset_minutes": 480
+}

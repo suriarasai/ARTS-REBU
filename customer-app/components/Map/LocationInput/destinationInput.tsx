@@ -50,7 +50,7 @@ export function DestinationInput() {
 	return (
 		<div className='relative'>
 			<Autocomplete
-				onLoad={(e) => setAutocomplete(e)}
+				onLoad={setAutocomplete}
 				onPlaceChanged={onRetrieve}
 				options={{ componentRestrictions: { country: 'sg' } }}
 				fields={['address_components', 'geometry', 'formatted_address']}

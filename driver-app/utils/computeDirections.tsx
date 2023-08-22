@@ -17,6 +17,5 @@ export default function SetDirections(
       }
     }
   );
-  // console.log("Test", directionsService)
   return null;
 }

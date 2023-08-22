@@ -97,6 +97,5 @@ export const getDirections = (
     )
     .then((response: any) => {
       callback(response.data.routes[0]);
-      console.log(response);
     });
 };
