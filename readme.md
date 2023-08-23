@@ -13,7 +13,7 @@ Rebu was created for the National University of Singapore's SWE 5003 (Architecti
 
 ### Table of Contents
 
-1. [Overview](#overview)
+1. [Technology](#technology)
    <br />1.1 [Technology](#technology)
    <br />1.2 [Architecture and Design](#architecture)
    <br />1.3 [Data Models](#datamodel)
@@ -35,19 +35,22 @@ Rebu was created for the National University of Singapore's SWE 5003 (Architecti
    <br />3.8 [Frontend Concepts](#frontendconcepts)
 
 4. [Issues and Future Work](#issues)
+   <br />4.1 [Debugging](#debugging)
+   <br />4.2 [Issues](#issues)
+   <br />4.3 [Future Work](#futurework)
 
 ---
 
 ---
 
-<a id="overview"></a>
+<a id="technology"></a>
 
-### Overview
+### Technology
 
 <a id="technology"></a>
 
 <details>
-  <summary>Technology</summary>
+  <summary>Stack and Libraries</summary>
 
 <br />**Tech Stack and Tools**
 
@@ -78,7 +81,7 @@ Abstraction was generally avoided unless it was necessary or greatly reduced the
 
 <br />**External APIs**
 
-The Fleet Management System (FMS) simulates taxi location by pulling from the Singapore Government's open data API for taxi availability. This API returns a list of all available public taxis in the country and updates every 30 seconds
+The Fleet Management System (FMS) simulates taxi location by pulling taxi availability from the Singapore Government's open data API. This API returns a list of all available public taxis in the country and updates every 30 seconds
 
 > Maps: **Google Maps API** (v3) <br />
 > Fleet Management: **Taxi Availability API** (data.gov.sg)
@@ -91,13 +94,178 @@ The Fleet Management System (FMS) simulates taxi location by pulling from the Si
 
 <details>
   <summary>Architecture</summary>
+
+  The architecture is event-based where each frontend application communicates with the backend through endpoints. The backend relays stream data back to the frontend via web sockets
   
 </details>
 
 <a id="datamodel"></a>
 
 <details>
-  <summary>Data Modelling</summary>
+  <summary>Data Models</summary>
+
+  There are 5 MongoDB tables and 4 stream data models:
+
+  **MongoDB Models** (Batch Data)
+
+  These can be found in the backend through their respective folders
+
+
+  ```js
+  Booking
+    bookingID: integer
+    messageSubmitedTime: long (ms since epoch)
+    messageReceivedTime: long (ms since epoch)
+    customerID: integer
+    customerName: string
+    phoneNumber: integer
+    pickUpLocation: Location
+    pickUpTime: long (ms since epoch)
+    dropLocation: Location
+    taxiType: 'regular' | 'plus'
+    fareType: 'metered' | 'fixed'
+    fare: string
+    eta: integer (seconds) (unused)
+    status: 'requested' | 'dispatched' | 'cancelled' | 'completed'
+    driverID: integer
+    sno: integer
+    distance: float (meters)
+    paymentMethod: string (cash or card number)
+    dropTime: long (ms since epoch)
+  ```
+
+  ```js
+  Customer
+    customerID: integer
+    customerName: string
+    memberCategory: string (unused)
+    age: integer
+    gender: string
+    amountSpent: double (unused)
+    address: string
+    city: string (unused)
+    countryCode: string (unused)
+    contactTitle: string
+    phoneNumber: integer
+    email: string
+    password: string
+    phoneCountryCode: integer
+    home: Location
+    work: Location
+    savedLocations: Location[]
+    paymentMethods: []
+      cardHolder: string
+      cardNumber: long
+      expiryDate: integer
+      cvv: integer
+      defaultPaymentMethod: boolean
+  ```
+
+  ```js
+  Location (subclass for Customer and Booking)
+  placeID: string (cachable key from Google Maps API) (unused)
+  lat: float
+  lng: float
+  postcode: string
+  address: string
+  placeName: string
+  ```
+
+  ```js
+  Driver
+    driverID: integer
+    driverName: string
+    phoneNumber: integer
+    rating: double
+  ```
+  
+  ```js
+  Review
+    reviewID: integer (ID)
+    customerID: integer
+    driverID: integer
+    messageReceivedTime: long (ms since epoch)
+    rating: integer (1 to 5)
+    reviewBody: string
+    areasOfImprovement:
+      cleanliness: boolean
+      politeness: boolean
+      punctuality: boolean
+      bookingProcess: boolean
+      waitTime: boolean
+  ```
+  
+  ```js
+  Taxi
+    sno: integer (ID)
+    taxiNumber: string
+    taxiType: 'plus' | 'regular'
+    tmdtid: string
+    taxiFeature: 
+      taxiMakeModel: string
+      taxiPassengerCapacity: integer
+      taxiColor: string
+    registeredDrivers: [] (unused)
+      driverID: integer
+      driverName: string
+      driverPhone: integer
+  ```
+  <i>*sno = serial number; tmdtid may be a better key for auto-incrementing</i>
+
+  **Kafka Models** (Stream Data)
+
+  These are defined in the Kafka folder under `Kafka/models/`
+
+  ```js
+  BookingEvent
+    customerID: integer
+    customerName: string
+    phoneNumber: string
+    taxiType: string
+    fareType: string
+    fare: double
+    distance: double
+    paymentMethod: string
+    eta: double
+    pickUpLocation: Location
+    dropLocation: Location
+  ```
+
+  ```js
+  DispatchEvent
+    customerID: integer
+    customerName: string
+    customerPhoneNumber: integer
+    status: string
+    tmdtid: integer
+    taxiNumber: string
+    taxiPassengerCapacity: integer
+    taxiMakeModel: string
+    taxiColor: string
+    driverID: integer
+    driverName: string
+    driverPhoneNumber: integer
+    sno: integer
+    rating: double
+  ```
+
+  ```js
+  TaxiLocatorEvent
+    tmdtid: integer
+    driverID: integer
+    taxiNumber: string
+    availabilityStatus: boolean
+    currentPosition: 
+      lat: float
+      lng: float
+  ```
+
+  ```js
+  ChatEvent
+    recipientID: string ('d' + driverID or 'c' + customerID)
+    type: string
+    body: string
+  ```
   
 </details>
 
@@ -115,22 +283,140 @@ The Fleet Management System (FMS) simulates taxi location by pulling from the Si
 
 <a id="installation"></a>
 
-<details open>
+<details>
   <summary>Installation</summary>
-  
-  * Software Pre-requisites
-  * MongoDB
+
+This is a brief installation guide - refer to the detailed installation guide for help
+
+**Pre-requisites**
+
+- NPM, Node
+- JDK
+- VSCode
+- Google Maps API Key
+- Stub Data for Driver and Taxis
+
+**Quick Guide**
+
+1. Clone the project: `git clone https://github.com/suriarasai/ARTS-REBU.git`
+2. Run `npm install` on the `customer-app`, `driver-app`, and `demo-app` (try running `npm run dev` on the `demo-app` to see if it renders)
+3. Add `.env.local` into the root directory of each of the above apps and populate it with `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=[APIKEY]`
+4. Configure the MongoDB connection by creating `.env` at `src/main/resources/.env` with the following:
+
+```java
+MONGO_DATABASE="rebu"
+MONGO_USER=""
+MONGO_PASSWORD=""
+MONGO_CLUSTER="localhost:27017"
+```
+
+5. Install Kafka and configure the environment variables. Restart the PC if necessary
+6. Start the Zookeeper server via PowerShell. Point the following command at where Kafka was installed
+
+```java
+zookeeper-server-start.bat D:\\kafka\\config\\zookeeper.properties
+```
+
+7. Start the Kafka server in a new PowerShell terminal (mind the path):
+
+```java
+kafka-server-start.bat D:\\kafka\\config\\server.properties
+```
+
+8. Install MongoDB Community Server with MongoDB Compass
+9. Using MongoDB Compass, create a new database, `rebu`, and add 5 empty collections: `Booking`, `Customer`, `Driver`, `Review`, and `Taxi`
+10. Import the stub data into the `Driver` and `Taxi` collections
+11. Run the main Java method, `src/main/java/com/rebu/RebuApplication.java`, using the play button on the top right
+12. Run `npm run dev` on the remaining apps (`customer-app` and `driver-app`) then open `localhost:3000` (and 3001, 3002)
+13. Optional: Install the customer application as a PWA using the icon in the browser's search bar
+
 </details>
 
-<a id="fileorganization"></a>
+<a id="accounts"></a>
+<details>
+  <summary>User Accounts</summary>
+  
+</details>
 
+<a id="booking"></a>
+<details>
+  <summary>Booking</summary>
+  
+</details>
+
+<a id="demomanual"></a>
+<details>
+  <summary>Demo</summary>
+  
+</details>
+
+<br />
+
+---
+
+---
+
+### Source Code
+
+<a id="fileorganization"></a>
 <details>
   <summary>File Organization</summary>
   
+**High-level overview**
+
+```
+| customer-app/ (Rider app frontend)
+| data-models/ (Documentation on API I/O)
+| demo-app/ (Demo app frontend w/WIP Simulator)
+| driver-app/ (Driver app frontend)
+| src/ (Backend)
+```
+
+**General Frontend Setup**
+
+```
+| api/ (API configuration)
+| components/ (Components that render onto the pages)
+| pages/ (Pages to be routed to)
+| styles/
+| - globals.css (Global styling)
+| - maps.json (Styling for Google Maps interface)
+| constants.tsx (Constant values)
+| server.tsx (API router)
+| state.tsx (Global state accessors via Recoil)
+| types.tsx (Custom types for TypeScript)
+```
+
+**Backend Setup**
+
+The backend code is primarily data classes for storing data in MongoDB. The `resources/` folder also contains configuration for the MongoDB and Kafka connections
+```
+src/main/java/com/rebu
+| Booking/
+| config/ (Web socket configuration)
+| Customer/
+| Driver/
+| Kafka/
+| - Models/ (Stream data models)
+| Review/
+| Taxi/
+| RebuApplication.java
+```
+
+Each data class follows the MVC (Model, View, Controller) structure. For example, the `Customer` folder:
+
+```
+Customer
+| Customer.java (Main data class)
+| CustomerController.java (API routing)
+| CustomerRepository.java (Custom queries)
+| CustomerService.java (Data processing)
+| HelperClasses.java (Custom data objects that comprise Customer.java)
+```
+
 </details>
 
 <a id="client"></a>
-
 <details open>
   <summary>Rider Application</summary>
 
@@ -197,7 +483,7 @@ The fare calculation, `components/fareCalculator/computeFare.tsx`, is based on [
 
 Google Maps offers an [advanced route API](https://developers.google.com/maps/documentation/routes/overview) that returns a traffic-aware route (ie. list of coordinates), trip distance, and trip duration.
 
-How to Use: Drag and drop either of the origin/destination markers around the map 
+How to Use: Drag and drop either of the origin/destination markers around the map
 
 <br />**(Matching) Matching and Taxi ETA**
 
@@ -222,6 +508,22 @@ How to Use: Drag and drop either of the origin/destination markers around the ma
 
 </details>
 
+<a id="internalapis"></a>
+<details>
+<summary>Internal APIs</summary>
+
+Test
+
+</details>
+
+<a id="externalapis"></a>
+<details>
+<summary>External APIs</summary>
+
+Test
+
+</details>
+
 <a id="frontendconcepts"></a>
 
 <details open>
@@ -236,53 +538,6 @@ How to Use: Drag and drop either of the origin/destination markers around the ma
 
 </details>
 
-<a id="internalapis"></a>
-
-<details>
-<summary>Internal APIs</summary>
-
-Test
-
-</details>
-
-<a id="externalapis"></a>
-
-<details>
-<summary>External APIs</summary>
-
-Test
-
-</details>
-
-<br />
-
----
-
----
-
-### Source Code
-
-<a id="accounts"></a>
-
-<details>
-  <summary>User Accounts</summary>
-  
-</details>
-
-<a id="booking"></a>
- 
-<details>
-  <summary>Booking</summary>
-  
-</details>
-
-<a id="demomanual"></a>
-
-<details>
-  <summary>Demo</summary>
-  
-</details>
-
 <br />
 
 ---
@@ -292,6 +547,27 @@ Test
 <a id="issues"></a>
 
 ### Issues and Future Work
+
+<a id="debugging"></a>
+
+<details>
+  <summary>Debugging</summary>
+  
+</details>
+
+<a id="issues"></a>
+
+<details>
+  <summary>Issues</summary>
+  
+</details>
+
+<a id="futurework"></a>
+
+<details>
+  <summary>Future Work</summary>
+  
+</details>
 
 <br />
 
