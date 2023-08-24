@@ -473,7 +473,7 @@ Customer
 
 <a id="client"></a>
 
-<details open>
+<details>
   <summary>Rider Application</summary>
 
 - 3.3.1 User Registration
@@ -498,14 +498,14 @@ Customer
 
 <a id="driver"></a>
 
-<details open>
+<details>
   <summary>Driver Application</summary>
   
 </details>
 
 <a id="demo"></a>
 
-<details open>
+<details>
   <summary>Demo Application</summary>
 
 The purpose of the demo application is to serve as a playground to demonstrate backend processes and attempt to simulate driver-customer interactions. It runs independently and does not require the backend to be operating
@@ -551,7 +551,7 @@ How to Use: Drag and drop either of the origin/destination markers around the ma
 
 <a id="backend"></a>
 
-<details open>
+<details>
   <summary>Backend</summary>
 
 - 3.5.1 Taxi Booking System (TBS)
@@ -584,7 +584,7 @@ Test
 
 <a id="frontendconcepts"></a>
 
-<details open>
+<details>
   <summary>Frontend Concepts</summary>
   
   * Form Validation and Exception Handling
@@ -608,7 +608,7 @@ Test
 
 <a id="debugging"></a>
 
-<details open>
+<details>
   <summary>Debugging</summary>
   Remember to check the terminal or do inspect element on the webpage!
 
@@ -628,7 +628,7 @@ Test
   * Google Maps API not loading: The API key may expire or not have the user's IP/domain whitelisted. Confirm with the administrator that the API key is up to date and configured properly
   * Google Maps API crashing: If a directions/routes/geocoding/autocomplete API request fails, it may be because either of the inputted locations are invalid. Check the detailed response object via inspect element and choose a new location input to see if this resolves the issue
 
-  **Backend**:
+  **Backend**: Since the majority of the logic is contaied in the frontend, the backend tends to crash infrequently. Most of the time, it's because data being sent to the backend is in an incorrect format and in this case, it will be helpful to use Postman to test the endpoints
   
 </details>
 
@@ -636,6 +636,14 @@ Test
 
 <details>
   <summary>Issues</summary>
+
+  <br />
+
+  **Isolating Logic to Backend**: A major issue is that Rebu's logic is primarily stored on the frontend (ie. presentation layer). For example, the fare calculation and external API calls to Google Maps. In production, this is a security risk as frontend code is not as secure as the backend code
+
+  **Error Handling**: Rebu's event-based architecture is heavily reliant on API calls, which implies a demand for error handling. For example, using NextJS's [Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) custom hook or even simple `try... catch...` statements.
+
+  **TypeScript: Type-hinting**: Using `any` types is generally a bad practice as it defeats the purpose of type hinting. However, it may also be difficult to identify a variable's type, especially if it comes from an external library. For example, a Google Map interface has the `google.maps.Map` type while a React useState setter uses `React.Dispatch<React.SetStateAction<[Type]>>`. Therefore, it is important to ensure the frontend libraries are TypeScript-compatible (which is normally indicated by a `@types/[library]` package in the `package.json` file)
   
 </details>
 
@@ -643,6 +651,30 @@ Test
 
 <details>
   <summary>Future Work</summary>
+
+  <br />
+
+  **Unit/Integration Testing**: Tying in with the need for error handling, unit testing is an important part of development for catching errors in development. This is especially applicable for Rebu which has scaled in size and become convoluted with 3 frontend applications. For example, changing a single key name in the backend (ex. tmdtid) can lead to crashes in another application or component rather than the intended target. 
+
+  **TypeScript: OOP**: TypeScript provides tools for object-orientated programming. Rebu uses this in the demo app to represent booking objects, but this concept can be extended to all custom objects like booking, dispatch, chat, and taxi locator events to reduce redundant code
+
+  **Simulation**: The current simulation is incomplete as the event generator and map interface are still separate. More work must also be done on the event generator as drivers are randomly matched to customers. Instead, only nearby drivers should be considered for matching
+
+  **Analytics**: The demo application provides an interface for creating dashboards of the stream data. One tool of interest is the `Simulation` UI's `Geofencing` tool which generates a draggable and adjustable rectangle on the map. [This example](https://developers.google.com/maps/documentation/javascript/examples/poly-containsLocation) shows how shapes can be used for geofencing via the `containsLocation([latLng])` method, to detect whether a coordinate is contained within the geofenced region. This can be used to filter the data stream and gather analytics in a specific area
+
+  **Driver App - Reading Streams from Beginning**: Currently driver application only reads messages when they are waiting on the trip UI. If they leave the screen, they will lose access to the pending booking requests. Instead, the WebSocket should be open for as long as the driver's status is 'available' - or rather, as soon as they log in, so that the driver can see all available booking requests
+
+  **KafkaJS**: Kafka has several npm libraries that can integrate with Kafka to produce/consume events. [KafkaJS](https://www.npmjs.com/package/kafkajs#getting-started) is one of the more popular examples. Incorporating this library would require using a NodeJS backend but eliminates the need for a WebSocket between NextJS and the existing Spring Boot backend
+
+  **kSQL**: Kafka has a real-time database known as [kSQL](https://www.confluent.io/blog/ksql-streaming-sql-for-apache-kafka/) which is very helpful for filtering stream data. This is particularly useful for private communication between a matched driver and their client, and for removing booking stream events once a driver accepts (to prevent double bookings)
+
+  **MongoDB Connector**: Kafka has a [connector](https://www.mongodb.com/docs/kafka-connector/current/) to MongoDB where stream data can be written to MongoDB. This may be useful for analytics or a better visualization of the data streams 
+
+  **Buffer Screens**: Certain screens take longer to load, in particular, the map interface. Rebu does use loading screens in many of such pages, but buffer screens can also be implemented for components. For example, the taxi selection component also takes a long time to load so a loading element can be applied to this specific component. NextJS provides a [Suspense](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming) component for this purpose
+
+  **Chat Stream**: Chat channels between customers and drivers are another application of real-time data. The frontend has icons in the live trip UI as well as an existing chat stream to facilitate this feature. However, the current chat stream is used for sending trip details such as driver arrival and customer trip cancellation so it may need to be remodelled
+
+
   
 </details>
 
