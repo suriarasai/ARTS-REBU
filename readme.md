@@ -781,8 +781,49 @@ Sample models can be found in the `data-models/external-apis/` folder
 
 <details open>
   <summary>Frontend Concepts</summary>
+
+  <br />
   
-**Form Validation**: Form validation is done via the `react-hook-form` library which tracks the value of input elements and triggers errors. 
+**Form Validation**: Form validation is done via the `react-hook-form` library which tracks the value of input elements and triggers errors.
+
+To initialize the form controller and onSubmit handler:
+
+```tsx
+const {
+  register: register,
+  handleSubmit: handleSubmit,
+  formState: { errors: errors },
+} = useForm();
+
+const onSubmit = handleSubmit((data) => {
+  // Code that runs if the validations pass
+  ...
+});
+
+return (
+  <form onSubmit={onSubmit}>
+    // Form inputs
+    ...
+  </form>
+)
+```
+
+For validation, each input will have additional properties that define the 'name' of the input and acceptable values. On error, the error text will render. However, the error will not trigger until the form is submitted. Afterward, the error will go away as soon as the mistake is corrected and re-appear when the value is invalid (without having to submit the form)
+
+```tsx
+<input
+  placeholder="Enter your mobile number"
+  {...register("phoneNumber", {
+    required: true,
+    minLength: 8,
+    maxLength: 8,
+    pattern: /^-?[0-9]\d*\.?\d*$/i,
+  })}
+/>;
+{
+  errors.phoneNumber && <p>Warning Text</p>;
+}
+```
 
 **State Management**: State management was done using [Recoil](https://recoiljs.org/) - a React state management library by Facebook. It operates similar to the built-in `useContext` hook and is syntactically similar to the `useState` hook. It is less popular than the widely-used Redux but has the same core functionalities and far less boilerplate code
 
@@ -860,13 +901,105 @@ const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
 
 This is a simple solution and appropriate for smaller applications, but the NextJS documentation offers an alternate solution using [middleware](https://nextjs.org/docs/app/building-your-application/routing/internationalization).
 
-**Progressive Web Application (PWA)**
+**Progressive Web Application (PWA)**: Rebu's customer application is a PWA, meaning it is a cross-platform application that can be installed on mobile and web without having to be re-written in native languages such as Swift or Kotlin. In terms of frontend rendering, Rebu is responsive to different screen sizes. For example, a top navigation bar will render on medium and large screens while a bottom navigation bar will render on small screens. This logic is done via CSS:
+
+```tsx
+<div className="sm:hidden">// bottom nav bar code</div>
+```
+
+To be installable as a PWA, the `next.config.js` file must be configured:
+
+```tsx
+next.config.js;
+
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  disable: process.env.NODE_ENV === "development",
+});
+
+module.exports = withPWA({
+  webpack5: true,
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false };
+    return config;
+  },
+  output: "standalone",
+});
+```
+
+Once this is complete, the application will be installable through an icon in the browser's search bar. Consider the PWA as a shortcut to accessing the website through a browser
 
 **Reports (PDF)**
 
+PDF generation is done by the `@progress/kendo-react-pdf` library. It is part of a larger commercial library but still usable for free. Kendo automatically converts the components it wraps around to a PDF format
+
+```tsx
+<PDFExport paperSize="A4" margin="0.5cm" ref={ref}>
+  ...
+</PDFExport>
+```
+
+And to download the PDF (note: `ref` is a reference object created using React's createRef: `const ref = createRef()`):
+
+```tsx
+<button onClick={ref.current.save()}>Download</button>
+```
+
 **API Routers**
 
+The API routing between the frontend and backend is primarily done via `axios`. Configuration can be found in `/api/`
+
+```tsx
+import axios from "axios";
+
+export default axios.create({
+  baseURL: "http://127.0.0.1:8080/",
+  headers: { "ngrok-skip-browser-warning": "true" },
+});
+```
+
+Once `axios` is set up, it can be used to call the backend endpoints. All API calls are centralized in the `server.tsx` file. For example, a sample `get` request:
+
+```tsx
+export const getUser = async (customerID: number) => {
+  await api.get("/api/v1/Customer/" + customerID);
+};
+```
+
+And a sample `post` request:
+
+```tsx
+export const RemovePaymentMethod = async (
+  customerID: number,
+  cardNumber: string
+) => {
+  await api.post("/api/v1/Customer/removePaymentMethod", {
+    customerID: customerID,
+    cardNumber: cardNumber,
+  });
+};
+```
+
 **Routing**
+
+Routing between pages is done via NextJS's built-in `router`. The name of the page to route to corresponds to how the file is named in the `/pages` folder. For example, routing to the `pages/maps.tsx` UI:
+
+```tsx
+import { useRouter } from 'next/router'
+
+function Home() {
+  const router = useRouter()
+
+  return (
+    <button onClick={() => router.push('/maps')}>
+      Maps
+    </button>
+  )
+}
+```
+
+This is a simple example, but there are many other more things that the `router` can do - an entire section exists on the [NextJS documentation](https://nextjs.org/docs/app/building-your-application/routing)
 
 </details>
 
