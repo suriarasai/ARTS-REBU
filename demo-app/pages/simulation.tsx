@@ -25,8 +25,10 @@ export default function Simulation() {
   const useGrid = () => loadTaxis(new GridAlgorithm({}));
   const useNoop = () => loadTaxis(null);
   const useSuper = () => loadTaxis(new SuperClusterAlgorithm({}));
-  const useTraffic = () => trafficLayer.setMap(trafficLayer.getMap() ? null : mapRef!);
-  const useGeofence = () => rectangle.setMap(rectangle.getMap() ? null : mapRef!);
+  const useTraffic = () =>
+    trafficLayer.setMap(trafficLayer.getMap() ? null : mapRef!);
+  const useGeofence = () =>
+    rectangle.setMap(rectangle.getMap() ? null : mapRef!);
   const useHeatmap = () => heatmap.setMap(heatmap.getMap() ? null : mapRef!);
 
   // On map load... set location to current location
@@ -101,13 +103,17 @@ export default function Simulation() {
           infoWindow = new google.maps.InfoWindow();
           taxiMarkers.push(newTaxi);
           tempTaxiList.push(taxiCoord);
+
           taxiMarkers[index].addListener("mouseover", () => {
             infoWindow.close();
 
             queryID = taxiMarkers[index].getTitle();
 
             getTaxi(queryID, (taxi: any) => {
+              if (!taxi) return;
+
               getDriver(queryID, (driver: any) => {
+                if (!driver) return;
                 infoWindow.setContent(`
                   <b>Driver</b><br />
                   DriverID: ${driver.driverID} <br />

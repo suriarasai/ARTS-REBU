@@ -27,14 +27,26 @@ export async function produceKafkaTaxiLocatorEvent(message: string) {
 
 // Retrieves taxi information based on the ID (sno)
 export const getTaxi = async (sno: number, _callback: Function) => {
-  const response = await api.get("/api/v1/Taxi/" + sno);
-  _callback(response.data);
+  try {
+    const response = await api.get("/api/v1/Taxi/" + sno);
+    _callback(response.data);
+  } catch (e) {
+    console.log(e);
+    console.log("getTaxi has failed, the server may be offline");
+    _callback(null);
+  }
 };
 
 // Retrieves taxi information based on the ID (sno)
 export const getDriver = async (id: number, _callback: Function) => {
-  const response = await api.get("/api/v1/Driver/" + id);
-  _callback(response.data);
+  try {
+    const response = await api.get("/api/v1/Driver/" + id);
+    _callback(response.data);
+  } catch (e) {
+    console.log(e)
+    console.log("getDriver has failed, the server may be offline")
+    _callback(null)
+  }
 };
 
 export async function computeNearbyTaxis(

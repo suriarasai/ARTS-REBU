@@ -368,9 +368,12 @@ Once the destination address is inputted, a confirmation button will appear to s
 
 **Taxi Selection**: There are 2 taxi types - `regular` and `plus`, which differ in fare and number of seats. Users can view the origin/destination locations, select their desired taxi type, and edit the payment method before confirming the trip.
 
+> *Note: Before confirming the trip, the user should sign into the driver application. Hover over a nearby taxi on the customer application to see the corresponding driver ID and sign into that driver's account then wait on the trips screen before confirming on the customer application. <span style="color:red">This must be done within 30 seconds</span> from the time of confirming the route to confirming the taxi selection. This is because the nearby taxis are computed in real-time and refreshed every 30 seconds (around the <span style="color:red">:15 and :45 second mark</span>). A good way to time it is to open the computer or online clock and start around the :22 or :50 second point to guarentee getting up-to-date information on which drivers are nearby (booking events are only sent to the nearest 6 drivers)
+
 **Matching**: Users will wait at this screen until a nearby driver approves the booking request. Users can cancel at any time using the red button on the top left of the screen
 
-\*Note: Clicking on the magnifying glass icon will mock a driver and begin the trip
+*Note: Clicking on the magnifying glass icon will mock a driver and begin the trip
+
 
 **Live Trip**: Once a taxi is dispatched, users will be given the taxi/driver information, estimated arrival time (ETA), and projected route the taxi driver will take. There will be 2 notifications when the driver is approaching the pickup location and after they arrive.
 
@@ -536,7 +539,7 @@ The booking process follows:
 - A traffic-aware, optimized route is rendered from the origin to destination locations. This API also returns the trip duration/distance
 - Fare calculation for each taxi type
 
-3. **Matching**: Waiting for a nearby driver to accept the booking request
+3. **Matching**: Waiting for a nearby driver to accept the booking request. <span style="color: red">For demonstration purposes, it is possible to bypass the matching process by clicking on the magnifying glass icon</span>
 4. **Live trip**: Step-by-step:
 
 - Driver approves the trip and is dispatched. Driver, taxi, and ETA information are sent to the customer
@@ -549,6 +552,9 @@ The booking process follows:
 **3.3.5 Make a Payment**
 
 - `pages/managePayment.tsx`
+- `components/payment/`
+
+The default payment method is cash, but users may add payment cards through the manage payments screen. There are also options to remove payment methods and change the default payment method
 
 **3.3.6 <del>Route Choices</del>**
 
@@ -586,7 +592,7 @@ The form submission is sent to the MongoDB database in the `Reviews` table. The 
 
 **3.3.11 <del>Notifications Feature</del>**
 
-The notifications are limited to the taxi proximity notifications that trigger based on the estimated arrival time to the customer's location. 
+The notifications are limited to the taxi proximity notifications that trigger based on the estimated arrival time to the customer's location.
 
 **3.4.1 <del>In-app Chat and Calling</del>**
 
@@ -604,16 +610,59 @@ The notifications are limited to the taxi proximity notifications that trigger b
 
 <a id="driver"></a>
 
-<details open>
+<details>
   <summary>Driver Application</summary>
   
-  
+  The `driver-app` is a very simple application for producing/consuming stream events
+
+**Sign In**: The sign-in page is the first page and the only required field is the driverID. Enter an integer from 1 to 3000. The selected driver will correspond with the index in the stub data
+
+Driver information can be viewed at the settings screen, as well as the option to sign out. It is impossible to modify the driver data from within the application.
+
+Note: Unlike the customer application, the driver data is not actively cached and restored on page refresh. Therefore, refreshing the application at any point may cause the application to crash, at which point the best solution is to either reopen the app or sign out and sign in again
+
+**Internationalization**: A unique trait of the driver application is language support, or internationalization. There is language support for English (default), Chinese, and Japanese. These can be toggled using the Earth icon on the bottom right corner of the sign in screen. Notice how the URL gets the localization appended (ie. `/zh`, `/ja`)
+
+Internationalization is done through a NextJS configuration at `next.config.js` and dictionaries (ex. `locales/zh`).
+
+```js
+driver-app/next.config.js
+
+module.exports = withPWA({
+...
+  i18n: {
+    locales: ["en", "zh", "jp"],
+    defaultLocale: "en",
+  },
+});
+```
+
+The user's language preference is set in the main screen and accessed by the `router`
+
+```js
+const router = useRouter();
+const { locale } = router;
+const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
+```
+
+This is a simple solution and appropriate for smaller applications, but the NextJS documentation offers an alternate solution using [middleware](https://nextjs.org/docs/app/building-your-application/routing/internationalization). 
+
+
+**Trips**: The booking lifecycle is as follows:
+
+1. The driver waits at the `Trips` screen for a booking request (they only listen to nearby requests). Once a request appears, they can view the booking information and approve the request (thereby sending a dispatch event to the customer that contains the driver/taxi information)
+2. The driver is routed to the `Maps` screen where the routes to the user and destination are calculated
+3. After pressing the confirm route button, the driver will start moving toward the client and continuously stream their location
+4. On arrival, the driver will send an arrival event (via the chat stream), pause and wait for the customer to board
+5. Once boarded, the driver will confirm the pickup and proceed toward the destination
+6. Once at the destination, the driver will confirm the dropoff via another message on the chat stream, then stop sharing their location
+* At any time, if the customer cancels, the driver will receive a cancellation event through the chat stream which will cease their movement and remove the route polylines from the map
 
 </details>
 
 <a id="demo"></a>
 
-<details open>
+<details>
   <summary>Demo Application</summary>
 
 The purpose of the demo application is to serve as a playground to demonstrate backend processes and attempt to simulate driver-customer interactions. It runs independently and does not require the backend to be operating
@@ -649,9 +698,29 @@ Google Maps offers an [advanced route API](https://developers.google.com/maps/do
 
 How to Use: Drag and drop either of the origin/destination markers around the map
 
+Note: This API is fairly expensive at [$0.015 USD per request](https://developers.google.com/maps/documentation/routes/usage-and-billing) because it returns traffic conditions
+
 <br />**(Matching) Matching and Taxi ETA**
 
-<br />**(Simulation) Visualization Tools**
+This tool helps visualize the matching process:
+
+1. Retrieve the locations of all available taxis in Singapore (ie. a list of coordinates)
+2. Assign driver IDs (and taxi IDs, assuming they're the same) to each taxi according to the index at which they're returned
+3. Compute which ones are closest to the customer via straight-line lat/lng difference
+4. Simulation: While rendering the nearby taxi markers, randomly assign 50% of the markers to be red (ie. plus type) or yellow (ie. regular type). In the customer application, each taxiID is querried to determine the taxi type, but this step is mocked for the demo app
+5. Click on any of the taxi markers to view the straight line distance and estimated arrival time. The distance in meters is approximated by multiplying the lat/lng difference by 111190. ETA is also estimated by multiplying the distance by a certain factor
+* Taxi ETA for a certain taxi type is computed as the average ETA of that specific taxi type within the 6 nearest taxis
+
+How to use: Drag and drop the user marker to anywhere on the map (including the ocean!). The nearby taxis are re-calculated to determine the new matching
+
+<br />**(Simulation) Visualization Tools**: This map interface demonstrates several tools offered by the Google Maps API:
+
+* K-Means clustering (sparse, dense, none): groups taxis together and show the cluster sizes. Note that the 'none' option is very taxing because it's rendering around 1500-3000 markers onto the map. The total number of taxis can be found by zooming out (until the entire country is visible) as the cluster count changes based on zoom level
+* Traffic layer: shows traffic conditions 
+* Heat map: Similar to clustering but uses a color scale to measure taxi density rather than clusters and numbers
+* Geo-fencing: 
+
+Hovering over any taxi marker will create an infoWindow that shows the taxi/driver information (again, assuming the driverID and taxiID are equal). This is the only database dependency that the demo-app has - all other features will run properly without the Kafka, Mongo, or Spring Boot servers
 
 <br />**(Trips) Data Generator**
 
