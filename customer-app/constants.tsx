@@ -124,3 +124,10 @@ export interface message {
 	messageSubmittedTime?: string
 	messageReceivedTime?: string
 }
+export const phoneCountryCodes: any = {
+	65: 'SGP',
+	60: 'MYS',
+	62: 'IDN',
+	852: 'HKG',
+	63: 'PHL',
+}

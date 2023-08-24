@@ -6,6 +6,7 @@ import { FaUser } from 'react-icons/fa'
 import { EmailForm } from './EmailForm'
 import { userAtom } from '@/state'
 import { useRecoilValue } from 'recoil'
+import { phoneCountryCodes } from '@/constants'
 
 // Main component
 const AccountInformation = ({
@@ -129,14 +130,6 @@ const AccountInformation = ({
 }
 
 export default AccountInformation
-
-const phoneCountryCodes: any = {
-	65: 'SGP',
-	60: 'MYS',
-	62: 'IDN',
-	852: 'HKG',
-	63: 'PHL',
-}
 
 const DropDownArrow = ({ mt, px }: { mt: number; px: number }) => (
 	<div

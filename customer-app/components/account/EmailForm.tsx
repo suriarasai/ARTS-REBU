@@ -1,5 +1,4 @@
 // Email form for entering/modifying email and password
-// TODO: Forgot email/password?
 
 import { FaEnvelope, FaKey } from 'react-icons/fa'
 
@@ -11,7 +10,6 @@ export function EmailForm({
 	/*
 		Register 		: assigns names to each input field to be accessed when reading the form
 		Errors 			: defines error conditions for validation checks
-		existingUser 	: whether the user is registering or editing their information
 		signInError		: error during sign in if the email/password are incorrect
 	*/
 	return (

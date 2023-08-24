@@ -13,14 +13,11 @@ import { useState } from 'react'
 
 export const MobileNumber = ({ newUser = true, populateData = {} }: any) => {
 	/*
-		Register 		: assigns names to each input field to be accessed when reading the form
-		Errors 			: defines error conditions for validation checks
 		newUser		 	: whether the user is registering or editing their information
 		populateData	: populating form data for when the user wants to update their information
 	*/
 
 	const router = useRouter()
-
 	const [triggerOTP, setTriggerOTP] = useState(false)
 
 	const {

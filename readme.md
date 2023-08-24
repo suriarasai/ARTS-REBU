@@ -476,36 +476,144 @@ Customer
 <details>
   <summary>Rider Application</summary>
 
-- 3.3.1 User Registration
-- 3.3.2 Login
-- 3.3.3 Display Profile
-- 3.3.4 Book Taxi
-- 3.3.5 Make a Payment
-- 3.3.6 Route Choices
-- 3.3.7 View Trip History
-- 3.3.8 Places of Interest
-- 3.3.9 Print Receipts
-- 3.3.10 Driver Review
-- 3.3.11 Notifications Feature
-- 3.4.1 <del>In-app Chat and Calling</del>
-- 3.4.2 <del>Emergency SOS</del>
-- 3.4.3 <del>Share Ride</del>
-- 3.4.4 <del>Interactive Map</del>
-- 3.4.5 <del>Track Driver</del>
-- 3.4.6 <del>View Proposed Fare Table</del>
+This section will go overview each of the functional requirements. Optional features (section 3.4) were not implemented
+
+```
+customer-app/pages/
+| accountSettings.tsx (Account Settings)
+| activity.tsx (Trip History)
+| home.tsx (Home Screen after sign-in)
+| index.tsx (Sign In)
+| managePayment.tsx (Payment Methods)
+| map.tsx (Map Interface)
+| notifications.tsx (Placeholder screen)
+| registration.tsx (Registration)
+| rewardPoints.tsx (Placeholder screen)
+| savedPlaces.tsx (Manage Saved Places)
+| settings.tsx (Settings)
+```
+
+```
+customer-app/components/
+| account/ (Account-related components, ex. forms)
+| Map/ (Booking components)
+| payment/ (Payment components)
+| ui/ (Re-used components, ex. nav bar, buffer screens)
+```
+
+**3.3.1-2 User Registration and Login**
+
+- `pages/index.tsx`
+- `pages/registration`
+- `components/account/`
+
+The UI component consists of the login screen (by phone or by email) and the registration screen. Below is the general process:
+
+1. User inputs their phone number. If the number is recognized, they will be signed in, otherwise the user will be routed to the registration process. Form validation will be covered in the [frontend concepts](#frontendconcepts) section
+2. (Skip the OTP screen by pressing the next button)
+
+<br />
+
+**3.3.3 Display Profile**
+
+- `pages/settings.tsx`
+- `pages/accountSettings.tsx`
+
+Account settings re-use the registration form components to modify account information. Except, since the user information is already known, the `accountSettings` page is able to pre-populate the form elements so that users can directly change the field they want rather than update the entire form.
+
+**3.3.4 Book Taxi**
+
+- `pages/map.tsx`
+- `components/Map/TripScreens/`
+
+The booking process follows:
+
+1. **Location input** (via search, saved location, or map click): Once the destination location is inputted, a button will appear to confirm the trip. A blank origin location will default to the user's current location
+2. **Taxi selection and payment method**: Several processes occur at this screen:
+
+- 6 nearby taxis are rendered and this data comes from the Singapore Government's Taxi Availability API
+- Taxi ETA for each taxi type is calculated based on the nearby taxis in range
+- A traffic-aware, optimized route is rendered from the origin to destination locations. This API also returns the trip duration/distance
+- Fare calculation for each taxi type
+
+3. **Matching**: Waiting for a nearby driver to accept the booking request
+4. **Live trip**: Step-by-step:
+
+- Driver approves the trip and is dispatched. Driver, taxi, and ETA information are sent to the customer
+- Driver streams their location to the customer throughout the journey. This causes the taxi marker to move based on the taxi locator stream events
+- Taxi ETA is updated every minute. At 1 and 0 minutes remaining, there are proximity notifications reminding clients to get ready or board the taxi
+- On arrival to the customer's location, the pickup is confirmed by the driver and the taxi starts moving toward the destination. The customer is given the option to rate the trip
+
+5. **Arrival**: After the driver confirms the dropoff, the trip is considered complete and the customer can view the trip receipt (and download it) and rate the trip before returning to the main booking screen
+
+**3.3.5 Make a Payment**
+
+- `pages/managePayment.tsx`
+
+**3.3.6 <del>Route Choices</del>**
+
+There are no route choices, but the customer is provided a traffic-optimized route and is able to track the taxi throughout the journey
+
+**3.3.7 View Trip History**
+
+- `pages/activity.tsx`
+
+This feature queries booking events by the user's ID and renders by time and trip status (ex. completed/cancelled)
+
+**3.3.8 Places of Interest**
+
+- Frontend: `components/Map/Controls/buttons.tsx (TogglePOI)`
+- Styling: `styles/maps.json`
+- Logic: `components/Map/utils/poi.tsx`
+
+Places of interest are toggled by updating the map's `styles` property.
+
+**3.3.9 Print Receipts**
+
+- `components/Map/TripScreens/Arrival/Receipt.tsx`
+
+Receipts are shown upon ride completion or by clicking on a trip in the trip history UI. The inputs to this function is the bookingID, which is used to get trip, driver, and taxi information
+
+The receipt can be downloaded as a PDF. This is done via the `@progress/kendo-react-pdf` library which reads the DOM to generate a PDF
+
+**3.3.10 Driver Review**
+
+- `components/Map/TripScreens/Arrival/Rating.tsx`
+
+The rating form appears during the live trip and arrival screens. Users can rate the driver (1-5) and offer suggestions from a multi-select list of common criticisms and/or text field.
+
+The form submission is sent to the MongoDB database in the `Reviews` table. The driverID is automatically reported but the submitted rating does not update the driver's overall rating
+
+**3.3.11 <del>Notifications Feature</del>**
+
+The notifications are limited to the taxi proximity notifications that trigger based on the estimated arrival time to the customer's location. 
+
+**3.4.1 <del>In-app Chat and Calling</del>**
+
+**3.4.2 <del>Emergency SOS</del>**
+
+**3.4.3 <del>Share Ride</del>**
+
+**3.4.4 <del>Interactive Map</del>**
+
+**3.4.5 <del>Track Driver</del>**
+
+**3.4.6 <del>View Proposed Fare Table</del>**
 
 </details>
 
 <a id="driver"></a>
 
-<details>
+<details open>
   <summary>Driver Application</summary>
   
+  
+
 </details>
 
 <a id="demo"></a>
 
-<details>
+<details open>
   <summary>Demo Application</summary>
 
 The purpose of the demo application is to serve as a playground to demonstrate backend processes and attempt to simulate driver-customer interactions. It runs independently and does not require the backend to be operating
@@ -551,7 +659,7 @@ How to Use: Drag and drop either of the origin/destination markers around the ma
 
 <a id="backend"></a>
 
-<details>
+<details open>
   <summary>Backend</summary>
 
 - 3.5.1 Taxi Booking System (TBS)
@@ -566,7 +674,7 @@ How to Use: Drag and drop either of the origin/destination markers around the ma
 
 <a id="internalapis"></a>
 
-<details>
+<details open>
 <summary>Internal APIs</summary>
 
 Test
@@ -575,7 +683,7 @@ Test
 
 <a id="externalapis"></a>
 
-<details>
+<details open>
 <summary>External APIs</summary>
 
 Test
@@ -584,7 +692,7 @@ Test
 
 <a id="frontendconcepts"></a>
 
-<details>
+<details open>
   <summary>Frontend Concepts</summary>
   
   * Form Validation and Exception Handling
@@ -593,6 +701,7 @@ Test
   * Progressive Web Application (PWA)
   * Reports (PDF)
   * API Routers
+  * Routing
 
 </details>
 
@@ -628,8 +737,8 @@ Test
   * Google Maps API not loading: The API key may expire or not have the user's IP/domain whitelisted. Confirm with the administrator that the API key is up to date and configured properly
   * Google Maps API crashing: If a directions/routes/geocoding/autocomplete API request fails, it may be because either of the inputted locations are invalid. Check the detailed response object via inspect element and choose a new location input to see if this resolves the issue
 
-  **Backend**: Since the majority of the logic is contaied in the frontend, the backend tends to crash infrequently. Most of the time, it's because data being sent to the backend is in an incorrect format and in this case, it will be helpful to use Postman to test the endpoints
-  
+**Backend**: Since the majority of the logic is contaied in the frontend, the backend tends to crash infrequently. Most of the time, it's because data being sent to the backend is in an incorrect format and in this case, it will be helpful to use Postman to test the endpoints
+
 </details>
 
 <a id="issues"></a>
@@ -639,12 +748,14 @@ Test
 
   <br />
 
-  **Isolating Logic to Backend**: A major issue is that Rebu's logic is primarily stored on the frontend (ie. presentation layer). For example, the fare calculation and external API calls to Google Maps. In production, this is a security risk as frontend code is not as secure as the backend code
+**Retrieving Place Names from Google Maps**: The autocomplete search bar currently returns the address of a location rather than the place name. This is because not every location on Google Maps has a corresponding place name, so the response data model is inconsistent. For example, setting a location by map click would return the address at that specific coordinate rather than search for the nearest point of interest.
 
-  **Error Handling**: Rebu's event-based architecture is heavily reliant on API calls, which implies a demand for error handling. For example, using NextJS's [Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) custom hook or even simple `try... catch...` statements.
+**Isolating Logic to Backend**: A major issue is that Rebu's logic is primarily stored on the frontend (ie. presentation layer). For example, the fare calculation and external API calls to Google Maps. In production, this is a security risk as frontend code is not as secure as the backend code
 
-  **TypeScript: Type-hinting**: Using `any` types is generally a bad practice as it defeats the purpose of type hinting. However, it may also be difficult to identify a variable's type, especially if it comes from an external library. For example, a Google Map interface has the `google.maps.Map` type while a React useState setter uses `React.Dispatch<React.SetStateAction<[Type]>>`. Therefore, it is important to ensure the frontend libraries are TypeScript-compatible (which is normally indicated by a `@types/[library]` package in the `package.json` file)
-  
+**Error Handling**: Rebu's event-based architecture is heavily reliant on API calls, which implies a demand for error handling. For example, using NextJS's [Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) custom hook or even simple `try... catch...` statements.
+
+**TypeScript: Type-hinting**: Using `any` types is generally a bad practice as it defeats the purpose of type hinting. However, it may also be difficult to identify a variable's type, especially if it comes from an external library. For example, a Google Map interface has the `google.maps.Map` type while a React useState setter uses `React.Dispatch<React.SetStateAction<[Type]>>`. Therefore, it is important to ensure the frontend libraries are TypeScript-compatible (which is normally indicated by a `@types/[library]` package in the `package.json` file)
+
 </details>
 
 <a id="futurework"></a>
@@ -654,28 +765,26 @@ Test
 
   <br />
 
-  **Unit/Integration Testing**: Tying in with the need for error handling, unit testing is an important part of development for catching errors in development. This is especially applicable for Rebu which has scaled in size and become convoluted with 3 frontend applications. For example, changing a single key name in the backend (ex. tmdtid) can lead to crashes in another application or component rather than the intended target. 
+**Unit/Integration Testing**: Tying in with the need for error handling, unit testing is an important part of development for catching errors in development. This is especially applicable for Rebu which has scaled in size and become convoluted with 3 frontend applications. For example, changing a single key name in the backend (ex. tmdtid) can lead to crashes in another application or component rather than the intended target.
 
-  **TypeScript: OOP**: TypeScript provides tools for object-orientated programming. Rebu uses this in the demo app to represent booking objects, but this concept can be extended to all custom objects like booking, dispatch, chat, and taxi locator events to reduce redundant code
+**TypeScript: OOP**: TypeScript provides tools for object-orientated programming. Rebu uses this in the demo app to represent booking objects, but this concept can be extended to all custom objects like booking, dispatch, chat, and taxi locator events to reduce redundant code
 
-  **Simulation**: The current simulation is incomplete as the event generator and map interface are still separate. More work must also be done on the event generator as drivers are randomly matched to customers. Instead, only nearby drivers should be considered for matching
+**Simulation**: The current simulation is incomplete as the event generator and map interface are still separate. More work must also be done on the event generator as drivers are randomly matched to customers. Instead, only nearby drivers should be considered for matching
 
-  **Analytics**: The demo application provides an interface for creating dashboards of the stream data. One tool of interest is the `Simulation` UI's `Geofencing` tool which generates a draggable and adjustable rectangle on the map. [This example](https://developers.google.com/maps/documentation/javascript/examples/poly-containsLocation) shows how shapes can be used for geofencing via the `containsLocation([latLng])` method, to detect whether a coordinate is contained within the geofenced region. This can be used to filter the data stream and gather analytics in a specific area
+**Analytics**: The demo application provides an interface for creating dashboards of the stream data. One tool of interest is the `Simulation` UI's `Geofencing` tool which generates a draggable and adjustable rectangle on the map. [This example](https://developers.google.com/maps/documentation/javascript/examples/poly-containsLocation) shows how shapes can be used for geofencing via the `containsLocation([latLng])` method, to detect whether a coordinate is contained within the geofenced region. This can be used to filter the data stream and gather analytics in a specific area
 
-  **Driver App - Reading Streams from Beginning**: Currently driver application only reads messages when they are waiting on the trip UI. If they leave the screen, they will lose access to the pending booking requests. Instead, the WebSocket should be open for as long as the driver's status is 'available' - or rather, as soon as they log in, so that the driver can see all available booking requests
+**Driver App - Reading Streams from Beginning**: Currently driver application only reads messages when they are waiting on the trip UI. If they leave the screen, they will lose access to the pending booking requests. Instead, the WebSocket should be open for as long as the driver's status is 'available' - or rather, as soon as they log in, so that the driver can see all available booking requests
 
-  **KafkaJS**: Kafka has several npm libraries that can integrate with Kafka to produce/consume events. [KafkaJS](https://www.npmjs.com/package/kafkajs#getting-started) is one of the more popular examples. Incorporating this library would require using a NodeJS backend but eliminates the need for a WebSocket between NextJS and the existing Spring Boot backend
+**KafkaJS**: Kafka has several npm libraries that can integrate with Kafka to produce/consume events. [KafkaJS](https://www.npmjs.com/package/kafkajs#getting-started) is one of the more popular examples. Incorporating this library would require using a NodeJS backend but eliminates the need for a WebSocket between NextJS and the existing Spring Boot backend
 
-  **kSQL**: Kafka has a real-time database known as [kSQL](https://www.confluent.io/blog/ksql-streaming-sql-for-apache-kafka/) which is very helpful for filtering stream data. This is particularly useful for private communication between a matched driver and their client, and for removing booking stream events once a driver accepts (to prevent double bookings)
+**kSQL**: Kafka has a real-time database known as [kSQL](https://www.confluent.io/blog/ksql-streaming-sql-for-apache-kafka/) which is very helpful for filtering stream data. This is particularly useful for private communication between a matched driver and their client, and for removing booking stream events once a driver accepts (to prevent double bookings)
 
-  **MongoDB Connector**: Kafka has a [connector](https://www.mongodb.com/docs/kafka-connector/current/) to MongoDB where stream data can be written to MongoDB. This may be useful for analytics or a better visualization of the data streams 
+**MongoDB Connector**: Kafka has a [connector](https://www.mongodb.com/docs/kafka-connector/current/) to MongoDB where stream data can be written to MongoDB. This may be useful for analytics or a better visualization of the data streams
 
-  **Buffer Screens**: Certain screens take longer to load, in particular, the map interface. Rebu does use loading screens in many of such pages, but buffer screens can also be implemented for components. For example, the taxi selection component also takes a long time to load so a loading element can be applied to this specific component. NextJS provides a [Suspense](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming) component for this purpose
+**Buffer Screens**: Certain screens take longer to load, in particular, the map interface. Rebu does use loading screens in many of such pages, but buffer screens can also be implemented for components. For example, the taxi selection component also takes a long time to load so a loading element can be applied to this specific component. NextJS provides a [Suspense](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming) component for this purpose
 
-  **Chat Stream**: Chat channels between customers and drivers are another application of real-time data. The frontend has icons in the live trip UI as well as an existing chat stream to facilitate this feature. However, the current chat stream is used for sending trip details such as driver arrival and customer trip cancellation so it may need to be remodelled
+**Chat Stream**: Chat channels between customers and drivers are another application of real-time data. The frontend has icons in the live trip UI as well as an existing chat stream to facilitate this feature. However, the current chat stream is used for sending trip details such as driver arrival and customer trip cancellation so it may need to be remodelled
 
-
-  
 </details>
 
 <br />

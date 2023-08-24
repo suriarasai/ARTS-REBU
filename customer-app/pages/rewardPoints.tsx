@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react'
 import Page from '@/components/ui/page'
-import Section from '@/components/ui/section'
 import { rewardPoints } from '@/types'
 import { Rewards, Title } from '@/constants'
 import { userAtom } from '@/state'
@@ -36,72 +35,70 @@ const RewardPoints = () => {
 
 	return (
 		<Page title={Title.REWARDS}>
-			<Section>
-				<div className='mb-8 mt-3'>
-					<h2 className='mb-8 mt-3 text-center text-xl font-bold'>
-						{Rewards.REDEEM_POINTS}
-					</h2>
-					<div className='flex-cols flex pb-8 text-3xl'>
-						<div className='mr-3 w-1/2 rounded bg-green-700 p-4 text-zinc-100'>
-							<label className='text-zinc-100'>{Rewards.POINTS}</label>
-							{rewardPoints}
-						</div>
-						<div className='w-1/2 rounded bg-green-700 p-4 text-zinc-100'>
-							<label className='text-zinc-100'>{Rewards.POINTS_WORTH}</label>$
-							{rewardPoints ? rewardPoints / 100 : 0}
-						</div>
+			<div className='mb-8 mt-3'>
+				<h2 className='mb-8 mt-3 text-center text-xl font-bold'>
+					{Rewards.REDEEM_POINTS}
+				</h2>
+				<div className='flex-cols flex pb-8 text-3xl'>
+					<div className='mr-3 w-1/2 rounded bg-green-700 p-4 text-zinc-100'>
+						<label className='text-zinc-100'>{Rewards.POINTS}</label>
+						{rewardPoints}
 					</div>
-
-					<form className='flex-cols flex pb-8' ref={rewardsForm}>
-						<div className='mr-3 w-3/4'>
-							<input
-								type='number'
-								name='points'
-								placeholder='Enter Points to Redeem'
-								className='px-4 py-2'
-							/>
-							{invalidInput && (
-								<p className='text-error px-3'>
-									{Rewards.MAXIMUM} {rewardPoints}
-								</p>
-							)}
-						</div>
-						<div className='mt-1 w-1/4'>
-							<button
-								className='green-button -mt-1 w-full uppercase'
-								onClick={(e) => handleSubmit(e)}
-							>
-								Redeem
-							</button>
-						</div>
-					</form>
-
-					<label className='pb-3'>{Rewards.HISTORY}</label>
-
-					{rewardHistory ? (
-						<table className='w-full table-auto text-left'>
-							<thead>
-								<tr>
-									<th>Date</th>
-									<th>Points</th>
-									<th>Total Points</th>
-								</tr>
-							</thead>
-							<tbody>
-								{rewardHistory.map((transaction, index) => (
-									<tr key={index}>
-										<td>{transaction.date}</td>
-										<td>{transaction.points * -1}</td>
-										<td>{transaction.totalPoints}</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					) : (
-						Rewards.NO_DATA
-					)}
+					<div className='w-1/2 rounded bg-green-700 p-4 text-zinc-100'>
+						<label className='text-zinc-100'>{Rewards.POINTS_WORTH}</label>$
+						{rewardPoints ? rewardPoints / 100 : 0}
+					</div>
 				</div>
-			</Section>
+
+				<form className='flex-cols flex pb-8' ref={rewardsForm}>
+					<div className='mr-3 w-3/4'>
+						<input
+							type='number'
+							name='points'
+							placeholder='Enter Points to Redeem'
+							className='px-4 py-2'
+						/>
+						{invalidInput && (
+							<p className='text-error px-3'>
+								{Rewards.MAXIMUM} {rewardPoints}
+							</p>
+						)}
+					</div>
+					<div className='mt-1 w-1/4'>
+						<button
+							className='green-button -mt-1 w-full uppercase'
+							onClick={(e) => handleSubmit(e)}
+						>
+							Redeem
+						</button>
+					</div>
+				</form>
+
+				<label className='pb-3'>{Rewards.HISTORY}</label>
+
+				{rewardHistory ? (
+					<table className='w-full table-auto text-left'>
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Points</th>
+								<th>Total Points</th>
+							</tr>
+						</thead>
+						<tbody>
+							{rewardHistory.map((transaction, index) => (
+								<tr key={index}>
+									<td>{transaction.date}</td>
+									<td>{transaction.points * -1}</td>
+									<td>{transaction.totalPoints}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				) : (
+					Rewards.NO_DATA
+				)}
+			</div>
 		</Page>
 	)
 }

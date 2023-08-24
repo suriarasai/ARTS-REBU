@@ -16,8 +16,7 @@ export const EmailSignIn = ({ setForm }: any) => {
 		handleSubmit: handleSubmit,
 		formState: { errors: errors },
 	} = useForm()
-	const onSubmit = handleSubmit((data) => {
-		// @ts-ignore
+	const onSubmit = handleSubmit((data: any) => {
 		validateCredentials(data.email, data.password)
 	})
 
