@@ -368,12 +368,11 @@ Once the destination address is inputted, a confirmation button will appear to s
 
 **Taxi Selection**: There are 2 taxi types - `regular` and `plus`, which differ in fare and number of seats. Users can view the origin/destination locations, select their desired taxi type, and edit the payment method before confirming the trip.
 
-> *Note: Before confirming the trip, the user should sign into the driver application. Hover over a nearby taxi on the customer application to see the corresponding driver ID and sign into that driver's account then wait on the trips screen before confirming on the customer application. <span style="color:red">This must be done within 30 seconds</span> from the time of confirming the route to confirming the taxi selection. This is because the nearby taxis are computed in real-time and refreshed every 30 seconds (around the <span style="color:red">:15 and :45 second mark</span>). A good way to time it is to open the computer or online clock and start around the :22 or :50 second point to guarentee getting up-to-date information on which drivers are nearby (booking events are only sent to the nearest 6 drivers)
+> \*Note: Before confirming the trip, the user should sign into the driver application. Hover over a nearby taxi on the customer application to see the corresponding driver ID and sign into that driver's account then wait on the trips screen before confirming on the customer application. <span style="color:red">This must be done within 30 seconds</span> from the time of confirming the route to confirming the taxi selection. This is because the nearby taxis are computed in real-time and refreshed every 30 seconds (around the <span style="color:red">:15 and :45 second mark</span>). A good way to time it is to open the computer or online clock and start around the :22 or :50 second point to guarentee getting up-to-date information on which drivers are nearby (booking events are only sent to the nearest 6 drivers)
 
 **Matching**: Users will wait at this screen until a nearby driver approves the booking request. Users can cancel at any time using the red button on the top left of the screen
 
-*Note: Clicking on the magnifying glass icon will mock a driver and begin the trip
-
+\*Note: Clicking on the magnifying glass icon will mock a driver and begin the trip
 
 **Live Trip**: Once a taxi is dispatched, users will be given the taxi/driver information, estimated arrival time (ETA), and projected route the taxi driver will take. There will be 2 notifications when the driver is approaching the pickup location and after they arrive.
 
@@ -613,40 +612,13 @@ The notifications are limited to the taxi proximity notifications that trigger b
 <details>
   <summary>Driver Application</summary>
   
-  The `driver-app` is a very simple application for producing/consuming stream events
+  The `driver-app` is a very simple application for producing/consuming stream events. Refer to [Frontend Concepts](#frontendconcepts) for internationalization
 
 **Sign In**: The sign-in page is the first page and the only required field is the driverID. Enter an integer from 1 to 3000. The selected driver will correspond with the index in the stub data
 
 Driver information can be viewed at the settings screen, as well as the option to sign out. It is impossible to modify the driver data from within the application.
 
 Note: Unlike the customer application, the driver data is not actively cached and restored on page refresh. Therefore, refreshing the application at any point may cause the application to crash, at which point the best solution is to either reopen the app or sign out and sign in again
-
-**Internationalization**: A unique trait of the driver application is language support, or internationalization. There is language support for English (default), Chinese, and Japanese. These can be toggled using the Earth icon on the bottom right corner of the sign in screen. Notice how the URL gets the localization appended (ie. `/zh`, `/ja`)
-
-Internationalization is done through a NextJS configuration at `next.config.js` and dictionaries (ex. `locales/zh`).
-
-```js
-driver-app/next.config.js
-
-module.exports = withPWA({
-...
-  i18n: {
-    locales: ["en", "zh", "jp"],
-    defaultLocale: "en",
-  },
-});
-```
-
-The user's language preference is set in the main screen and accessed by the `router`
-
-```js
-const router = useRouter();
-const { locale } = router;
-const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
-```
-
-This is a simple solution and appropriate for smaller applications, but the NextJS documentation offers an alternate solution using [middleware](https://nextjs.org/docs/app/building-your-application/routing/internationalization). 
-
 
 **Trips**: The booking lifecycle is as follows:
 
@@ -656,7 +628,8 @@ This is a simple solution and appropriate for smaller applications, but the Next
 4. On arrival, the driver will send an arrival event (via the chat stream), pause and wait for the customer to board
 5. Once boarded, the driver will confirm the pickup and proceed toward the destination
 6. Once at the destination, the driver will confirm the dropoff via another message on the chat stream, then stop sharing their location
-* At any time, if the customer cancels, the driver will receive a cancellation event through the chat stream which will cease their movement and remove the route polylines from the map
+
+- At any time, if the customer cancels, the driver will receive a cancellation event through the chat stream which will cease their movement and remove the route polylines from the map
 
 </details>
 
@@ -709,53 +682,98 @@ This tool helps visualize the matching process:
 3. Compute which ones are closest to the customer via straight-line lat/lng difference
 4. Simulation: While rendering the nearby taxi markers, randomly assign 50% of the markers to be red (ie. plus type) or yellow (ie. regular type). In the customer application, each taxiID is querried to determine the taxi type, but this step is mocked for the demo app
 5. Click on any of the taxi markers to view the straight line distance and estimated arrival time. The distance in meters is approximated by multiplying the lat/lng difference by 111190. ETA is also estimated by multiplying the distance by a certain factor
-* Taxi ETA for a certain taxi type is computed as the average ETA of that specific taxi type within the 6 nearest taxis
+
+- Taxi ETA for a certain taxi type is computed as the average ETA of that specific taxi type within the 6 nearest taxis
 
 How to use: Drag and drop the user marker to anywhere on the map (including the ocean!). The nearby taxis are re-calculated to determine the new matching
 
 <br />**(Simulation) Visualization Tools**: This map interface demonstrates several tools offered by the Google Maps API:
 
-* K-Means clustering (sparse, dense, none): groups taxis together and show the cluster sizes. Note that the 'none' option is very taxing because it's rendering around 1500-3000 markers onto the map. The total number of taxis can be found by zooming out (until the entire country is visible) as the cluster count changes based on zoom level
-* Traffic layer: shows traffic conditions 
-* Heat map: Similar to clustering but uses a color scale to measure taxi density rather than clusters and numbers
-* Geo-fencing: 
+- K-Means clustering (sparse, dense, none): groups taxis together and show the cluster sizes. Note that the 'none' option is very taxing because it's rendering around 1500-3000 markers onto the map. The total number of taxis can be found by zooming out (until the entire country is visible) as the cluster count changes based on zoom level
+- Traffic layer: shows traffic conditions
+- Heat map: Similar to clustering but uses a color scale to measure taxi density rather than clusters and numbers
+- Geo-fencing: This generates a rectangle that can be moved around and reshaped. Its purpose is to visually filter stream data based on coordinates located inside the shape. However, no logic has been added to this tool
 
 Hovering over any taxi marker will create an infoWindow that shows the taxi/driver information (again, assuming the driverID and taxiID are equal). This is the only database dependency that the demo-app has - all other features will run properly without the Kafka, Mongo, or Spring Boot servers
 
 <br />**(Trips) Data Generator**
 
+This last tool simulates data streams by randomly generating booking events. Every second:
+
+- A random booking event is created with an auto-incrementing booking ID and randomly selected customerID (selection without replacement). The pickup/dropoff locations are randomly selected from a list of Singapore street addresses (n=3910) (`demo-app/public/resources/addresses.json`) that can be geocoded into coordinates and placed onto a map
+- With a 50% chance, any of the requested bookings will be matched with a driverID and taxiID (selection without replacement)
+- With a 20% chance, any of the dispatched bookings will be completed and removed from the table
+
+Next steps:
+
+- Match bookings with nearby drivers as opposed to random drivers
+- Connect the data generator to the map interface, iteratively add booking event markers (geocode pickup locations to coordinates), and draw lines between matched bookings/drivers
+- Track completed trips and set up real-time dashboards that track where demand is the highest, revenue per region, etc. and implement geofencing to filter the analytics
+
 </details>
 
 <a id="backend"></a>
 
-<details open>
+<details>
   <summary>Backend</summary>
+The case study specifies several applications in section 3.5. The most important ones are the Taxi Booking System (TBS), which controls the booking and dispatch events, and the Fleet Management System, which monitors the taxi locations. The remaining application systems were either not focused on or implemented
 
-- 3.5.1 Taxi Booking System (TBS)
-- 3.5.2 Fleet Management System (FMS)
-- 3.5.3 <del>Geographical Positioning System (GPS)</del>
-- 3.5.4 <del>Customer Relationship Management System (CRM)</del>
-- 3.5.5 <del>Messaging Gateway</del>
-- 3.5.6 <del>Financial System (FS)</del>
-- 3.5.7 <del>Payment Gateway</del>
+<br />
+
+**3.5.1 Taxi Booking System (TBS)**: The TBS (`kafka/`) is responsible for routing booking and dispatch events from the customer and driver. Incoming events are sent to the Kafka server. The TBS also actively listens to the Kafka stream to detect changes, and all changes are console logged then sent to their respective web socket before being delivered to the consumer.
+
+For example, a normal trip would follow:
+
+1. Customer produces a booking event. Backend sends it to Kafka and it's added to a stream
+2. The stream has changed so the websocket computes nearby drivers and sends this booking event to them (ie. nearby drivers)
+3. The driver app consumes the message and sends a dispatch event. A similar flow ensues where the dispatch event is sent to Kafka, a listener picks up on the change, then sends the information to the customer via web socket
+
+**3.5.2 Fleet Management System (FMS)**: The FMS is mocked using the Singapore Government's [Taxi Availability API](https://data.gov.sg/dataset/taxi-availability?view_id=5ad2510e-6b51-4ffe-9504-6661061a708c&resource_id=9d217820-1350-4032-a7a3-3cd83e222eb7) which returns the location of all of LTA's available taxis in Singapore at any given time. The response is in the form of a geojson object, containing list of LngLat coordinates. This list of taxis is indexed to simulate driverID and taxiIDs (ex. first coordinate pair in the list represents taxiID=1, driverID=1).
+
+The FMS also tracks taxi location during trips. Taxis will constantly stream their location via the `taxiLocatorEvent` and the FMS will make this information available to the customer through a web socket.
+
+**3.5.3 <del>Geographical Positioning System (GPS)</del>**:
+Instead of a GPS system, the current system uses the built-in location tracker. For example, this is how the user's current location is retrieved when the map interface loads:
+
+```js
+navigator.geolocation.getCurrentPosition((position) => {
+  const coords = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude,
+  };
+  const currentLocation = new google.maps.LatLng(coords);
+});
+```
+
+**3.5.4 <del>Customer Relationship Management System (CRM)</del>**: A separate UI can be created to serve as a CRM where customers are retrieved by their customerID. The latest booking requests associated with the customer could also be retrieved using the customerID
+
+**3.5.5 <del>Messaging Gateway</del>**:
+
+**3.5.6 <del>Financial System (FS)</del>**:
+
+**3.5.7 <del>Payment Gateway</del>**:
 
 </details>
 
 <a id="internalapis"></a>
 
-<details open>
+<details>
 <summary>Internal APIs</summary>
 
-Test
+Internal APIs refer to the `MongoDB` and `Kafka` CRUD operations. For data models, refer to the [Data Models](#datamodel) section
+
+Sample models can be found in the `data-models/internal-apis/` folder
 
 </details>
 
 <a id="externalapis"></a>
 
-<details open>
+<details>
 <summary>External APIs</summary>
 
-Test
+External APIs refer to the `Google Maps` and `Taxi Availability` APIs
+
+Sample models can be found in the `data-models/external-apis/` folder
 
 </details>
 
@@ -764,13 +782,91 @@ Test
 <details open>
   <summary>Frontend Concepts</summary>
   
-  * Form Validation and Exception Handling
-  * State Management
-  * Internationalization
-  * Progressive Web Application (PWA)
-  * Reports (PDF)
-  * API Routers
-  * Routing
+**Form Validation**: Form validation is done via the `react-hook-form` library which tracks the value of input elements and triggers errors. 
+
+**State Management**: State management was done using [Recoil](https://recoiljs.org/) - a React state management library by Facebook. It operates similar to the built-in `useContext` hook and is syntactically similar to the `useState` hook. It is less popular than the widely-used Redux but has the same core functionalities and far less boilerplate code
+
+To set up Recoil, wrap the app component in a `RecoilRoot` (similar to the `useContext` `ContextProvider` custom hook)
+
+```tsx
+_app.tsx
+
+return (
+  <RecoilRoot>
+    <Component>
+  </RecoilRoot>
+)
+```
+
+Afterwards, creating a global state variable, or 'atom', can be done like so:
+
+```tsx
+state.tsx;
+
+export const screenAtom = atom({
+  key: "screen-atom",
+  default: "",
+});
+```
+
+And finally to access/modify, it's the same as the `useState` hook but with `useRecoilState` (which makes migrating very easy)
+
+```tsx
+const [user, setUser] = useRecoilState(userAtom);
+```
+
+There are many other things that can be done, such as tracking changes to the state variables. For example, changes to the `User` atom will update the cached object in `localStorage` so it can be recovered if the app crashes
+
+```tsx
+export const userAtom = atom({
+  key: "user-atom",
+  default: {} as User,
+  effects: [
+    ({ onSet }) => {
+      onSet((data) => {
+        localStorage.setItem("user", JSON.stringify(data));
+        console.log("Updated User Data (state.tsx): ", data);
+      });
+    },
+  ],
+});
+```
+
+**Internationalization**: A unique trait of the driver application is language support, or internationalization. There is language support for English (default), Chinese, and Japanese. These can be toggled using the Earth icon on the bottom right corner of the sign in screen. Notice how the URL gets the localization appended (ie. `/zh`, `/ja`)
+
+> Translation was done via Google Translate - please tolerate incorrect translations and feel free to offer suggestions. The translation files are stored in `driver-app/locales/`
+
+Internationalization is done through a NextJS configuration at `next.config.js` and dictionaries (ex. `locales/zh`).
+
+```js
+driver-app/next.config.js
+
+module.exports = withPWA({
+...
+  i18n: {
+    locales: ["en", "zh", "jp"],
+    defaultLocale: "en",
+  },
+});
+```
+
+The user's language preference is set in the main screen and accessed by the `router`
+
+```js
+const router = useRouter();
+const { locale } = router;
+const lang = locale === "en" ? en : locale === "zh" ? zh : ja;
+```
+
+This is a simple solution and appropriate for smaller applications, but the NextJS documentation offers an alternate solution using [middleware](https://nextjs.org/docs/app/building-your-application/routing/internationalization).
+
+**Progressive Web Application (PWA)**
+
+**Reports (PDF)**
+
+**API Routers**
+
+**Routing**
 
 </details>
 
@@ -824,6 +920,10 @@ Test
 **Error Handling**: Rebu's event-based architecture is heavily reliant on API calls, which implies a demand for error handling. For example, using NextJS's [Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) custom hook or even simple `try... catch...` statements.
 
 **TypeScript: Type-hinting**: Using `any` types is generally a bad practice as it defeats the purpose of type hinting. However, it may also be difficult to identify a variable's type, especially if it comes from an external library. For example, a Google Map interface has the `google.maps.Map` type while a React useState setter uses `React.Dispatch<React.SetStateAction<[Type]>>`. Therefore, it is important to ensure the frontend libraries are TypeScript-compatible (which is normally indicated by a `@types/[library]` package in the `package.json` file)
+
+**Theme Provider**: Originally the dark theme was meant to be an experiment that would be reverted later on, but it became embedded into the design and unfortunately not in a way that could be easily changed. A theme provider should be implemented to toggle between light and dark modes as well as consider different types of color blindness
+
+**Styling**: The styling is Tailwind-based so while better than pure CSS, it still grew to be very redundant and difficult to maintain. External libraries could be considered such as MaterialUI, for styling purposes. The in-line styling can also be analyzed to see which ones can be merged and reused as custom CSS classes
 
 </details>
 
