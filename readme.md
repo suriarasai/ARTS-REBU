@@ -280,7 +280,7 @@ ChatEvent
 <a id="installation"></a>
 
 <details>
-  <summary>Installation</summary>
+  <summary>Installation and Running</summary>
 
 This is a brief installation guide - refer to the detailed installation guide for help
 
@@ -291,6 +291,15 @@ This is a brief installation guide - refer to the detailed installation guide fo
 - VSCode
 - Google Maps API Key
 - Stub Data for Driver and Taxis
+
+**If everything is already installed**:
+
+- Run Zookeeper: `zookeeper-server-start.bat D:\\kafka\\config\\zookeeper.properties` (check the path)
+- Run Kafka: `kafka-server-start.bat D:\\kafka\\config\\server.properties` (check the path)
+- Run Spring Boot at `src/main/java/com/rebu/RebuApplication.java`
+- Run the frontend applications via `cd` into their directory and `npm run dev`
+
+> In total, there will be 6 terminals: 3 for the backend, 3 for the frontend
 
 **Quick Guide**
 
