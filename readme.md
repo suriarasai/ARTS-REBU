@@ -779,7 +779,7 @@ Sample models can be found in the `data-models/external-apis/` folder
 
 <a id="frontendconcepts"></a>
 
-<details open>
+<details>
   <summary>Frontend Concepts</summary>
 
   <br />
