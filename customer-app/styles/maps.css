@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.map {
+	height: 83.33vh !important;
+	@apply w-screen;
+}
+
+/* Hiding the Google Maps logo... please remove if this goes public */
+.pac-container.pac-logo.hdpi::after {
+	@apply hidden !important;
+}
+
+.pac-matched {
+	@apply text-green-200;
+}
+
+.pac-container {
+	@apply mt-1 rounded-b-lg border-none bg-zinc-700 text-zinc-100 shadow-md !important;
+}
+
+.pac-item {
+	@apply border-none py-3 hover:bg-zinc-600 text-zinc-300;
+}
+
+.pac-item-query {
+	@apply text-zinc-100;
+}
+
+.map-control-button {
+	@apply flex h-12 w-12 items-center justify-center rounded-full bg-green-300 shadow-lg;
+}

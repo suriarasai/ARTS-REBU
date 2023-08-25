@@ -1,3 +1,6 @@
+// Main method, run this to run MongoDB on localhost
+// 19-05-2023
+
 package com.rebu;
 
 import org.springframework.boot.SpringApplication;

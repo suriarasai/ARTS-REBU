@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	@apply min-h-screen select-none bg-zinc-700 text-zinc-700 antialiased;
+	/* PWA enhancements */
+	-webkit-overflow-scrolling: touch;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+}
+
+input {
+	@apply mb-3 block w-full rounded-sm bg-gray-500 px-4 py-3 leading-tight text-green-100 shadow-md focus:bg-zinc-100 focus:text-green-600 focus:outline-none;
+}
+
+label {
+	@apply mb-2 block text-xs font-bold uppercase tracking-wide text-gray-50;
+}
+
+h5 {
+	@apply text-xs text-gray-50 !important;
+}
+
+h1 {
+	@apply text-xl text-gray-50 mb-6 !important;
+	font-family: 'Segoe UI' !important;
+	font-weight: 400 !important;
+}
+
+p {
+	font-family: 'Segoe UI';
+	font-weight: 300;
+	src: local('Segoe UI Light');
+}
+
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+::-webkit-scrollbar-track {
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.1);
+}
+::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(0, 0, 0, 0.4);
+}
+::-webkit-scrollbar-thumb:active {
+	background: rgba(0, 0, 0, 0.9);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.bottom-nav {
+	@apply fixed bottom-0 h-20 w-full rounded-t-3xl bg-white;
+	box-shadow: 0 -7px 7px -7px rgb(0 0 0 / 0.1);
+}
+
+.rect-button {
+	@apply flex h-10 w-2/12 items-center justify-center !bg-green-300 text-white hover:!bg-green-100;
+}
+
+.white-input {
+	@apply rounded-none border-none px-4 py-2 shadow-none;
+}
